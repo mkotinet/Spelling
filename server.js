@@ -220,7 +220,7 @@ const server = http.createServer(async (req, res) => {
       }
 
       const target = db.users[username];
-      const uData = body.userData || {};
+      const uData = body.userData || body || {};
 
       // Merge and update stats
       if (typeof uData.streak === "number") target.streak = Math.max(target.streak, uData.streak);
@@ -273,6 +273,8 @@ const server = http.createServer(async (req, res) => {
       totalPoints: u.totalPoints || 0,
       todayScore: u.todayScore || 0
     }));
+
+    list.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
 
     return sendJSON(res, 200, { success: true, leaderboard: list });
   }
