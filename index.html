@@ -38,6 +38,8 @@
       </div>
       <div class="header-actions">
         <button id="btnOpenDictSearch" class="icon-btn" title="국립국어원 표준국어대사전 검색">📖</button>
+        <button id="btnOpenAuthModal" class="icon-btn" title="간단 로그인 / 회원가입">🔑</button>
+        <button id="btnGitSync" class="icon-btn" title="GitHub 즉시 동기화">☁️</button>
         <button id="btnToggleSound" class="icon-btn" title="효과음 켜기/끄기">🔔</button>
         <button id="btnOpenApiSettings" class="icon-btn" title="국립국어원 API 설정">⚙️</button>
         <button id="btnEditProfile" class="icon-btn" title="내 프로필 수정">👤</button>
@@ -49,7 +51,10 @@
       <div class="user-avatar-tag">
         <div id="userAvatar" class="avatar-badge">🌸</div>
         <div class="user-details">
-          <div id="userName" class="uname">맞춤요정</div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span id="userName" class="uname">맞춤요정</span>
+            <span id="cloudSyncBadge" style="font-size: 0.68rem; font-weight: 700; color: #2ec4b6; background: #e6f9f5; padding: 2px 6px; border-radius: 8px;">게스트</span>
+          </div>
           <div id="userGrade" class="ugrade">중학교 2학년</div>
         </div>
       </div>
@@ -374,6 +379,72 @@
       <div id="dictSearchResults" style="max-height: 260px; overflow-y: auto; margin-top: 12px;">
         <!-- Populated search results -->
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 4: SIMPLE CLOUD AUTH & MULTI-DEVICE SYNC MODAL
+       ============================================================ -->
+  <div id="modalAuth" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="authModalTitle">🔑 간단 로그인 & 기기 연동</h3>
+        <button id="btnCloseAuthModal" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="rank-filter-tabs" style="margin-bottom: 14px;">
+        <button id="tabAuthLogin" class="rank-filter-btn active">간단 로그인</button>
+        <button id="tabAuthRegister" class="rank-filter-btn">1초 회원가입</button>
+      </div>
+
+      <p id="authNotice" style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.45; margin-bottom: 14px;">
+        아이디로 로그인하면 PC, 스마트폰, 태블릿 어디서든 내 출석 도장과 점수가 유지됩니다! 🌸
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="authUsername">아이디 (닉네임)</label>
+        <input id="authUsername" type="text" class="form-input" placeholder="영문, 숫자, 한글 모두 가능" maxlength="15">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="authPassword">간단 비밀번호</label>
+        <input id="authPassword" type="password" class="form-input" placeholder="기억하기 쉬운 비밀번호 입력" maxlength="20">
+      </div>
+
+      <!-- Registration-only fields -->
+      <div id="authRegFields" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="authGrade">내 학년</label>
+          <select id="authGrade" class="form-select">
+            <option value="초등학교 4학년">초등학교 4학년</option>
+            <option value="초등학교 5학년">초등학교 5학년</option>
+            <option value="초등학교 6학년">초등학교 6학년</option>
+            <option value="중학교 1학년">중학교 1학년</option>
+            <option value="중학교 2학년" selected>중학교 2학년</option>
+            <option value="중학교 3학년">중학교 3학년</option>
+            <option value="고등학교 1학년">고등학교 1학년</option>
+            <option value="고등학교 2학년">고등학교 2학년</option>
+            <option value="고등학교 3학년">고등학교 3학년</option>
+            <option value="일반 / 대학생">일반 / 대학생</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="authLoggedInView" style="display: none; text-align: center; padding: 12px 0;">
+        <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px;">
+          <span id="loggedInUserName">사용자</span>님 환영합니다! 🎉
+        </div>
+        <p style="font-size: 0.82rem; color: var(--accent-purple); margin-bottom: 14px;">
+          ☁️ 시놀로지 클라우드에 실시간 자동 동기화 중입니다.
+        </p>
+        <button id="btnLogout" class="main-action-btn" style="background: #f1e6ee; color: #7d6e83; padding: 10px;">
+          로그아웃
+        </button>
+      </div>
+
+      <button id="btnSubmitAuth" class="main-action-btn" style="margin-top: 6px;">
+        로그인하기 💕
+      </button>
     </div>
   </div>
 

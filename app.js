@@ -272,12 +272,16 @@ class HaruMatchumApp {
     this.maxCombo = 0;
     this.selectedOption = null;
 
+    this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    this.authMode = 'login'; // 'login' | 'register'
+
     this.initDOM();
     this.bindEvents();
     this.renderUserProfile();
     this.renderCalendarWeek();
     this.renderLeaderboard('daily');
     this.renderBadges();
+    this.checkCloudAuth();
   }
 
   initDOM() {
@@ -292,6 +296,7 @@ class HaruMatchumApp {
     this.modalProfile = document.getElementById('modalProfile');
     this.modalApi = document.getElementById('modalApi');
     this.modalDictSearch = document.getElementById('modalDictSearch');
+    this.modalAuth = document.getElementById('modalAuth');
 
     // Mascot
     this.mascotBubble = document.getElementById('mascotSpeech');
@@ -340,6 +345,15 @@ class HaruMatchumApp {
     document.getElementById('inputDictSearch').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.executeDictSearch();
     });
+
+    // Cloud Auth modal & Git Sync
+    document.getElementById('btnOpenAuthModal').addEventListener('click', () => this.openAuthModal());
+    document.getElementById('btnCloseAuthModal').addEventListener('click', () => this.closeAuthModal());
+    document.getElementById('tabAuthLogin').addEventListener('click', () => this.setAuthMode('login'));
+    document.getElementById('tabAuthRegister').addEventListener('click', () => this.setAuthMode('register'));
+    document.getElementById('btnSubmitAuth').addEventListener('click', () => this.submitAuth());
+    document.getElementById('btnLogout').addEventListener('click', () => this.logout());
+    document.getElementById('btnGitSync').addEventListener('click', () => this.syncGitRepo());
 
     // API settings modal
     document.getElementById('btnOpenApiSettings').addEventListener('click', () => this.openApiModal());
@@ -654,6 +668,7 @@ class HaruMatchumApp {
     }
 
     DataManager.save(this.data);
+    this.syncToCloud();
     this.renderUserProfile();
     this.renderCalendarWeek();
 
@@ -786,6 +801,7 @@ class HaruMatchumApp {
     }
 
     DataManager.save(this.data);
+    this.syncToCloud();
     this.renderUserProfile();
     this.renderLeaderboard('daily');
     this.closeProfileModal();
@@ -899,6 +915,216 @@ class HaruMatchumApp {
     DataManager.save(this.data);
     this.closeApiModal();
     alert('국립국어원 표준국어대사전 API 설정이 저장되었습니다! 🌸');
+  }
+
+  // ============================================================
+  // Cloud Auth & Multi-Device Synchronization
+  // ============================================================
+  async checkCloudAuth() {
+    if (!this.cloudToken) {
+      this.updateCloudStatus(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/user/profile', {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && body.user) {
+          const u = body.user;
+          // Apply cloud user to local data
+          this.data.currentUser.name = u.name || u.username;
+          this.data.currentUser.grade = u.grade || this.data.currentUser.grade;
+          this.data.currentUser.avatar = u.avatar || this.data.currentUser.avatar;
+          this.data.currentUser.streak = Math.max(this.data.currentUser.streak || 1, u.streak || 1);
+          this.data.currentUser.totalPoints = Math.max(this.data.currentUser.totalPoints || 0, u.totalPoints || 0);
+          this.data.currentUser.completedDates = Array.from(new Set([...(this.data.currentUser.completedDates || []), ...(u.completedDates || [])]));
+          this.data.currentUser.badges = Array.from(new Set([...(this.data.currentUser.badges || []), ...(u.badges || [])]));
+          this.data.wrongQuestions = u.wrongQuestions || this.data.wrongQuestions || [];
+
+          DataManager.save(this.data);
+          this.renderUserProfile();
+          this.renderCalendarWeek();
+          this.renderLeaderboard('daily');
+          this.updateCloudStatus(true, u.name || u.username);
+        }
+      } else {
+        // Token expired or invalid
+        this.cloudToken = '';
+        localStorage.removeItem('haru_cloud_token');
+        this.updateCloudStatus(false);
+      }
+    } catch (e) {
+      // Backend not reached (e.g. running on GitHub Pages static)
+      this.updateCloudStatus(false, null, '로컬');
+    }
+  }
+
+  updateCloudStatus(isLoggedIn, username, customText) {
+    const badge = document.getElementById('cloudSyncBadge');
+    if (!badge) return;
+    if (isLoggedIn) {
+      badge.textContent = `☁️ ${username}`;
+      badge.style.color = '#2ec4b6';
+      badge.style.background = '#e6f9f5';
+    } else {
+      badge.textContent = customText || '게스트';
+      badge.style.color = '#7d6e83';
+      badge.style.background = '#f2edf5';
+    }
+  }
+
+  async syncToCloud() {
+    if (!this.cloudToken) return;
+    try {
+      await fetch('/api/user/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.cloudToken}`
+        },
+        body: JSON.stringify({
+          token: this.cloudToken,
+          userData: this.data.currentUser
+        })
+      });
+    } catch (e) {
+      // Ignore background sync errors
+    }
+  }
+
+  openAuthModal() {
+    if (this.cloudToken) {
+      document.getElementById('authLoggedInView').style.display = 'block';
+      document.getElementById('loggedInUserName').textContent = this.data.currentUser.name;
+      document.getElementById('authUsername').parentElement.style.display = 'none';
+      document.getElementById('authPassword').parentElement.style.display = 'none';
+      document.getElementById('authRegFields').style.display = 'none';
+      document.getElementById('btnSubmitAuth').style.display = 'none';
+    } else {
+      document.getElementById('authLoggedInView').style.display = 'none';
+      document.getElementById('authUsername').parentElement.style.display = 'block';
+      document.getElementById('authPassword').parentElement.style.display = 'block';
+      document.getElementById('btnSubmitAuth').style.display = 'flex';
+      this.setAuthMode('login');
+    }
+    this.modalAuth.classList.add('active');
+  }
+
+  closeAuthModal() {
+    this.modalAuth.classList.remove('active');
+  }
+
+  setAuthMode(mode) {
+    this.authMode = mode;
+    const tabLogin = document.getElementById('tabAuthLogin');
+    const tabReg = document.getElementById('tabAuthRegister');
+    const regFields = document.getElementById('authRegFields');
+    const submitBtn = document.getElementById('btnSubmitAuth');
+    const title = document.getElementById('authModalTitle');
+
+    if (mode === 'login') {
+      tabLogin.classList.add('active');
+      tabReg.classList.remove('active');
+      regFields.style.display = 'none';
+      submitBtn.textContent = '로그인하기 💕';
+      title.textContent = '🔑 간단 로그인 & 기기 연동';
+    } else {
+      tabLogin.classList.remove('active');
+      tabReg.classList.add('active');
+      regFields.style.display = 'block';
+      submitBtn.textContent = '1초 가입하고 시작하기 ✨';
+      title.textContent = '🌸 1초 간편 회원가입';
+    }
+  }
+
+  async submitAuth() {
+    const username = document.getElementById('authUsername').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const grade = document.getElementById('authGrade').value;
+
+    if (!username || !password) {
+      alert('아이디와 비밀번호를 입력해 주세요!');
+      return;
+    }
+
+    const endpoint = this.authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const payload = {
+      username,
+      password,
+      grade,
+      avatar: this.data.currentUser.avatar || '🌸'
+    };
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.message || '로그인/가입 처리에 실패했습니다.');
+        return;
+      }
+
+      this.cloudToken = data.token;
+      localStorage.setItem('haru_cloud_token', data.token);
+
+      const u = data.user;
+      this.data.currentUser.name = u.name || u.username;
+      this.data.currentUser.grade = u.grade || this.data.currentUser.grade;
+      this.data.currentUser.avatar = u.avatar || this.data.currentUser.avatar;
+      this.data.currentUser.streak = u.streak || this.data.currentUser.streak;
+      this.data.currentUser.totalPoints = u.totalPoints || this.data.currentUser.totalPoints;
+      this.data.currentUser.completedDates = u.completedDates || this.data.currentUser.completedDates;
+      this.data.currentUser.badges = u.badges || this.data.currentUser.badges;
+
+      DataManager.save(this.data);
+      this.renderUserProfile();
+      this.renderCalendarWeek();
+      this.renderLeaderboard('daily');
+      this.updateCloudStatus(true, u.name || u.username);
+      this.closeAuthModal();
+      sfx.combo();
+
+      alert(`환영합니다, ${u.name || u.username}님! 🎉\n이제 PC, 스마트폰, 태블릿 어디서든 이 계정으로 접속하시면 내 기록이 유지됩니다.`);
+    } catch (e) {
+      alert('서버에 연결할 수 없습니다. 시놀로지 서버 상태를 확인해 주세요.');
+    }
+  }
+
+  logout() {
+    this.cloudToken = '';
+    localStorage.removeItem('haru_cloud_token');
+    this.updateCloudStatus(false);
+    this.closeAuthModal();
+    alert('로그아웃되었습니다. 로컬 게스트 모드로 전환됩니다.');
+  }
+
+  async syncGitRepo() {
+    const btn = document.getElementById('btnGitSync');
+    btn.disabled = true;
+    btn.textContent = '⏳';
+
+    try {
+      const res = await fetch('/api/git/sync', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        sfx.combo();
+        alert('시놀로지와 깃허브 간 자동 양방향 동기화가 성공적으로 완료되었습니다! ☁️✨');
+      } else {
+        alert('동기화 결과: ' + (data.message || '완료'));
+      }
+    } catch (e) {
+      alert('GitHub 동기화 요청을 전송했습니다. (정적 모드에서는 깃허브 액션/서버 환경이 필요합니다)');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '☁️';
+    }
   }
 }
 
