@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
+  <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+</head>
+<body>
+
+  <!-- Floating Background Pastel Stickers -->
+  <div class="bg-decorations" aria-hidden="true">
+    <div class="decor-item decor-1">🌸</div>
+    <div class="decor-item decor-2">✨</div>
+    <div class="decor-item decor-3">🎀</div>
+    <div class="decor-item decor-4">🐰</div>
+    <div class="decor-item decor-5">🍰</div>
+    <div class="decor-item decor-6">⭐</div>
+  </div>
+
+  <!-- Confetti Canvas for Celebrations -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Main App Shell -->
+  <main class="app-container">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="logo-area" onclick="window.app && window.app.switchView('home')">
+        <div class="logo-icon">✨</div>
+        <div class="logo-text">
+          <h1>하루맞춤</h1>
+          <p>매일 5분! 반짝이는 우리말 맞춤법</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnToggleSound" class="icon-btn" title="효과음 켜기/끄기">🔔</button>
+        <button id="btnOpenApiSettings" class="icon-btn" title="국립국어원 API 설정">⚙️</button>
+        <button id="btnEditProfile" class="icon-btn" title="내 프로필 수정">👤</button>
+      </div>
+    </header>
+
+    <!-- User Mini Profile Bar -->
+    <div id="userBar" class="user-bar" title="클릭하여 프로필을 변경하세요">
+      <div class="user-avatar-tag">
+        <div id="userAvatar" class="avatar-badge">🌸</div>
+        <div class="user-details">
+          <div id="userName" class="uname">맞춤요정</div>
+          <div id="userGrade" class="ugrade">중학교 2학년</div>
+        </div>
+      </div>
+      <div class="user-stats-pill">
+        <div class="stat-item">
+          <div id="userStreak" class="val">1일</div>
+          <div class="lbl">연속 출석</div>
+        </div>
+        <div class="stat-item">
+          <div id="userPoints" class="val">120P</div>
+          <div class="lbl">보유 포인트</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" aria-label="메뉴 탐색">
+      <button class="nav-tab active" data-view="home">🏠 퀴즈 홈</button>
+      <button class="nav-tab" data-view="leaderboard">🏆 회원 랭킹</button>
+      <button class="nav-tab" data-view="badges">🎀 스티커북</button>
+    </nav>
+
+    <!-- ============================================================
+         VIEW 1: HOME SCREEN
+         ============================================================ -->
+    <section id="viewHome" class="view-section active">
+
+      <!-- Cute Mascot Speech Card -->
+      <div class="mascot-card">
+        <div id="mascotAvatar" class="mascot-avatar">🐰</div>
+        <div id="mascotSpeech" class="mascot-bubble">
+          안녕, <strong>맞춤요정</strong>야! 오늘도 반짝이는 맞춤법 퀴즈 도전해볼까? ✨
+        </div>
+      </div>
+
+      <!-- Mode Cards Grid -->
+      <div class="mode-grid">
+        <div id="btnStartDaily" class="mode-card primary">
+          <div class="mode-icon">📅</div>
+          <div class="mode-info">
+            <span class="mode-badge">오늘의 데일리 챌린지</span>
+            <h3>오늘의 맞춤법 5제</h3>
+            <p>매일 갱신되는 5문제 풀고 출석 도장 & 랭킹 포인트 적립!</p>
+          </div>
+        </div>
+
+        <div id="btnStartPractice" class="mode-card">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-info">
+            <h3>무한 연습</h3>
+            <p>언제든 가볍게 5문제 풀기</p>
+          </div>
+        </div>
+
+        <div id="btnStartReview" class="mode-card">
+          <div class="mode-icon">📝</div>
+          <div class="mode-info">
+            <h3>오답노트 복습</h3>
+            <p>헷갈렸던 문제 다시 확인</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Diary Streak Card -->
+      <div class="diary-card">
+        <div class="diary-header">
+          <h3>📖 이번 주 출석 다이어리</h3>
+          <span id="streakBadge" class="streak-count">🔥 1일 연속</span>
+        </div>
+        <div id="calendarWeek" class="calendar-week">
+          <!-- Dynamically populated 7 days -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================
+         VIEW 2: QUIZ SCREEN
+         ============================================================ -->
+    <section id="viewQuiz" class="view-section">
+      <div class="quiz-screen">
+        <div class="quiz-top-bar">
+          <span id="quizCategory" class="quiz-category-pill">어휘·표기 · 기초</span>
+          <span id="quizCombo" class="quiz-combo-pill" style="display: none;">🔥 2 콤보!</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-track">
+          <div id="quizProgressFill" class="progress-fill"></div>
+        </div>
+
+        <!-- Question Content -->
+        <div class="quiz-content">
+          <div id="quizPrompt" class="quiz-prompt">Q1. 다음 중 올바른 맞춤법을 골라보세요.</div>
+          
+          <div class="quiz-sentence-box">
+            <div id="quizSentence" class="quiz-sentence">
+              오늘따라 <span class="highlight">[ 왠지 / 웬지 ]</span> 기분이 좋아!
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div id="quizOptions" class="options-grid">
+            <!-- Dynamically populated options -->
+          </div>
+
+          <!-- Detailed Explanation & National Institute Dictionary link -->
+          <div id="quizExplanation" class="explanation-card">
+            <div class="exp-badge">📖 국립국어원 표준 맞춤법 해설</div>
+            <p id="expText" class="exp-text"></p>
+            <div class="exp-rule">
+              <span id="expRule">한글 맞춤법 제54항</span>
+              <a id="expDictLink" class="dict-link-btn" href="#" target="_blank" rel="noopener noreferrer">
+                표준국어대사전에서 단어 뜻 보기 ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next / Complete Action Button -->
+        <button id="btnQuizNext" class="main-action-btn" disabled>
+          다음 문제로 ✨
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 3: RESULT SCREEN
+         ============================================================ -->
+    <section id="viewResult" class="view-section">
+      <div class="quiz-screen result-screen">
+        <div id="resultMascot" class="result-mascot">🎉</div>
+        <h2 id="resultTitle" class="result-title">오늘의 퀴즈 완료!</h2>
+        <p id="resultSubtitle" class="result-subtitle">꾸준히 도전하는 모습이 정말 멋져요!</p>
+
+        <div class="score-circle-card">
+          <div class="score-circle-item">
+            <div id="resultScore" class="num">100점</div>
+            <div class="label">획득 점수</div>
+          </div>
+          <div class="score-circle-item">
+            <div id="resultCombo" class="num">5회</div>
+            <div class="label">최대 콤보</div>
+          </div>
+          <div class="score-circle-item">
+            <div id="resultPoints" class="num">+100P</div>
+            <div class="label">적립 포인트</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: auto;">
+          <button id="btnResultRetry" class="main-action-btn" style="background: linear-gradient(135deg, #ffd6e0, #c8b6ff); color: #4a3e4e;">
+            다시 풀기 🔄
+          </button>
+          <button id="btnResultHome" class="main-action-btn">
+            홈으로 가기 🏠
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 4: LEADERBOARD / RANKING SCREEN
+         ============================================================ -->
+    <section id="viewLeaderboard" class="view-section">
+      <div class="leaderboard-card">
+        <div class="rank-top-banner">
+          <h3>👑 맞춤법 랭킹 명예의 전당</h3>
+          <p style="font-size: 0.8rem; color: var(--text-sub);">친구들과 함께 겨루며 맞춤법 왕관에 도전해보세요!</p>
+        </div>
+
+        <div class="rank-filter-tabs">
+          <button class="rank-filter-btn active" data-type="daily">오늘의 랭킹 (일간)</button>
+          <button class="rank-filter-btn" data-type="total">누적 명예의 전당</button>
+        </div>
+
+        <div id="leaderboardList" class="leaderboard-list">
+          <!-- Dynamically populated ranking items -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VIEW 5: BADGES / STICKERBOOK SCREEN
+         ============================================================ -->
+    <section id="viewBadges" class="view-section">
+      <div class="leaderboard-card">
+        <div class="rank-top-banner">
+          <h3>🎀 나의 맞춤법 스티커 다이어리</h3>
+          <p style="font-size: 0.8rem; color: var(--text-sub);">미션을 달성하여 반짝이는 스티커 뱃지를 수집해 보세요!</p>
+        </div>
+
+        <div id="badgesGrid" class="badges-grid">
+          <!-- Dynamically populated badges -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       MODAL 1: PROFILE SETUP / SWITCH MODAL
+       ============================================================ -->
+  <div id="modalProfile" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>👤 내 프로필 설정</h3>
+        <button id="btnCloseProfileModal" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inputNickname">내 닉네임 (아이디)</label>
+        <input id="inputNickname" type="text" class="form-input" placeholder="귀여운 닉네임을 적어주세요 (예: 맞춤요정)" maxlength="12">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="selectGrade">내 학년</label>
+        <select id="selectGrade" class="form-select">
+          <option value="초등학교 4학년">초등학교 4학년</option>
+          <option value="초등학교 5학년">초등학교 5학년</option>
+          <option value="초등학교 6학년">초등학교 6학년</option>
+          <option value="중학교 1학년">중학교 1학년</option>
+          <option value="중학교 2학년" selected>중학교 2학년</option>
+          <option value="중학교 3학년">중학교 3학년</option>
+          <option value="고등학교 1학년">고등학교 1학년</option>
+          <option value="고등학교 2학년">고등학교 2학년</option>
+          <option value="고등학교 3학년">고등학교 3학년</option>
+          <option value="일반 / 대학생">일반 / 대학생</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">프로필 아바타 선택</label>
+        <div class="avatar-selector">
+          <div class="avatar-opt selected" data-avatar="🌸">🌸</div>
+          <div class="avatar-opt" data-avatar="🐰">🐰</div>
+          <div class="avatar-opt" data-avatar="🐱">🐱</div>
+          <div class="avatar-opt" data-avatar="🐶">🐶</div>
+          <div class="avatar-opt" data-avatar="🐻">🐻</div>
+          <div class="avatar-opt" data-avatar="🍒">🍒</div>
+          <div class="avatar-opt" data-avatar="🍓">🍓</div>
+          <div class="avatar-opt" data-avatar="🎀">🎀</div>
+          <div class="avatar-opt" data-avatar="⭐">⭐</div>
+          <div class="avatar-opt" data-avatar="🧁">🧁</div>
+          <div class="avatar-opt" data-avatar="🦄">🦄</div>
+          <div class="avatar-opt" data-avatar="🍀">🍀</div>
+        </div>
+      </div>
+
+      <button id="btnSaveProfile" class="main-action-btn" style="margin-top: 14px;">
+        프로필 저장하기 💕
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 2: NATIONAL INSTITUTE OF KOREAN LANGUAGE API MODAL
+       ============================================================ -->
+  <div id="modalApi" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🏛️ 국립국어원 사전 API 연동</h3>
+        <button id="btnCloseApiModal" class="modal-close-btn">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 14px;">
+        본 프로그램은 국립국어원 표준국어대사전 규정 기반 60제 엄선 문제은행을 기본 탑재하고 있으며, 오픈 API 인증키를 등록하시면 표준국어대사전 실시간 검색과 연동됩니다.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label" for="inputApiKey">국립국어원 Open API 인증키</label>
+        <input id="inputApiKey" type="text" class="form-input" placeholder="발급받은 인증키를 입력하세요 (선택사항)">
+      </div>
+
+      <div style="background: #fdf5f8; padding: 12px; border-radius: 12px; font-size: 0.78rem; color: var(--text-sub); margin-bottom: 16px;">
+        💡 <strong>인증키 무료 발급 안내</strong>:
+        <a href="https://stdict.korean.go.kr/openapi/openApiInfo.do" target="_blank" rel="noopener noreferrer" style="color: var(--accent-coral); font-weight: 700;">
+          국립국어원 표준국어대사전 OpenAPI 센터 ↗
+        </a> 에서 회원가입 후 무료로 즉시 발급받으실 수 있습니다. 키가 없어도 내장 문제은행과 사전 바로가기 링크로 100% 정상 작동합니다.
+      </div>
+
+      <button id="btnSaveApiSettings" class="main-action-btn">
+        API 설정 저장하기 ✨
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
