@@ -57,11 +57,11 @@
       "name": "미니미니",
       "passwordHash": "99381a8d56024a3660dd4d0a6eb888b9b3ab8ae59d8582d4a707a62697d9bd7f",
       "grade": "일반 / 대학생",
-      "avatar": "🌸",
+      "avatar": "🐶",
       "streak": 1,
-      "totalPoints": 100,
-      "totalSolved": 5,
-      "totalCorrect": 5,
+      "totalPoints": 250,
+      "totalSolved": 15,
+      "totalCorrect": 17,
       "todayScore": 100,
       "lastActiveDate": "2026-11-11",
       "completedDates": [
@@ -72,7 +72,7 @@
       ],
       "wrongQuestions": [],
       "createdAt": "2026-11-11T14:26:09.520Z",
-      "updatedAt": "2026-11-11T14:26:09.520Z"
+      "updatedAt": "2026-11-11T14:32:41.948Z"
     },
     "단민러브": {
       "id": "user_1794407473169",
@@ -113,6 +113,7 @@
     "f5fd9572e040fbdffbace6a2a2d4ef5104865f8f750da0cb": "미니미니",
     "cb9b6860c8e0455e6c03bc33ac58d8517c1351f76d8b6aeb": "단민러브",
     "3d7f2d75655a84b5e3d7eba4ef91d1c6a39b66cf33020a3f": "미니미니",
-    "ce3a85ce5353c9b35403b4536c61fd58f8a5d4ffb157a471": "단민러브"
+    "ce3a85ce5353c9b35403b4536c61fd58f8a5d4ffb157a471": "단민러브",
+    "a866739457cefa9f080b3d814a92371cb70f5eabc36f5a8f": "미니미니"
   }
 }
