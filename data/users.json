@@ -50,12 +50,69 @@
       "wrongQuestions": [],
       "createdAt": "2026-11-11T14:22:27.163Z",
       "updatedAt": "2026-11-11T14:22:52.357Z"
+    },
+    "미니미니": {
+      "id": "user_1794407169517",
+      "username": "미니미니",
+      "name": "미니미니",
+      "passwordHash": "99381a8d56024a3660dd4d0a6eb888b9b3ab8ae59d8582d4a707a62697d9bd7f",
+      "grade": "일반 / 대학생",
+      "avatar": "🌸",
+      "streak": 1,
+      "totalPoints": 100,
+      "totalSolved": 5,
+      "totalCorrect": 5,
+      "todayScore": 100,
+      "lastActiveDate": "2026-11-11",
+      "completedDates": [
+        "2026-11-11"
+      ],
+      "badges": [
+        "starter"
+      ],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-11T14:26:09.520Z",
+      "updatedAt": "2026-11-11T14:26:09.520Z"
+    },
+    "단민러브": {
+      "id": "user_1794407473169",
+      "username": "단민러브",
+      "name": "단민러브",
+      "passwordHash": "64cf29d846d9b712ea375d504e25aa3467ae4c5df8206d009aced75e260de912",
+      "grade": "고등학교 1학년",
+      "avatar": "🐰",
+      "streak": 5,
+      "totalPoints": 500,
+      "totalSolved": 25,
+      "totalCorrect": 25,
+      "todayScore": 100,
+      "lastActiveDate": "2026-11-11",
+      "completedDates": [
+        "2026-11-11",
+        "2026-11-07",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-10"
+      ],
+      "badges": [
+        "starter",
+        "streak_3",
+        "perfect_100",
+        "spelling_king"
+      ],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-11T14:31:13.169Z",
+      "updatedAt": "2026-11-11T14:31:30.361Z"
     }
   },
   "tokens": {
     "bc67e74b75a8af134ff84e4ea0a2964fcfd5239195418037": "맞춤요정",
     "ce7f8b9d7615dc1f3918fafa04e0f860f26c29e8f764ace9": "맞춤요정",
     "a90e63c7198408aeebfdb891c7a37bb62adcc1cda3c1fac1": "민지",
-    "9bee6e8d7756a115c162f16ff36c32db86269e0c56349f1e": "민지"
+    "9bee6e8d7756a115c162f16ff36c32db86269e0c56349f1e": "민지",
+    "f5fd9572e040fbdffbace6a2a2d4ef5104865f8f750da0cb": "미니미니",
+    "cb9b6860c8e0455e6c03bc33ac58d8517c1351f76d8b6aeb": "단민러브",
+    "3d7f2d75655a84b5e3d7eba4ef91d1c6a39b66cf33020a3f": "미니미니",
+    "ce3a85ce5353c9b35403b4536c61fd58f8a5d4ffb157a471": "단민러브"
   }
 }
