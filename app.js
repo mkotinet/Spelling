@@ -178,7 +178,7 @@ class DataManager {
         lastActiveDate: new Date().toISOString().split('T')[0],
         completedDates: [new Date().toISOString().split('T')[0]]
       },
-      apiKey: '',
+      apiKey: 'C0E0448602CD3B859FDDD29BBD84289C',
       soundEnabled: true,
       wrongQuestions: [],
       badges: ['starter'],
@@ -196,6 +196,9 @@ class DataManager {
         return init;
       }
       const parsed = JSON.parse(raw);
+      if (!parsed.apiKey) {
+        parsed.apiKey = 'C0E0448602CD3B859FDDD29BBD84289C';
+      }
       if (!parsed.allUsers || parsed.allUsers.length === 0) {
         parsed.allUsers = this.generatePeerRankings(parsed.currentUser);
       }
@@ -288,6 +291,7 @@ class HaruMatchumApp {
     // Modals
     this.modalProfile = document.getElementById('modalProfile');
     this.modalApi = document.getElementById('modalApi');
+    this.modalDictSearch = document.getElementById('modalDictSearch');
 
     // Mascot
     this.mascotBubble = document.getElementById('mascotSpeech');
@@ -327,6 +331,14 @@ class HaruMatchumApp {
         document.querySelectorAll('.avatar-opt').forEach(o => o.classList.remove('selected'));
         e.currentTarget.classList.add('selected');
       });
+    });
+
+    // Dictionary search modal
+    document.getElementById('btnOpenDictSearch').addEventListener('click', () => this.openDictModal());
+    document.getElementById('btnCloseDictModal').addEventListener('click', () => this.closeDictModal());
+    document.getElementById('btnDoDictSearch').addEventListener('click', () => this.executeDictSearch());
+    document.getElementById('inputDictSearch').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.executeDictSearch();
     });
 
     // API settings modal
@@ -569,16 +581,20 @@ class HaruMatchumApp {
       }
     }
 
-    // Show Explanation
+    // Show Explanation & National Institute Dictionary Definition
     const expCard = document.getElementById('quizExplanation');
     expCard.classList.add('active');
     document.getElementById('expText').textContent = q.explanation;
     document.getElementById('expRule').textContent = `규정: ${q.rule}`;
 
+    const targetWord = q.standardWord || q.options[q.answerIndex];
+    document.getElementById('dictWord').textContent = targetWord;
+    document.getElementById('dictPos').textContent = q.pos || '표준어';
+    document.getElementById('dictDefText').textContent = q.dictDefinition || q.explanation;
+
     // National Institute of Korean Language Dictionary search link
     const dictLink = document.getElementById('expDictLink');
-    const targetWord = q.standardWord || q.options[q.answerIndex];
-    dictLink.href = `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(targetWord)}`;
+    dictLink.href = q.dictLink || `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(targetWord)}`;
     dictLink.onclick = () => {
       this.trackDictionarySearch();
     };
@@ -783,6 +799,98 @@ class HaruMatchumApp {
 
   closeApiModal() {
     this.modalApi.classList.remove('active');
+  }
+
+  openDictModal() {
+    this.modalDictSearch.classList.add('active');
+    document.getElementById('inputDictSearch').focus();
+    if (!document.getElementById('dictSearchResults').innerHTML.trim()) {
+      this.renderInitialDictExamples();
+    }
+  }
+
+  closeDictModal() {
+    this.modalDictSearch.classList.remove('active');
+  }
+
+  renderInitialDictExamples() {
+    const container = document.getElementById('dictSearchResults');
+    container.innerHTML = `
+      <div style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 8px;">추천 검색어:</div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+        ${['왠지', '며칠', '금세', '희한하다', '봬요', '어이없다', '등굣길', '설렘'].map(w => 
+          `<button class="rank-filter-btn" style="padding: 4px 10px; font-size: 0.78rem; background: #fff; border: 1px solid var(--primary-soft-pink);" onclick="window.app.quickDictSearch('${w}')">${w}</button>`
+        ).join('')}
+      </div>
+    `;
+  }
+
+  quickDictSearch(word) {
+    document.getElementById('inputDictSearch').value = word;
+    this.executeDictSearch();
+  }
+
+  executeDictSearch() {
+    const rawQuery = document.getElementById('inputDictSearch').value.trim();
+    if (!rawQuery) {
+      alert('검색할 단어를 입력해 주세요!');
+      return;
+    }
+
+    const container = document.getElementById('dictSearchResults');
+    container.innerHTML = `<div style="text-align: center; padding: 16px; color: var(--text-sub);">국립국어원 표준국어대사전 조회 중... 🌸</div>`;
+
+    this.trackDictionarySearch();
+
+    // Check our enriched question bank first for instant result
+    const matched = SPELLING_QUESTION_BANK.find(q => 
+      (q.standardWord && q.standardWord.includes(rawQuery)) || 
+      (q.sentence && q.sentence.includes(rawQuery)) ||
+      q.options.some(opt => opt.includes(rawQuery))
+    );
+
+    setTimeout(() => {
+      const cleanWord = rawQuery;
+      const dictUrl = `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(cleanWord)}`;
+
+      if (matched && matched.dictDefinition) {
+        container.innerHTML = `
+          <div class="dict-def-card" style="margin-top: 4px;">
+            <div class="dict-def-header">
+              <span class="dict-title-tag">표준국어대사전 공식 표제어</span>
+              <strong style="font-size: 1rem; color: var(--accent-coral);">${matched.standardWord || cleanWord}</strong>
+              <span class="dict-pos-tag">${matched.pos || '표준어'}</span>
+            </div>
+            <p class="dict-def-body">${matched.dictDefinition}</p>
+            <div style="font-size: 0.78rem; color: var(--text-sub); margin-bottom: 6px;">
+              💡 <strong>규정</strong>: ${matched.rule}
+            </div>
+            <div style="text-align: right;">
+              <a class="dict-link-btn" href="${matched.dictLink || dictUrl}" target="_blank" rel="noopener noreferrer">
+                국립국어원 공식 사전 상세 보기 ↗
+              </a>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="dict-def-card" style="margin-top: 4px;">
+            <div class="dict-def-header">
+              <span class="dict-title-tag">국립국어원 검색 결과</span>
+              <strong style="font-size: 1rem; color: var(--accent-coral);">${cleanWord}</strong>
+            </div>
+            <p class="dict-def-body">
+              ‘${cleanWord}’에 대한 국립국어원 표준국어대사전 공식 웹 검색 결과입니다.
+            </p>
+            <div style="text-align: right; margin-top: 8px;">
+              <a class="dict-link-btn" href="${dictUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 0.85rem;">
+                🏛️ 국립국어원 표준국어대사전 웹에서 '${cleanWord}' 전체 뜻 보기 ↗
+              </a>
+            </div>
+          </div>
+        `;
+      }
+    }, 200);
   }
 
   saveApiSettings() {

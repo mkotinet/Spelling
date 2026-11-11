@@ -2,6 +2,20 @@
 
 ---
 
+## 📌 [v1.1.0] - 2026-11-11 (National Institute of Korean Language API Integration & Domain Connect)
+
+### 🏛️ 국립국어원 표준국어대사전 Open API 실데이터 완벽 연동
+- **공식 API 인증키(`C0E0448602CD3B859FDDD29BBD84289C`) 적용**:
+  - `stdict.korean.go.kr` Open API를 직접 호출하여 60개 전체 문항에 대한 공식 표제어, 품사(pos), 정의(definition), 사전 상세 링크를 연동.
+- **퀴즈 화면 '표준국어대사전 공식 표제어' 카드 추가**:
+  - 문제 정답 선택 시 단순 해설뿐만 아니라 국립국어원의 공인된 사전 뜻풀이가 별도 카드 블록으로 함께 표출.
+- **상단 '📖 표준국어대사전 실시간 검색기' 모달 탑재**:
+  - 퀴즈 중이거나 홈 화면 어디서든 궁금한 맞춤법 단어를 즉시 검색하고 공식 사전 정의를 확인 가능.
+- **커스텀 도메인 연결 완료**:
+  - `haru.danminlove.com` 서브도메인 CNAME 및 Cloudflare DNS 라우팅 연동.
+
+---
+
 ## 📌 [v1.0.0] - 2026-11-11 (Official First Release)
 
 ### 🎉 신규 기능 추가 (New Features)

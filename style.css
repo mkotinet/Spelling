@@ -696,6 +696,49 @@ body {
   align-items: center;
 }
 
+/* Official National Institute Dictionary Card */
+.dict-def-card {
+  background: linear-gradient(135deg, #fbf7ff, #fff5f8);
+  border: 1.5px solid var(--primary-soft-pink);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(200, 150, 180, 0.12);
+}
+
+.dict-def-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.dict-title-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #ff8fb1, #9b5de5);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.dict-pos-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  background: #f0e6ff;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.dict-def-body {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #3d3142;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
 .dict-link-btn {
   color: var(--accent-coral);
   font-size: 0.78rem;
