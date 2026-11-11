@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  spelling:
+    image: nginx:alpine
+    container_name: spelling
+    restart: unless-stopped
+    ports:
+      - "8089:80"
+    command: >
+      /bin/sh -c "
+        apk add --no-cache git &&
+        git clone https://github.com/mkotinet/Spelling.git /tmp/spelling &&
+        cp -r /tmp/spelling/* /usr/share/nginx/html/ &&
+        rm -rf /tmp/spelling &&
+        nginx -g 'daemon off;'
+      "
+    networks:
+      - npm_default
+
+networks:
+  npm_default:
+    external: true

@@ -2,6 +2,26 @@
 
 ---
 
+## 📌 [v1.2.0] - 2026-11-11 (Synology Portainer & NPM Reverse Proxy Deployment)
+
+### 🐳 시놀로지 포테이너(Portainer) 스택 배포 완료
+- **Portainer Stack 생성 (`spelling`)**:
+  - 엔드포인트: Synology DS1019+ (`local`, ID: 3)
+  - 스택 ID: `12`
+  - 컨테이너: `spelling` (`nginx:alpine`), 호스트 포트 `8089:80`
+  - 도커 네트워크: `npm_default` 공유 브리지 네트워크 바인딩
+  - 깃허브 저장소(`mkotinet/Spelling`) 자동 코드 동기화 구동 스크립트 적용
+
+### 🌐 Nginx Proxy Manager (NPM) 도메인 라우팅 구축
+- **프록시 호스트 등록 (`haru1.danminlove.com`)**:
+  - 호스트 ID: `12`
+  - 도메인: `haru1.danminlove.com`
+  - 전달 대상: `http://192.168.0.44:8089` (컨테이너 내부 `spelling:80` 매핑)
+  - Nginx vhost 설정 파일 자동 생성 (`/data/nginx/proxy_host/12.conf`) 및 Nginx 엔진 리로드(`nginx -s reload`) 완료
+  - 외부 공용망 HTTP 200 OK 무결성 검증 완료
+
+---
+
 ## 📌 [v1.1.0] - 2026-11-11 (National Institute of Korean Language API Integration & Domain Connect)
 
 ### 🏛️ 국립국어원 표준국어대사전 Open API 실데이터 완벽 연동

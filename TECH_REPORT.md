@@ -143,18 +143,61 @@ const seed = Math.abs(hash);
 
 ---
 
-## 6. 품질 검증 및 브라우저 호환성 테스트
+## 6. 시놀로지 Portainer 및 Nginx Proxy Manager (NPM) 인프라 연동
 
-| 테스트 항목 | 테스트 환경 | 결과 | 상세 내용 |
-| :--- | :--- | :--- | :--- |
-| **모바일 반응형 뷰** | iPhone 14 / Galaxy S24 (뷰포트 375~412px) | **PASS** | 터치 타깃 적합성, 가로 스크롤 방지 완벽 대응 |
-| **태블릿/데스크톱** | iPad Air / MacBook Pro Chrome, Safari | **PASS** | 카드 최대 너비(580px) 중앙 정렬 및 여백 최적화 |
-| **Web Audio 사운드** | Chrome, Safari, Edge | **PASS** | 사용자 제스처(클릭) 이벤트 후 정상 AudioContext 구동 |
-| **데이터 영속성** | 새로고침 및 브라우저 재시작 | **PASS** | 유저 정보, 포인트, 출석 도장, 뱃지 상태 복원 확인 |
-| **CORS 및 보안** | 콘솔 에러 검사 | **PASS** | 외부 리소스 의존 최소화로 Mixed-Content 에러 제로 |
+### 6.1 이중 배포(Dual Deployment) 아키텍처
+본 프로젝트는 글로벌 CDN 정적 호스팅(GitHub Pages)과 개인 홈서버 프라이빗 호스팅(Synology NAS Portainer)의 하이브리드 이중 배포 환경을 지원합니다:
+
+```
+                  [ 사용자 접속 ]
+                         |
+      +------------------+------------------+
+      |                                     |
+[ haru.danminlove.com ]             [ haru1.danminlove.com ]
+      |                                     |
+  Cloudflare DNS                       Cloudflare DNS
+      | (CNAME)                             | (A/CNAME)
+      v                                     v
+GitHub Pages CDN                     Synology NAS (DS1019+)
+(Static Edge Hosting)                Nginx Proxy Manager (:80/:443)
+                                            |
+                                            | (npm_default network)
+                                            v
+                                     Portainer Stack: spelling
+                                     Container: spelling (:8089->80)
+                                     (nginx:alpine on Docker)
+```
+
+### 6.2 Portainer 스택 명세 (`spelling`)
+- **스택 ID / 이름**: `12` / `spelling`
+- **엔드포인트**: `ID: 3 (local Docker on Synology)`
+- **베이스 이미지**: `nginx:alpine`
+- **외부 노출 포트**: `8089` (호스트 `192.168.0.44:8089`)
+- **도커 네트워크**: `npm_default` (NPM 컨테이너와 동일 브리지 네트워크 공유)
+- **컨테이너 내부 동작**: 컨테이너 부팅 시 GitHub 저장소 최신 코드를 자동 동기화하여 `/usr/share/nginx/html`에 배포 후 Nginx 웹서버 구동.
+
+### 6.3 Nginx Proxy Manager (NPM) 라우팅 설정
+- **호스트 ID**: `12`
+- **도메인**: `haru1.danminlove.com`
+- **전송 대상 (Forward Host / Port)**: `192.168.0.44` : `8089` (또는 `spelling:80`)
+- **프로토콜**: `HTTP`
+- **옵션**: `Block Exploits` 활성화, `Websocket Support` 활성화
 
 ---
 
-## 7. 결론 및 향후 로드맵
+## 7. 품질 검증 및 브라우저 호환성 테스트
 
-'하루맞춤'은 초·중·고등학생 사용자의 눈높이에 맞춘 감성적인 비주얼과 게이미피케이션 요소를 통해 국어 맞춤법 학습의 진입 장벽을 대폭 낮췄습니다. 향후 로드맵으로는 친구 초대 기능, 학급 단위 대항전 랭킹, 그리고 국어원 오픈 API를 활용한 신조어·외래어 표기법 퀴즈 확장을 계획하고 있습니다.
+| 테스트 항목 | 테스트 환경 | 결과 | 상세 내용 |
+| :--- | :--- | :--- | :--- |
+| **GitHub Pages 라이브** | `http://haru.danminlove.com` | **PASS** | 글로벌 엣지 배포 200 OK 정상 응답 |
+| **시놀로지 NAS 라이브** | `http://haru1.danminlove.com` | **PASS** | NPM 리버스 프록시 거쳐 8089 포트 200 OK 정상 응답 |
+| **Portainer 스택 상태** | Synology DS1019+ Docker | **PASS** | 컨테이너 상태 `running`, `nginx/1.31.8` 무결성 검증 |
+| **모바일 반응형 뷰** | iPhone 14 / Galaxy S24 (뷰포트 375~412px) | **PASS** | 터치 타깃 적합성, 가로 스크롤 방지 완벽 대응 |
+| **Web Audio 사운드** | Chrome, Safari, Edge | **PASS** | 사용자 제스처(클릭) 이벤트 후 정상 AudioContext 구동 |
+| **데이터 영속성** | 새로고침 및 브라우저 재시작 | **PASS** | 유저 정보, 포인트, 출석 도장, 뱃지 상태 복원 확인 |
+
+---
+
+## 8. 결론 및 향후 로드맵
+
+'하루맞춤'은 초·중·고등학생 사용자의 눈높이에 맞춘 감성적인 비주얼과 게이미피케이션 요소를 통해 국어 맞춤법 학습의 진입 장벽을 대폭 낮췄습니다. 또한 GitHub Pages 및 시놀로지 Portainer + NPM 이중 환경 배포를 통해 고가용성과 자가 호스팅(Self-hosting)의 유연성을 동시에 확보하였습니다.
