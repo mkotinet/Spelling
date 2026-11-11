@@ -338,4 +338,20 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`[Haru Matchum] Server listening on http://0.0.0.0:${PORT}`);
+
+  // Auto-sync with GitHub every 10 minutes
+  setInterval(() => {
+    try {
+      const status = runGit("git status --porcelain");
+      if (status) {
+        console.log("[Auto-Sync] Detected changes, pushing to GitHub...");
+        runGit("git add .");
+        runGit('git commit -m "auto: periodic sync from Synology NAS" || true');
+        runGit("git push origin main || true");
+        console.log("[Auto-Sync] Pushed to GitHub successfully!");
+      }
+    } catch (e) {
+      console.error("[Auto-Sync Error]", e.message);
+    }
+  }, 10 * 60 * 1000);
 });

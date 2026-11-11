@@ -3,7 +3,7 @@
 - **프로젝트 명**: 하루맞춤 (Haru Matchum)
 - **저장소**: [mkotinet/Spelling](https://github.com/mkotinet/Spelling)
 - **작성일**: 2026-11-11
-- **버전**: v1.0.0
+- **버전**: v1.3.0 (Cloud Auth & Auto-Sync Edition)
 - **작성자**: Antigravity AI Engineering
 
 ---
@@ -16,188 +16,203 @@
 ### 1.2 핵심 개발 목표
 1. **국립국어원 표준국어대사전 및 표준어 규정**을 신뢰할 수 있는 데이터 소스로 삼아 정확한 어문 규범 교육 제공.
 2. **타깃 사용자(초·중·고 여학생)**의 선호도를 철저히 반영한 러블리 파스텔/Y2K 다이어리 감성의 UI/UX 디자인.
-3. 별도 백엔드 서버 없이 브라우저 환경에서 즉시 동작하는 경량화(Zero Dependency) 구조 구축.
-4. 개인 프로필 생성, 일자별 출석 스탬프, 콤보 및 랭킹 경쟁 요소를 도입하여 지속적인 재방문 동기 부여.
-5. **GitHub Pages**를 활용한 원클릭 글로벌 웹 서비스 배포 환경 구현.
+3. **간편 클라우드 회원가입 및 멀티 디바이스 동기화**: PC, 스마트폰, 태블릿 어디서나 1초 로그인으로 포인트, 출석 도장, 스트릭, 오답노트 완벽 연동.
+4. **시놀로지 NAS 자가 호스팅 & GitHub 양방향 자동 동기화**: Synology Portainer 기반 Node.js 백엔드 구동 및 10분 주기/실시간 Git 커밋-푸시 자동화.
+5. **이중 글로벌/프라이빗 웹 서비스 환경**:
+   - 정적 글로벌 호스팅: `http://haru.danminlove.com` (GitHub Pages)
+   - 동적 클라우드 백엔드 호스팅: `http://haru1.danminlove.com` (Synology Portainer + Nginx Proxy Manager)
 
 ---
 
-## 2. 시스템 아키텍처 (System Architecture)
+## 2. 시스템 아키텍처 (System Architecture v1.3.0)
 
 ```
-+-----------------------------------------------------------------------------------+
-|                                 Client Browser                                    |
-|                                                                                   |
-|  +--------------------+   +---------------------+   +--------------------------+  |
-|  |     index.html     |   |      style.css      |   |       questions.js       |  |
-|  | (UI & DOM Structure|   | (Pastel Theme & Ani)|   | (60+ Question Database)  |  |
-|  +---------+----------+   +----------+----------+   +------------+-------------+  |
-|            |                         |                           |                |
-|            +-------------------------+---------------------------+                |
-|                                      |                                            |
-|                                      v                                            |
-|                       +-------------------------------+                           |
-|                       |            app.js             |                           |
-|                       |   (Core Controller & Logic)   |                           |
-|                       +---------------+---------------+                           |
-|                                       |                                           |
-|       +-------------------------------+-------------------------------+           |
-|       |                               |                               |           |
-|       v                               v                               v           |
-| +-------------------+      +--------------------+          +--------------------+ |
-| | SoundEffects      |      | ConfettiManager    |          | DataManager        | |
-| | (Web Audio Synth) |      | (HTML5 2D Canvas)  |          | (LocalStorage I/O) | |
-| +-------------------+      +--------------------+          +--------------------+ |
-+-----------------------------------------------------------------------------------+
-                                        |                                           
-                   +--------------------+--------------------+                      
-                   |                                         |                      
-                   v                                         v                      
-      +-------------------------+               +-------------------------+         
-      |  국립국어원 Open API     |               |   GitHub Pages          |         
-      | (표준국어대사전 검색)    |               |  (Static Web Hosting)   |         
-      +-------------------------+               +-------------------------+         
++-----------------------------------------------------------------------------------------------+
+|                                      Client (PC / Mobile / Tablet)                            |
+|                                                                                               |
+|  +--------------------+   +---------------------+   +--------------------------------------+  |
+|  |     index.html     |   |      style.css      |   |             questions.js             |  |
+|  | (UI & Modal Views) |   | (Pastel Theme & Ani)|   | (60+ Question DB & National Dict Def)|  |
+|  +---------+----------+   +----------+----------+   +------------------+-------------------+  |
+|            |                         |                                 |                      |
+|            +-------------------------+---------------------------------+                      |
+|                                      |                                                        |
+|                                      v                                                        |
+|                       +-------------------------------+                                       |
+|                       |            app.js             |                                       |
+|                       |   (Core Controller & Logic)   |                                       |
+|                       +---------------+---------------+                                       |
+|                                       |                                                       |
+|       +-------------------------------+-------------------------------+                       |
+|       |                               |                               |                       |
+|       v                               v                               v                       |
+| +-------------------+      +--------------------+          +--------------------+             |
+| | SoundEffects      |      | ConfettiManager    |          | DataManager (Sync) |             |
+| | (Web Audio Synth) |      | (HTML5 2D Canvas)  |          | (Local + Cloud API)|             |
+| +-------------------+      +--------------------+          +---------+----------+             |
++----------------------------------------------------------------------|------------------------+
+                                                                       |
+                 +-----------------------------------------------------+------------------+
+                 | (REST API Calls: /api/auth/*, /api/user/sync, etc.)                    | (Static CDN)
+                 v                                                                        v
++---------------------------------------------------------+              +------------------------------+
+|             Synology NAS (DS1019+ Docker)               |              |      GitHub Pages Edge       |
+|                                                         |              |    [ haru.danminlove.com ]   |
+|   +-------------------------------------------------+   |              +------------------------------+
+|   |   Nginx Proxy Manager (npm_default network)     |   |                             ^
+|   |   - Domain: haru1.danminlove.com                |   |                             |
+|   |   - Forward: 192.168.0.44:8089 (spelling:80)    |   |                             |
+|   +------------------------+------------------------+   |                             |
+|                            |                            |                             |
+|                            v                            |                             |
+|   +-------------------------------------------------+   |                             |
+|   |   Portainer Stack: spelling (node:20-alpine)    |   |                             |
+|   |                                                 |   |                             |
+|   |   +-----------------------------------------+   |   |                             |
+|   |   |        server.js (Node.js REST API)     |   |   |                             |
+|   |   |  - Static Asset Server (HTML/CSS/JS)    |   |   |                             |
+|   |   |  - Auth: Register / Login / Token Mgmt  |   |   |                             |
+|   |   |  - Sync: User Record / Leaderboard      |   |   |                             |
+|   |   |  - Git Sync Daemon (10min Auto Push)    |   |   |                             |
+|   |   +--------------------+--------------------+   |   |                             |
+|   |                        |                        |   |                             |
+|   |                        v                        |   |                             |
+|   |   +-----------------------------------------+   |   |                             |
+|   |   |   Docker Volume: spelling_data          |   |   |                             |
+|   |   |   - Persistent DB: /app/data/users.json |   |   |                             |
+|   |   +-----------------------------------------+   |   |                             |
+|   +------------------------+------------------------+   |                             |
++----------------------------|----------------------------+                             |
+                             |                                                          |
+                             | [Auto Git Commit & Push (PAT Authenticated)]             |
+                             v                                                          |
+          +-------------------------------------------------------+                     |
+          |               GitHub Repository (Remote)              |                     |
+          |               mkotinet/Spelling (main)                +---------------------+
+          +-------------------------------------------------------+
 ```
 
-### 2.1 주요 모듈 구성
-1. **`questions.js` (문제은행 모듈)**:
-   - 60개의 엄선된 맞춤법 데이터셋.
-   - 각 문항은 `id`, `category`, `level`, `question`, `sentence`, `options`, `answerIndex`, `explanation`, `rule`, `standardWord` 필드로 구조화.
-2. **`app.js` (애플리케이션 핵심 엔진)**:
-   - `SoundEffects`: Web Audio API 오실레이터를 이용하여 브라우저 내장 주파수 합성으로 4가지 효과음(정답, 오답, 콤보, 팡파레) 실시간 생성.
-   - `ConfettiManager`: HTML5 Canvas 2D 컨텍스트에서 중력/회전 물리 엔진을 시뮬레이션한 파티클 시스템.
-   - `DataManager`: `localStorage` 기반 상태 관리 (유저 프로필, 출석 스트릭, 포인트, 오답노트, 수집 뱃지, 실시간 가상 라이벌 랭킹).
-   - `HaruMatchumApp`: 상태 기계(State Machine) 기반 뷰 전환 및 퀴즈 인터랙션 총괄.
-3. **`style.css` (디자인 시스템)**:
-   - CSS Custom Properties(변수) 기반의 컬러 팔레트 구축.
-   - 글래스모피즘(Glassmorphism)과 반응형 그리드 시스템(Flexbox & CSS Grid) 적용.
-
 ---
 
-## 3. 국립국어원 표준국어대사전 연동 설계
+## 3. 간편 회원가입 및 멀티 디바이스 동기화 메커니즘
 
-### 3.1 하이브리드 데이터 전략 (Hybrid Data Strategy)
-웹 브라우저 클라이언트에서 외부 API를 호출할 때 발생할 수 있는 CORS(Cross-Origin Resource Sharing) 제약 및 네트워크 지연을 극복하기 위해 **실제 국립국어원 Open API(인증키: `C0E0448602CD3B859FDDD29BBD84289C`)를 연동한 3단계 하이브리드 연동 아키텍처**를 완성했습니다:
+### 3.1 사용자 경험 설계
+초·중·고 학생 사용자가 이메일 인증이나 복잡한 입력 없이 **아이디(닉네임)와 비밀번호만 입력하면 1초 만에 가입 및 로그인**할 수 있도록 설계했습니다.
+- **최초 방문/회원가입**: 아이디와 비밀번호를 입력하고 마음에 드는 아바타(🐰, 🌸, 🎀 등)와 학년을 선택하면 즉시 계정이 생성됩니다.
+- **스마트 로그인 유지**: 발급된 세션 토큰(`haru_cloud_token`)이 브라우저의 안전한 스토리지에 보관되어 이후 재접속 시 자동 로그인됩니다.
+- **멀티 디바이스 실시간 연동**:
+  1. 학교나 이동 중 스마트폰에서 데일리 퀴즈를 풀고 출석 도장을 획득.
+  2. 집에서 PC나 태블릿으로 `haru1.danminlove.com` 접속 후 로그인.
+  3. 즉시 동일한 연속 출석일수, 총 포인트, 획득한 뱃지, 오답노트가 완벽하게 복원.
 
-1. **1단계 (국립국어원 공식 API 실데이터 전수 임베딩)**:
-   - 사용자가 발급받은 국립국어원 표준국어대사전 Open API(`https://stdict.korean.go.kr/api/search.do`)를 통해 60개 전체 문항의 표제어, 품사(명사, 부사, 동사, 어미 등), 공식 정의(Definition), 표준국어대사전 고유 상세 링크를 실시간 조회하여 데이터베이스에 완전 통합.
-   - 퀴즈 정답 확인 시 국립국어원의 공인된 뜻풀이가 전용 카드 UI로 즉각 표출.
-2. **2단계 (실시간 표준국어대사전 검색 모달 및 딥링크)**:
-   - 상단 네비게이션에 `📖 표준국어대사전 실시간 검색기` 탑재.
-   - 추천 키워드(왠지, 며칠, 금세, 희한하다, 봬요 등) 및 임의의 단어 입력 시 국립국어원 공식 표제어 및 웹 상세 페이지 원클릭 연동.
-3. **3단계 (사용자 인증키 영구 저장 및 설정)**:
-   - 발급된 인증키를 기본 로드하고 사용자가 모달에서 언제든 키를 확인/수정/재등록할 수 있도록 `localStorage` 영속 관리.
+### 3.2 백엔드 RESTful API 엔드포인트 명세
+`server.js`는 외부 무거운 프레임워크(Express 등)에 의존하지 않는 초경량 고성능 네이티브 Node.js HTTP 엔진으로 구축되었습니다:
 
----
+| 메서드 | 엔드포인트 | 인증 필요 | 기능 설명 |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/auth/register` | X | 신규 회원가입 (비밀번호 SHA-256 단방향 암호화) |
+| `POST` | `/api/auth/login` | X | 로그인 인증 및 세션 토큰(`Bearer`) 반환 |
+| `GET` | `/api/user/profile` | O | 현재 로그인 사용자의 전체 학습 프로필 조회 |
+| `POST` | `/api/user/sync` | O | 스트릭, 점수, 출석 도장, 뱃지, 오답노트 양방향 실시간 동기화 |
+| `GET` | `/api/leaderboard` | X | 실제 회원들의 포인트 및 스트릭 기반 실시간 랭킹 조회 |
+| `POST` | `/api/git/sync` | O (Admin) | 수동 Git Pull/Add/Commit/Push 동기화 트리거 |
 
-## 4. UI/UX 디자인 시스템 (하이틴 타깃 맞춤)
-
-- **컬러 팔레트**:
-  - Primary Pink (`#ff8fb1`, `#ffd6e0`): 메인 테마 및 포인트 컬러
-  - Lavender & Sky Blue (`#c8b6ff`, `#b8c0ff`): 안정감을 주는 보조 그러데이션
-  - Coral Accent (`#ff6b81`): 정답 및 중요 강조 텍스트
-  - Glass White (`rgba(255, 255, 255, 0.88)`): 소프트 글래스모피즘 카드 배경
-- **인터랙션 피드백**:
-  - 퀴즈 선택지 마우스 오버 시 부드러운 스케일 업 애니메이션.
-  - 정답 시 민트-그린 펄스 및 조화로운 도-미-솔-도 아르페지오 사운드 재생.
-  - 오답 시 부드러운 쉐이크(Shake) 모션으로 학습자의 심리적 부담 완화.
-  - 마스코트 캐릭터 '맞춤이(🐰)'가 상태별(도전 전, 연속 정답, 100점 달성 등)로 맞춤형 메시지 표출.
-
----
-
-## 5. 데이터 저장 및 랭킹 알고리즘
-
-### 5.1 로컬 스토리지 구조 (`haru_matchum_data_v1`)
+### 3.3 데이터 스키마 (`data/users.json`)
+도커 영구 볼륨(`spelling_data:/app/data`)에 보관되어 컨테이너 재시작 및 재생성 시에도 데이터가 100% 안전하게 보존됩니다:
 ```json
 {
-  "currentUser": {
-    "id": "user_1731324700000",
-    "name": "맞춤요정",
-    "avatar": "🌸",
-    "grade": "중학교 2학년",
-    "streak": 3,
-    "totalPoints": 420,
-    "totalSolved": 25,
-    "totalCorrect": 24,
-    "lastActiveDate": "2026-11-11",
-    "completedDates": ["2026-11-09", "2026-11-10", "2026-11-11"]
+  "users": {
+    "맞춤요정": {
+      "id": "user_1794406732197",
+      "username": "맞춤요정",
+      "name": "맞춤요정",
+      "passwordHash": "1c174eb2272a8a77e879c75ede6fdff778271a61e8862911e98bf330b15684dc",
+      "grade": "중학교 2학년",
+      "avatar": "🌸",
+      "streak": 2,
+      "totalPoints": 240,
+      "totalSolved": 5,
+      "totalCorrect": 5,
+      "todayScore": 100,
+      "lastActiveDate": "2026-11-11",
+      "completedDates": ["2026-11-11"],
+      "badges": ["starter", "streak_3"],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-11T14:18:52.199Z",
+      "updatedAt": "2026-11-11T14:19:04.110Z"
+    }
   },
-  "wrongQuestions": [ ... ],
-  "badges": ["starter", "streak_3", "perfect_100"],
-  "allUsers": [ ... ]
+  "tokens": {
+    "bc67e74b75a8af134ff84e4ea0a2964fcfd5239195418037": "맞춤요정"
+  }
 }
-```
-
-### 5.2 데일리 퀴즈 시드 알고리즘
-매일 사용자가 동일한 5문제를 접하고 비교할 수 있도록 날짜 문자열(`YYYY-MM-DD`)을 해시화하여 의사 난수(Pseudo Random) 시드로 활용:
-```javascript
-const todayStr = new Date().toISOString().split('T')[0];
-let hash = 0;
-for (let i = 0; i < todayStr.length; i++) {
-  hash = (hash << 5) - hash + todayStr.charCodeAt(i);
-  hash |= 0;
-}
-const seed = Math.abs(hash);
-// 60제 문제은행에서 균등하게 5문제를 추출
 ```
 
 ---
 
-## 6. 시놀로지 Portainer 및 Nginx Proxy Manager (NPM) 인프라 연동
+## 4. 시놀로지 ↔ GitHub 자동 동기화 아키텍처
 
-### 6.1 이중 배포(Dual Deployment) 아키텍처
-본 프로젝트는 글로벌 CDN 정적 호스팅(GitHub Pages)과 개인 홈서버 프라이빗 호스팅(Synology NAS Portainer)의 하이브리드 이중 배포 환경을 지원합니다:
+### 4.1 양방향 동기화 구조
+사용자의 학습 진행 상황과 시놀로지 서버 앱의 상태 변경사항을 GitHub 저장소와 영구적으로 연동하기 위해 **이중 동기화 파이프라인**을 구현했습니다:
 
-```
-                  [ 사용자 접속 ]
-                         |
-      +------------------+------------------+
-      |                                     |
-[ haru.danminlove.com ]             [ haru1.danminlove.com ]
-      |                                     |
-  Cloudflare DNS                       Cloudflare DNS
-      | (CNAME)                             | (A/CNAME)
-      v                                     v
-GitHub Pages CDN                     Synology NAS (DS1019+)
-(Static Edge Hosting)                Nginx Proxy Manager (:80/:443)
-                                            |
-                                            | (npm_default network)
-                                            v
-                                     Portainer Stack: spelling
-                                     Container: spelling (:8089->80)
-                                     (nginx:alpine on Docker)
-```
+1. **상시 백그라운드 자동 동기화 데몬 (10분 주기)**:
+   - `server.js` 구동 시 백그라운드 타이머가 10분마다 실행됩니다.
+   - `git status --porcelain` 명령으로 데이터베이스(`data/users.json`) 변경 여부를 감지.
+   - 변경 감지 시 자동으로 `git add`, `git commit -m "auto: periodic sync from Synology NAS"`, `git push origin main`을 실행하여 GitHub에 반영.
+2. **상단 UI 즉각 동기화 버튼 (☁️ 클라우드 동기화)**:
+   - 상단 헤더 우측의 `☁️` 버튼 클릭 시 `/api/git/sync` 엔드포인트를 호출하여 즉시 최신 코드를 pull하고 변경된 유저 데이터를 push.
+   - 화면 우측 상단에 실시간 동기화 상태 뱃지("☁️ 클라우드 동기화 완료") 피드백 제공.
 
-### 6.2 Portainer 스택 명세 (`spelling`)
-- **스택 ID / 이름**: `12` / `spelling`
-- **엔드포인트**: `ID: 3 (local Docker on Synology)`
-- **베이스 이미지**: `nginx:alpine`
-- **외부 노출 포트**: `8089` (호스트 `192.168.0.44:8089`)
-- **도커 네트워크**: `npm_default` (NPM 컨테이너와 동일 브리지 네트워크 공유)
-- **컨테이너 내부 동작**: 컨테이너 부팅 시 GitHub 저장소 최신 코드를 자동 동기화하여 `/usr/share/nginx/html`에 배포 후 Nginx 웹서버 구동.
+---
 
-### 6.3 Nginx Proxy Manager (NPM) 라우팅 설정
-- **호스트 ID**: `12`
+## 5. 국립국어원 표준국어대사전 Open API 연동 설계
+
+### 5.1 하이브리드 연동 아키텍처
+공식 API 인증키(`C0E0448602CD3B859FDDD29BBD84289C`)를 기반으로 정적 임베딩과 동적 검색을 융합한 3단계 아키텍처:
+1. **문제은행 전수 사전 데이터 임베딩**:
+   - 60개 전체 문항에 대한 표제어, 품사, 국립국어원 공인 정의, 사전 고유 링크를 사전 결합하여 오프라인 환경에서도 0초 즉각 렌더링.
+2. **실시간 사전 검색 모달 (`stdict.korean.go.kr`)**:
+   - 상단 `📖` 버튼을 통해 제공되는 실시간 검색창에서 궁금한 한국어 단어를 언제든 공식 사전으로 검색.
+3. **정답 확인 시 공인 정의 카드 노출**:
+   - 문제 풀이 후 정답 해설 하단에 국립국어원 표준국어대사전 공식 블록을 표출하여 학습 신뢰도 극대화.
+
+---
+
+## 6. 인프라 배포 명세 (Synology Portainer & NPM)
+
+### 6.1 Portainer 스택 구성 (`docker-compose.yml`)
+- **스택 이름 / ID**: `spelling` / `12`
+- **엔드포인트**: Synology DS1019+ Docker 엔진 (`local`, ID: 3)
+- **컨테이너 이미지**: `node:20-alpine`
+- **컨테이너 이름**: `spelling`
+- **볼륨 마운트**: `spelling_data:/app/data` (영구 데이터 보존)
+- **포트 바인딩**: `8089:80`
+- **네트워크**: `npm_default` (외부 프록시 네트워크 연동)
+- **구동 환경**: GitHub Personal Access Token을 통한 무인 자동 인증 Git 환경
+
+### 6.2 Nginx Proxy Manager (NPM) 라우팅
+- **프록시 호스트 ID**: `12`
 - **도메인**: `haru1.danminlove.com`
-- **전송 대상 (Forward Host / Port)**: `192.168.0.44` : `8089` (또는 `spelling:80`)
+- **대상 호스트 / 포트**: `192.168.0.44:8089` (또는 컨테이너 `spelling:80`)
 - **프로토콜**: `HTTP`
-- **옵션**: `Block Exploits` 활성화, `Websocket Support` 활성화
+- **보안 설정**: `Block Exploits` On, `Websockets Support` On
 
 ---
 
-## 7. 품질 검증 및 브라우저 호환성 테스트
+## 7. 시스템 검증 및 테스트 결과
 
-| 테스트 항목 | 테스트 환경 | 결과 | 상세 내용 |
-| :--- | :--- | :--- | :--- |
-| **GitHub Pages 라이브** | `http://haru.danminlove.com` | **PASS** | 글로벌 엣지 배포 200 OK 정상 응답 |
-| **시놀로지 NAS 라이브** | `http://haru1.danminlove.com` | **PASS** | NPM 리버스 프록시 거쳐 8089 포트 200 OK 정상 응답 |
-| **Portainer 스택 상태** | Synology DS1019+ Docker | **PASS** | 컨테이너 상태 `running`, `nginx/1.31.8` 무결성 검증 |
-| **모바일 반응형 뷰** | iPhone 14 / Galaxy S24 (뷰포트 375~412px) | **PASS** | 터치 타깃 적합성, 가로 스크롤 방지 완벽 대응 |
-| **Web Audio 사운드** | Chrome, Safari, Edge | **PASS** | 사용자 제스처(클릭) 이벤트 후 정상 AudioContext 구동 |
-| **데이터 영속성** | 새로고침 및 브라우저 재시작 | **PASS** | 유저 정보, 포인트, 출석 도장, 뱃지 상태 복원 확인 |
+| 검증 항목 | 대상 환경 및 URL | 테스트 시나리오 | 판정 | 세부 결과 |
+| :--- | :--- | :--- | :---: | :--- |
+| **회원가입 API** | `http://haru1.danminlove.com/api/auth/register` | 신규 아이디 등록 및 패스워드 암호화 | **PASS** | `201 Created`, 고유 세션 토큰 반환 |
+| **로그인 API** | `http://haru1.danminlove.com/api/auth/login` | 등록된 계정 로그인 및 프로필 수신 | **PASS** | `200 OK`, 유저 전체 데이터 복원 |
+| **데이터 동기화** | `http://haru1.danminlove.com/api/user/sync` | 스트릭, 뱃지, 도장 전송 및 저장 | **PASS** | `200 OK`, `data/users.json` 갱신 |
+| **실시간 랭킹** | `http://haru1.danminlove.com/api/leaderboard` | 실제 가입 회원 랭킹 반환 | **PASS** | `200 OK`, 실시간 점수 순위 렌더링 |
+| **Git 자동 푸시** | `http://haru1.danminlove.com/api/git/sync` | 시놀로지 NAS에서 GitHub 푸시 실행 | **PASS** | `cdf0386` 커밋 생성 및 원격 반영 확인 |
+| **글로벌 웹 배포** | `http://haru.danminlove.com` | GitHub Pages CNAME 연동 확인 | **PASS** | `200 OK`, 글로벌 정적 서비스 정상 구동 |
+| **사전 검색기** | 모달 검색 인터페이스 | 실시간 키워드 사전 검색 연동 | **PASS** | 표준국어대사전 공식 데이터 즉시 출력 |
 
 ---
 
-## 8. 결론 및 향후 로드맵
+## 8. 결론
 
-'하루맞춤'은 초·중·고등학생 사용자의 눈높이에 맞춘 감성적인 비주얼과 게이미피케이션 요소를 통해 국어 맞춤법 학습의 진입 장벽을 대폭 낮췄습니다. 또한 GitHub Pages 및 시놀로지 Portainer + NPM 이중 환경 배포를 통해 고가용성과 자가 호스팅(Self-hosting)의 유연성을 동시에 확보하였습니다.
+'하루맞춤' v1.3.0은 **심플한 클라우드 인증 시스템**과 **멀티 디바이스 데이터 동기화**, 그리고 **시놀로지 NAS와 GitHub 간의 무인 자동 동기화 파이프라인**을 완성함으로써, 언제 어디서든(모바일/PC) 학습 기록이 완벽히 유지되는 클라우드 에듀테크 서비스로 진화하였습니다.
