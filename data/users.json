@@ -1,0 +1,32 @@
+{
+  "users": {
+    "맞춤요정": {
+      "id": "user_1794406732197",
+      "username": "맞춤요정",
+      "name": "맞춤요정",
+      "passwordHash": "1c174eb2272a8a77e879c75ede6fdff778271a61e8862911e98bf330b15684dc",
+      "grade": "중학교 2학년",
+      "avatar": "🌸",
+      "streak": 2,
+      "totalPoints": 240,
+      "totalSolved": 5,
+      "totalCorrect": 5,
+      "todayScore": 100,
+      "lastActiveDate": "2026-11-11",
+      "completedDates": [
+        "2026-11-11"
+      ],
+      "badges": [
+        "starter",
+        "streak_3"
+      ],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-11T14:18:52.199Z",
+      "updatedAt": "2026-11-11T14:19:04.110Z"
+    }
+  },
+  "tokens": {
+    "bc67e74b75a8af134ff84e4ea0a2964fcfd5239195418037": "맞춤요정",
+    "ce7f8b9d7615dc1f3918fafa04e0f860f26c29e8f764ace9": "맞춤요정"
+  }
+}
