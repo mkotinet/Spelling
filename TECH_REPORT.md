@@ -18,9 +18,9 @@
 2. **타깃 사용자(초·중·고 여학생)**의 선호도를 철저히 반영한 러블리 파스텔/Y2K 다이어리 감성의 UI/UX 디자인.
 3. **간편 클라우드 회원가입 및 멀티 디바이스 동기화**: PC, 스마트폰, 태블릿 어디서나 1초 로그인으로 포인트, 출석 도장, 스트릭, 오답노트 완벽 연동.
 4. **시놀로지 NAS 자가 호스팅 & GitHub 양방향 자동 동기화**: Synology Portainer 기반 Node.js 백엔드 구동 및 10분 주기/실시간 Git 커밋-푸시 자동화.
-5. **이중 글로벌/프라이빗 웹 서비스 환경**:
-   - 정적 글로벌 호스팅: `http://haru.danminlove.com` (GitHub Pages)
-   - 동적 클라우드 백엔드 호스팅: `http://haru1.danminlove.com` (Synology Portainer + Nginx Proxy Manager)
+5. **단일 통합 도메인(`http://haru.danminlove.com`) 배포 환경**:
+   - 시놀로지 NAS Portainer (Node.js REST API + 영구 DB 볼륨) + Nginx Proxy Manager (NPM)를 통해 `haru.danminlove.com`을 정식 메인 서비스로 완전 전환.
+   - 글로벌 CDN 정적 배포(GitHub Pages)에서 클라우드 회원가입 및 실시간 동기화 풀스택 환경으로 성공적 이전.
 
 ---
 
@@ -192,7 +192,7 @@
 
 ### 6.2 Nginx Proxy Manager (NPM) 라우팅
 - **프록시 호스트 ID**: `12`
-- **도메인**: `haru1.danminlove.com`
+- **도메인**: `haru.danminlove.com` (기존 `haru1.danminlove.com`에서 공식 주소로 승격)
 - **대상 호스트 / 포트**: `192.168.0.44:8089` (또는 컨테이너 `spelling:80`)
 - **프로토콜**: `HTTP`
 - **보안 설정**: `Block Exploits` On, `Websockets Support` On
@@ -203,12 +203,15 @@
 
 | 검증 항목 | 대상 환경 및 URL | 테스트 시나리오 | 판정 | 세부 결과 |
 | :--- | :--- | :--- | :---: | :--- |
-| **회원가입 API** | `http://haru1.danminlove.com/api/auth/register` | 신규 아이디 등록 및 패스워드 암호화 | **PASS** | `201 Created`, 고유 세션 토큰 반환 |
-| **로그인 API** | `http://haru1.danminlove.com/api/auth/login` | 등록된 계정 로그인 및 프로필 수신 | **PASS** | `200 OK`, 유저 전체 데이터 복원 |
-| **데이터 동기화** | `http://haru1.danminlove.com/api/user/sync` | 스트릭, 뱃지, 도장 전송 및 저장 | **PASS** | `200 OK`, `data/users.json` 갱신 |
-| **실시간 랭킹** | `http://haru1.danminlove.com/api/leaderboard` | 실제 가입 회원 랭킹 반환 | **PASS** | `200 OK`, 실시간 점수 순위 렌더링 |
-| **Git 자동 푸시** | `http://haru1.danminlove.com/api/git/sync` | 시놀로지 NAS에서 GitHub 푸시 실행 | **PASS** | `cdf0386` 커밋 생성 및 원격 반영 확인 |
-| **글로벌 웹 배포** | `http://haru.danminlove.com` | GitHub Pages CNAME 연동 확인 | **PASS** | `200 OK`, 글로벌 정적 서비스 정상 구동 |
+| **DNS 라우팅** | `haru.danminlove.com` | Synology DDNS CNAME 및 IP 매핑 확인 | **PASS** | `mvkotinet.synology.me` (180.67.213.88) 정상 확인 |
+| **NPM 프록시 라우팅** | `http://haru.danminlove.com/` | 웹 애플리케이션 진입 및 에셋 로드 | **PASS** | `200 OK`, HTML/CSS/JS 에셋 정상 응답 |
+| **신규 회원가입** | `POST http://haru.danminlove.com/api/auth/register` | 신규 아이디 등록 및 패스워드 암호화 | **PASS** | `201 Created`, 고유 세션 토큰 반환 |
+| **중복 가입 차단** | `POST http://haru.danminlove.com/api/auth/register` | 기존 아이디 중복 생성 시도 | **PASS** | `409 Conflict`, "이미 사용 중인 아이디입니다." |
+| **비정상 로그인 거부** | `POST http://haru.danminlove.com/api/auth/login` | 틀린 패스워드로 로그인 시도 | **PASS** | `401 Unauthorized`, "비밀번호 불일치" 응답 |
+| **정상 로그인 & 복원** | `POST http://haru.danminlove.com/api/auth/login` | 올바른 패스워드로 로그인 | **PASS** | `200 OK`, 세션 토큰 및 학습 기록 완벽 복원 |
+| **멀티 디바이스 동기화** | `POST http://haru.danminlove.com/api/user/sync` | 스트릭, 뱃지, 도장 전송 및 저장 | **PASS** | `200 OK`, `data/users.json` 실시간 갱신 |
+| **실시간 랭킹 정렬** | `GET http://haru.danminlove.com/api/leaderboard` | 실제 가입 회원 랭킹 반환 | **PASS** | `200 OK`, 총 포인트 내림차순 자동 정렬 |
+| **Git 자동 푸시** | `POST http://haru.danminlove.com/api/git/sync` | 시놀로지 NAS에서 GitHub 푸시 실행 | **PASS** | `d8f184b` 커밋 생성 및 원격 반영 확인 |
 | **사전 검색기** | 모달 검색 인터페이스 | 실시간 키워드 사전 검색 연동 | **PASS** | 표준국어대사전 공식 데이터 즉시 출력 |
 
 ---

@@ -24,6 +24,10 @@
 - **상단 헤더 즉시 동기화 버튼 (☁️)**:
   - 사용자가 원할 때 즉시 최신 코드를 pull하고 변경된 데이터를 GitHub에 push할 수 있는 원클릭 수동 동기화 버튼 탑재.
 
+### 🌐 메인 도메인(`haru.danminlove.com`) 시놀로지 NPM 직접 연동
+- Cloudflare DNS에서 기존 GitHub Pages 연결을 정리하고 시놀로지 DDNS(`mvkotinet.synology.me`)로 직접 연결.
+- NPM 프록시 호스트 12를 `haru.danminlove.com`으로 갱신하여 메인 공식 도메인에서 클라우드 회원가입 및 실시간 백엔드 시스템 완벽 지원.
+
 ---
 
 ## 📌 [v1.2.0] - 2026-11-11 (Synology Portainer & NPM Reverse Proxy Deployment)
