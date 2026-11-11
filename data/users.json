@@ -23,10 +23,39 @@
       "wrongQuestions": [],
       "createdAt": "2026-11-11T14:18:52.199Z",
       "updatedAt": "2026-11-11T14:19:04.110Z"
+    },
+    "민지": {
+      "id": "user_1794406947157",
+      "username": "민지",
+      "name": "민지",
+      "passwordHash": "48c2c17f4636a60b933ad994861ac730c523fc2bf91053740e90af9078eca6de",
+      "grade": "중학교 1학년",
+      "avatar": "🎀",
+      "streak": 3,
+      "totalPoints": 350,
+      "totalSolved": 15,
+      "totalCorrect": 15,
+      "todayScore": 100,
+      "lastActiveDate": "2026-11-11",
+      "completedDates": [
+        "2026-11-11",
+        "2026-11-09",
+        "2026-11-10"
+      ],
+      "badges": [
+        "starter",
+        "streak_3",
+        "perfect_100"
+      ],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-11T14:22:27.163Z",
+      "updatedAt": "2026-11-11T14:22:52.357Z"
     }
   },
   "tokens": {
     "bc67e74b75a8af134ff84e4ea0a2964fcfd5239195418037": "맞춤요정",
-    "ce7f8b9d7615dc1f3918fafa04e0f860f26c29e8f764ace9": "맞춤요정"
+    "ce7f8b9d7615dc1f3918fafa04e0f860f26c29e8f764ace9": "맞춤요정",
+    "a90e63c7198408aeebfdb891c7a37bb62adcc1cda3c1fac1": "민지",
+    "9bee6e8d7756a115c162f16ff36c32db86269e0c56349f1e": "민지"
   }
 }
