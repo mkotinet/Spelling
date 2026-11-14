@@ -532,6 +532,57 @@ body.theme-hanja .mode-switch-btn.active {
   color: var(--accent-coral);
 }
 
+/* In-Progress Quiz Resumption Banner */
+.resume-quiz-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border: 1.5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  animation: pulseResume 2.5s infinite ease-in-out;
+}
+@keyframes pulseResume {
+  0%, 100% { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); border-color: #f59e0b; }
+  50% { box-shadow: 0 6px 18px rgba(245, 158, 11, 0.28); border-color: #d97706; }
+}
+.resume-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.resume-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.resume-sub {
+  display: block;
+  font-size: 0.78rem;
+  color: #78350f;
+  margin-top: 2px;
+}
+.btn-resume-action {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+  transition: transform 0.15s ease, background 0.2s ease;
+  flex-shrink: 0;
+}
+.btn-resume-action:active {
+  transform: scale(0.96);
+}
+
 /* Daily Banner & Mode Cards */
 .mode-grid {
   display: grid;

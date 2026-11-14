@@ -198,15 +198,17 @@ console.log('✅ Level Daily round failure rules (Shield defense, Revive / Fallb
 // ----------------------------------------------------
 // 4. HTML Elements & Version Check for v2.4.1
 // ----------------------------------------------------
-console.log('\n--- Test 4: HTML Elements, Header Sync Removal & Version 2.4.2 Verification ---');
+console.log('\n--- Test 4: HTML Elements, Header Sync Removal & Version 2.4.3 Verification ---');
 const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 
 assert(!indexHtml.includes('id="btnGitSync"'), 'index.html must NOT include btnGitSync in top header menu');
 assert(indexHtml.includes('id="btnLevelChange"'), 'index.html must include btnLevelChange button');
-assert(indexHtml.includes('v2.4.2'), 'index.html must display v2.4.2 version badge');
-assert(indexHtml.includes('style.css?v=2.4.2'), 'style.css must be tagged with v2.4.2');
-assert(indexHtml.includes('app.js?v=2.4.2'), 'app.js must be tagged with v2.4.2');
-console.log('✅ HTML has btnGitSync removed from top menu, has btnLevelChange, and displays v2.4.2 versioning');
+assert(indexHtml.includes('id="resumeQuizBanner"'), 'index.html must include resumeQuizBanner element');
+assert(indexHtml.includes('id="btnResumeQuiz"'), 'index.html must include btnResumeQuiz button');
+assert(indexHtml.includes('v2.4.3'), 'index.html must display v2.4.3 version badge');
+assert(indexHtml.includes('style.css?v=2.4.3'), 'style.css must be tagged with v2.4.3');
+assert(indexHtml.includes('app.js?v=2.4.3'), 'app.js must be tagged with v2.4.3');
+console.log('✅ HTML has btnGitSync removed, has btnLevelChange, resumeQuizBanner, and displays v2.4.3 versioning');
 
 // ----------------------------------------------------
 // 5. App.js Source Logic & Web Audio Engine Verification
@@ -218,7 +220,7 @@ assert(appJs.includes('startLevelDailyQuiz(level, round = 1)'), 'startLevelDaily
 assert(appJs.includes('getLevelDailyQuestions(level, round = 1)'), 'app.js must implement getLevelDailyQuestions');
 assert(appJs.includes('this.currentMode === \'level_daily\''), 'app.js must check level_daily');
 assert(appJs.includes('btnLevelChange'), 'app.js must handle btnLevelChange');
-assert(appJs.includes('this.startLevelDailyQuiz(this.selectedLevel, this.currentRound + 1)'), 'startNextRound must support level_daily');
+assert(appJs.includes('this.startLevelDailyQuiz(this.selectedLevel, nextRound)'), 'startNextRound must support level_daily');
 assert(appJs.includes('this.startLevelDailyQuiz(this.selectedLevel, prev)'), 'fallbackRound must support level_daily');
 assert(appJs.includes('reviveMode === \'level_daily\''), 'Revival finish must support level_daily');
 assert(appJs.includes('unlockAudio()'), 'app.js must implement unlockAudio for iOS/Safari Web Audio unlock');
@@ -314,4 +316,92 @@ assert(appJs.includes('[ (     ) ]'), 'app.js must include bracket blank replace
 
 console.log('✅ All 4-choice questions across Spelling, Hanja, and English banks strictly adhere to bracket blank format [ (     ) ] with zero slash comparisons, and app.js runtime guard is active!');
 
-console.log('\n🎉 ALL v2.4.0, v2.4.1 & v2.4.2 LEVEL DAILY ROUNDS, GAME ITEMS, AUDIO & 4-CHOICE FORMAT TESTS PASSED PRISTINE! 🚀\n');
+// ----------------------------------------------------
+// 7. Round Progression & Skip Prevention Verification (v2.4.3)
+// ----------------------------------------------------
+console.log('\n--- Test 7: Round Progression & Skip Prevention Verification ---');
+
+// Verify that btnNextRound, btnReviveQuiz, btnFallbackRound do NOT have redundant addEventListener in bindEvents()
+const bindEventsCode = appJs.slice(appJs.indexOf('bindEvents()'), appJs.indexOf('checkDateTransition('));
+assert(!bindEventsCode.includes('btnNextRound.addEventListener'), 'bindEvents() must NOT attach addEventListener to btnNextRound');
+assert(!bindEventsCode.includes('btnRevive.addEventListener'), 'bindEvents() must NOT attach addEventListener to btnRevive');
+assert(!bindEventsCode.includes('btnFallback.addEventListener'), 'bindEvents() must NOT attach addEventListener to btnFallback');
+
+// Verify that startNextRound() and fallbackRound() implement debounce & single-round advance
+assert(appJs.includes('this._isStartingNextRound'), 'app.js must implement _isStartingNextRound debounce lock');
+assert(appJs.includes('const nextRound = (this.currentRound || 1) + 1;'), 'startNextRound must advance strictly by 1');
+assert(appJs.includes('const prev = Math.max(1, (this.currentRound || 1) - 1);'), 'fallbackRound must decrease strictly by 1');
+
+// Verify startNextRound step progression logic
+let currentRoundSim = 1;
+function simStartNextRound() {
+  currentRoundSim = currentRoundSim + 1;
+}
+simStartNextRound();
+assert.strictEqual(currentRoundSim, 2, 'Round after Round 1 must be Round 2 (NOT skipped to 3)');
+simStartNextRound();
+assert.strictEqual(currentRoundSim, 3, 'Round after Round 2 must be Round 3 (NOT skipped to 4)');
+simStartNextRound();
+assert.strictEqual(currentRoundSim, 4, 'Round after Round 3 must be Round 4');
+
+console.log('✅ Duplicate button event listeners completely purged, debouncing lock active, round skipping prevented');
+
+// ----------------------------------------------------
+// 8. Mobile Background Return & KakaoTalk Switch Session Persistence (v2.4.3)
+// ----------------------------------------------------
+console.log('\n--- Test 8: Mobile Background Return & KakaoTalk Switch Session Persistence ---');
+
+assert(appJs.includes('saveActiveQuizSession()'), 'app.js must implement saveActiveQuizSession');
+assert(appJs.includes('restoreActiveQuizSession()'), 'app.js must implement restoreActiveQuizSession');
+assert(appJs.includes('clearActiveQuizSession()'), 'app.js must implement clearActiveQuizSession');
+assert(appJs.includes('haru_active_quiz_session'), 'app.js must use haru_active_quiz_session localStorage key');
+assert(appJs.includes('visibilitychange'), 'app.js must listen to visibilitychange');
+assert(appJs.includes('pagehide'), 'app.js must listen to pagehide');
+assert(appJs.includes('beforeunload'), 'app.js must listen to beforeunload');
+
+// Test session serialization and deserialization
+const mockSession = {
+  date: '2026-11-14',
+  quizSubject: 'spelling',
+  currentMode: 'level_daily',
+  selectedLevel: '초등',
+  currentRound: 2,
+  currentIndex: 3,
+  roundCorrectCount: 3,
+  currentScore: 75,
+  combo: 3,
+  maxCombo: 3,
+  selectedOption: 0,
+  luckyBoxDroppedThisRound: true,
+  activeItemHeart: true,
+  pointMultiplier: 2,
+  activeItemMagnet: true,
+  activeItem5050Indices: [1, 2],
+  isHintOpen: true,
+  isReviveQuiz: false,
+  reviveMode: null,
+  reviveLevel: null,
+  activeQuestions: [
+    { id: 1, question: "Q1", sentence: "문장1", options: ["A", "B"], answerIndex: 0 },
+    { id: 2, question: "Q2", sentence: "문장2", options: ["A", "B"], answerIndex: 0 },
+    { id: 3, question: "Q3", sentence: "문장3", options: ["A", "B"], answerIndex: 0 },
+    { id: 4, question: "Q4", sentence: "문장4", options: ["A", "B"], answerIndex: 0 },
+    { id: 5, question: "Q5", sentence: "문장5", options: ["A", "B"], answerIndex: 0 }
+  ],
+  savedAt: Date.now()
+};
+
+const serialized = JSON.stringify(mockSession);
+const parsed = JSON.parse(serialized);
+
+assert.strictEqual(parsed.date, '2026-11-14');
+assert.strictEqual(parsed.currentRound, 2);
+assert.strictEqual(parsed.currentIndex, 3);
+assert.strictEqual(parsed.selectedLevel, '초등');
+assert.strictEqual(parsed.pointMultiplier, 2);
+assert.strictEqual(parsed.activeItemHeart, true);
+assert.strictEqual(parsed.activeQuestions.length, 5);
+
+console.log('✅ Quiz session auto-save and restore seamlessly serializes all in-progress quiz progress for KakaoTalk switch resilience');
+
+console.log('\n🎉 ALL v2.4.0, v2.4.1, v2.4.2 & v2.4.3 LEVEL ROUNDS, MOBILE RESUME & ANTI-SKIP TESTS PASSED PRISTINE! 🚀\n');

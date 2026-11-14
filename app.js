@@ -385,6 +385,9 @@ class HaruMatchumApp {
     this.authMode = 'login'; // 'login' | 'register'
     this.lastLoadedDate = getKSTDateString();
     this.currentViewName = 'home';
+    this._isStartingNextRound = false;
+    this.activeItem5050Indices = [];
+    this.isHintOpen = false;
 
     this.initDOM();
     this.bindEvents();
@@ -393,6 +396,9 @@ class HaruMatchumApp {
     this.renderLeaderboard('daily');
     this.renderBadges();
     this.checkCloudAuth();
+
+    // Check & restore active quiz session (e.g. returning after KakaoTalk app switch or page reload)
+    this.restoreActiveQuizSession();
   }
 
   initDOM() {
@@ -482,9 +488,11 @@ class HaruMatchumApp {
         this.startQuiz(this.currentMode, this.currentRound);
       }
     });
-    const btnNextRound = document.getElementById('btnNextRound');
-    if (btnNextRound) {
-      btnNextRound.addEventListener('click', () => this.startNextRound());
+    // Note: btnNextRound, btnReviveQuiz, btnFallbackRound are dynamically wired in showQuizResult() with single handlers
+    // to prevent double event firing and round number skipping.
+    const btnResumeQuiz = document.getElementById('btnResumeQuiz');
+    if (btnResumeQuiz) {
+      btnResumeQuiz.addEventListener('click', () => this.restoreActiveQuizSession());
     }
     const btnLevelChange = document.getElementById('btnLevelChange');
     if (btnLevelChange) {
@@ -573,14 +581,12 @@ class HaruMatchumApp {
       btnCloseHint.addEventListener('click', () => {
         const hintBox = document.getElementById('quizHintBox');
         if (hintBox) hintBox.style.display = 'none';
+        this.isHintOpen = false;
+        this.saveActiveQuizSession();
       });
     }
 
-    // Fail Actions (Revive & Fallback)
-    const btnRevive = document.getElementById('btnReviveQuiz');
-    const btnFallback = document.getElementById('btnFallbackRound');
-    if (btnRevive) btnRevive.addEventListener('click', () => this.handleReviveQuiz());
-    if (btnFallback) btnFallback.addEventListener('click', () => this.fallbackRound());
+    // Fail Actions (Revive & Fallback) are dynamically wired in showQuizResult()
 
     // Leaderboard Subject Switcher
     const rankSubjSpelling = document.getElementById('rankSubjectSpelling');
@@ -634,17 +640,43 @@ class HaruMatchumApp {
       });
     });
 
-    // Lifecycle & Date Transition Watchers (Mobile background resume & midnight refresh)
+    // Lifecycle & Date Transition Watchers (Mobile app switch / background resume & session persistence)
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        this.checkDateTransition();
+      if (document.visibilityState === 'hidden') {
+        this.saveActiveQuizSession();
+      } else if (document.visibilityState === 'visible') {
+        const transitioned = this.checkDateTransition();
+        if (!transitioned && this.currentViewName !== 'quiz') {
+          const raw = localStorage.getItem('haru_active_quiz_session');
+          if (raw) {
+            this.restoreActiveQuizSession();
+          }
+        }
       }
     });
     window.addEventListener('pageshow', () => {
-      this.checkDateTransition();
+      const transitioned = this.checkDateTransition();
+      if (!transitioned && this.currentViewName !== 'quiz') {
+        const raw = localStorage.getItem('haru_active_quiz_session');
+        if (raw) {
+          this.restoreActiveQuizSession();
+        }
+      }
     });
     window.addEventListener('focus', () => {
-      this.checkDateTransition();
+      const transitioned = this.checkDateTransition();
+      if (!transitioned && this.currentViewName !== 'quiz') {
+        const raw = localStorage.getItem('haru_active_quiz_session');
+        if (raw) {
+          this.restoreActiveQuizSession();
+        }
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      this.saveActiveQuizSession();
+    });
+    window.addEventListener('beforeunload', () => {
+      this.saveActiveQuizSession();
     });
     // Re-verify and sync session automatically when mobile device restores network connection
     window.addEventListener('online', () => {
@@ -665,6 +697,9 @@ class HaruMatchumApp {
       console.log(`[Haru Matchum] Date transitioned: ${this.lastLoadedDate} -> ${todayStr}`);
       const prevDate = this.lastLoadedDate;
       this.lastLoadedDate = todayStr;
+
+      // Clear yesterday's active quiz session
+      this.clearActiveQuizSession();
 
       // 1. If currently in middle of quiz or stale result view from yesterday, return to home
       if (this.currentViewName === 'quiz' || this.currentViewName === 'result') {
@@ -718,6 +753,7 @@ class HaruMatchumApp {
     if (viewName === 'home') {
       this.viewHome.classList.add('active');
       this.updateMascotMood('happy');
+      this.updateResumeQuizBanner();
     } else if (viewName === 'quiz') {
       this.viewQuiz.classList.add('active');
     } else if (viewName === 'result') {
@@ -870,9 +906,12 @@ class HaruMatchumApp {
 
     // Shuffle options dynamically so answer position is randomised across 1, 2, 3, 4
     this.activeQuestions = this.activeQuestions.map(q => this.shuffleQuestionOptions(q));
+    this.activeItem5050Indices = [];
+    this.isHintOpen = false;
 
     this.switchView('quiz');
     this.renderCurrentQuestion();
+    this.saveActiveQuizSession();
   }
 
   startLevelDailyQuiz(level, round = 1) {
@@ -891,6 +930,8 @@ class HaruMatchumApp {
     this.activeItemHeart = false;
     this.pointMultiplier = 1;
     this.activeItemMagnet = false;
+    this.activeItem5050Indices = [];
+    this.isHintOpen = false;
 
     const roundBadge = document.getElementById('quizRoundBadge');
     if (roundBadge) {
@@ -907,6 +948,7 @@ class HaruMatchumApp {
     this.renderCurrentQuestion();
     this.renderShieldStatus();
     this.renderItemBar();
+    this.saveActiveQuizSession();
   }
 
   getLevelDailyQuestions(level, round = 1) {
@@ -1048,6 +1090,7 @@ class HaruMatchumApp {
 
     this.renderShieldStatus();
     this.renderItemBar();
+    this.saveActiveQuizSession();
   }
 
   handleOptionSelect(selectedIndex, clickedBtn) {
@@ -1236,18 +1279,23 @@ class HaruMatchumApp {
 
     document.getElementById('btnQuizNext').disabled = false;
     this.renderItemBar();
+    this.saveActiveQuizSession();
   }
 
   handleNextQuestion() {
+    this.activeItem5050Indices = [];
+    this.isHintOpen = false;
     this.currentIndex++;
     if (this.currentIndex < this.activeQuestions.length) {
       this.renderCurrentQuestion();
     } else {
+      this.clearActiveQuizSession();
       this.finishQuiz();
     }
   }
 
   finishQuiz() {
+    this.clearActiveQuizSession();
     sfx.fanfare();
     this.confetti.explode();
 
@@ -1473,8 +1521,12 @@ class HaruMatchumApp {
 
       if (btnNextRound) {
         btnNextRound.style.display = 'block';
+        btnNextRound.disabled = false;
         btnNextRound.textContent = `🎉 ${modePrefix}라운드 ${this.currentRound + 1} (새 5문제) 도전하기 🔥`;
-        btnNextRound.onclick = () => this.startNextRound();
+        btnNextRound.onclick = () => {
+          btnNextRound.disabled = true;
+          this.startNextRound();
+        };
       }
       if (resultFailActions) resultFailActions.style.display = 'none';
       if (btnEliminated) btnEliminated.style.display = 'none';
@@ -1491,8 +1543,10 @@ class HaruMatchumApp {
         if (resultFailActions) resultFailActions.style.display = 'none';
         if (btnEliminated) {
           btnEliminated.style.display = 'block';
+          btnEliminated.disabled = false;
           btnEliminated.textContent = `🔁 3문제 이상 탈락! ${modePrefix}1라운드부터 다시 풀기 🔥`;
           btnEliminated.onclick = () => {
+            btnEliminated.disabled = true;
             if (isLevelDaily) {
               this.startLevelDailyQuiz(this.selectedLevel, 1);
             } else {
@@ -1514,12 +1568,18 @@ class HaruMatchumApp {
           const btnRevive = document.getElementById('btnReviveQuiz');
           const btnFallback = document.getElementById('btnFallbackRound');
           if (btnRevive) {
+            btnRevive.disabled = false;
             btnRevive.textContent = `💫 부활 찬스: 보너스 1문제 맞추고 라운드 ${this.currentRound} 유지!`;
-            btnRevive.onclick = () => this.handleReviveQuiz();
+            btnRevive.onclick = () => {
+              btnRevive.disabled = true;
+              this.handleReviveQuiz();
+            };
           }
           if (btnFallback) {
+            btnFallback.disabled = false;
             btnFallback.textContent = `🔙 전단계 라운드 ${fallbackRound}에서 다시 도전하기`;
             btnFallback.onclick = () => {
+              btnFallback.disabled = true;
               if (isLevelDaily) {
                 this.startLevelDailyQuiz(this.selectedLevel, fallbackRound);
               } else {
@@ -1542,15 +1602,24 @@ class HaruMatchumApp {
   }
 
   startNextRound() {
+    if (this._isStartingNextRound) return;
+    this._isStartingNextRound = true;
+    setTimeout(() => { this._isStartingNextRound = false; }, 600);
+
+    const nextRound = (this.currentRound || 1) + 1;
     if (this.currentMode === 'level_daily') {
-      this.startLevelDailyQuiz(this.selectedLevel, this.currentRound + 1);
+      this.startLevelDailyQuiz(this.selectedLevel, nextRound);
     } else {
-      this.startQuiz('daily', this.currentRound + 1);
+      this.startQuiz('daily', nextRound);
     }
   }
 
   fallbackRound() {
-    const prev = Math.max(1, this.currentRound - 1);
+    if (this._isStartingNextRound) return;
+    this._isStartingNextRound = true;
+    setTimeout(() => { this._isStartingNextRound = false; }, 600);
+
+    const prev = Math.max(1, (this.currentRound || 1) - 1);
     if (this.currentMode === 'level_daily') {
       this.startLevelDailyQuiz(this.selectedLevel, prev);
     } else {
@@ -1754,6 +1823,7 @@ class HaruMatchumApp {
 
     wrongIndices.sort(() => 0.5 - Math.random());
     const toHide = wrongIndices.slice(0, 2);
+    this.activeItem5050Indices = toHide;
     toHide.forEach(idx => {
       if (buttons[idx]) {
         buttons[idx].classList.add('erased');
@@ -1767,6 +1837,7 @@ class HaruMatchumApp {
     this.items.eraser5050--;
     localStorage.setItem('haru_item_5050', this.items.eraser5050);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.correct();
     this.showToastNotice('🪄 50:50 요술봉 뿅! 오답 2개가 사라졌습니다! ✨');
   }
@@ -1777,6 +1848,7 @@ class HaruMatchumApp {
     this.items.heart--;
     localStorage.setItem('haru_item_heart', this.items.heart);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.combo();
     this.showToastNotice('💖 하트 수호 가동! 오답을 선택해도 1회 다시 선택할 수 있습니다.');
   }
@@ -1787,6 +1859,7 @@ class HaruMatchumApp {
     this.items.booster2x--;
     localStorage.setItem('haru_item_booster', this.items.booster2x);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.fanfare();
     this.showToastNotice('🚀 2배 로켓 부스터 가동! 이번 라운드 획득 포인트가 2배로 적립됩니다!');
   }
@@ -1811,10 +1884,12 @@ class HaruMatchumApp {
 
     hintText.innerHTML = text;
     hintBox.style.display = 'block';
+    this.isHintOpen = true;
 
     this.items.hint--;
     localStorage.setItem('haru_item_hint', this.items.hint);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.correct();
     this.showToastNotice('🔍 돋보기 힌트 오픈! 문제 해결의 실마리를 확인해보세요! ✨');
   }
@@ -1838,6 +1913,7 @@ class HaruMatchumApp {
 
     this.handleOptionSelect(q.answerIndex, targetBtn || document.createElement('button'));
     this.renderItemBar();
+    this.saveActiveQuizSession();
   }
 
   useItemTimemachine() {
@@ -1891,6 +1967,7 @@ class HaruMatchumApp {
     this.items.timemachine--;
     localStorage.setItem('haru_item_timemachine', this.items.timemachine);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.combo();
     this.showToastNotice('⌛ 타임머신 가동! 방금 오답을 취소하고 시간을 되돌렸습니다. 다시 풀어보세요!');
   }
@@ -1901,6 +1978,7 @@ class HaruMatchumApp {
     this.items.magnet--;
     localStorage.setItem('haru_item_magnet', this.items.magnet);
     this.renderItemBar();
+    this.saveActiveQuizSession();
     sfx.combo();
     this.showToastNotice('🧲 콤보 자석 가동! 연속 정답 시 콤보 점수를 강력 흡수합니다!');
   }
@@ -1936,6 +2014,7 @@ class HaruMatchumApp {
     this.renderCurrentQuestion();
     this.renderShieldStatus();
     this.renderItemBar();
+    this.saveActiveQuizSession();
   }
 
   openGameGuideModal() {
@@ -1944,6 +2023,231 @@ class HaruMatchumApp {
 
   closeGameGuideModal() {
     if (this.modalGameGuide) this.modalGameGuide.classList.remove('active');
+  }
+
+  // ============================================================
+  // Active Quiz Session Auto-Save & Mobile Resume (App Switch / KakaoTalk)
+  // ============================================================
+  saveActiveQuizSession() {
+    if (this.currentViewName !== 'quiz' || !this.activeQuestions || this.activeQuestions.length === 0) {
+      return;
+    }
+    const session = {
+      date: getKSTDateString(),
+      quizSubject: this.quizSubject || 'spelling',
+      currentMode: this.currentMode || 'daily',
+      selectedLevel: this.selectedLevel || null,
+      currentRound: this.currentRound || 1,
+      currentIndex: this.currentIndex || 0,
+      roundCorrectCount: this.roundCorrectCount || 0,
+      currentScore: this.currentScore || 0,
+      combo: this.combo || 0,
+      maxCombo: this.maxCombo || 0,
+      selectedOption: this.selectedOption !== undefined ? this.selectedOption : null,
+      luckyBoxDroppedThisRound: !!this.luckyBoxDroppedThisRound,
+      activeItemHeart: !!this.activeItemHeart,
+      pointMultiplier: this.pointMultiplier || 1,
+      activeItemMagnet: !!this.activeItemMagnet,
+      activeItem5050Indices: this.activeItem5050Indices || [],
+      isHintOpen: !!this.isHintOpen,
+      isReviveQuiz: !!this.isReviveQuiz,
+      reviveMode: this.reviveMode || null,
+      reviveLevel: this.reviveLevel || null,
+      activeQuestions: this.activeQuestions,
+      savedAt: Date.now()
+    };
+    try {
+      localStorage.setItem('haru_active_quiz_session', JSON.stringify(session));
+    } catch (e) {
+      console.warn('[Session] Failed to auto-save active quiz session', e);
+    }
+  }
+
+  clearActiveQuizSession() {
+    try {
+      localStorage.removeItem('haru_active_quiz_session');
+    } catch (e) {}
+    const resumeBanner = document.getElementById('resumeQuizBanner');
+    if (resumeBanner) resumeBanner.style.display = 'none';
+  }
+
+  restoreActiveQuizSession() {
+    try {
+      const raw = localStorage.getItem('haru_active_quiz_session');
+      if (!raw) return false;
+      const session = JSON.parse(raw);
+      const today = getKSTDateString();
+
+      // Check date validity (expire on midnight date transition)
+      if (session.date !== today) {
+        this.clearActiveQuizSession();
+        return false;
+      }
+
+      if (!session.activeQuestions || !Array.isArray(session.activeQuestions) || session.activeQuestions.length === 0) {
+        this.clearActiveQuizSession();
+        return false;
+      }
+
+      // Restore session properties
+      this.quizSubject = session.quizSubject || 'spelling';
+      this.currentMode = session.currentMode || 'daily';
+      this.selectedLevel = session.selectedLevel || null;
+      this.currentRound = session.currentRound || 1;
+      this.currentIndex = session.currentIndex || 0;
+      this.roundCorrectCount = session.roundCorrectCount || 0;
+      this.currentScore = session.currentScore || 0;
+      this.combo = session.combo || 0;
+      this.maxCombo = session.maxCombo || 0;
+      this.selectedOption = session.selectedOption !== undefined ? session.selectedOption : null;
+      this.luckyBoxDroppedThisRound = !!session.luckyBoxDroppedThisRound;
+      this.activeItemHeart = !!session.activeItemHeart;
+      this.pointMultiplier = session.pointMultiplier || 1;
+      this.activeItemMagnet = !!session.activeItemMagnet;
+      this.activeItem5050Indices = session.activeItem5050Indices || [];
+      this.isHintOpen = !!session.isHintOpen;
+      this.isReviveQuiz = !!session.isReviveQuiz;
+      this.reviveMode = session.reviveMode || null;
+      this.reviveLevel = session.reviveLevel || null;
+      this.activeQuestions = session.activeQuestions;
+
+      // Apply subject theme & mode
+      this.setQuizSubject(this.quizSubject);
+
+      // Switch to quiz view
+      this.switchView('quiz');
+
+      // Update round badge text
+      const roundBadge = document.getElementById('quizRoundBadge');
+      if (roundBadge) {
+        if (this.isReviveQuiz) {
+          const levelPrefix = (this.reviveMode === 'level_daily' && this.reviveLevel) ? `${this.reviveLevel} ` : '';
+          roundBadge.textContent = `💫 ${levelPrefix}부활 퀴즈 (1문제)`;
+        } else if (this.currentMode === 'level_daily') {
+          roundBadge.textContent = `🎯 ${this.selectedLevel} · 라운드 ${this.currentRound}`;
+        } else {
+          roundBadge.textContent = `라운드 ${this.currentRound}`;
+        }
+        roundBadge.style.display = 'inline-block';
+      }
+
+      // Render current question
+      this.renderCurrentQuestion();
+
+      // If 50:50 wand was used on this question, re-apply erased styles
+      if (this.activeItem5050Indices && this.activeItem5050Indices.length > 0) {
+        const buttons = document.querySelectorAll('.option-btn');
+        this.activeItem5050Indices.forEach(idx => {
+          if (buttons[idx]) {
+            buttons[idx].classList.add('erased');
+            const q = this.activeQuestions[this.currentIndex];
+            if (q && q.options && q.options[idx]) {
+              buttons[idx].innerHTML = `
+                <span style="text-decoration: line-through; opacity: 0.4;">${idx + 1}. ${q.options[idx]}</span>
+                <span class="opt-icon" style="font-size: 0.8rem; color: #94a3b8;">💨 뿅! 지워짐</span>
+              `;
+            }
+          }
+        });
+      }
+
+      // If hint box was opened, re-display hint box
+      if (this.isHintOpen) {
+        const hintBox = document.getElementById('quizHintBox');
+        const hintText = document.getElementById('quizHintText');
+        const q = this.activeQuestions[this.currentIndex];
+        if (hintBox && hintText && q) {
+          let text = q.dictDefinition || q.meaning || q.explanation || '';
+          if (q.standardWord) {
+            text = `💡 <strong>[표준어 어원 힌트]</strong> '${q.standardWord}'의 올바른 맞춤법 원리를 생각해보세요!<br>${text}`;
+          } else if (q.hanjaWord) {
+            text = `💡 <strong>[한자 어휘 힌트]</strong> '${q.hanjaWord}'의 한자 구성과 뜻을 떠올려보세요!<br>${text}`;
+          } else if (q.englishWord) {
+            text = `💡 <strong>[영어 철자 힌트]</strong> 발음: <code>${q.phonetic || ''}</code> / 뜻: <strong>${q.meaning || ''}</strong><br>${text}`;
+          }
+          hintText.innerHTML = text;
+          hintBox.style.display = 'block';
+        }
+      }
+
+      // If question was already answered before app switch, re-apply answered UI state
+      if (this.selectedOption !== null && this.selectedOption !== undefined) {
+        this.restoreAnsweredQuestionState(this.selectedOption);
+      }
+
+      const modeTitle = this.currentMode === 'level_daily' ? `[${this.selectedLevel}] ` : '';
+      this.showToastNotice(`🌸 진행 중이던 ${modeTitle}라운드 ${this.currentRound} (Q${this.currentIndex + 1})를 이어서 진행합니다!`);
+      return true;
+    } catch (e) {
+      console.error('[Session] Error restoring quiz session:', e);
+      this.clearActiveQuizSession();
+      return false;
+    }
+  }
+
+  restoreAnsweredQuestionState(selectedIndex) {
+    const q = this.activeQuestions[this.currentIndex];
+    if (!q) return;
+    const isCorrect = selectedIndex === q.answerIndex;
+    const allButtons = document.querySelectorAll('.option-btn');
+    allButtons.forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.answerIndex) {
+        b.classList.add('correct');
+        const icon = b.querySelector('.opt-icon');
+        if (icon) icon.textContent = '⭕ 정답!';
+      } else if (i === selectedIndex && !isCorrect) {
+        b.classList.add('wrong');
+        const icon = b.querySelector('.opt-icon');
+        if (icon) icon.textContent = '❌ 오답';
+      }
+    });
+
+    const expCard = document.getElementById('quizExplanation');
+    if (expCard) expCard.classList.add('active');
+    const expText = document.getElementById('expText');
+    if (expText) expText.textContent = q.explanation;
+    const expRule = document.getElementById('expRule');
+    if (expRule) expRule.textContent = `규정/출전: ${q.rule || q.category}`;
+
+    const targetWord = q.standardWord || q.hanjaWord || q.englishWord || q.options[q.answerIndex];
+    const blankEl = document.querySelector('.quiz-blank');
+    if (blankEl) {
+      blankEl.textContent = ` ${targetWord} `;
+      blankEl.classList.add('answered');
+    }
+
+    const nextBtn = document.getElementById('btnQuizNext');
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      const total = this.activeQuestions.length;
+      nextBtn.textContent = (this.currentIndex === total - 1) ? '결과 확인하기 🎉' : '다음 문제로 ✨';
+    }
+  }
+
+  updateResumeQuizBanner() {
+    const banner = document.getElementById('resumeQuizBanner');
+    if (!banner) return;
+    try {
+      const raw = localStorage.getItem('haru_active_quiz_session');
+      if (!raw) {
+        banner.style.display = 'none';
+        return;
+      }
+      const session = JSON.parse(raw);
+      if (session.date !== getKSTDateString() || !session.activeQuestions || session.activeQuestions.length === 0) {
+        banner.style.display = 'none';
+        return;
+      }
+      const titleEl = document.getElementById('resumeBannerTitle');
+      const descEl = document.getElementById('resumeBannerDesc');
+      const modeLabel = session.currentMode === 'level_daily' ? `[${session.selectedLevel}] ` : '';
+      if (titleEl) titleEl.textContent = `진행 중인 ${modeLabel}라운드 ${session.currentRound} 퀴즈 (Q${(session.currentIndex || 0) + 1})`;
+      if (descEl) descEl.textContent = '카카오톡 확인 등 다른 앱을 보셨나요? 풀던 문제를 바로 이어서 계속할 수 있어요.';
+      banner.style.display = 'flex';
+    } catch (e) {
+      banner.style.display = 'none';
+    }
   }
 
   // ============================================================
