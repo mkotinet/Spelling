@@ -7,6 +7,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const zlib = require("zlib");
 const { execSync } = require("child_process");
 
 const PORT = process.env.PORT || 80;
@@ -544,12 +545,25 @@ const server = http.createServer(async (req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
+    const acceptEncoding = req.headers["accept-encoding"] || "";
+    const shouldGzip = /\bgzip\b/.test(acceptEncoding) && (ext === ".js" || ext === ".css" || ext === ".html" || ext === ".json");
+    const isVersioned = (ext === ".js" || ext === ".css") && (req.url && req.url.includes("?v="));
 
-    res.writeHead(200, {
+    const headers = {
       "Content-Type": contentType,
-      "Cache-Control": (ext === ".html" || ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600"
-    });
-    fs.createReadStream(filePath).pipe(res);
+      "Cache-Control": isVersioned
+        ? "public, max-age=31536000, immutable"
+        : ((ext === ".html" || ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600")
+    };
+
+    if (shouldGzip) {
+      headers["Content-Encoding"] = "gzip";
+      res.writeHead(200, headers);
+      fs.createReadStream(filePath).pipe(zlib.createGzip()).pipe(res);
+    } else {
+      res.writeHead(200, headers);
+      fs.createReadStream(filePath).pipe(res);
+    }
   });
 });
 
