@@ -169,6 +169,11 @@ const srv = server.listen(TEST_PORT, async () => {
     }
     assert(shuffleWorked, 'Shuffling must distribute answer index beyond 0');
 
+    // 12. Mobile Auth Persistence check
+    assert(appCode.includes('haru_auth_username'), 'app.js must backup haru_auth_username in localStorage');
+    assert(appCode.includes("res.status === 401"), 'app.js must strictly check for 401 before wiping tokens');
+    assert(appCode.includes("window.addEventListener('online'"), 'app.js must re-verify session on online event');
+
     console.log('🎉 ALL End-to-End System Tests Passed Pristine and Green!');
     srv.close();
     process.exit(0);

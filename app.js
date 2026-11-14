@@ -411,6 +411,13 @@ class HaruMatchumApp {
     window.addEventListener('focus', () => {
       this.checkDateTransition();
     });
+    // Re-verify and sync session automatically when mobile device restores network connection
+    window.addEventListener('online', () => {
+      console.log('[Haru Matchum] Network restored. Validating session...');
+      if (this.cloudToken) {
+        this.checkCloudAuth();
+      }
+    });
     // Check every 60s for midnight date rollover
     setInterval(() => {
       this.checkDateTransition();
@@ -1310,20 +1317,34 @@ class HaruMatchumApp {
           this.data.wrongQuestions = u.wrongQuestions || this.data.wrongQuestions || [];
 
           DataManager.save(this.data);
+          localStorage.setItem('haru_auth_username', u.name || u.username);
           this.renderUserProfile();
           this.renderCalendarWeek();
           this.renderLeaderboard('daily');
           this.updateCloudStatus(true, u.name || u.username);
         }
-      } else {
-        // Token expired or invalid
+      } else if (res.status === 401) {
+        // STRICT: Only clear token if server explicitly confirms token is invalid/deleted
+        console.warn('[Haru Matchum] Token rejected with 401 Unauthorized. Clearing session.');
         this.cloudToken = '';
         localStorage.removeItem('haru_cloud_token');
+        localStorage.removeItem('haru_auth_username');
         this.updateCloudStatus(false);
+      } else {
+        // Temporary server error (500, 502, 503) -> Retain cached session and token!
+        console.warn(`[Haru Matchum] Server returned status ${res.status}. Retaining cached login session.`);
+        const cachedUser = localStorage.getItem('haru_auth_username') || (this.data.currentUser ? this.data.currentUser.name : null);
+        this.updateCloudStatus(true, cachedUser);
       }
     } catch (e) {
-      // Backend not reached (e.g. running on GitHub Pages static)
-      this.updateCloudStatus(false, null, '로컬');
+      // Network offline or phone wake-up delay -> DO NOT clear token, keep local session
+      console.warn('[Haru Matchum] Network offline during wake-up. Retaining cached login session:', e);
+      const cachedUser = localStorage.getItem('haru_auth_username') || (this.data.currentUser ? this.data.currentUser.name : null);
+      if (this.cloudToken && cachedUser && cachedUser !== '맞춤요정') {
+        this.updateCloudStatus(true, cachedUser);
+      } else {
+        this.updateCloudStatus(false, null, '오프라인');
+      }
     }
   }
 
@@ -1442,6 +1463,7 @@ class HaruMatchumApp {
       localStorage.setItem('haru_cloud_token', data.token);
 
       const u = data.user;
+      localStorage.setItem('haru_auth_username', u.name || u.username);
       this.data.currentUser.name = u.name || u.username;
       this.data.currentUser.grade = u.grade || this.data.currentUser.grade;
       this.data.currentUser.avatar = u.avatar || this.data.currentUser.avatar;
@@ -1467,6 +1489,7 @@ class HaruMatchumApp {
   logout() {
     this.cloudToken = '';
     localStorage.removeItem('haru_cloud_token');
+    localStorage.removeItem('haru_auth_username');
     this.updateCloudStatus(false);
     this.closeAuthModal();
     alert('로그아웃되었습니다. 로컬 게스트 모드로 전환됩니다.');

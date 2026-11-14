@@ -10,13 +10,41 @@ const crypto = require("crypto");
 const { execSync } = require("child_process");
 
 const PORT = process.env.PORT || 80;
-const DATA_DIR = path.join(__dirname, "data");
+const PERSISTENT_DIR = "/app/data";
+const DATA_DIR = (fs.existsSync(PERSISTENT_DIR) && process.env.NODE_ENV !== "test") ? PERSISTENT_DIR : path.join(__dirname, "data");
 const DB_FILE = path.join(DATA_DIR, "users.json");
 const LOGS_FILE = path.join(DATA_DIR, "access_logs.json");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Initial bootstrap if running in container persistent volume mode
+if (DATA_DIR === PERSISTENT_DIR) {
+  const fallbackDir = path.join(__dirname, "data");
+  if (fs.existsSync(fallbackDir)) {
+    const srcUsers = path.join(fallbackDir, "users.json");
+    const targetUsers = path.join(DATA_DIR, "users.json");
+    if (!fs.existsSync(targetUsers) && fs.existsSync(srcUsers)) {
+      try {
+        fs.copyFileSync(srcUsers, targetUsers);
+        console.log("[Persistence] Bootstrapped users.json into /app/data");
+      } catch (e) {
+        console.error("Failed to bootstrap users.json:", e);
+      }
+    }
+    const srcLogs = path.join(fallbackDir, "access_logs.json");
+    const targetLogs = path.join(DATA_DIR, "access_logs.json");
+    if (!fs.existsSync(targetLogs) && fs.existsSync(srcLogs)) {
+      try {
+        fs.copyFileSync(srcLogs, targetLogs);
+        console.log("[Persistence] Bootstrapped access_logs.json into /app/data");
+      } catch (e) {
+        console.error("Failed to bootstrap access_logs.json:", e);
+      }
+    }
+  }
 }
 
 // In-memory / JSON Database helper
