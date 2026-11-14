@@ -50,10 +50,13 @@ ENGLISH_QUESTION_BANK.forEach((q, idx) => {
   assert(q.meaning, `English Q[${idx}] missing meaning`);
   assert(q.explanation, `English Q[${idx}] missing explanation`);
   assert(q.dictLink && q.dictLink.includes('naver.com'), `English Q[${idx}] missing valid naver dictLink`);
+  assert(q.sentenceTranslation && q.sentenceTranslation.length > 5, `English Q[${idx}] missing sentenceTranslation`);
+  assert(q.keyIdioms && q.keyIdioms.length > 3, `English Q[${idx}] missing keyIdioms`);
+  assert(q.grammar && q.grammar.length > 5, `English Q[${idx}] missing grammar`);
   assert(q.sentence.includes('[ (     ) ]') || q.sentence.includes('[ ( ? ) ]'), `English Q[${idx}] sentence must have blank [ (     ) ]`);
   assert(!q.sentence.includes(' / '), `English Q[${idx}] sentence must not contain 2-choice comparison [ A / B ]`);
 });
-console.log(`✅ All ${ENGLISH_QUESTION_BANK.length} English questions passed strict schema validation & 4-choice blank standard`);
+console.log(`✅ All ${ENGLISH_QUESTION_BANK.length} English questions passed strict schema validation, sentence translation, key idioms & grammar notes`);
 
 // Verify English level distribution
 targetLevels.forEach(lvl => {
@@ -125,6 +128,10 @@ assert(indexHtml.includes('id="btnStartLevelDaily"'), 'index.html must include L
 assert(indexHtml.includes('id="modalLevelSelect"'), 'index.html must include Level Select Modal');
 assert(indexHtml.includes('id="modalLuckyBox"'), 'index.html must include Lucky Box Modal');
 assert(indexHtml.includes('id="expEnglishArea"'), 'index.html must include English explanation area');
+assert(indexHtml.includes('id="englishFullSentence"'), 'index.html must include englishFullSentence');
+assert(indexHtml.includes('id="englishSentenceTranslation"'), 'index.html must include englishSentenceTranslation');
+assert(indexHtml.includes('id="englishIdiomsText"'), 'index.html must include englishIdiomsText');
+assert(indexHtml.includes('id="englishGrammarText"'), 'index.html must include englishGrammarText');
 assert(indexHtml.includes('id="rankSubjectEnglish"'), 'index.html must include English leaderboard tab');
 assert(indexHtml.includes('src="english_questions.js"'), 'index.html must link english_questions.js');
 

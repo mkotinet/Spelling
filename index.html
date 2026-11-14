@@ -277,21 +277,52 @@
               </div>
             </div>
 
-            <!-- English Word Breakdown, Phonetic & Examples -->
+            <!-- English Word Breakdown, Phonetic, Sentence Translation & Grammar -->
             <div id="expEnglishArea" class="english-exp-card" style="display: none; margin-top: 14px; padding: 14px; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius-md); border: 1px solid #c7d2fe; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.08);">
+              <!-- Top Word & Phonetic -->
               <div class="english-exp-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <span class="dict-title-tag" style="background: #e0e7ff; color: #4338ca; font-size: 0.76rem; font-weight: 800; padding: 3px 8px; border-radius: 12px;">🔤 올바른 영어 단어</span>
-                <strong id="englishWordTitle" style="font-size: 1.1rem; color: #4338ca;">definitely</strong>
-                <span id="englishPhonetic" class="phonetic-tag" style="font-size: 0.8rem; color: #6366f1; background: #eef2ff; padding: 2px 8px; border-radius: 8px;">/ˈdef.ə.nət.li/</span>
+                <strong id="englishWordTitle" style="font-size: 1.15rem; color: #4338ca;">calendar</strong>
+                <span id="englishPhonetic" class="phonetic-tag" style="font-size: 0.8rem; color: #6366f1; background: #eef2ff; padding: 2px 8px; border-radius: 8px;">/ˈkæl.ən.dɚ/</span>
               </div>
-              <div style="font-size: 0.85rem; color: #4b5563; margin: 8px 0;">
-                <strong>뜻:</strong> <span id="englishMeaning">-</span>
+              <div style="font-size: 0.86rem; color: #4b5563; margin: 6px 0 10px 0;">
+                <strong>뜻:</strong> <span id="englishMeaning" style="color: #1e1b4b; font-weight: 700;">-</span>
               </div>
-              <div style="font-size: 0.82rem; color: #475569; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #6366f1; margin: 8px 0;">
-                <strong>예문:</strong> <span id="englishExampleText">-</span>
+
+              <!-- Problem Sentence & Korean Translation -->
+              <div class="english-detail-box" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;">
+                <div style="font-size: 0.76rem; font-weight: 800; color: #4f46e5; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                  <span>📖</span> <span>제시 문장 & 한국어 번역</span>
+                </div>
+                <div id="englishFullSentence" style="font-size: 0.88rem; font-weight: 700; color: #1e293b; line-height: 1.45; margin-bottom: 4px;">
+                  -
+                </div>
+                <div id="englishSentenceTranslation" style="font-size: 0.83rem; color: #475569; line-height: 1.45;">
+                  -
+                </div>
               </div>
-              <div style="text-align: right; margin-top: 8px;">
-                <a id="englishNaverLink" class="dict-link-btn" href="#" target="_blank" rel="noopener noreferrer" style="background:#eef2ff; color:#4338ca; text-decoration: none; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 8px;">
+
+              <!-- Key Idioms & Key Grammar -->
+              <div class="english-grammar-box" style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;">
+                <div style="font-size: 0.76rem; font-weight: 800; color: #4338ca; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                  <span>💡</span> <span>문장 내 주요 숙어 & 핵심 문법</span>
+                </div>
+                <div id="englishIdiomsRow" style="font-size: 0.82rem; color: #312e81; margin-bottom: 6px; line-height: 1.45;">
+                  <strong style="color: #4338ca;">🔹 주요 숙어:</strong> <span id="englishIdiomsText">-</span>
+                </div>
+                <div id="englishGrammarRow" style="font-size: 0.82rem; color: #312e81; line-height: 1.45;">
+                  <strong style="color: #4338ca;">📌 핵심 문법:</strong> <span id="englishGrammarText">-</span>
+                </div>
+              </div>
+
+              <!-- Additional Real-Life Example -->
+              <div style="font-size: 0.8rem; color: #475569; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px;">
+                <strong style="color: #64748b;">📝 추가 실생활 예문:</strong> <span id="englishExampleText">-</span>
+              </div>
+
+              <!-- Dictionary Deep Link -->
+              <div style="text-align: right; margin-top: 6px;">
+                <a id="englishNaverLink" class="dict-link-btn" href="#" target="_blank" rel="noopener noreferrer" style="background:#eef2ff; color:#4338ca; text-decoration: none; font-size: 0.78rem; font-weight: 700; padding: 5px 12px; border-radius: 8px; border: 1px solid #c7d2fe; display: inline-block;">
                   네이버 영어사전 상세 검색 ↗
                 </a>
               </div>

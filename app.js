@@ -1039,6 +1039,38 @@ class HaruMatchumApp {
           phoneticEl.style.display = q.phonetic ? 'inline-block' : 'none';
         }
         document.getElementById('englishMeaning').textContent = q.meaning || q.dictDefinition || q.explanation || '-';
+
+        // Full Sentence with target word highlighted
+        const fullSentEl = document.getElementById('englishFullSentence');
+        if (fullSentEl) {
+          let fullSent = q.sentence || '';
+          const wordToInsert = `<span class="highlight-word" style="color: #4338ca; background: #e0e7ff; padding: 2px 6px; border-radius: 6px; font-weight: 800;">${q.englishWord || targetWord}</span>`;
+          if (fullSent.includes('[ (     ) ]') || fullSent.includes('[ ( ? ) ]')) {
+            fullSent = fullSent.replace(/\[\s*\(\s*\?*\s*\)\s*\]/g, wordToInsert);
+          } else if (fullSent.includes('[') && fullSent.includes(']')) {
+            fullSent = fullSent.replace(/\[(.*?)\]/g, wordToInsert);
+          }
+          fullSentEl.innerHTML = fullSent;
+        }
+
+        // Sentence Translation
+        const transEl = document.getElementById('englishSentenceTranslation');
+        if (transEl) {
+          transEl.textContent = q.sentenceTranslation || '-';
+        }
+
+        // Key Idioms
+        const idiomsEl = document.getElementById('englishIdiomsText');
+        if (idiomsEl) {
+          idiomsEl.textContent = q.keyIdioms || '-';
+        }
+
+        // Key Grammar
+        const grammarEl = document.getElementById('englishGrammarText');
+        if (grammarEl) {
+          grammarEl.textContent = q.grammar || q.explanation || '-';
+        }
+
         document.getElementById('englishExampleText').textContent = q.exampleSentence || '-';
         const naverEnglishLink = document.getElementById('englishNaverLink');
         if (naverEnglishLink) {
