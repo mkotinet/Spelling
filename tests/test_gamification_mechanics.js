@@ -28,6 +28,7 @@ class MockGameEngine {
 
   finishRound(correctCount) {
     const isPerfect = correctCount === 5;
+    const mistakes = 5 - correctCount;
     let roundPassed = false;
     let bonusPoints = 0;
 
@@ -49,22 +50,32 @@ class MockGameEngine {
     } else {
       this.perfectRoundStreak = 0;
 
-      // Shield protection: if 4/5 (1 mistake) and shields > 0
-      if (correctCount === 4 && this.shields > 0) {
+      // Shield protection: if mistakes <= 2 and shields > 0
+      if (mistakes <= 2 && this.shields > 0) {
         this.shields -= 1;
         roundPassed = true;
         this.lastAction = 'SHIELD_DEFENDED';
-      } else {
+      } else if (mistakes <= 2) {
+        // 1 or 2 mistakes: given a chance!
         roundPassed = false;
-        this.lastAction = 'ROUND_FAILED';
+        this.lastAction = 'CHANCE_GIVEN';
+      } else {
+        // 3 or more mistakes: COMPLETE ELIMINATION (탈락)!
+        roundPassed = false;
+        this.lastAction = 'ELIMINATED';
       }
     }
 
     this.totalPoints += bonusPoints;
-    return { roundPassed, bonusPoints };
+    return { roundPassed, mistakes, bonusPoints, action: this.lastAction };
   }
 
-  getFailedNextRound(choseRevive, passedRevive) {
+  getFailedNextRound(correctCount, choseRevive, passedRevive) {
+    const mistakes = 5 - correctCount;
+    if (mistakes >= 3) {
+      // 3+ mistakes -> Must restart from Round 1
+      return 1;
+    }
     if (choseRevive) {
       if (passedRevive) {
         // Keep current round
@@ -95,29 +106,29 @@ res = engine.finishRound(5);
 assert.strictEqual(res.roundPassed, true);
 assert.strictEqual(res.bonusPoints, 300, 'Should earn +300 bonus points after 3 consecutive perfect rounds');
 
-// Round 4: 4/5 (1 mistake) -> Shield protects and consumes shield!
+// Round 4: 2 mistakes (3/5) with 1 shield -> Shield protects against up to 2 mistakes!
 engine.currentRound = 4;
-res = engine.finishRound(4);
-assert.strictEqual(res.roundPassed, true, 'Shield must protect round progression on 1 mistake');
+res = engine.finishRound(3);
+assert.strictEqual(res.roundPassed, true, 'Shield must protect round progression even on 2 mistakes');
 assert.strictEqual(engine.shields, 0, 'Shield must be consumed');
 assert.strictEqual(engine.lastAction, 'SHIELD_DEFENDED');
 
-// Round 5: 3/5 (2 mistakes) with 0 shields -> Fails!
+// Round 5: 2 mistakes (3/5) with 0 shields -> Given a chance (Revive or Checkpoint R-1)
 engine.currentRound = 5;
 res = engine.finishRound(3);
 assert.strictEqual(res.roundPassed, false);
-assert.strictEqual(engine.lastAction, 'ROUND_FAILED');
+assert.strictEqual(engine.lastAction, 'CHANCE_GIVEN', '2 mistakes without shield gives chance');
 
-// Checkpoint fallback: Round 5 drops to Round 4
-const fallbackRound = engine.getFailedNextRound(false, false);
-assert.strictEqual(fallbackRound, 4, 'Failing round 5 must fall back to round 4 (R-1)');
+// Chance option A: Revive pass -> keeps Round 5
+assert.strictEqual(engine.getFailedNextRound(3, true, true), 5);
+// Chance option B: Checkpoint -> falls back to Round 4
+assert.strictEqual(engine.getFailedNextRound(3, false, false), 4);
 
-// Revive quiz: If passed revive quiz, restart Round 5!
-const revivedRound = engine.getFailedNextRound(true, true);
-assert.strictEqual(revivedRound, 5, 'Passing revive quiz must keep current round 5');
-
-// Revive quiz fail: drops to Round 4
-const reviveFailedRound = engine.getFailedNextRound(true, false);
-assert.strictEqual(reviveFailedRound, 4, 'Failing revive quiz must fall back to round 4');
+// Round 6: 3 mistakes (2/5) -> COMPLETE ELIMINATION! Must restart from Round 1
+engine.currentRound = 6;
+res = engine.finishRound(2);
+assert.strictEqual(res.roundPassed, false);
+assert.strictEqual(engine.lastAction, 'ELIMINATED', '3 or more mistakes must result in elimination');
+assert.strictEqual(engine.getFailedNextRound(2, false, false), 1, '3 or more mistakes must restart from Round 1');
 
 console.log('🎉 ALL Gamification Mechanics Logic Assertions Passed!');

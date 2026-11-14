@@ -175,12 +175,21 @@
             </div>
           </div>
 
-          <!-- Quiz Game Item Bar -->
-          <div id="quizItemBar" class="quiz-item-bar" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap;">
-            <button id="btnItem5050" class="game-item-btn" type="button" title="확실한 오답 2개를 지워줍니다">🔍 50:50 지우개 (2)</button>
-            <button id="btnItemHeart" class="game-item-btn" type="button" title="오답을 선택해도 1회 다시 선택할 수 있습니다">💖 하트 원모어 (1)</button>
-            <button id="btnItemDouble" class="game-item-btn" type="button" title="이번 라운드 획득 포인트를 2배로 만듭니다">⭐ 2배 부스터 (1)</button>
+          <!-- Quiz Game Item Bar with Cute Icons -->
+          <div id="quizItemBar" class="quiz-item-bar">
+            <button id="btnItem5050" class="game-item-btn item-btn-wand" type="button" title="오답 2개를 뿅! 지워줍니다">
+              <span class="item-emoji">🪄</span> <span class="item-label">50:50 요술봉</span> <span id="badgeItem5050" class="item-count-badge">2</span>
+            </button>
+            <button id="btnItemHeart" class="game-item-btn item-btn-heart" type="button" title="오답을 골라도 1회 다시 선택할 수 있습니다">
+              <span class="item-emoji">💖</span> <span class="item-label">하트 수호</span> <span id="badgeItemHeart" class="item-count-badge">1</span>
+            </button>
+            <button id="btnItemDouble" class="game-item-btn item-btn-rocket" type="button" title="이번 라운드 포인트를 2배로 만듭니다">
+              <span class="item-emoji">🚀</span> <span class="item-label">2배 로켓</span> <span id="badgeItemDouble" class="item-count-badge">1</span>
+            </button>
           </div>
+
+          <!-- Active Item Visual Indicator Banner -->
+          <div id="activeItemStatusBanner" class="active-item-banner" style="display: none;"></div>
 
           <!-- Options -->
           <div id="quizOptions" class="options-grid">
@@ -270,7 +279,7 @@
           🎉 100점 만점 통과! 다음 라운드(새 5문제) 도전하기 🔥
         </button>
 
-        <!-- Checkpoint & Revive Choice Buttons (Shown on round failure) -->
+        <!-- Checkpoint & Revive Choice Buttons (Shown on 1~2 mistakes) -->
         <div id="resultFailActions" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; width: 100%;">
           <button id="btnReviveQuiz" class="main-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; font-weight: 800; font-size: 0.98rem; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);">
             💫 부활 찬스: 보너스 1문제 맞추고 현재 라운드 유지!
@@ -279,6 +288,11 @@
             🔙 전단계 라운드에서 다시 도전하기
           </button>
         </div>
+
+        <!-- Elimination Restart Button (Shown on 3+ mistakes) -->
+        <button id="btnEliminatedRestart" class="main-action-btn" style="display: none; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; margin-bottom: 14px; font-weight: 800; font-size: 1.02rem; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);">
+          🔁 3문제 이상 탈락! 1라운드부터 다시 풀기 🔥
+        </button>
 
         <div style="display: flex; gap: 12px; margin-top: auto;">
           <button id="btnResultRetry" class="main-action-btn" style="background: linear-gradient(135deg, #ffd6e0, #c8b6ff); color: #4a3e4e;">
@@ -574,7 +588,7 @@
           <h4 style="margin: 0 0 6px 0; color: #166534; font-size: 0.95rem;">🛡️ 방패 시스템 (실드 획득 및 보호)</h4>
           <p style="margin: 0; color: #15803d; font-size: 0.82rem;">
             라운드를 <strong>2단계 연속 100점 만점</strong>으로 통과하면 <strong>방패 1개(🛡️)</strong>를 얻습니다.<br>
-            방패는 라운드에서 1문제를 틀려도(4/5 득점) 1개가 소모되며 탈락 없이 <strong>다음 라운드로 바로 진출</strong>시켜 줍니다! (최대 3개 보유)
+            방패를 보유하고 있다면 <strong>최대 2문제까지 틀려도(3/5 득점 이상)</strong> 방패가 소모되며 탈락 없이 <strong>다음 라운드로 바로 진출</strong>합니다! (최대 3개 보유)
           </p>
         </div>
 
@@ -586,19 +600,19 @@
         </div>
 
         <div class="guide-card" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
-          <h4 style="margin: 0 0 6px 0; color: #6b21a8; font-size: 0.95rem;">💫 탄력적 체크포인트 & 부활 찬스</h4>
+          <h4 style="margin: 0 0 6px 0; color: #6b21a8; font-size: 0.95rem;">💫 2문제 재도전 기회 & 3문제 탈락 규칙</h4>
           <p style="margin: 0; color: #7e22ce; font-size: 0.82rem;">
-            라운드를 실패해도 1라운드로 떨어지지 않고 <strong>직전 라운드(R-1)</strong>에서 부드럽게 이어할 수 있습니다.<br>
-            또한 <strong>💫 부활 찬스</strong>를 선택하여 보너스 1문제를 맞히면 현재 라운드를 그대로 유지하며 즉시 재도전할 수 있습니다!
+            * <strong>1~2문제 오답</strong>: 탈락하지 않고 <strong>💫 부활 찬스(보너스 1문제 풀고 현재 라운드 유지)</strong> 또는 <strong>전단계(R-1) 복귀</strong> 기회가 주어집니다.<br>
+            * <strong>3문제 이상 오답</strong>: <strong>완전 탈락!</strong> 체크포인트나 부활 없이 <strong>1라운드부터 처음부터 다시 시작</strong>해야 합니다!
           </p>
         </div>
 
         <div class="guide-card" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; margin-bottom: 6px;">
-          <h4 style="margin: 0 0 6px 0; color: #1e40af; font-size: 0.95rem;">🎒 특별 찬스 아이템 도감</h4>
-          <ul style="margin: 0; padding-left: 18px; font-size: 0.82rem; color: #1d4ed8;">
-            <li><strong>🔍 50:50 지우개</strong>: 4개 선택지 중 확실한 오답 2개를 즉시 지워줍니다.</li>
-            <li><strong>💖 하트 원모어</strong>: 오답을 눌러도 정답 공개 전 1회 다시 선택할 수 있습니다.</li>
-            <li><strong>⭐ 2배 부스터</strong>: 이번 라운드에 획득하는 모든 점수를 2배로 적립합니다!</li>
+          <h4 style="margin: 0 0 6px 0; color: #1e40af; font-size: 0.95rem;">🎒 귀여운 찬스 아이템 도감</h4>
+          <ul style="margin: 0; padding-left: 18px; font-size: 0.82rem; color: #1d4ed8; line-height: 1.6;">
+            <li><strong>🪄 50:50 요술봉</strong>: 4개 선택지 중 오답 2개를 뿅! 지워줍니다.</li>
+            <li><strong>💖 하트 수호</strong>: 오답을 골라도 1회 안심하고 다른 답을 다시 선택할 수 있습니다.</li>
+            <li><strong>🚀 2배 로켓</strong>: 이번 라운드에 획득하는 모든 점수와 보너스를 2배로 적립합니다!</li>
           </ul>
         </div>
       </div>

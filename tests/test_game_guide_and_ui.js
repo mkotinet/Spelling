@@ -16,7 +16,7 @@ assert(indexHtml.includes('id="btnCloseGameGuideModal"'), 'index.html must have 
 assert(indexHtml.includes('방패 시스템'), 'Game Guide must explain Shield system');
 assert(indexHtml.includes('+300P'), 'Game Guide must explain 300P bonus');
 assert(indexHtml.includes('부활 찬스'), 'Game Guide must explain Revive chance');
-assert(indexHtml.includes('50:50 지우개'), 'Game Guide must explain 50:50 item');
+assert(indexHtml.includes('50:50 요술봉'), 'Game Guide must explain 50:50 item');
 
 // 2. In-Game Items & Shield UI
 assert(indexHtml.includes('id="quizShieldBadge"'), 'index.html must have quizShieldBadge');
@@ -24,11 +24,13 @@ assert(indexHtml.includes('id="quizItemBar"'), 'index.html must have quizItemBar
 assert(indexHtml.includes('id="btnItem5050"'), 'index.html must have btnItem5050');
 assert(indexHtml.includes('id="btnItemHeart"'), 'index.html must have btnItemHeart');
 assert(indexHtml.includes('id="btnItemDouble"'), 'index.html must have btnItemDouble');
+assert(indexHtml.includes('id="activeItemStatusBanner"'), 'index.html must have activeItemStatusBanner');
 
 // 3. Fail Checkpoint & Revive UI
 assert(indexHtml.includes('id="resultFailActions"'), 'index.html must have resultFailActions');
 assert(indexHtml.includes('id="btnReviveQuiz"'), 'index.html must have btnReviveQuiz');
 assert(indexHtml.includes('id="btnFallbackRound"'), 'index.html must have btnFallbackRound');
+assert(indexHtml.includes('id="btnEliminatedRestart"'), 'index.html must have btnEliminatedRestart');
 
 // 4. Leaderboard Dual-Subject & Highest Round UI
 assert(indexHtml.includes('id="rankSubjectSpelling"'), 'index.html must have rankSubjectSpelling');
