@@ -244,7 +244,8 @@ body.theme-hanja .mode-switch-btn.active {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  padding: 8px 6px;
+  padding: 8px 4px;
+  gap: 8px;
 }
 
 .logo-area {
@@ -252,12 +253,15 @@ body.theme-hanja .mode-switch-btn.active {
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .logo-icon {
   font-size: 2rem;
   filter: drop-shadow(0 3px 6px rgba(255, 143, 177, 0.4));
   animation: bounceSoft 2.5s infinite;
+  flex-shrink: 0;
 }
 
 @keyframes bounceSoft {
@@ -265,24 +269,36 @@ body.theme-hanja .mode-switch-btn.active {
   50% { transform: translateY(-4px); }
 }
 
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+
 .logo-text h1 {
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 800;
   background: linear-gradient(45deg, #ff6584, #9b5de5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .logo-text p {
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   color: var(--text-sub);
   font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -298,6 +314,7 @@ body.theme-hanja .mode-switch-btn.active {
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(255, 180, 200, 0.2);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .icon-btn:hover {
@@ -1338,7 +1355,60 @@ body.theme-hanja .quiz-sentence .quiz-blank {
 /* Responsive tweaks */
 @media (max-width: 480px) {
   .app-container {
-    padding: 12px 12px 70px;
+    padding: 10px 10px 70px;
+  }
+  .app-header {
+    margin-bottom: 12px;
+    padding: 2px 0;
+    gap: 4px;
+  }
+  .logo-area {
+    gap: 6px;
+  }
+  .logo-icon {
+    font-size: 1.6rem;
+  }
+  .logo-text h1 {
+    font-size: 1.15rem;
+    white-space: nowrap;
+  }
+  .logo-text p {
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+  .header-actions {
+    gap: 3px;
+  }
+  .icon-btn {
+    width: 29px;
+    height: 29px;
+    font-size: 0.84rem;
+    border-width: 1px;
+    flex-shrink: 0;
+  }
+  .user-bar {
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+  .user-stats-pill {
+    gap: 8px;
+  }
+  .avatar-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1.4rem;
+  }
+  .user-avatar-tag {
+    gap: 8px;
+  }
+  .user-details .uname {
+    font-size: 0.92rem;
+  }
+  .stat-item .val {
+    font-size: 0.88rem;
+  }
+  .stat-item .lbl {
+    font-size: 0.62rem;
   }
   .quiz-sentence {
     font-size: 1.15rem;
@@ -1354,6 +1424,50 @@ body.theme-hanja .quiz-sentence .quiz-blank {
   }
   .badges-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Single-row Item Bar on Mobile */
+  .quiz-item-bar {
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .game-item-btn {
+    padding: 6px 3px;
+    font-size: 0.74rem;
+    gap: 2px;
+    border-radius: 16px;
+  }
+  .item-name-tail {
+    display: none;
+  }
+  .item-count-badge {
+    padding: 1px 4px;
+    font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .logo-text p {
+    display: none;
+  }
+  .logo-text h1 {
+    font-size: 1.02rem;
+  }
+  .header-actions {
+    gap: 2px;
+  }
+  .icon-btn {
+    width: 27px;
+    height: 27px;
+    font-size: 0.78rem;
+  }
+  .game-item-btn {
+    padding: 5px 2px;
+    font-size: 0.7rem;
+    gap: 2px;
+  }
+  .item-emoji {
+    font-size: 0.85rem;
   }
 }
 
@@ -1443,31 +1557,36 @@ body.theme-hanja .quiz-sentence .quiz-blank {
 
 .quiz-item-bar {
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  gap: 6px;
+  justify-content: space-between;
   margin-bottom: 12px;
-  flex-wrap: wrap;
+  width: 100%;
+  flex-wrap: nowrap;
 }
 
 .game-item-btn {
+  flex: 1;
+  min-width: 0;
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
   color: #334155;
-  padding: 7px 14px;
-  border-radius: 24px;
-  font-size: 0.82rem;
+  padding: 7px 6px;
+  border-radius: 20px;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 4px;
   position: relative;
+  white-space: nowrap;
 }
 
 .game-item-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
@@ -1475,6 +1594,32 @@ body.theme-hanja .quiz-sentence .quiz-blank {
   opacity: 0.45;
   cursor: not-allowed;
   filter: grayscale(80%);
+}
+
+.item-emoji {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.item-label {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-name-tail {
+  display: inline;
+}
+
+.item-count-badge {
+  background: rgba(0, 0, 0, 0.08);
+  padding: 1px 6px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  flex-shrink: 0;
 }
 
 .item-btn-wand {
