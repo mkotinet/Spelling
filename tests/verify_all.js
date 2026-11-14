@@ -205,16 +205,22 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.strictEqual(lbRoundRes.status, 200);
     assert(Array.isArray(lbRoundRes.data.leaderboard));
 
-    // 14. v2.6.0 Mobile Auto-Update & Version Check check
+    // 14. v2.6.1 Mobile Auto-Update & Version Check check
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.6.0">'), 'index.html must include meta app-version 2.6.0');
+    assert(indexHtml.includes('<meta name="app-version" content="2.6.1">'), 'index.html must include meta app-version 2.6.1');
+
+    // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
+    assert(appCode.includes(']겠다는/g'), 'app.js must include self-healing guard for 겠다는');
+    const sample4694 = idiomBank.find(q => q.question && q.question.includes('#4694'));
+    assert(sample4694, 'Question #4694 must exist in idiom bank');
+    assert(sample4694.sentence.includes("'[ (     ) ]'라는 당찬 포부를 밝혔다"), 'Question #4694 must use clean quote citation');
 
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.6.0', 'GET /api/version version must be 2.6.0');
+    assert.strictEqual(verRes.data.version, '2.6.1', 'GET /api/version version must be 2.6.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

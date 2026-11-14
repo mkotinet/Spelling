@@ -73,18 +73,18 @@ console.log('2️⃣ Verifying version.json integrity...');
 const versionJsonPath = path.join(ROOT_DIR, 'version.json');
 assert(fs.existsSync(versionJsonPath), 'version.json must exist in project root');
 const versionJson = JSON.parse(fs.readFileSync(versionJsonPath, 'utf8'));
-assert.strictEqual(versionJson.version, '2.6.0', 'version.json version must be 2.6.0');
+assert.strictEqual(versionJson.version, '2.6.1', 'version.json version must be 2.6.1');
 assert(versionJson.build, 'version.json must have build timestamp');
 console.log(`  ✅ version.json verified: version=${versionJson.version}, build=${versionJson.build}\n`);
 
 // 3. index.html Verification
 console.log('3️⃣ Verifying index.html version metadata & cache-busting params...');
 const indexHtml = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
-assert(indexHtml.includes('<meta name="app-version" content="2.6.0">'), 'index.html must contain app-version meta tag');
-assert(indexHtml.includes('v2.6.0'), 'index.html must display v2.6.0 in version badge');
-assert(indexHtml.includes('app.js?v=2.6.0'), 'app.js script tag must use ?v=2.6.0 cache buster');
-assert(indexHtml.includes('style.css?v=2.6.0'), 'style.css link tag must use ?v=2.6.0 cache buster');
-assert(indexHtml.includes('questions.js?v=2.6.0'), 'questions.js must use ?v=2.6.0 cache buster');
+assert(indexHtml.includes('<meta name="app-version" content="2.6.1">'), 'index.html must contain app-version meta tag');
+assert(indexHtml.includes('v2.6.1'), 'index.html must display v2.6.1 in version badge');
+assert(indexHtml.includes('app.js?v=2.6.1'), 'app.js script tag must use ?v=2.6.1 cache buster');
+assert(indexHtml.includes('style.css?v=2.6.1'), 'style.css link tag must use ?v=2.6.1 cache buster');
+assert(indexHtml.includes('questions.js?v=2.6.1'), 'questions.js must use ?v=2.6.1 cache buster');
 console.log('  ✅ index.html version tags verified!\n');
 
 // 4. app.js Lifecycle Hook Verification
@@ -131,7 +131,7 @@ setTimeout(() => {
       try {
         const json = JSON.parse(body);
         assert.strictEqual(json.success, true, 'API response success must be true');
-        assert.strictEqual(json.version, '2.6.0', 'API response version must be 2.6.0');
+        assert.strictEqual(json.version, '2.6.1', 'API response version must be 2.6.1');
         assert(json.serverTime, 'API response must have serverTime');
         console.log('  ✅ /api/version endpoint response:', JSON.stringify(json));
         console.log('  ✅ Cache-Control header:', cc);

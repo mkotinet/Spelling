@@ -506,7 +506,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.6.0';
+    this.APP_VERSION = metaVer || '2.6.1';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1384,6 +1384,15 @@ class HaruMatchumApp {
     // Runtime guard: 4-choice questions must always use bracket blank format instead of [ A / B ]
     if (q.options && q.options.length >= 4 && /\[\s*[^\]]+\/[^\]]+\]/.test(sentenceHtml)) {
       sentenceHtml = sentenceHtml.replace(/\[\s*[^\]]+\/[^\]]+\]/g, '[ (     ) ]');
+    }
+
+    // Runtime guard: Self-heal awkward verb ending collisions if answer word ends in '다' (Prevent double ending collision)
+    const ansWord = (q.options && q.options[q.answerIndex !== undefined ? q.answerIndex : 0]) || '';
+    if (typeof ansWord === 'string' && ansWord.endsWith('다')) {
+      sentenceHtml = sentenceHtml.replace(/\[\s*\(\s*\?*\s*\)\s*\]겠다는/g, "'[ (     ) ]'라는");
+      sentenceHtml = sentenceHtml.replace(/\[\s*\(\s*\?*\s*\)\s*\]고\s+/g, "'[ (     ) ]'라며 ");
+      sentenceHtml = sentenceHtml.replace(/\[\s*\(\s*\?*\s*\)\s*\]며\s+/g, "'[ (     ) ]'라며 ");
+      sentenceHtml = sentenceHtml.replace(/\[\s*\(\s*\?*\s*\)\s*\]은\s+듯/g, "'[ (     ) ]'라는 듯");
     }
 
     if (sentenceHtml.includes('[ (     ) ]') || sentenceHtml.includes('[ ( ? ) ]')) {
@@ -3453,7 +3462,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.6.0';
+      const clientVersion = this.APP_VERSION || '2.6.1';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
