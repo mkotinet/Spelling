@@ -182,7 +182,7 @@ class DataManager {
       soundEnabled: true,
       wrongQuestions: [],
       badges: ['starter'],
-      allUsers: [] // multi-profile & simulated peer ranking
+      allUsers: [] // Real users loaded from server leaderboard
     };
   }
 
@@ -191,7 +191,7 @@ class DataManager {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
         const init = this.defaultData();
-        init.allUsers = this.generatePeerRankings(init.currentUser);
+        init.allUsers = [{ ...init.currentUser, isMe: true }];
         this.save(init);
         return init;
       }
@@ -199,8 +199,12 @@ class DataManager {
       if (!parsed.apiKey) {
         parsed.apiKey = 'C0E0448602CD3B859FDDD29BBD84289C';
       }
+      // Purge any legacy dummy peer users (peer_1 ~ peer_7)
+      if (Array.isArray(parsed.allUsers)) {
+        parsed.allUsers = parsed.allUsers.filter(u => u && u.id && !u.id.startsWith('peer_'));
+      }
       if (!parsed.allUsers || parsed.allUsers.length === 0) {
-        parsed.allUsers = this.generatePeerRankings(parsed.currentUser);
+        parsed.allUsers = [{ ...parsed.currentUser, isMe: true }];
       }
       return parsed;
     } catch (e) {
@@ -214,32 +218,6 @@ class DataManager {
     } catch (e) {
       console.error('Storage save error', e);
     }
-  }
-
-  static generatePeerRankings(myUser) {
-    const peers = [
-      { id: 'peer_1', name: '체리블라썸', avatar: '🍒', grade: '중학교 3학년', totalPoints: 520, streak: 7, todayScore: 100 },
-      { id: 'peer_2', name: '토끼마카롱', avatar: '🐰', grade: '중학교 2학년', totalPoints: 460, streak: 5, todayScore: 100 },
-      { id: 'peer_3', name: '달빛고양이', avatar: '🐱', grade: '고등학교 1학년', totalPoints: 410, streak: 4, todayScore: 80 },
-      { id: 'peer_4', name: '민트라벤더', avatar: '🌿', grade: '중학교 1학년', totalPoints: 370, streak: 3, todayScore: 80 },
-      { id: 'peer_5', name: '딸기구름', avatar: '🍓', grade: '초등학교 6학년', totalPoints: 310, streak: 2, todayScore: 60 },
-      { id: 'peer_6', name: '별빛소녀', avatar: '⭐', grade: '초등학교 5학년', totalPoints: 240, streak: 2, todayScore: 60 },
-      { id: 'peer_7', name: '포근곰돌이', avatar: '🐻', grade: '중학교 2학년', totalPoints: 190, streak: 1, todayScore: 40 }
-    ];
-
-    return [
-      {
-        id: myUser.id,
-        name: myUser.name,
-        avatar: myUser.avatar,
-        grade: myUser.grade,
-        totalPoints: myUser.totalPoints,
-        streak: myUser.streak,
-        todayScore: 100,
-        isMe: true
-      },
-      ...peers
-    ];
   }
 }
 
@@ -691,13 +669,47 @@ class HaruMatchumApp {
   }
 
   // ============================================================
-  // Leaderboard / Ranking View
+  // Leaderboard / Ranking View (Real users only, no dummy peers)
   // ============================================================
-  renderLeaderboard(type = 'daily') {
+  async renderLeaderboard(type = 'daily') {
     const listContainer = document.getElementById('leaderboardList');
-    listContainer.innerHTML = '';
+    if (!listContainer) return;
 
-    const users = [...this.data.allUsers];
+    try {
+      const res = await fetch('/api/leaderboard');
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.leaderboard)) {
+          const myId = this.data.currentUser.id;
+          const myName = this.data.currentUser.name;
+          this.data.allUsers = body.leaderboard.map(u => ({
+            ...u,
+            isMe: u.id === myId || u.name === myName
+          }));
+
+          // If current user is not yet in leaderboard, add locally
+          if (!this.data.allUsers.some(u => u.isMe)) {
+            this.data.allUsers.push({
+              id: myId,
+              name: myName,
+              avatar: this.data.currentUser.avatar || '🌸',
+              grade: this.data.currentUser.grade || '중학교 2학년',
+              totalPoints: this.data.currentUser.totalPoints || 0,
+              streak: this.data.currentUser.streak || 1,
+              todayScore: this.data.currentUser.todayScore || 0,
+              maxRoundToday: this.data.currentUser.maxRoundToday || 1,
+              isMe: true
+            });
+          }
+          DataManager.save(this.data);
+        }
+      }
+    } catch (e) {
+      // Offline fallback: use local cached allUsers
+    }
+
+    listContainer.innerHTML = '';
+    const users = [...(this.data.allUsers || [])];
     if (type === 'daily') {
       users.sort((a, b) => (b.todayScore || 0) - (a.todayScore || 0));
     } else {
@@ -708,18 +720,22 @@ class HaruMatchumApp {
       const rankNum = idx + 1;
       const rankClass = rankNum === 1 ? 'rank-1' : rankNum === 2 ? 'rank-2' : rankNum === 3 ? 'rank-3' : 'rank-other';
       const rankBadgeIcon = rankNum === 1 ? '👑' : rankNum === 2 ? '🥈' : rankNum === 3 ? '🥉' : rankNum;
+      const roundTag = user.maxRoundToday && user.maxRoundToday > 1 
+        ? `<span class="rank-tag-round" style="background:#ffedd5; color:#ea580c; font-size:0.7rem; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:4px;">🔥 ${user.maxRoundToday}R</span>`
+        : '';
 
       const item = document.createElement('div');
       item.className = `rank-item ${rankClass} ${user.isMe ? 'is-me' : ''}`;
       item.innerHTML = `
         <div class="rank-badge">${rankBadgeIcon}</div>
-        <div class="rank-avatar">${user.avatar}</div>
+        <div class="rank-avatar">${user.avatar || '🌸'}</div>
         <div class="rank-info">
           <div class="rank-name-row">
             <span class="rank-name">${user.name}</span>
             ${user.isMe ? '<span class="rank-tag-me">나</span>' : ''}
+            ${roundTag}
           </div>
-          <div class="rank-sub">${user.grade} · 🔥 ${user.streak || 1}일 연속</div>
+          <div class="rank-sub">${user.grade || '일반'} · 🔥 ${user.streak || 1}일 연속</div>
         </div>
         <div class="rank-score">
           ${type === 'daily' ? (user.todayScore || 0) : user.totalPoints}
