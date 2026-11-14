@@ -285,7 +285,8 @@ class DataManager {
         totalSolved: 10,
         totalCorrect: 9,
         lastActiveDate: today,
-        completedDates: [today]
+        completedDates: [today],
+        solvedQuestionMap: { spelling: [], idiom: [], hanja: [], english: [] }
       },
       apiKey: 'C0E0448602CD3B859FDDD29BBD84289C',
       soundEnabled: true,
@@ -307,6 +308,9 @@ class DataManager {
       const parsed = JSON.parse(raw);
       if (!parsed.apiKey) {
         parsed.apiKey = 'C0E0448602CD3B859FDDD29BBD84289C';
+      }
+      if (parsed.currentUser && (!parsed.currentUser.solvedQuestionMap || typeof parsed.currentUser.solvedQuestionMap !== 'object')) {
+        parsed.currentUser.solvedQuestionMap = { spelling: [], idiom: [], hanja: [], english: [] };
       }
       // Purge any legacy dummy peer users (peer_1 ~ peer_7)
       if (Array.isArray(parsed.allUsers)) {
@@ -952,7 +956,7 @@ class HaruMatchumApp {
         alert('아직 오답노트에 저장된 문제가 없어요! 데일리 퀴즈나 연습 퀴즈를 먼저 풀어보세요.');
         return;
       }
-      this.activeQuestions = [...this.data.wrongQuestions].slice(0, 5);
+      this.activeQuestions = this.shuffleArray([...this.data.wrongQuestions]).slice(0, 5);
     }
 
     // Shuffle options dynamically so answer position is randomised across 1, 2, 3, 4
@@ -1002,6 +1006,141 @@ class HaruMatchumApp {
     this.saveActiveQuizSession();
   }
 
+  // ============================================================
+  // Randomization & Unsolved-First Question Selection Engine
+  // ============================================================
+  shuffleArray(arr) {
+    if (!Array.isArray(arr) || arr.length <= 1) return arr ? [...arr] : [];
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  getSolvedQuestionIds(subject = this.quizSubject) {
+    const sub = subject || 'spelling';
+    const u = this.data.currentUser;
+    if (!u.solvedQuestionMap || typeof u.solvedQuestionMap !== 'object') {
+      u.solvedQuestionMap = { spelling: [], idiom: [], hanja: [], english: [] };
+    }
+    if (!Array.isArray(u.solvedQuestionMap[sub])) {
+      u.solvedQuestionMap[sub] = [];
+    }
+
+    // Merge with localStorage if present
+    try {
+      const localRaw = localStorage.getItem(`haru_solved_${sub}_ids`);
+      if (localRaw) {
+        const localArr = JSON.parse(localRaw);
+        if (Array.isArray(localArr) && localArr.length > 0) {
+          const mergedSet = new Set([...u.solvedQuestionMap[sub], ...localArr]);
+          u.solvedQuestionMap[sub] = Array.from(mergedSet);
+        }
+      }
+    } catch (e) {}
+
+    return u.solvedQuestionMap[sub];
+  }
+
+  recordQuestionSolved(questionId, subject = this.quizSubject) {
+    if (!questionId) return;
+    const sub = subject || 'spelling';
+    const u = this.data.currentUser;
+    if (!u.solvedQuestionMap || typeof u.solvedQuestionMap !== 'object') {
+      u.solvedQuestionMap = { spelling: [], idiom: [], hanja: [], english: [] };
+    }
+    if (!Array.isArray(u.solvedQuestionMap[sub])) {
+      u.solvedQuestionMap[sub] = [];
+    }
+
+    if (!u.solvedQuestionMap[sub].includes(questionId)) {
+      u.solvedQuestionMap[sub].push(questionId);
+      try {
+        localStorage.setItem(`haru_solved_${sub}_ids`, JSON.stringify(u.solvedQuestionMap[sub]));
+      } catch (e) {}
+      DataManager.save(this.data);
+    }
+  }
+
+  recordQuestionsSolvedBatch(questionIds, subject = this.quizSubject) {
+    if (!Array.isArray(questionIds) || questionIds.length === 0) return;
+    const sub = subject || 'spelling';
+    const u = this.data.currentUser;
+    if (!u.solvedQuestionMap || typeof u.solvedQuestionMap !== 'object') {
+      u.solvedQuestionMap = { spelling: [], idiom: [], hanja: [], english: [] };
+    }
+    if (!Array.isArray(u.solvedQuestionMap[sub])) {
+      u.solvedQuestionMap[sub] = [];
+    }
+
+    const set = new Set(u.solvedQuestionMap[sub]);
+    let added = false;
+    for (const qId of questionIds) {
+      if (qId && !set.has(qId)) {
+        set.add(qId);
+        added = true;
+      }
+    }
+    if (added) {
+      u.solvedQuestionMap[sub] = Array.from(set);
+      try {
+        localStorage.setItem(`haru_solved_${sub}_ids`, JSON.stringify(u.solvedQuestionMap[sub]));
+      } catch (e) {}
+      DataManager.save(this.data);
+    }
+  }
+
+  resetSolvedQuestionsForPool(pool, subject = this.quizSubject) {
+    if (!pool || pool.length === 0) return;
+    const sub = subject || 'spelling';
+    const poolIds = new Set(pool.map(q => q.id));
+    const currentSolved = this.getSolvedQuestionIds(sub);
+    const retained = currentSolved.filter(id => !poolIds.has(id));
+    const u = this.data.currentUser;
+    if (u && u.solvedQuestionMap) {
+      u.solvedQuestionMap[sub] = retained;
+    }
+    try {
+      localStorage.setItem(`haru_solved_${sub}_ids`, JSON.stringify(retained));
+    } catch (e) {}
+    DataManager.save(this.data);
+  }
+
+  selectUnsolvedFirstQuestions(pool, count = 5, subject = this.quizSubject, level = null) {
+    if (!pool || pool.length === 0) return [];
+    if (pool.length <= count) {
+      return this.shuffleArray(pool);
+    }
+
+    const solvedIds = new Set(this.getSolvedQuestionIds(subject));
+    const unseenPool = pool.filter(q => !solvedIds.has(q.id));
+    const seenPool = pool.filter(q => solvedIds.has(q.id));
+
+    let selected = [];
+
+    if (unseenPool.length >= count) {
+      // 1. Unseen questions are plenty: shuffle unseen pool and take count
+      const shuffledUnseen = this.shuffleArray(unseenPool);
+      selected = shuffledUnseen.slice(0, count);
+    } else if (unseenPool.length > 0) {
+      // 2. Unseen questions are fewer than count: take all unseen, fill remainder from seen pool
+      const shuffledUnseen = this.shuffleArray(unseenPool);
+      const shuffledSeen = this.shuffleArray(seenPool);
+      const neededFromSeen = count - shuffledUnseen.length;
+      selected = [...shuffledUnseen, ...shuffledSeen.slice(0, neededFromSeen)];
+    } else {
+      // 3. All questions in this pool have been solved! Reset tracking for this pool and start fresh cycle
+      this.resetSolvedQuestionsForPool(pool, subject);
+      const shuffledAll = this.shuffleArray(pool);
+      selected = shuffledAll.slice(0, count);
+    }
+
+    // Final shuffle to guarantee the questions appear in dynamic random order (Q1~Q5)
+    return this.shuffleArray(selected);
+  }
+
   getPermutedBlockQuestions(pool, round = 1, seedKey = '') {
     if (!pool || pool.length === 0) return [];
     const questionsPerRound = 5;
@@ -1038,17 +1177,14 @@ class HaruMatchumApp {
   }
 
   getLevelDailyQuestions(level, round = 1) {
-    const todayStr = getKSTDateString();
     const bank = this.getActiveBank();
     const filtered = bank.filter(q => q.level && q.level.includes(level));
     const pool = (filtered.length >= 5) ? filtered : bank;
-    const seedKey = `${todayStr}_${this.quizSubject}_level_${level}`;
-    return this.getPermutedBlockQuestions(pool, round, seedKey);
+    return this.selectUnsolvedFirstQuestions(pool, 5, this.quizSubject, level);
   }
 
-  getRandomQuestionsFromPool(pool, count) {
-    const shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+  getRandomQuestionsFromPool(pool, count = 1) {
+    return this.selectUnsolvedFirstQuestions(pool, count, this.quizSubject);
   }
 
   shuffleQuestionOptions(q) {
@@ -1063,16 +1199,13 @@ class HaruMatchumApp {
   }
 
   getDailyQuestions(round = 1) {
-    const todayStr = getKSTDateString();
     const bank = this.getActiveBank();
-    const seedKey = `${todayStr}_${this.quizSubject}_daily`;
-    return this.getPermutedBlockQuestions(bank, round, seedKey);
+    return this.selectUnsolvedFirstQuestions(bank, 5, this.quizSubject);
   }
 
-  getRandomQuestions(count) {
+  getRandomQuestions(count = 5) {
     const bank = this.getActiveBank();
-    const shuffled = [...bank].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    return this.selectUnsolvedFirstQuestions(bank, count, this.quizSubject);
   }
 
   renderCurrentQuestion() {
@@ -1166,6 +1299,7 @@ class HaruMatchumApp {
     }
 
     this.selectedOption = selectedIndex;
+    this.recordQuestionSolved(q.id, this.quizSubject);
 
     const allButtons = document.querySelectorAll('.option-btn');
     allButtons.forEach((b, i) => {
@@ -1349,6 +1483,7 @@ class HaruMatchumApp {
 
   finishQuiz() {
     this.clearActiveQuizSession();
+    this.recordQuestionsSolvedBatch((this.activeQuestions || []).map(q => q.id), this.quizSubject);
     sfx.fanfare();
     this.confetti.explode();
 
@@ -3026,6 +3161,16 @@ class HaruMatchumApp {
       this.data.currentUser.totalPoints = u.totalPoints || this.data.currentUser.totalPoints;
       this.data.currentUser.completedDates = u.completedDates || this.data.currentUser.completedDates;
       this.data.currentUser.badges = u.badges || this.data.currentUser.badges;
+      if (u.solvedQuestionMap && typeof u.solvedQuestionMap === 'object') {
+        this.data.currentUser.solvedQuestionMap = u.solvedQuestionMap;
+        for (const sub of ['spelling', 'idiom', 'hanja', 'english']) {
+          if (Array.isArray(u.solvedQuestionMap[sub])) {
+            try {
+              localStorage.setItem(`haru_solved_${sub}_ids`, JSON.stringify(u.solvedQuestionMap[sub]));
+            } catch (e) {}
+          }
+        }
+      }
 
       DataManager.save(this.data);
       this.renderUserProfile();

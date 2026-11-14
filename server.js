@@ -391,6 +391,19 @@ const server = http.createServer(async (req, res) => {
         target.wrongQuestions = uData.wrongQuestions;
       }
 
+      // Merge solved question IDs (subject-specific map: spelling, idiom, hanja, english)
+      if (uData.solvedQuestionMap && typeof uData.solvedQuestionMap === "object") {
+        target.solvedQuestionMap = target.solvedQuestionMap || {};
+        for (const sub of ["spelling", "idiom", "hanja", "english"]) {
+          const existing = new Set(target.solvedQuestionMap[sub] || []);
+          const incoming = uData.solvedQuestionMap[sub] || [];
+          if (Array.isArray(incoming)) {
+            incoming.forEach(id => existing.add(id));
+          }
+          target.solvedQuestionMap[sub] = Array.from(existing);
+        }
+      }
+
       target.updatedAt = new Date().toISOString();
       saveDB(db);
 
