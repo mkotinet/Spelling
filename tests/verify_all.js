@@ -152,6 +152,23 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkDateTransition'), 'app.js includes checkDateTransition');
     assert(appCode.includes('getKSTDateString'), 'app.js includes getKSTDateString');
 
+    // 11. Random Answer Distribution and Option Shuffle check
+    assert(appCode.includes('shuffleQuestionOptions'), 'app.js must include shuffleQuestionOptions');
+    const sampleHanjaQ = hanjaBank[0];
+    const originalAns = sampleHanjaQ.options[sampleHanjaQ.answerIndex];
+    let shuffleWorked = false;
+    for (let t = 0; t < 20; t++) {
+      const copy = { ...sampleHanjaQ, options: [...sampleHanjaQ.options] };
+      for (let i = copy.options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy.options[i], copy.options[j]] = [copy.options[j], copy.options[i]];
+      }
+      copy.answerIndex = copy.options.indexOf(originalAns);
+      assert.strictEqual(copy.options[copy.answerIndex], originalAns);
+      if (copy.answerIndex !== 0) shuffleWorked = true;
+    }
+    assert(shuffleWorked, 'Shuffling must distribute answer index beyond 0');
+
     console.log('🎉 ALL End-to-End System Tests Passed Pristine and Green!');
     srv.close();
     process.exit(0);

@@ -11,44 +11,5 @@
       "role": "admin",
       "note": "v2.0 고도화 배포 초기화"
     }
-  },
-  {
-    "id": "log_1794641054947_11h1o",
-    "timestamp": "2026-11-14T07:24:14.947Z",
-    "kstTime": "2026-11-14 07:24:14",
-    "username": "e2e_runner_1794641054933",
-    "action": "REGISTER",
-    "ip": "127.0.0.1",
-    "userAgent": "-",
-    "details": {
-      "grade": "고등학교 1학년"
-    }
-  },
-  {
-    "id": "log_1794641054948_1f668",
-    "timestamp": "2026-11-14T07:24:14.948Z",
-    "kstTime": "2026-11-14 07:24:14",
-    "username": "e2e_runner_1794641054933",
-    "action": "LOGIN_SUCCESS",
-    "ip": "127.0.0.1",
-    "userAgent": "-",
-    "details": {
-      "grade": "고등학교 1학년"
-    }
-  },
-  {
-    "id": "log_1794641054948_hqic1",
-    "timestamp": "2026-11-14T07:24:14.948Z",
-    "kstTime": "2026-11-14 07:24:14",
-    "username": "e2e_runner_1794641054933",
-    "action": "ROUND_CLEAR",
-    "ip": "127.0.0.1",
-    "userAgent": "-",
-    "details": {
-      "mode": "hanja",
-      "round": 2,
-      "score": 100,
-      "pointsEarned": 150
-    }
   }
 ]

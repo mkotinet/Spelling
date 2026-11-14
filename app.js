@@ -606,8 +606,22 @@ class HaruMatchumApp {
       this.activeQuestions = [...this.data.wrongQuestions].slice(0, 5);
     }
 
+    // Shuffle options dynamically so answer position is randomised across 1, 2, 3, 4
+    this.activeQuestions = this.activeQuestions.map(q => this.shuffleQuestionOptions(q));
+
     this.switchView('quiz');
     this.renderCurrentQuestion();
+  }
+
+  shuffleQuestionOptions(q) {
+    const copy = { ...q, options: [...q.options] };
+    const originalAnswerText = copy.options[copy.answerIndex];
+    for (let i = copy.options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy.options[i], copy.options[j]] = [copy.options[j], copy.options[i]];
+    }
+    copy.answerIndex = copy.options.indexOf(originalAnswerText);
+    return copy;
   }
 
   getDailyQuestions(round = 1) {
