@@ -23,6 +23,10 @@ services:
         else
           git clone https://github.com/mkotinet/Spelling.git /app_src
         fi &&
+        mkdir -p /app/data &&
+        cp -rn /app_src/data/* /app/data/ 2>/dev/null || true &&
+        rm -rf /app_src/data &&
+        ln -s /app/data /app_src/data &&
         cd /app_src &&
         node server.js
       "

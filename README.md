@@ -1,58 +1,56 @@
-# ✨ 하루맞춤 (Haru Matchum)
+# ✨ 하루맞춤 (Haru Matchum) v2.0
 
-> **매일 5분! 초·중·고등학생을 위한 반짝이는 국어 맞춤법 데일리 퀴즈 & 랭킹 챌린지 웹 애플리케이션**
+> **매일 5분! 초·중·고등학생과 우리말을 사랑하는 모두를 위한 반짝이는 국어 맞춤법 & 한자 퀴즈 챌린지 웹 애플리케이션**
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-ff69b4?style=for-the-badge&logo=github)](https://mkotinet.github.io/Spelling/)
+[![Service URL](https://img.shields.io/badge/Service-haru.danminlove.com-2ec4b6?style=for-the-badge&logo=cloudflare)](https://haru.danminlove.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Spelling-ff69b4?style=for-the-badge&logo=github)](https://github.com/mkotinet/Spelling)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 ---
 
 ## 🌸 서비스 소개
 
-**하루맞춤(Haru Matchum)**은 일상과 시험에서 가장 자주 헷갈리는 한국어 맞춤법을 매일 5문제씩 재미있는 퀴즈로 풀고, 출석 도장을 모으며 친구들과 랭킹을 겨루는 하이틴 감성의 웹 애플리케이션입니다.
+**하루맞춤(Haru Matchum)**은 일상과 시험에서 가장 자주 헷갈리는 한국어 맞춤법과 필수 한자·고사성어를 재미있는 퀴즈로 풀고, 출석 도장과 포인트를 모으며 친구들과 랭킹을 겨루는 하이틴 감성의 웹 애플리케이션입니다.
 
-- **웹 주소(GitHub Pages)**: [https://mkotinet.github.io/Spelling/](https://mkotinet.github.io/Spelling/)
+- **공식 서비스 도메인**: [https://haru.danminlove.com](https://haru.danminlove.com)
 - **공식 저장소**: [mkotinet/Spelling](https://github.com/mkotinet/Spelling)
+- **기술문서**: [기술레포트.md](기술레포트.md) | [제작히스토리.md](제작히스토리.md)
 
 ---
 
-## 🎀 주요 특징 및 기능
+## 🎀 v2.0 주요 특징 및 기능
 
-### 1. 🏛️ 국립국어원 표준국어대사전 & 한글 맞춤법 규정 기반
-- 국립국어원 표준국어대사전 표제어 및 한글 맞춤법 제1항~제57항 규정을 충실히 반영한 **엄선 60제 문제은행** 기본 탑재.
-- 정답/오답 확인 시 국립국어원 규정(사이시옷, 준말, 두음법칙 등) 상세 해설 제공.
-- 표준국어대사전 실시간 사전 단어 조회 및 오픈 API 인증키 연동 지원.
+### 1. 📜 한자(漢字) 및 고사성어 퀴즈 신규 모드
+- 메인 화면 상단 원클릭 전환 탭: `[🌸 우리말 맞춤법]` ⇄ `[📜 한자·고사성어]`
+- 사자성어, 동음이의 한자어(결제/결재, 개발/계발 등), 필수 한자 32제 전용 문제은행.
+- 개별 한자의 **음과 훈(音訓), 단어 용례(Usage), 실생활 예문(Examples)** 제공.
+- 국립국어원 표준국어대사전 및 **네이버 한자사전 딥링크(1클릭 검색)** 연동.
 
-### 2. 📅 매일매일 새로운 데일리 퀴즈 & 출석 다이어리
-- 날짜 시드(Date Seed) 알고리즘으로 매일 자동으로 변경되는 **오늘의 맞춤법 5제**.
-- 연속 출석일수(Streak)를 기록하고, 요일별로 벚꽃/연필 도장이 찍히는 **출석 다이어리**.
+### 2. 🔥 5문제 만점 시 무한 연속 라운드 시스템
+- 기본 5문제를 모두 맞히면(5/5) 결과 화면에 **"🎉 100점 만점 통과! 다음 라운드(새 5문제) 도전하기 🔥"** 버튼 활성화!
+- 라운드를 돌파할 때마다 보너스 포인트(+50P) 및 랭킹 카드에 `🔥 N라운드 돌파` 뱃지 갱신.
 
-### 3. 🍓 초·중·고등학생 여학생 취향 저격 하이틴 파스텔 디자인
-- 부드러운 핑크, 라벤더, 스카이블루 그러데이션과 아기자기한 이모지 스티커.
-- 귀여운 마스코트 토끼 **'맞춤이'**가 사용자를 응원하는 반응형 말풍선.
-- 브라우저 Web Audio API 기반의 무지연 고음질 차임벨/효과음 및 축하 컨페티(꽃가루) 애니메이션.
+### 3. 👑 실제 활동 유저 기반 클린 실시간 랭킹
+- 기존 시뮬레이션 더미 피어 계정(`체리블라썸`, `토끼마카롱` 등)을 전면 제거.
+- 시놀로지 NAS 서버 DB에 등록된 실제 회원들만 실시간 집계되어 공정한 명예의 전당 운영.
 
-### 4. 👑 아이디 생성 및 실시간 회원 랭킹 시스템
-- 나만의 닉네임, 학년(초·중·고), 아바타(🐰, 🌸, 🍒, 🐱 등) 프로필 생성 및 자유로운 변경.
-- **오늘의 랭킹(일간)** 및 **누적 명예의 전당**을 통해 또래 친구들과 선의의 경쟁.
-- 5연속 정답 시 발동하는 콤보 부스터 보너스 점수 시스템.
+### 4. 🔒 서버 접속 및 이용 이력 감사 로깅 (Security Audit)
+- 로그인 성공/실패, 회원가입, 라운드 클리어 시각(KST), 접속 IP, User-Agent 서버(`data/access_logs.json`) 안전 기록.
+- 프로필 모달 내 **"📋 내 최근 접속/이용 이력"** 조회 제공.
+- 대표 관리자(`단민러브`) 계정 전용 **"👑 전체 회원 접속 감사 로그"** 뷰어 제공.
 
-### 5. 🎯 무한 연습 & 오답노트 복습
-- 언제든 자유롭게 5문제씩 풀어볼 수 있는 **무한 연습 모드**.
-- 헷갈려서 틀렸던 문제만 자동으로 저장되어 다시 풀어볼 수 있는 **오답노트 복습 모드**.
-
-### 6. 🎀 6종 스티커 뱃지 컬렉션
-- '첫 발걸음', '3일 연속 열공', '일주일 완주왕', '퍼펙트 만점러', '콤보 마스터', '사전 탐험가' 뱃지 획득 가능.
+### 5. 🏛️ 국립국어원 표준국어대사전 규정 준수
+- 한글 맞춤법 제1항~제57항 규정을 충실히 반영한 60제 맞춤법 문제은행 및 상세 해설.
 
 ---
 
 ## 💻 기술 스택
 
-- **Frontend**: Semantic HTML5, Modern CSS3 (CSS Variables, Flexbox, CSS Grid, Glassmorphism), Vanilla JavaScript (ES6+)
-- **Audio Engine**: Web Audio API (합성 오실레이터 기반 사운드 재생, 외부 mp3 파일 없이 즉시 로드)
-- **Visual FX**: HTML5 2D Canvas 기반 Confetti(꽃가루 폭죽) 파티클 시스템
-- **Persistence**: Browser `localStorage` (무설치, 무서버 영구 보관)
-- **Deployment**: GitHub Pages (정적 웹 호스팅)
+- **Backend**: Node.js v20 (Alpine Linux Docker 컨테이너), 순수 내장 모듈(`http`, `fs`, `crypto`)
+- **Frontend**: Semantic HTML5, Modern CSS3 (Variables, Glassmorphism, Theme Switching), Vanilla JavaScript (ES6+)
+- **Audio & FX**: Web Audio API (합성 오실레이터 사운드), HTML5 2D Canvas Confetti 파티클
+- **Infrastructure**: Synology NAS Portainer, Nginx Proxy Manager (NPM, SSL 443), Cloudflare DNS
+- **Version Control**: Git / GitHub 양방향 자동 동기화 (`mkotinet/Spelling`)
 
 ---
 
