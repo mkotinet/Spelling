@@ -144,7 +144,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(adminRes.data.logs.length > 0, 'Admin logs should have recorded entries');
 
     // 9. Hanja duplicate sentence check
-    const hanjaBank = require('../hanja_questions.js');
+    const rawHanja = require('../hanja_questions.js');
+    const hanjaBank = rawHanja.HANJA_QUESTION_BANK || rawHanja;
     let dupCount = 0;
     hanjaBank.forEach(q => {
       const match = q.sentence.match(/\[\s*([^\s\/]+)\s*\/\s*([^\s\/]+)\s*\]/);

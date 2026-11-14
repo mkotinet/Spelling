@@ -1,5 +1,6 @@
 const assert = require('assert');
-const HANJA_QUESTION_BANK = require('../hanja_questions.js');
+const rawHanja = require('../hanja_questions.js');
+const HANJA_QUESTION_BANK = rawHanja.HANJA_QUESTION_BANK || rawHanja;
 
 console.log('🧪 Testing Option Shuffle and Answer Distribution...');
 
