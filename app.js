@@ -1000,7 +1000,13 @@ class HaruMatchumApp {
 
     // Sentence & Blank highlighting
     document.getElementById('quizPrompt').textContent = `Q${this.currentIndex + 1}. ${q.question}`;
-    let sentenceHtml = q.sentence;
+    let sentenceHtml = q.sentence || '';
+
+    // Runtime guard: 4-choice questions must always use bracket blank format instead of [ A / B ]
+    if (q.options && q.options.length >= 4 && /\[\s*[^\]]+\/[^\]]+\]/.test(sentenceHtml)) {
+      sentenceHtml = sentenceHtml.replace(/\[\s*[^\]]+\/[^\]]+\]/g, '[ (     ) ]');
+    }
+
     if (sentenceHtml.includes('[ (     ) ]') || sentenceHtml.includes('[ ( ? ) ]')) {
       sentenceHtml = sentenceHtml.replace(
         /\[\s*\(\s*\?*\s*\)\s*\]/g,

@@ -198,15 +198,15 @@ console.log('✅ Level Daily round failure rules (Shield defense, Revive / Fallb
 // ----------------------------------------------------
 // 4. HTML Elements & Version Check for v2.4.1
 // ----------------------------------------------------
-console.log('\n--- Test 4: HTML Elements, Header Sync Removal & Version 2.4.1 Verification ---');
+console.log('\n--- Test 4: HTML Elements, Header Sync Removal & Version 2.4.2 Verification ---');
 const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 
 assert(!indexHtml.includes('id="btnGitSync"'), 'index.html must NOT include btnGitSync in top header menu');
 assert(indexHtml.includes('id="btnLevelChange"'), 'index.html must include btnLevelChange button');
-assert(indexHtml.includes('v2.4.1'), 'index.html must display v2.4.1 version badge');
-assert(indexHtml.includes('style.css?v=2.4.1'), 'style.css must be tagged with v2.4.1');
-assert(indexHtml.includes('app.js?v=2.4.1'), 'app.js must be tagged with v2.4.1');
-console.log('✅ HTML has btnGitSync removed from top menu, has btnLevelChange, and displays v2.4.1 versioning');
+assert(indexHtml.includes('v2.4.2'), 'index.html must display v2.4.2 version badge');
+assert(indexHtml.includes('style.css?v=2.4.2'), 'style.css must be tagged with v2.4.2');
+assert(indexHtml.includes('app.js?v=2.4.2'), 'app.js must be tagged with v2.4.2');
+console.log('✅ HTML has btnGitSync removed from top menu, has btnLevelChange, and displays v2.4.2 versioning');
 
 // ----------------------------------------------------
 // 5. App.js Source Logic & Web Audio Engine Verification
@@ -278,4 +278,40 @@ soundSandbox.window.sfx.combo();
 soundSandbox.window.sfx.fanfare();
 console.log('✅ Web Audio synthesizer verified: correct, wrong buzzer, combo, and fanfare executed successfully without errors');
 
-console.log('\n🎉 ALL v2.4.0 & v2.4.1 LEVEL DAILY ROUNDS, ITEMS & AUDIO TESTS PASSED PRISTINE! 🚀\n');
+// ----------------------------------------------------
+// 6. 4-Choice Question Bracket Standard & Runtime Guard Verification (v2.4.2)
+// ----------------------------------------------------
+console.log('\n--- Test 6: 4-Choice Question Bracket Standard & Runtime Guard Verification ---');
+
+// Check Spelling Question Bank 4-choice questions
+const sp4 = SPELLING_QUESTION_BANK.filter(q => q.options && q.options.length >= 4);
+assert(sp4.length >= 20, `Spelling 4-choice questions should be at least 20, found ${sp4.length}`);
+sp4.forEach(q => {
+  assert(!q.sentence.includes('/'), `Spelling 4-choice question (ID ${q.id}) must not contain '/' in sentence: "${q.sentence}"`);
+  assert(q.sentence.includes('[ (     ) ]') || q.sentence.includes('('), `Spelling 4-choice question (ID ${q.id}) must have bracket blank format: "${q.sentence}"`);
+});
+
+// Check Hanja Question Bank
+const hj4 = HANJA_QUESTION_BANK.filter(q => q.options && q.options.length >= 4);
+assert(hj4.length === 37, `Hanja questions should be 37 4-choice questions, found ${hj4.length}`);
+hj4.forEach(q => {
+  assert(!q.sentence.includes('/'), `Hanja 4-choice question (ID ${q.id}) must not contain '/' in sentence: "${q.sentence}"`);
+  assert(q.sentence.includes('[ (     ) ]'), `Hanja 4-choice question (ID ${q.id}) must have '[ (     ) ]': "${q.sentence}"`);
+});
+
+// Check English Question Bank
+const en4 = ENGLISH_QUESTION_BANK.filter(q => q.options && q.options.length >= 4);
+assert(en4.length === 28, `English questions should be 28 4-choice questions, found ${en4.length}`);
+en4.forEach(q => {
+  assert(!q.sentence.includes('/'), `English 4-choice question (ID ${q.id}) must not contain '/' in sentence: "${q.sentence}"`);
+  assert(q.sentence.includes('[ (     ) ]'), `English 4-choice question (ID ${q.id}) must have '[ (     ) ]': "${q.sentence}"`);
+});
+
+// Verify app.js runtime safeguard
+assert(appJs.includes('q.options.length >= 4'), 'app.js renderCurrentQuestion must check q.options.length >= 4');
+assert(appJs.includes('sentenceHtml = sentenceHtml.replace('), 'app.js must sanitize 4-choice sentence');
+assert(appJs.includes('[ (     ) ]'), 'app.js must include bracket blank replacement');
+
+console.log('✅ All 4-choice questions across Spelling, Hanja, and English banks strictly adhere to bracket blank format [ (     ) ] with zero slash comparisons, and app.js runtime guard is active!');
+
+console.log('\n🎉 ALL v2.4.0, v2.4.1 & v2.4.2 LEVEL DAILY ROUNDS, GAME ITEMS, AUDIO & 4-CHOICE FORMAT TESTS PASSED PRISTINE! 🚀\n');
