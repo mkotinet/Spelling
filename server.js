@@ -12,6 +12,7 @@ const { execSync } = require("child_process");
 const PORT = process.env.PORT || 80;
 const DATA_DIR = path.join(__dirname, "data");
 const DB_FILE = path.join(DATA_DIR, "users.json");
+const LOGS_FILE = path.join(DATA_DIR, "access_logs.json");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -36,6 +37,59 @@ function saveDB(db) {
   } catch (e) {
     console.error("DB Save Error:", e);
   }
+}
+
+// Access Logs helper (Max 1,000 entries rotation)
+function loadLogs() {
+  try {
+    if (fs.existsSync(LOGS_FILE)) {
+      return JSON.parse(fs.readFileSync(LOGS_FILE, "utf8"));
+    }
+  } catch (e) {
+    console.error("Logs Load Error:", e);
+  }
+  return [];
+}
+
+function saveLogs(logs) {
+  try {
+    const trimmed = logs.slice(-1000);
+    fs.writeFileSync(LOGS_FILE, JSON.stringify(trimmed, null, 2), "utf8");
+  } catch (e) {
+    console.error("Logs Save Error:", e);
+  }
+}
+
+function getKSTTime() {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const kst = new Date(utc + (9 * 60 * 60000));
+  return kst.toISOString().replace(/T/, " ").replace(/\..+/, "");
+}
+
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return req.socket ? (req.socket.remoteAddress || "").replace(/^.*:/, "") : "-";
+}
+
+function recordAccessLog(username, action, ip, userAgent, details = {}) {
+  const logs = loadLogs();
+  const entry = {
+    id: "log_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+    timestamp: new Date().toISOString(),
+    kstTime: getKSTTime(),
+    username: username || "게스트",
+    action: action, // LOGIN_SUCCESS, LOGIN_FAIL, REGISTER, ROUND_CLEAR, DATA_SYNC
+    ip: ip || "-",
+    userAgent: (userAgent || "-").substring(0, 200),
+    details: details
+  };
+  logs.push(entry);
+  saveLogs(logs);
+  return entry;
 }
 
 function hashPassword(password) {
@@ -98,6 +152,8 @@ function runGit(cmd) {
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const pathname = parsedUrl.pathname;
+  const clientIp = getClientIp(req);
+  const userAgent = req.headers["user-agent"] || "-";
 
   // CORS Preflight
   if (req.method === "OPTIONS") {
@@ -140,6 +196,7 @@ const server = http.createServer(async (req, res) => {
         totalSolved: 5,
         totalCorrect: 5,
         todayScore: 100,
+        maxRoundToday: 1,
         lastActiveDate: todayStr,
         completedDates: [todayStr],
         badges: ["starter"],
@@ -152,6 +209,8 @@ const server = http.createServer(async (req, res) => {
       db.users[trimmedUser] = newUser;
       db.tokens[token] = trimmedUser;
       saveDB(db);
+
+      recordAccessLog(trimmedUser, "REGISTER", clientIp, userAgent, { grade: newUser.grade });
 
       const userSafe = { ...newUser };
       delete userSafe.passwordHash;
@@ -174,12 +233,15 @@ const server = http.createServer(async (req, res) => {
       const user = db.users[trimmedUser];
 
       if (!user || user.passwordHash !== hashPassword(password)) {
+        recordAccessLog(trimmedUser, "LOGIN_FAIL", clientIp, userAgent, { reason: "인증 실패" });
         return sendJSON(res, 401, { success: false, message: "아이디 또는 비밀번호가 일치하지 않습니다." });
       }
 
       const token = generateToken();
       db.tokens[token] = trimmedUser;
       saveDB(db);
+
+      recordAccessLog(trimmedUser, "LOGIN_SUCCESS", clientIp, userAgent, { grade: user.grade });
 
       const userSafe = { ...user };
       delete userSafe.passwordHash;
@@ -228,19 +290,20 @@ const server = http.createServer(async (req, res) => {
       if (typeof uData.totalSolved === "number") target.totalSolved = Math.max(target.totalSolved, uData.totalSolved);
       if (typeof uData.totalCorrect === "number") target.totalCorrect = Math.max(target.totalCorrect, uData.totalCorrect);
       if (typeof uData.todayScore === "number") target.todayScore = uData.todayScore;
+      if (typeof uData.maxRoundToday === "number") target.maxRoundToday = Math.max(target.maxRoundToday || 1, uData.maxRoundToday);
       if (uData.grade) target.grade = uData.grade;
       if (uData.avatar) target.avatar = uData.avatar;
       if (uData.name) target.name = uData.name;
 
       // Merge completedDates array uniquely
       if (Array.isArray(uData.completedDates)) {
-        const dateSet = new Set([...target.completedDates, ...uData.completedDates]);
+        const dateSet = new Set([...(target.completedDates || []), ...uData.completedDates]);
         target.completedDates = Array.from(dateSet);
       }
 
       // Merge badges
       if (Array.isArray(uData.badges)) {
-        const badgeSet = new Set([...target.badges, ...uData.badges]);
+        const badgeSet = new Set([...(target.badges || []), ...uData.badges]);
         target.badges = Array.from(badgeSet);
       }
 
@@ -251,6 +314,11 @@ const server = http.createServer(async (req, res) => {
 
       target.updatedAt = new Date().toISOString();
       saveDB(db);
+
+      // Record special action (e.g. ROUND_CLEAR) or general sync
+      if (body.action === "ROUND_CLEAR") {
+        recordAccessLog(username, "ROUND_CLEAR", clientIp, userAgent, body.details || {});
+      }
 
       const userSafe = { ...target };
       delete userSafe.passwordHash;
@@ -271,7 +339,8 @@ const server = http.createServer(async (req, res) => {
       grade: u.grade || "중학교 2학년",
       streak: u.streak || 1,
       totalPoints: u.totalPoints || 0,
-      todayScore: u.todayScore || 0
+      todayScore: u.todayScore || 0,
+      maxRoundToday: u.maxRoundToday || 1
     }));
 
     list.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
@@ -279,10 +348,41 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 200, { success: true, leaderboard: list });
   }
 
-  // 6. 깃허브 자동 동기화 (Git Push/Pull Status)
+  // 6. 사용자 접속/이용 이력 조회 (User Access Logs)
+  if (req.method === "GET" && pathname === "/api/user/logs") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || !db.users[username]) {
+      return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+    }
+
+    const logs = loadLogs();
+    const userLogs = logs.filter(l => l.username === username).slice(-30).reverse();
+    return sendJSON(res, 200, { success: true, logs: userLogs });
+  }
+
+  // 7. 관리자 전체 접속 감사 로그 조회 (Admin Audit Logs - Only '단민러브')
+  if (req.method === "GET" && pathname === "/api/admin/logs") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || username !== "단민러브") {
+      return sendJSON(res, 403, { success: false, message: "관리자('단민러브') 권한이 필요합니다." });
+    }
+
+    const logs = loadLogs();
+    return sendJSON(res, 200, { success: true, logs: logs.slice(-1000).reverse() });
+  }
+
+  // 8. 깃허브 자동 동기화 (Git Push/Pull Status)
   if (pathname === "/api/git/sync" && req.method === "POST") {
     try {
-      const pullRes = runGit("git pull origin main");
+      const pullRes = runGit("git pull --rebase origin main");
       const addRes = runGit("git add .");
       const commitRes = runGit('git commit -m "auto: synology app update & data sync" || true');
       const pushRes = runGit("git push origin main || true");
@@ -338,22 +438,27 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`[Haru Matchum] Server listening on http://0.0.0.0:${PORT}`);
+if (require.main === module || !process.env.TEST_ENV) {
+  server.listen(PORT, () => {
+    console.log(`[Haru Matchum] Server listening on http://0.0.0.0:${PORT}`);
 
-  // Auto-sync with GitHub every 10 minutes
-  setInterval(() => {
-    try {
-      const status = runGit("git status --porcelain");
-      if (status) {
-        console.log("[Auto-Sync] Detected changes, pushing to GitHub...");
-        runGit("git add .");
-        runGit('git commit -m "auto: periodic sync from Synology NAS" || true');
-        runGit("git push origin main || true");
-        console.log("[Auto-Sync] Pushed to GitHub successfully!");
+    // Auto-sync with GitHub every 10 minutes
+    setInterval(() => {
+      try {
+        const status = runGit("git status --porcelain");
+        if (status) {
+          console.log("[Auto-Sync] Detected changes, pushing to GitHub...");
+          runGit("git pull --rebase origin main || true");
+          runGit("git add .");
+          runGit('git commit -m "auto: periodic sync from Synology NAS" || true');
+          runGit("git push origin main || true");
+          console.log("[Auto-Sync] Pushed to GitHub successfully!");
+        }
+      } catch (e) {
+        console.error("[Auto-Sync Error]", e.message);
       }
-    } catch (e) {
-      console.error("[Auto-Sync Error]", e.message);
-    }
-  }, 10 * 60 * 1000);
-});
+    }, 10 * 60 * 1000);
+  });
+}
+
+module.exports = server;
