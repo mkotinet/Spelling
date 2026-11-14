@@ -23,5 +23,41 @@
     "details": {
       "grade": "일반 / 대학생"
     }
+  },
+  {
+    "id": "log_1794653265170_adrfq",
+    "timestamp": "2026-11-14T10:47:45.170Z",
+    "kstTime": "2026-11-14 10:47:45",
+    "username": "non_existent_user_123",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1794653878709_tz9pt",
+    "timestamp": "2026-11-14T10:57:58.709Z",
+    "kstTime": "2026-11-14 10:57:58",
+    "username": "non_existent_user_123",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1794653907546_rt7zi",
+    "timestamp": "2026-11-14T10:58:27.546Z",
+    "kstTime": "2026-11-14 10:58:27",
+    "username": "non_existent_user_123",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
   }
 ]
