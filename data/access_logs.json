@@ -11,5 +11,17 @@
       "role": "admin",
       "note": "v2.0 고도화 배포 초기화"
     }
+  },
+  {
+    "id": "log_1794641865320_s8218",
+    "timestamp": "2026-11-14T07:37:45.320Z",
+    "kstTime": "2026-11-14 16:37:45",
+    "username": "미니미니",
+    "action": "LOGIN_SUCCESS",
+    "ip": "172.18.0.1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Whale/5.41.429.5 Safari/537.36",
+    "details": {
+      "grade": "일반 / 대학생"
+    }
   }
 ]
