@@ -175,7 +175,7 @@
             </div>
           </div>
 
-          <!-- Quiz Game Item Bar with Cute Icons (Responsive Single Row) -->
+          <!-- Quiz Game Item Bar with Cute Icons (Responsive Single Row with Horizontal Swipe) -->
           <div id="quizItemBar" class="quiz-item-bar">
             <button id="btnItem5050" class="game-item-btn item-btn-wand" type="button" title="오답 2개를 뿅! 지워줍니다">
               <span class="item-emoji">🪄</span> <span class="item-label">50:50<span class="item-name-tail"> 요술봉</span></span> <span id="badgeItem5050" class="item-count-badge">2</span>
@@ -186,6 +186,30 @@
             <button id="btnItemDouble" class="game-item-btn item-btn-rocket" type="button" title="이번 라운드 포인트를 2배로 만듭니다">
               <span class="item-emoji">🚀</span> <span class="item-label">2배<span class="item-name-tail"> 로켓</span></span> <span id="badgeItemDouble" class="item-count-badge">1</span>
             </button>
+            <button id="btnItemHint" class="game-item-btn item-btn-hint" type="button" title="국립국어원 사전 정의와 어원 힌트를 엿봅니다">
+              <span class="item-emoji">🔍</span> <span class="item-label">힌트<span class="item-name-tail"> 돋보기</span></span> <span id="badgeItemHint" class="item-count-badge">2</span>
+            </button>
+            <button id="btnItemClover" class="game-item-btn item-btn-clover" type="button" title="현재 문제를 즉시 정답으로 인정하고 통과합니다">
+              <span class="item-emoji">🍀</span> <span class="item-label">클로버<span class="item-name-tail"> 패스</span></span> <span id="badgeItemClover" class="item-count-badge">1</span>
+            </button>
+            <button id="btnItemTimemachine" class="game-item-btn item-btn-timemachine" type="button" title="오답을 선택했을 때 방금 선택을 취소하고 다시 문제를 풉니다">
+              <span class="item-emoji">⌛</span> <span class="item-label">타임머신<span class="item-name-tail"> 시계</span></span> <span id="badgeItemTimemachine" class="item-count-badge">1</span>
+            </button>
+            <button id="btnItemMagnet" class="game-item-btn item-btn-magnet" type="button" title="연속 정답 시 콤보 추가 점수를 2배로 흡수합니다">
+              <span class="item-emoji">🧲</span> <span class="item-label">자석<span class="item-name-tail"> 콤보</span></span> <span id="badgeItemMagnet" class="item-count-badge">1</span>
+            </button>
+          </div>
+
+          <!-- In-Game Cute Hint Box (Activated by 돋보기) -->
+          <div id="quizHintBox" class="quiz-hint-box" style="display: none;">
+            <div class="hint-header">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="hint-icon">🔍</span>
+                <strong style="color: #0369a1; font-size: 0.88rem;">맞춤 돋보기 힌트</strong>
+              </div>
+              <button id="btnCloseHint" class="hint-close-btn" type="button">✕</button>
+            </div>
+            <div id="quizHintText" class="hint-body"></div>
           </div>
 
           <!-- Active Item Visual Indicator Banner -->
@@ -608,11 +632,15 @@
         </div>
 
         <div class="guide-card" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; margin-bottom: 6px;">
-          <h4 style="margin: 0 0 6px 0; color: #1e40af; font-size: 0.95rem;">🎒 귀여운 찬스 아이템 도감</h4>
-          <ul style="margin: 0; padding-left: 18px; font-size: 0.82rem; color: #1d4ed8; line-height: 1.6;">
+          <h4 style="margin: 0 0 6px 0; color: #1e40af; font-size: 0.95rem;">🎒 귀여운 찬스 아이템 7종 도감</h4>
+          <ul style="margin: 0; padding-left: 18px; font-size: 0.82rem; color: #1d4ed8; line-height: 1.65;">
             <li><strong>🪄 50:50 요술봉</strong>: 4개 선택지 중 오답 2개를 뿅! 지워줍니다.</li>
             <li><strong>💖 하트 수호</strong>: 오답을 골라도 1회 안심하고 다른 답을 다시 선택할 수 있습니다.</li>
             <li><strong>🚀 2배 로켓</strong>: 이번 라운드에 획득하는 모든 점수와 보너스를 2배로 적립합니다!</li>
+            <li><strong>🔍 돋보기 힌트</strong>: 국립국어원 표준국어대사전 뜻풀이와 맞춤법 유래 힌트를 엿봅니다.</li>
+            <li><strong>🍀 행운의 클로버</strong>: 헷갈리는 문제를 즉시 정답 처리하고 위기를 통과합니다!</li>
+            <li><strong>⌛ 타임머신 시계</strong>: 오답을 선택했을 때 방금 선택을 취소하고 시간을 되돌려 다시 풉니다!</li>
+            <li><strong>🧲 콤보 자석</strong>: 연속 정답 시 콤보 가산점을 2배로 강력하게 흡수합니다!</li>
           </ul>
         </div>
       </div>

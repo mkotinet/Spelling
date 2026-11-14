@@ -18,12 +18,17 @@ assert(indexHtml.includes('+300P'), 'Game Guide must explain 300P bonus');
 assert(indexHtml.includes('부활 찬스'), 'Game Guide must explain Revive chance');
 assert(indexHtml.includes('50:50 요술봉'), 'Game Guide must explain 50:50 item');
 
-// 2. In-Game Items & Shield UI
+// 2. In-Game Items & Shield UI (7 Items)
 assert(indexHtml.includes('id="quizShieldBadge"'), 'index.html must have quizShieldBadge');
 assert(indexHtml.includes('id="quizItemBar"'), 'index.html must have quizItemBar');
 assert(indexHtml.includes('id="btnItem5050"'), 'index.html must have btnItem5050');
 assert(indexHtml.includes('id="btnItemHeart"'), 'index.html must have btnItemHeart');
 assert(indexHtml.includes('id="btnItemDouble"'), 'index.html must have btnItemDouble');
+assert(indexHtml.includes('id="btnItemHint"'), 'index.html must have btnItemHint');
+assert(indexHtml.includes('id="btnItemClover"'), 'index.html must have btnItemClover');
+assert(indexHtml.includes('id="btnItemTimemachine"'), 'index.html must have btnItemTimemachine');
+assert(indexHtml.includes('id="btnItemMagnet"'), 'index.html must have btnItemMagnet');
+assert(indexHtml.includes('id="quizHintBox"'), 'index.html must have quizHintBox');
 assert(indexHtml.includes('id="activeItemStatusBanner"'), 'index.html must have activeItemStatusBanner');
 
 // 3. Fail Checkpoint & Revive UI

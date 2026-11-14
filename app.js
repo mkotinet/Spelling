@@ -277,10 +277,15 @@ class HaruMatchumApp {
     this.isReviveQuiz = false;
     this.pointMultiplier = 1;
     this.activeItemHeart = false;
+    this.activeItemMagnet = false;
     this.items = {
       eraser5050: parseInt(localStorage.getItem('haru_item_5050') || '2', 10),
       heart: parseInt(localStorage.getItem('haru_item_heart') || '1', 10),
-      booster2x: parseInt(localStorage.getItem('haru_item_booster') || '1', 10)
+      booster2x: parseInt(localStorage.getItem('haru_item_booster') || '1', 10),
+      hint: parseInt(localStorage.getItem('haru_item_hint') || '2', 10),
+      clover: parseInt(localStorage.getItem('haru_item_clover') || '1', 10),
+      timemachine: parseInt(localStorage.getItem('haru_item_timemachine') || '1', 10),
+      magnet: parseInt(localStorage.getItem('haru_item_magnet') || '1', 10)
     };
 
     this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
@@ -403,13 +408,29 @@ class HaruMatchumApp {
     if (btnOpenGuide) btnOpenGuide.addEventListener('click', () => this.openGameGuideModal());
     if (btnCloseGuide) btnCloseGuide.addEventListener('click', () => this.closeGameGuideModal());
 
-    // Game Items
+    // Game Items (7 Items)
     const btn5050 = document.getElementById('btnItem5050');
     const btnHeart = document.getElementById('btnItemHeart');
     const btnDouble = document.getElementById('btnItemDouble');
+    const btnHint = document.getElementById('btnItemHint');
+    const btnClover = document.getElementById('btnItemClover');
+    const btnTimemachine = document.getElementById('btnItemTimemachine');
+    const btnMagnet = document.getElementById('btnItemMagnet');
+    const btnCloseHint = document.getElementById('btnCloseHint');
+
     if (btn5050) btn5050.addEventListener('click', () => this.useItem5050());
     if (btnHeart) btnHeart.addEventListener('click', () => this.useItemHeart());
     if (btnDouble) btnDouble.addEventListener('click', () => this.useItemDouble());
+    if (btnHint) btnHint.addEventListener('click', () => this.useItemHint());
+    if (btnClover) btnClover.addEventListener('click', () => this.useItemClover());
+    if (btnTimemachine) btnTimemachine.addEventListener('click', () => this.useItemTimemachine());
+    if (btnMagnet) btnMagnet.addEventListener('click', () => this.useItemMagnet());
+    if (btnCloseHint) {
+      btnCloseHint.addEventListener('click', () => {
+        const hintBox = document.getElementById('quizHintBox');
+        if (hintBox) hintBox.style.display = 'none';
+      });
+    }
 
     // Fail Actions (Revive & Fallback)
     const btnRevive = document.getElementById('btnReviveQuiz');
@@ -767,7 +788,9 @@ class HaruMatchumApp {
       optionsContainer.appendChild(btn);
     });
 
-    // Reset Explanation & Next Button
+    // Reset Hint Box, Explanation & Next Button
+    const hintBox = document.getElementById('quizHintBox');
+    if (hintBox) hintBox.style.display = 'none';
     const expCard = document.getElementById('quizExplanation');
     expCard.classList.remove('active');
     const nextBtn = document.getElementById('btnQuizNext');
@@ -816,7 +839,10 @@ class HaruMatchumApp {
       this.roundCorrectCount++;
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-      const comboBonus = (this.combo - 1) * 5;
+      let comboBonus = (this.combo - 1) * 5;
+      if (this.activeItemMagnet) {
+        comboBonus = (this.combo - 1) * 20; // 🧲 Combo Magnet 4x boost
+      }
       this.currentScore += (20 + comboBonus);
 
       if (this.combo > 2) {
@@ -886,6 +912,7 @@ class HaruMatchumApp {
     }
 
     document.getElementById('btnQuizNext').disabled = false;
+    this.renderItemBar();
   }
 
   handleNextQuestion() {
@@ -992,6 +1019,8 @@ class HaruMatchumApp {
       this.showToastNotice(`⭐ 2배 부스터 적용! 총 +${pointsEarned}P 적립!`);
       this.pointMultiplier = 1;
     }
+    this.activeItemMagnet = false;
+    this.activeItemHeart = false;
     u.totalPoints += pointsEarned;
 
     const todayStr = getKSTDateString();
@@ -1161,17 +1190,31 @@ class HaruMatchumApp {
     const btn5050 = document.getElementById('btnItem5050');
     const btnHeart = document.getElementById('btnItemHeart');
     const btnDouble = document.getElementById('btnItemDouble');
+    const btnHint = document.getElementById('btnItemHint');
+    const btnClover = document.getElementById('btnItemClover');
+    const btnTimemachine = document.getElementById('btnItemTimemachine');
+    const btnMagnet = document.getElementById('btnItemMagnet');
+
     const badge5050 = document.getElementById('badgeItem5050');
     const badgeHeart = document.getElementById('badgeItemHeart');
     const badgeDouble = document.getElementById('badgeItemDouble');
+    const badgeHint = document.getElementById('badgeItemHint');
+    const badgeClover = document.getElementById('badgeItemClover');
+    const badgeTimemachine = document.getElementById('badgeItemTimemachine');
+    const badgeMagnet = document.getElementById('badgeItemMagnet');
+
     const banner = document.getElementById('activeItemStatusBanner');
 
+    const q = this.activeQuestions && this.activeQuestions[this.currentIndex];
+    const isAnswered = this.selectedOption !== null;
+    const isAnsweredWrong = isAnswered && q && this.selectedOption !== q.answerIndex;
+
     if (btn5050) {
-      btn5050.disabled = this.items.eraser5050 <= 0;
+      btn5050.disabled = this.items.eraser5050 <= 0 || isAnswered;
       if (badge5050) badge5050.textContent = this.items.eraser5050;
     }
     if (btnHeart) {
-      btnHeart.disabled = this.items.heart <= 0;
+      btnHeart.disabled = this.items.heart <= 0 || isAnswered;
       if (badgeHeart) badgeHeart.textContent = this.items.heart;
       if (this.activeItemHeart) btnHeart.classList.add('active');
       else btnHeart.classList.remove('active');
@@ -1181,6 +1224,24 @@ class HaruMatchumApp {
       if (badgeDouble) badgeDouble.textContent = this.items.booster2x;
       if (this.pointMultiplier === 2) btnDouble.classList.add('active');
       else btnDouble.classList.remove('active');
+    }
+    if (btnHint) {
+      btnHint.disabled = this.items.hint <= 0 || isAnswered;
+      if (badgeHint) badgeHint.textContent = this.items.hint;
+    }
+    if (btnClover) {
+      btnClover.disabled = this.items.clover <= 0 || isAnswered;
+      if (badgeClover) badgeClover.textContent = this.items.clover;
+    }
+    if (btnTimemachine) {
+      btnTimemachine.disabled = this.items.timemachine <= 0 || !isAnsweredWrong;
+      if (badgeTimemachine) badgeTimemachine.textContent = this.items.timemachine;
+    }
+    if (btnMagnet) {
+      btnMagnet.disabled = this.items.magnet <= 0 || this.activeItemMagnet;
+      if (badgeMagnet) badgeMagnet.textContent = this.items.magnet;
+      if (this.activeItemMagnet) btnMagnet.classList.add('active');
+      else btnMagnet.classList.remove('active');
     }
 
     // Active Item Intuitive Banner
@@ -1193,6 +1254,10 @@ class HaruMatchumApp {
         banner.style.display = 'flex';
         banner.className = 'active-item-banner banner-rocket';
         banner.innerHTML = `<span>🚀</span> <span><strong>[2배 로켓 가동 중]</strong> 이번 라운드 획득 포인트가 2배로 적립됩니다!</span>`;
+      } else if (this.activeItemMagnet) {
+        banner.style.display = 'flex';
+        banner.className = 'active-item-banner banner-magnet';
+        banner.innerHTML = `<span>🧲</span> <span><strong>[콤보 자석 가동 중]</strong> 연속 정답 시 콤보 점수가 4배로 강력 흡수됩니다!</span>`;
       } else {
         banner.style.display = 'none';
       }
@@ -1200,7 +1265,7 @@ class HaruMatchumApp {
   }
 
   useItem5050() {
-    if (this.items.eraser5050 <= 0) return;
+    if (this.items.eraser5050 <= 0 || this.selectedOption !== null) return;
     const q = this.activeQuestions[this.currentIndex];
     const buttons = document.querySelectorAll('.option-btn');
     const wrongIndices = [];
@@ -1228,7 +1293,7 @@ class HaruMatchumApp {
   }
 
   useItemHeart() {
-    if (this.items.heart <= 0) return;
+    if (this.items.heart <= 0 || this.selectedOption !== null) return;
     this.activeItemHeart = true;
     this.items.heart--;
     localStorage.setItem('haru_item_heart', this.items.heart);
@@ -1245,6 +1310,107 @@ class HaruMatchumApp {
     this.renderItemBar();
     sfx.fanfare();
     this.showToastNotice('🚀 2배 로켓 부스터 가동! 이번 라운드 획득 포인트가 2배로 적립됩니다!');
+  }
+
+  useItemHint() {
+    if (this.items.hint <= 0 || this.selectedOption !== null) return;
+    const q = this.activeQuestions[this.currentIndex];
+    if (!q) return;
+
+    const hintBox = document.getElementById('quizHintBox');
+    const hintText = document.getElementById('quizHintText');
+    if (!hintBox || !hintText) return;
+
+    let text = q.dictDefinition || q.explanation || '';
+    if (q.standardWord) {
+      text = `💡 <strong>[표준어 어원 힌트]</strong> '${q.standardWord}'의 올바른 맞춤법 원리를 생각해보세요!<br>${text}`;
+    } else if (q.hanjaWord) {
+      text = `💡 <strong>[한자 어휘 힌트]</strong> '${q.hanjaWord}'의 한자 구성과 뜻을 떠올려보세요!<br>${text}`;
+    }
+
+    hintText.innerHTML = text;
+    hintBox.style.display = 'block';
+
+    this.items.hint--;
+    localStorage.setItem('haru_item_hint', this.items.hint);
+    this.renderItemBar();
+    sfx.correct();
+    this.showToastNotice('🔍 돋보기 힌트 오픈! 문제 해결의 실마리를 확인해보세요! ✨');
+  }
+
+  useItemClover() {
+    if (this.items.clover <= 0 || this.selectedOption !== null) return;
+    const q = this.activeQuestions[this.currentIndex];
+    if (!q) return;
+
+    this.items.clover--;
+    localStorage.setItem('haru_item_clover', this.items.clover);
+
+    const buttons = document.querySelectorAll('.option-btn');
+    const targetBtn = buttons[q.answerIndex];
+
+    this.showToastNotice('🍀 행운의 네잎클로버 발동! 문제를 즉시 정답으로 통과합니다! ✨');
+    sfx.fanfare();
+    if (this.confetti) {
+      this.confetti.explode();
+    }
+
+    this.handleOptionSelect(q.answerIndex, targetBtn || document.createElement('button'));
+    this.renderItemBar();
+  }
+
+  useItemTimemachine() {
+    if (this.items.timemachine <= 0) return;
+    const q = this.activeQuestions[this.currentIndex];
+    if (!q || this.selectedOption === null || this.selectedOption === q.answerIndex) return;
+
+    const wrongIdx = this.selectedOption;
+    this.selectedOption = null;
+
+    // Remove from wrong notebook
+    this.data.wrongQuestions = (this.data.wrongQuestions || []).filter(item => item.id !== q.id);
+
+    // Re-enable options except the wrong one
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach((b, i) => {
+      if (i === wrongIdx) {
+        b.disabled = true;
+        b.classList.remove('wrong');
+        b.classList.add('erased');
+        b.innerHTML = `
+          <span style="text-decoration: line-through; opacity: 0.4;">${i + 1}. ${q.options[i]}</span>
+          <span class="opt-icon" style="font-size: 0.8rem; color: #ef4444;">❌ 되돌린 오답</span>
+        `;
+      } else {
+        b.disabled = false;
+        b.classList.remove('correct');
+        b.querySelector('.opt-icon').textContent = '✨';
+      }
+    });
+
+    // Hide Explanation Card
+    const expCard = document.getElementById('quizExplanation');
+    if (expCard) expCard.classList.remove('active');
+
+    // Disable Next Button again
+    const nextBtn = document.getElementById('btnQuizNext');
+    if (nextBtn) nextBtn.disabled = true;
+
+    this.items.timemachine--;
+    localStorage.setItem('haru_item_timemachine', this.items.timemachine);
+    this.renderItemBar();
+    sfx.combo();
+    this.showToastNotice('⌛ 타임머신 가동! 방금 오답을 취소하고 시간을 되돌렸습니다. 다시 풀어보세요!');
+  }
+
+  useItemMagnet() {
+    if (this.items.magnet <= 0 || this.activeItemMagnet) return;
+    this.activeItemMagnet = true;
+    this.items.magnet--;
+    localStorage.setItem('haru_item_magnet', this.items.magnet);
+    this.renderItemBar();
+    sfx.combo();
+    this.showToastNotice('🧲 콤보 자석 가동! 연속 정답 시 콤보 점수를 강력 흡수합니다!');
   }
 
   handleReviveQuiz() {
