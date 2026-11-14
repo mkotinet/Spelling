@@ -46,6 +46,29 @@ body {
   transition: background 0.4s ease;
 }
 
+/* Theme Idiom Overrides */
+body.theme-idiom {
+  --primary-pink: #d97706;
+  --primary-soft-pink: #fef3c7;
+  --lavender: #f59e0b;
+  --lavender-light: #fffbeb;
+  --sky-blue: #b45309;
+  --accent-coral: #ea580c;
+  --accent-purple: #d97706;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #fef9c3 75%, #fefce8 100%);
+}
+
+body.theme-idiom .logo-text h1 {
+  background: linear-gradient(45deg, #d97706, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.theme-idiom .mode-switch-btn.active {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
 /* Theme Hanja Overrides */
 body.theme-hanja {
   --primary-pink: #028090;
@@ -870,6 +893,12 @@ body.theme-hanja .mode-switch-btn.active {
   text-decoration: none;
   vertical-align: middle;
   transition: all 0.3s ease;
+}
+
+body.theme-idiom .quiz-sentence .quiz-blank {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #d97706;
+  color: #b45309;
 }
 
 body.theme-hanja .quiz-sentence .quiz-blank {
