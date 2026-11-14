@@ -159,12 +159,30 @@ class ConfettiManager {
 }
 
 // ============================================================
-// 3. User & Storage Manager
+// 3. User & Storage Manager & Date Utilities
 // ============================================================
 const STORAGE_KEY = 'haru_matchum_data_v1';
 
+function getKSTDateString(dateObj = new Date()) {
+  try {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    return formatter.format(dateObj);
+  } catch (e) {
+    const now = dateObj || new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const kst = new Date(utc + (9 * 60 * 60000));
+    return kst.toISOString().split('T')[0];
+  }
+}
+
 class DataManager {
   static defaultData() {
+    const today = getKSTDateString();
     return {
       currentUser: {
         id: 'user_' + Date.now(),
@@ -175,8 +193,8 @@ class DataManager {
         totalPoints: 120,
         totalSolved: 10,
         totalCorrect: 9,
-        lastActiveDate: new Date().toISOString().split('T')[0],
-        completedDates: [new Date().toISOString().split('T')[0]]
+        lastActiveDate: today,
+        completedDates: [today]
       },
       apiKey: 'C0E0448602CD3B859FDDD29BBD84289C',
       soundEnabled: true,
@@ -255,6 +273,8 @@ class HaruMatchumApp {
 
     this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
     this.authMode = 'login'; // 'login' | 'register'
+    this.lastLoadedDate = getKSTDateString();
+    this.currentViewName = 'home';
 
     this.initDOM();
     this.bindEvents();
@@ -378,9 +398,75 @@ class HaruMatchumApp {
         this.renderLeaderboard(e.currentTarget.dataset.type);
       });
     });
+
+    // Lifecycle & Date Transition Watchers (Mobile background resume & midnight refresh)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.checkDateTransition();
+      }
+    });
+    window.addEventListener('pageshow', () => {
+      this.checkDateTransition();
+    });
+    window.addEventListener('focus', () => {
+      this.checkDateTransition();
+    });
+    // Check every 60s for midnight date rollover
+    setInterval(() => {
+      this.checkDateTransition();
+    }, 60000);
+  }
+
+  checkDateTransition(overrideDateStr) {
+    const todayStr = overrideDateStr || getKSTDateString();
+    if (todayStr !== this.lastLoadedDate) {
+      console.log(`[Haru Matchum] Date transitioned: ${this.lastLoadedDate} -> ${todayStr}`);
+      const prevDate = this.lastLoadedDate;
+      this.lastLoadedDate = todayStr;
+
+      // 1. If currently in middle of quiz or stale result view from yesterday, return to home
+      if (this.currentViewName === 'quiz' || this.currentViewName === 'result') {
+        this.switchView('home');
+        this.showToastNotice('새로운 하루가 밝았어요! 🌸 오늘의 새로운 퀴즈 5문제가 준비되었습니다.');
+      } else {
+        this.showToastNotice('오늘의 새로운 퀴즈가 갱신되었습니다! ✨');
+      }
+
+      // 2. Reset daily round state & refresh UI
+      this.currentRound = 1;
+      this.roundCorrectCount = 0;
+      this.renderCalendarWeek();
+      this.renderUserProfile();
+      this.updateMascotMood('happy', `새로운 하루가 시작되었어! 🌸 오늘의 <strong>${this.quizSubject === 'hanja' ? '한자' : '맞춤법'} 5문제</strong> 풀고 출석해볼까? ✨`);
+
+      // 3. Resync leaderboard & cloud auth
+      this.fetchLeaderboard('daily');
+      if (this.cloudToken) {
+        this.checkCloudAuth();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  showToastNotice(msg) {
+    let toast = document.getElementById('dailyRefreshToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'dailyRefreshToast';
+      toast.className = 'daily-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3500);
   }
 
   switchView(viewName) {
+    this.currentViewName = viewName;
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
 
@@ -463,18 +549,20 @@ class HaruMatchumApp {
 
   renderCalendarWeek() {
     const calendarContainer = document.getElementById('calendarWeek');
+    if (!calendarContainer) return;
     calendarContainer.innerHTML = '';
 
     const days = ['일', '월', '화', '수', '목', '금', '토'];
-    const today = new Date();
-    const currentDayOfWeek = today.getDay(); // 0 is Sun
+    const now = new Date();
+    const todayStr = getKSTDateString(now);
+    const currentDayOfWeek = now.getDay(); // 0 is Sun
 
     // Render 7 days of this current week (Sun - Sat)
     for (let i = 0; i < 7; i++) {
-      const dayDate = new Date(today);
-      dayDate.setDate(today.getDate() - currentDayOfWeek + i);
-      const dateStr = dayDate.toISOString().split('T')[0];
-      const isToday = i === currentDayOfWeek;
+      const dayDate = new Date(now);
+      dayDate.setDate(now.getDate() - currentDayOfWeek + i);
+      const dateStr = getKSTDateString(dayDate);
+      const isToday = (dateStr === todayStr);
       const isCompleted = this.data.currentUser.completedDates.includes(dateStr);
 
       const box = document.createElement('div');
@@ -523,7 +611,7 @@ class HaruMatchumApp {
   }
 
   getDailyQuestions(round = 1) {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getKSTDateString();
     let hash = 0;
     for (let i = 0; i < todayStr.length; i++) {
       hash = (hash << 5) - hash + todayStr.charCodeAt(i);
@@ -569,12 +657,21 @@ class HaruMatchumApp {
       comboEl.style.display = 'none';
     }
 
-    // Sentence
+    // Sentence & Blank highlighting
     document.getElementById('quizPrompt').textContent = `Q${this.currentIndex + 1}. ${q.question}`;
-    document.getElementById('quizSentence').innerHTML = q.sentence.replace(
-      /\[(.*?)\]/,
-      `<span class="highlight">[ $1 ]</span>`
-    );
+    let sentenceHtml = q.sentence;
+    if (sentenceHtml.includes('[ (     ) ]') || sentenceHtml.includes('[ ( ? ) ]')) {
+      sentenceHtml = sentenceHtml.replace(
+        /\[\s*\(\s*\?*\s*\)\s*\]/g,
+        `<span class="highlight quiz-blank" title="빈칸에 들어갈 알맞은 말을 고르세요">( &nbsp;?&nbsp; )</span>`
+      );
+    } else {
+      sentenceHtml = sentenceHtml.replace(
+        /\[(.*?)\]/g,
+        `<span class="highlight">[ $1 ]</span>`
+      );
+    }
+    document.getElementById('quizSentence').innerHTML = sentenceHtml;
 
     // Options
     const optionsContainer = document.getElementById('quizOptions');
@@ -719,7 +816,7 @@ class HaruMatchumApp {
     }
     u.totalPoints += pointsEarned;
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getKSTDateString();
     if (!u.completedDates.includes(todayStr)) {
       u.completedDates.push(todayStr);
       u.streak = (u.streak || 0) + 1;

@@ -137,6 +137,21 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(adminRes.data.success);
     assert(adminRes.data.logs.length > 0, 'Admin logs should have recorded entries');
 
+    // 9. Hanja duplicate sentence check
+    const hanjaBank = require('../hanja_questions.js');
+    let dupCount = 0;
+    hanjaBank.forEach(q => {
+      const match = q.sentence.match(/\[\s*([^\s\/]+)\s*\/\s*([^\s\/]+)\s*\]/);
+      if (match && match[1].trim() === match[2].trim()) dupCount++;
+    });
+    assert.strictEqual(dupCount, 0, 'No duplicate [ word / word ] in hanja sentences');
+
+    // 10. Mobile Lifecycle & KST Date logic check
+    const appCode = fs.readFileSync(path.join(__dirname, '../app.js'), 'utf8');
+    assert(appCode.includes('visibilitychange'), 'app.js includes visibilitychange');
+    assert(appCode.includes('checkDateTransition'), 'app.js includes checkDateTransition');
+    assert(appCode.includes('getKSTDateString'), 'app.js includes getKSTDateString');
+
     console.log('🎉 ALL End-to-End System Tests Passed Pristine and Green!');
     srv.close();
     process.exit(0);

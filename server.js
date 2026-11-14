@@ -67,6 +67,23 @@ function getKSTTime() {
   return kst.toISOString().replace(/T/, " ").replace(/\..+/, "");
 }
 
+function getKSTDateString(dateObj = new Date()) {
+  try {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    return formatter.format(dateObj);
+  } catch (e) {
+    const now = dateObj || new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const kst = new Date(utc + (9 * 60 * 60000));
+    return kst.toISOString().split("T")[0];
+  }
+}
+
 function getClientIp(req) {
   const forwarded = req.headers["x-forwarded-for"];
   if (forwarded) {
@@ -183,7 +200,7 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 409, { success: false, message: "이미 사용 중인 아이디입니다." });
       }
 
-      const todayStr = new Date().toISOString().split("T")[0];
+      const todayStr = getKSTDateString();
       const newUser = {
         id: "user_" + Date.now(),
         username: trimmedUser,

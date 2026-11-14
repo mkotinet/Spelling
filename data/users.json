@@ -108,6 +108,30 @@
       "createdAt": "2026-11-11T14:31:13.169Z",
       "updatedAt": "2026-11-11T14:31:30.361Z",
       "maxRoundToday": 1
+    },
+    "e2e_runner_1794641054933": {
+      "id": "user_1794641054946",
+      "username": "e2e_runner_1794641054933",
+      "name": "e2e_runner_1794641054933",
+      "passwordHash": "64cf29d846d9b712ea375d504e25aa3467ae4c5df8206d009aced75e260de912",
+      "grade": "고등학교 1학년",
+      "avatar": "🌟",
+      "streak": 1,
+      "totalPoints": 250,
+      "totalSolved": 5,
+      "totalCorrect": 5,
+      "todayScore": 100,
+      "maxRoundToday": 2,
+      "lastActiveDate": "2026-11-14",
+      "completedDates": [
+        "2026-11-14"
+      ],
+      "badges": [
+        "starter"
+      ],
+      "wrongQuestions": [],
+      "createdAt": "2026-11-14T07:24:14.946Z",
+      "updatedAt": "2026-11-14T07:24:14.948Z"
     }
   },
   "tokens": {
@@ -121,6 +145,8 @@
     "ce3a85ce5353c9b35403b4536c61fd58f8a5d4ffb157a471": "단민러브",
     "a866739457cefa9f080b3d814a92371cb70f5eabc36f5a8f": "미니미니",
     "0da194a213cd58e5d58d53386c07636aaf82219871ec9ee6": "미니미니",
-    "4e05299b8b30eb61a92063685c9a1054df3a2de854b6e27a": "미니미니"
+    "4e05299b8b30eb61a92063685c9a1054df3a2de854b6e27a": "미니미니",
+    "83b1bfead4f135676b6bd0e0b72bcd527ebc4ea0995041d0": "e2e_runner_1794641054933",
+    "7b3e91165ccd38e8231b6fc52a70d4a25adedc646a9a5fee": "e2e_runner_1794641054933"
   }
 }

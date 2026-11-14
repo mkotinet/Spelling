@@ -744,6 +744,28 @@ body.theme-hanja .mode-switch-btn.active {
   text-decoration: underline wavy var(--accent-sparkle) 2px;
 }
 
+.quiz-sentence .quiz-blank {
+  display: inline-block;
+  min-width: 90px;
+  padding: 3px 16px;
+  margin: 0 4px;
+  background: rgba(255, 126, 179, 0.12);
+  border: 2px dashed var(--accent-coral);
+  border-radius: 20px;
+  color: var(--accent-coral);
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  transition: all 0.3s ease;
+}
+
+body.theme-hanja .quiz-sentence .quiz-blank {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #059669;
+  color: #047857;
+}
+
 /* Choice Buttons */
 .options-grid {
   display: flex;
@@ -1372,4 +1394,29 @@ body.theme-hanja .mode-switch-btn.active {
   color: #64748b;
   font-family: monospace;
   font-size: 0.72rem;
+}
+
+/* Daily Auto Refresh Notification Toast */
+.daily-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: rgba(30, 27, 75, 0.95);
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  z-index: 99999;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+  opacity: 0;
+  backdrop-filter: blur(8px);
+}
+
+.daily-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }

@@ -13,10 +13,10 @@
     }
   },
   {
-    "id": "log_1794640334248_jn5hv",
-    "timestamp": "2026-11-14T07:12:14.248Z",
-    "kstTime": "2026-11-14 07:12:14",
-    "username": "e2e_runner_1794640334246",
+    "id": "log_1794641054947_11h1o",
+    "timestamp": "2026-11-14T07:24:14.947Z",
+    "kstTime": "2026-11-14 07:24:14",
+    "username": "e2e_runner_1794641054933",
     "action": "REGISTER",
     "ip": "127.0.0.1",
     "userAgent": "-",
@@ -25,10 +25,10 @@
     }
   },
   {
-    "id": "log_1794640334249_f7xix",
-    "timestamp": "2026-11-14T07:12:14.249Z",
-    "kstTime": "2026-11-14 07:12:14",
-    "username": "e2e_runner_1794640334246",
+    "id": "log_1794641054948_1f668",
+    "timestamp": "2026-11-14T07:24:14.948Z",
+    "kstTime": "2026-11-14 07:24:14",
+    "username": "e2e_runner_1794641054933",
     "action": "LOGIN_SUCCESS",
     "ip": "127.0.0.1",
     "userAgent": "-",
@@ -37,10 +37,10 @@
     }
   },
   {
-    "id": "log_1794640334250_dt1gf",
-    "timestamp": "2026-11-14T07:12:14.250Z",
-    "kstTime": "2026-11-14 07:12:14",
-    "username": "e2e_runner_1794640334246",
+    "id": "log_1794641054948_hqic1",
+    "timestamp": "2026-11-14T07:24:14.948Z",
+    "kstTime": "2026-11-14 07:24:14",
+    "username": "e2e_runner_1794641054933",
     "action": "ROUND_CLEAR",
     "ip": "127.0.0.1",
     "userAgent": "-",
