@@ -174,6 +174,18 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("res.status === 401"), 'app.js must strictly check for 401 before wiping tokens');
     assert(appCode.includes("window.addEventListener('online'"), 'app.js must re-verify session on online event');
 
+    // 13. Gamification & Dual-Subject Leaderboard check
+    assert(appCode.includes('this.shields'), 'app.js must include shields');
+    assert(appCode.includes('perfectRoundStreak'), 'app.js must track perfectRoundStreak');
+    assert(appCode.includes('useItem5050'), 'app.js must include useItem5050');
+    assert(appCode.includes('useItemHeart'), 'app.js must include useItemHeart');
+    assert(appCode.includes('useItemDouble'), 'app.js must include useItemDouble');
+    assert(appCode.includes('handleReviveQuiz'), 'app.js must include handleReviveQuiz');
+
+    const lbRoundRes = await request('GET', '/api/leaderboard?mode=spelling&type=round');
+    assert.strictEqual(lbRoundRes.status, 200);
+    assert(Array.isArray(lbRoundRes.data.leaderboard));
+
     console.log('🎉 ALL End-to-End System Tests Passed Pristine and Green!');
     srv.close();
     process.exit(0);

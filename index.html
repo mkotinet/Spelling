@@ -37,6 +37,7 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="btnOpenGameGuide" class="icon-btn" title="게임 룰 및 아이템 도감">🎮</button>
         <button id="btnOpenDictSearch" class="icon-btn" title="국립국어원 표준국어대사전 검색">📖</button>
         <button id="btnOpenAuthModal" class="icon-btn" title="간단 로그인 / 회원가입">🔑</button>
         <button id="btnGitSync" class="icon-btn" title="GitHub 즉시 동기화">☁️</button>
@@ -62,6 +63,10 @@
         <div class="stat-item">
           <div id="userStreak" class="val">1일</div>
           <div class="lbl">연속 출석</div>
+        </div>
+        <div class="stat-item">
+          <div id="userShields" class="val">0개</div>
+          <div class="lbl">보유 방패</div>
         </div>
         <div class="stat-item">
           <div id="userPoints" class="val">120P</div>
@@ -149,6 +154,7 @@
         <div class="quiz-top-bar">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="quizRoundBadge" class="quiz-round-pill">라운드 1</span>
+            <span id="quizShieldBadge" class="quiz-shield-pill" style="display: none; background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; border: 1px solid #bae6fd;">🛡️ 0</span>
             <span id="quizCategory" class="quiz-category-pill">어휘·표기 · 기초</span>
           </div>
           <span id="quizCombo" class="quiz-combo-pill" style="display: none;">🔥 2 콤보!</span>
@@ -167,6 +173,13 @@
             <div id="quizSentence" class="quiz-sentence">
               오늘따라 <span class="highlight">[ 왠지 / 웬지 ]</span> 기분이 좋아!
             </div>
+          </div>
+
+          <!-- Quiz Game Item Bar -->
+          <div id="quizItemBar" class="quiz-item-bar" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap;">
+            <button id="btnItem5050" class="game-item-btn" type="button" title="확실한 오답 2개를 지워줍니다">🔍 50:50 지우개 (2)</button>
+            <button id="btnItemHeart" class="game-item-btn" type="button" title="오답을 선택해도 1회 다시 선택할 수 있습니다">💖 하트 원모어 (1)</button>
+            <button id="btnItemDouble" class="game-item-btn" type="button" title="이번 라운드 획득 포인트를 2배로 만듭니다">⭐ 2배 부스터 (1)</button>
           </div>
 
           <!-- Options -->
@@ -257,6 +270,16 @@
           🎉 100점 만점 통과! 다음 라운드(새 5문제) 도전하기 🔥
         </button>
 
+        <!-- Checkpoint & Revive Choice Buttons (Shown on round failure) -->
+        <div id="resultFailActions" style="display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; width: 100%;">
+          <button id="btnReviveQuiz" class="main-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; font-weight: 800; font-size: 0.98rem; box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);">
+            💫 부활 찬스: 보너스 1문제 맞추고 현재 라운드 유지!
+          </button>
+          <button id="btnFallbackRound" class="main-action-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-weight: 700;">
+            🔙 전단계 라운드에서 다시 도전하기
+          </button>
+        </div>
+
         <div style="display: flex; gap: 12px; margin-top: auto;">
           <button id="btnResultRetry" class="main-action-btn" style="background: linear-gradient(135deg, #ffd6e0, #c8b6ff); color: #4a3e4e;">
             다시 풀기 🔄
@@ -274,13 +297,24 @@
     <section id="viewLeaderboard" class="view-section">
       <div class="leaderboard-card">
         <div class="rank-top-banner">
-          <h3>👑 맞춤법 랭킹 명예의 전당</h3>
-          <p style="font-size: 0.8rem; color: var(--text-sub);">친구들과 함께 겨루며 맞춤법 왕관에 도전해보세요!</p>
+          <h3>👑 명예의 전당 랭킹</h3>
+          <p style="font-size: 0.8rem; color: var(--text-sub);">친구들과 함께 겨루며 우리말과 한자 왕관에 도전해보세요!</p>
+        </div>
+
+        <!-- Subject Switcher in Leaderboard -->
+        <div class="mode-switch-wrapper" style="margin-bottom: 12px;">
+          <button id="rankSubjectSpelling" class="mode-switch-btn active" type="button">
+            <span class="switch-icon">🌸</span> 우리말 맞춤법
+          </button>
+          <button id="rankSubjectHanja" class="mode-switch-btn" type="button">
+            <span class="switch-icon">📜</span> 한자·고사성어
+          </button>
         </div>
 
         <div class="rank-filter-tabs">
-          <button class="rank-filter-btn active" data-type="daily">오늘의 랭킹 (일간)</button>
-          <button class="rank-filter-btn" data-type="total">누적 명예의 전당</button>
+          <button class="rank-filter-btn" data-type="round">👑 최고 라운드</button>
+          <button class="rank-filter-btn active" data-type="daily">🏆 오늘의 점수</button>
+          <button class="rank-filter-btn" data-type="total">💎 누적 랭킹</button>
         </div>
 
         <div id="leaderboardList" class="leaderboard-list">
@@ -521,6 +555,52 @@
 
       <div id="adminLogsContainer" style="flex: 1; overflow-y: auto; background: #fafafa; border-radius: 12px; padding: 10px; font-size: 0.74rem; border: 1px solid #e5e7eb; min-height: 280px; max-height: 420px;">
         <div style="text-align: center; color: var(--text-muted); padding: 20px;">로그를 불러오는 중입니다...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 6: GAME GUIDE & ITEM MANUAL MODAL
+       ============================================================ -->
+  <div id="modalGameGuide" class="modal-overlay">
+    <div class="modal-box" style="max-width: 520px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3>🎮 하루맞춤 게임 룰 & 아이템 도감</h3>
+        <button id="btnCloseGameGuideModal" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div style="flex: 1; overflow-y: auto; padding: 6px 2px; font-size: 0.86rem; line-height: 1.55; color: var(--text-dark);">
+        <div class="guide-card" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+          <h4 style="margin: 0 0 6px 0; color: #166534; font-size: 0.95rem;">🛡️ 방패 시스템 (실드 획득 및 보호)</h4>
+          <p style="margin: 0; color: #15803d; font-size: 0.82rem;">
+            라운드를 <strong>2단계 연속 100점 만점</strong>으로 통과하면 <strong>방패 1개(🛡️)</strong>를 얻습니다.<br>
+            방패는 라운드에서 1문제를 틀려도(4/5 득점) 1개가 소모되며 탈락 없이 <strong>다음 라운드로 바로 진출</strong>시켜 줍니다! (최대 3개 보유)
+          </p>
+        </div>
+
+        <div class="guide-card" style="background: #fefce8; border: 1px solid #fef08a; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+          <h4 style="margin: 0 0 6px 0; color: #854d0e; font-size: 0.95rem;">👑 3연속 만점 마스터 보너스 (+300P)</h4>
+          <p style="margin: 0; color: #a16207; font-size: 0.82rem;">
+            라운드를 <strong>3회 연속 만점</strong>으로 통과하면 실력자 보너스로 <strong>+300P</strong>가 즉시 적립됩니다!
+          </p>
+        </div>
+
+        <div class="guide-card" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+          <h4 style="margin: 0 0 6px 0; color: #6b21a8; font-size: 0.95rem;">💫 탄력적 체크포인트 & 부활 찬스</h4>
+          <p style="margin: 0; color: #7e22ce; font-size: 0.82rem;">
+            라운드를 실패해도 1라운드로 떨어지지 않고 <strong>직전 라운드(R-1)</strong>에서 부드럽게 이어할 수 있습니다.<br>
+            또한 <strong>💫 부활 찬스</strong>를 선택하여 보너스 1문제를 맞히면 현재 라운드를 그대로 유지하며 즉시 재도전할 수 있습니다!
+          </p>
+        </div>
+
+        <div class="guide-card" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px; margin-bottom: 6px;">
+          <h4 style="margin: 0 0 6px 0; color: #1e40af; font-size: 0.95rem;">🎒 특별 찬스 아이템 도감</h4>
+          <ul style="margin: 0; padding-left: 18px; font-size: 0.82rem; color: #1d4ed8;">
+            <li><strong>🔍 50:50 지우개</strong>: 4개 선택지 중 확실한 오답 2개를 즉시 지워줍니다.</li>
+            <li><strong>💖 하트 원모어</strong>: 오답을 눌러도 정답 공개 전 1회 다시 선택할 수 있습니다.</li>
+            <li><strong>⭐ 2배 부스터</strong>: 이번 라운드에 획득하는 모든 점수를 2배로 적립합니다!</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

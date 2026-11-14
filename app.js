@@ -271,6 +271,18 @@ class HaruMatchumApp {
     this.maxCombo = 0;
     this.selectedOption = null;
 
+    // Gamification & Item Mechanics State
+    this.shields = parseInt(localStorage.getItem('haru_game_shields') || '0', 10);
+    this.perfectRoundStreak = 0;
+    this.isReviveQuiz = false;
+    this.pointMultiplier = 1;
+    this.activeItemHeart = false;
+    this.items = {
+      eraser5050: parseInt(localStorage.getItem('haru_item_5050') || '2', 10),
+      heart: parseInt(localStorage.getItem('haru_item_heart') || '1', 10),
+      booster2x: parseInt(localStorage.getItem('haru_item_booster') || '1', 10)
+    };
+
     this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
     this.authMode = 'login'; // 'login' | 'register'
     this.lastLoadedDate = getKSTDateString();
@@ -299,10 +311,15 @@ class HaruMatchumApp {
     this.modalDictSearch = document.getElementById('modalDictSearch');
     this.modalAuth = document.getElementById('modalAuth');
     this.modalAdminLogs = document.getElementById('modalAdminLogs');
+    this.modalGameGuide = document.getElementById('modalGameGuide');
 
     // Mascot
     this.mascotBubble = document.getElementById('mascotSpeech');
     this.mascotAvatar = document.getElementById('mascotAvatar');
+
+    // Leaderboard state
+    this.rankSubject = 'spelling';
+    this.rankType = 'round';
   }
 
   bindEvents() {
@@ -380,6 +397,46 @@ class HaruMatchumApp {
     if (btnCloseAdmin) btnCloseAdmin.addEventListener('click', () => this.closeAdminLogsModal());
     if (btnRefreshAdmin) btnRefreshAdmin.addEventListener('click', () => this.fetchAdminLogs());
 
+    // Game Guide modal
+    const btnOpenGuide = document.getElementById('btnOpenGameGuide');
+    const btnCloseGuide = document.getElementById('btnCloseGameGuideModal');
+    if (btnOpenGuide) btnOpenGuide.addEventListener('click', () => this.openGameGuideModal());
+    if (btnCloseGuide) btnCloseGuide.addEventListener('click', () => this.closeGameGuideModal());
+
+    // Game Items
+    const btn5050 = document.getElementById('btnItem5050');
+    const btnHeart = document.getElementById('btnItemHeart');
+    const btnDouble = document.getElementById('btnItemDouble');
+    if (btn5050) btn5050.addEventListener('click', () => this.useItem5050());
+    if (btnHeart) btnHeart.addEventListener('click', () => this.useItemHeart());
+    if (btnDouble) btnDouble.addEventListener('click', () => this.useItemDouble());
+
+    // Fail Actions (Revive & Fallback)
+    const btnRevive = document.getElementById('btnReviveQuiz');
+    const btnFallback = document.getElementById('btnFallbackRound');
+    if (btnRevive) btnRevive.addEventListener('click', () => this.handleReviveQuiz());
+    if (btnFallback) btnFallback.addEventListener('click', () => this.fallbackRound());
+
+    // Leaderboard Subject Switcher
+    const rankSubjSpelling = document.getElementById('rankSubjectSpelling');
+    const rankSubjHanja = document.getElementById('rankSubjectHanja');
+    if (rankSubjSpelling) {
+      rankSubjSpelling.addEventListener('click', () => {
+        rankSubjSpelling.classList.add('active');
+        if (rankSubjHanja) rankSubjHanja.classList.remove('active');
+        this.rankSubject = 'spelling';
+        this.renderLeaderboard(this.rankType);
+      });
+    }
+    if (rankSubjHanja) {
+      rankSubjHanja.addEventListener('click', () => {
+        rankSubjHanja.classList.add('active');
+        if (rankSubjSpelling) rankSubjSpelling.classList.remove('active');
+        this.rankSubject = 'hanja';
+        this.renderLeaderboard(this.rankType);
+      });
+    }
+
     // Sound toggle
     const soundBtn = document.getElementById('btnToggleSound');
     soundBtn.addEventListener('click', () => {
@@ -395,7 +452,8 @@ class HaruMatchumApp {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.rank-filter-btn').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active');
-        this.renderLeaderboard(e.currentTarget.dataset.type);
+        this.rankType = e.currentTarget.dataset.type || 'daily';
+        this.renderLeaderboard(this.rankType);
       });
     });
 
@@ -550,6 +608,8 @@ class HaruMatchumApp {
     document.getElementById('userName').textContent = u.name;
     document.getElementById('userGrade').textContent = u.grade;
     document.getElementById('userStreak').textContent = u.streak + '일';
+    const userShieldsEl = document.getElementById('userShields');
+    if (userShieldsEl) userShieldsEl.textContent = (this.shields || 0) + '개';
     document.getElementById('userPoints').textContent = u.totalPoints + 'P';
     document.getElementById('streakBadge').textContent = `🔥 ${u.streak}일 연속`;
   }
@@ -713,14 +773,31 @@ class HaruMatchumApp {
     const nextBtn = document.getElementById('btnQuizNext');
     nextBtn.disabled = true;
     nextBtn.textContent = (this.currentIndex === total - 1) ? '결과 확인하기 🎉' : '다음 문제로 ✨';
+
+    this.renderShieldStatus();
+    this.renderItemBar();
   }
 
   handleOptionSelect(selectedIndex, clickedBtn) {
     if (this.selectedOption !== null) return; // already answered
-    this.selectedOption = selectedIndex;
 
     const q = this.activeQuestions[this.currentIndex];
     const isCorrect = selectedIndex === q.answerIndex;
+
+    // Heart Second Chance Item Check
+    if (!isCorrect && this.activeItemHeart) {
+      this.activeItemHeart = false;
+      this.selectedOption = null;
+      clickedBtn.disabled = true;
+      clickedBtn.style.opacity = '0.35';
+      clickedBtn.querySelector('.opt-icon').textContent = '💔 1회 방어';
+      sfx.wrong();
+      this.showToastNotice('💖 하트 찬스 발동! 오답 1회를 무효화했습니다. 다른 선택지를 골라보세요!');
+      this.renderItemBar();
+      return;
+    }
+
+    this.selectedOption = selectedIndex;
 
     const allButtons = document.querySelectorAll('.option-btn');
     allButtons.forEach((b, i) => {
@@ -824,9 +901,82 @@ class HaruMatchumApp {
     sfx.fanfare();
     this.confetti.explode();
 
-    const totalQuestions = this.activeQuestions.length;
-    const isRoundCleared = this.roundCorrectCount === 5; // 5/5 perfect score
     const u = this.data.currentUser;
+    const btnNextRound = document.getElementById('btnNextRound');
+    const resultFailActions = document.getElementById('resultFailActions');
+
+    // Case A: Finished Revive Quiz (1 question)
+    if (this.isReviveQuiz) {
+      this.isReviveQuiz = false;
+      const passedRevive = this.roundCorrectCount === 1;
+
+      document.getElementById('resultScore').textContent = passedRevive ? '성공 ⭕' : '실패 ❌';
+      document.getElementById('resultCombo').textContent = passedRevive ? '1회' : '0회';
+      document.getElementById('resultPoints').textContent = passedRevive ? '+50P' : '+0P';
+
+      if (passedRevive) {
+        u.totalPoints += 50;
+        DataManager.save(this.data);
+        this.renderUserProfile();
+
+        document.getElementById('resultTitle').textContent = `💫 부활 찬스 성공!`;
+        document.getElementById('resultSubtitle').textContent = `보너스 1문제를 통과하여 라운드 ${this.currentRound} 도전 자격을 회복했습니다! 🔥`;
+        document.getElementById('resultMascot').textContent = '🥳';
+
+        if (btnNextRound) {
+          btnNextRound.style.display = 'block';
+          btnNextRound.textContent = `🔥 라운드 ${this.currentRound} 다시 도전하기!`;
+          btnNextRound.onclick = () => this.startQuiz('daily', this.currentRound);
+        }
+        if (resultFailActions) resultFailActions.style.display = 'none';
+      } else {
+        const targetRound = Math.max(1, this.currentRound - 1);
+        document.getElementById('resultTitle').textContent = `부활 실패 😢`;
+        document.getElementById('resultSubtitle').textContent = `아쉽지만 전단계 라운드 ${targetRound}에서 기초를 다지고 다시 올라오세요! 💪`;
+        document.getElementById('resultMascot').textContent = '🌸';
+
+        if (btnNextRound) {
+          btnNextRound.style.display = 'block';
+          btnNextRound.textContent = `🔙 라운드 ${targetRound}에서 다시 도전하기`;
+          btnNextRound.onclick = () => this.startQuiz('daily', targetRound);
+        }
+        if (resultFailActions) resultFailActions.style.display = 'none';
+      }
+
+      this.switchView('result');
+      return;
+    }
+
+    // Case B: Standard Round Quiz
+    const totalQuestions = this.activeQuestions.length;
+    const isPerfect = this.roundCorrectCount === 5;
+    let isRoundCleared = isPerfect;
+    let shieldDefended = false;
+
+    if (isPerfect) {
+      this.perfectRoundStreak++;
+
+      // 2 consecutive perfect rounds -> +1 shield
+      if (this.perfectRoundStreak % 2 === 0) {
+        this.shields = Math.min(3, this.shields + 1);
+        localStorage.setItem('haru_game_shields', this.shields);
+        this.showToastNotice(`🛡️ 2연속 만점 달성! 방패 1개를 획득했습니다! (보유: ${this.shields}개)`);
+      }
+
+      // 3 consecutive perfect rounds -> +300P bonus
+      if (this.perfectRoundStreak % 3 === 0) {
+        this.currentScore += 300;
+        this.showToastNotice('👑 3연속 만점 마스터! 보너스 +300P를 획득했습니다! 🥳');
+      }
+    } else if (this.roundCorrectCount === 4 && this.shields > 0) {
+      // Shield protects 1 mistake (4/5)
+      this.useShield();
+      isRoundCleared = true;
+      shieldDefended = true;
+      this.showToastNotice('🛡️ 방패가 1회 오답을 방어하여 다음 라운드 진출 자격을 획득했습니다!');
+    } else {
+      this.perfectRoundStreak = 0;
+    }
 
     u.totalSolved += totalQuestions;
     u.totalCorrect += this.roundCorrectCount;
@@ -834,6 +984,12 @@ class HaruMatchumApp {
     let pointsEarned = this.currentScore;
     if (this.currentRound > 1 && isRoundCleared) {
       pointsEarned += 50; // Bonus +50P for round clear
+    }
+    // Apply 2x booster
+    if (this.pointMultiplier > 1) {
+      pointsEarned *= this.pointMultiplier;
+      this.showToastNotice(`⭐ 2배 부스터 적용! 총 +${pointsEarned}P 적립!`);
+      this.pointMultiplier = 1;
     }
     u.totalPoints += pointsEarned;
 
@@ -849,6 +1005,11 @@ class HaruMatchumApp {
     }
     if (isRoundCleared) {
       u.maxRoundToday = Math.max(u.maxRoundToday || 1, this.currentRound);
+      if (this.quizSubject === 'hanja') {
+        u.maxRoundHanja = Math.max(u.maxRoundHanja || 1, this.currentRound);
+      } else {
+        u.maxRoundSpelling = Math.max(u.maxRoundSpelling || 1, this.currentRound);
+      }
     }
 
     // Check badges
@@ -872,6 +1033,8 @@ class HaruMatchumApp {
       me.streak = u.streak;
       me.todayScore = u.todayScore;
       me.maxRoundToday = u.maxRoundToday;
+      if (this.quizSubject === 'hanja') me.maxRoundHanja = u.maxRoundHanja;
+      else me.maxRoundSpelling = u.maxRoundSpelling;
     }
 
     DataManager.save(this.data);
@@ -880,7 +1043,9 @@ class HaruMatchumApp {
       mode: this.quizSubject,
       round: this.currentRound,
       score: this.currentScore,
-      pointsEarned
+      pointsEarned,
+      maxRoundToday: u.maxRoundToday,
+      todayScore: u.todayScore
     });
 
     this.renderUserProfile();
@@ -891,22 +1056,48 @@ class HaruMatchumApp {
     document.getElementById('resultCombo').textContent = `${this.maxCombo}회`;
     document.getElementById('resultPoints').textContent = `+${pointsEarned}P`;
 
-    const btnNextRound = document.getElementById('btnNextRound');
     if (isRoundCleared && this.currentMode === 'daily') {
-      document.getElementById('resultTitle').textContent = `🎉 라운드 ${this.currentRound} 만점 통과!`;
-      document.getElementById('resultSubtitle').textContent = `5문제를 모두 맞히셨어요! 다음 라운드에 도전해 실력을 뽐내보세요! 🔥`;
+      document.getElementById('resultTitle').textContent = shieldDefended 
+        ? `🛡️ 방패 방어로 라운드 ${this.currentRound} 통과!` 
+        : `🎉 라운드 ${this.currentRound} 만점 통과!`;
+      document.getElementById('resultSubtitle').textContent = shieldDefended
+        ? `방패가 1회 오답을 막아주었습니다! 다음 라운드에서 실력을 보여주세요! 🔥`
+        : `5문제를 모두 맞히셨어요! 다음 라운드에 도전해 실력을 뽐내보세요! 🔥`;
       document.getElementById('resultMascot').textContent = '🥳';
+
       if (btnNextRound) {
         btnNextRound.style.display = 'block';
-        btnNextRound.textContent = `🎉 100점 만점 통과! 라운드 ${this.currentRound + 1} (새 5문제) 도전하기 🔥`;
+        btnNextRound.textContent = `🎉 라운드 ${this.currentRound + 1} (새 5문제) 도전하기 🔥`;
+        btnNextRound.onclick = () => this.startNextRound();
+      }
+      if (resultFailActions) resultFailActions.style.display = 'none';
+    } else if (this.currentMode === 'daily') {
+      // Failed round
+      const fallbackRound = Math.max(1, this.currentRound - 1);
+      document.getElementById('resultTitle').textContent = `라운드 ${this.currentRound} 도전 실패 😢`;
+      document.getElementById('resultSubtitle').textContent = `아쉽게도 만점에 도달하지 못했습니다. 부활 찬스에 도전하거나 전단계 라운드로 이동할 수 있어요!`;
+      document.getElementById('resultMascot').textContent = '🌸';
+
+      if (btnNextRound) btnNextRound.style.display = 'none';
+      if (resultFailActions) {
+        resultFailActions.style.display = 'flex';
+        const btnRevive = document.getElementById('btnReviveQuiz');
+        const btnFallback = document.getElementById('btnFallbackRound');
+        if (btnRevive) {
+          btnRevive.textContent = `💫 부활 찬스: 보너스 1문제 맞추고 라운드 ${this.currentRound} 유지!`;
+          btnRevive.onclick = () => this.handleReviveQuiz();
+        }
+        if (btnFallback) {
+          btnFallback.textContent = `🔙 전단계 라운드 ${fallbackRound}에서 다시 도전하기`;
+          btnFallback.onclick = () => this.startQuiz('daily', fallbackRound);
+        }
       }
     } else {
       document.getElementById('resultTitle').textContent = '오늘의 퀴즈 완료! 💕';
       document.getElementById('resultSubtitle').textContent = '꾸준히 풀다 보면 우리말과 한자 실력이 쑥쑥 자라나요!';
       document.getElementById('resultMascot').textContent = '🌸';
-      if (btnNextRound) {
-        btnNextRound.style.display = 'none';
-      }
+      if (btnNextRound) btnNextRound.style.display = 'none';
+      if (resultFailActions) resultFailActions.style.display = 'none';
     }
 
     this.switchView('result');
@@ -916,15 +1107,148 @@ class HaruMatchumApp {
     this.startQuiz('daily', this.currentRound + 1);
   }
 
+  fallbackRound() {
+    const prev = Math.max(1, this.currentRound - 1);
+    this.startQuiz('daily', prev);
+  }
+
   // ============================================================
-  // Leaderboard / Ranking View (Real users only, no dummy peers)
+  // Gamification & Item Mechanics (Shields, 50:50, Heart, Booster, Revive)
   // ============================================================
-  async renderLeaderboard(type = 'daily') {
+  useShield() {
+    if (this.shields > 0) {
+      this.shields--;
+      localStorage.setItem('haru_game_shields', this.shields);
+      this.renderShieldStatus();
+      this.renderUserProfile();
+      return true;
+    }
+    return false;
+  }
+
+  renderShieldStatus() {
+    const shieldBadge = document.getElementById('quizShieldBadge');
+    if (shieldBadge) {
+      shieldBadge.style.display = 'inline-block';
+      shieldBadge.textContent = `🛡️ ${this.shields}개`;
+      shieldBadge.title = `1회 오답을 방어해 주는 방패입니다 (보유: ${this.shields}개)`;
+    }
+  }
+
+  renderItemBar() {
+    const btn5050 = document.getElementById('btnItem5050');
+    const btnHeart = document.getElementById('btnItemHeart');
+    const btnDouble = document.getElementById('btnItemDouble');
+
+    if (btn5050) {
+      btn5050.innerHTML = `🔍 50:50 지우개 (${this.items.eraser5050})`;
+      btn5050.disabled = this.items.eraser5050 <= 0;
+    }
+    if (btnHeart) {
+      btnHeart.innerHTML = `💖 하트 원모어 (${this.items.heart})`;
+      btnHeart.disabled = this.items.heart <= 0;
+      if (this.activeItemHeart) btnHeart.classList.add('active');
+      else btnHeart.classList.remove('active');
+    }
+    if (btnDouble) {
+      btnDouble.innerHTML = `⭐ 2배 부스터 (${this.items.booster2x})`;
+      btnDouble.disabled = this.items.booster2x <= 0 || this.pointMultiplier === 2;
+      if (this.pointMultiplier === 2) btnDouble.classList.add('active');
+      else btnDouble.classList.remove('active');
+    }
+  }
+
+  useItem5050() {
+    if (this.items.eraser5050 <= 0) return;
+    const q = this.activeQuestions[this.currentIndex];
+    const buttons = document.querySelectorAll('.option-btn');
+    const wrongIndices = [];
+    q.options.forEach((opt, idx) => {
+      if (idx !== q.answerIndex) wrongIndices.push(idx);
+    });
+
+    wrongIndices.sort(() => 0.5 - Math.random());
+    const toHide = wrongIndices.slice(0, 2);
+    toHide.forEach(idx => {
+      if (buttons[idx]) {
+        buttons[idx].style.opacity = '0.2';
+        buttons[idx].style.pointerEvents = 'none';
+        buttons[idx].style.filter = 'grayscale(100%)';
+      }
+    });
+
+    this.items.eraser5050--;
+    localStorage.setItem('haru_item_5050', this.items.eraser5050);
+    this.renderItemBar();
+    sfx.correct();
+    this.showToastNotice('🔍 50:50 지우개 사용! 오답 2개가 지워졌습니다.');
+  }
+
+  useItemHeart() {
+    if (this.items.heart <= 0) return;
+    this.activeItemHeart = true;
+    this.items.heart--;
+    localStorage.setItem('haru_item_heart', this.items.heart);
+    this.renderItemBar();
+    sfx.combo();
+    this.showToastNotice('💖 하트 원모어 활성화! 오답을 선택해도 1회 다시 선택할 수 있습니다.');
+  }
+
+  useItemDouble() {
+    if (this.items.booster2x <= 0) return;
+    this.pointMultiplier = 2;
+    this.items.booster2x--;
+    localStorage.setItem('haru_item_booster', this.items.booster2x);
+    this.renderItemBar();
+    sfx.fanfare();
+    this.showToastNotice('⭐ 2배 부스터 가동! 이번 라운드 획득 포인트가 2배로 적립됩니다!');
+  }
+
+  handleReviveQuiz() {
+    this.isReviveQuiz = true;
+    this.roundCorrectCount = 0;
+    this.currentIndex = 0;
+    this.currentScore = 0;
+    this.combo = 0;
+    this.maxCombo = 0;
+    this.selectedOption = null;
+
+    // Pick 1 random question
+    this.activeQuestions = this.getRandomQuestions(1).map(q => this.shuffleQuestionOptions(q));
+
+    const roundBadge = document.getElementById('quizRoundBadge');
+    if (roundBadge) {
+      roundBadge.textContent = `💫 부활 퀴즈 (1문제)`;
+      roundBadge.style.display = 'inline-block';
+    }
+
+    this.switchView('quiz');
+    this.renderCurrentQuestion();
+    this.renderShieldStatus();
+    this.renderItemBar();
+  }
+
+  openGameGuideModal() {
+    if (this.modalGameGuide) this.modalGameGuide.classList.add('active');
+  }
+
+  closeGameGuideModal() {
+    if (this.modalGameGuide) this.modalGameGuide.classList.remove('active');
+  }
+
+  // ============================================================
+  // Leaderboard / Ranking View (Dual-Subject & Highest-Round)
+  // ============================================================
+  async renderLeaderboard(type = 'round') {
     const listContainer = document.getElementById('leaderboardList');
     if (!listContainer) return;
 
+    const currentType = type || this.rankType || 'round';
+    this.rankType = currentType;
+    const currentSubject = this.rankSubject || 'spelling';
+
     try {
-      const res = await fetch('/api/leaderboard');
+      const res = await fetch(`/api/leaderboard?mode=${currentSubject}&type=${currentType}`);
       if (res.ok) {
         const body = await res.json();
         if (body.success && Array.isArray(body.leaderboard)) {
@@ -946,6 +1270,8 @@ class HaruMatchumApp {
               streak: this.data.currentUser.streak || 1,
               todayScore: this.data.currentUser.todayScore || 0,
               maxRoundToday: this.data.currentUser.maxRoundToday || 1,
+              maxRoundSpelling: this.data.currentUser.maxRoundSpelling || (this.data.currentUser.maxRoundToday || 1),
+              maxRoundHanja: this.data.currentUser.maxRoundHanja || 1,
               isMe: true
             });
           }
@@ -958,19 +1284,51 @@ class HaruMatchumApp {
 
     listContainer.innerHTML = '';
     const users = [...(this.data.allUsers || [])];
-    if (type === 'daily') {
-      users.sort((a, b) => (b.todayScore || 0) - (a.todayScore || 0));
+
+    // Local sort fallback
+    if (currentType === 'round') {
+      if (currentSubject === 'hanja') {
+        users.sort((a, b) => ((b.maxRoundHanja || 1) - (a.maxRoundHanja || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      } else {
+        users.sort((a, b) => ((b.maxRoundSpelling || b.maxRoundToday || 1) - (a.maxRoundSpelling || a.maxRoundToday || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      }
+    } else if (currentType === 'total') {
+      if (currentSubject === 'hanja') {
+        users.sort((a, b) => ((b.pointsHanja || 0) - (a.pointsHanja || 0)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      } else if (currentSubject === 'spelling') {
+        users.sort((a, b) => ((b.pointsSpelling || 0) - (a.pointsSpelling || 0)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      } else {
+        users.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+      }
     } else {
-      users.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+      // daily
+      if (currentSubject === 'hanja') {
+        users.sort((a, b) => ((b.todayScoreHanja || 0) - (a.todayScoreHanja || 0)) || ((b.todayScore || 0) - (a.todayScore || 0)));
+      } else {
+        users.sort((a, b) => ((b.todayScoreSpelling || b.todayScore || 0) - (a.todayScoreSpelling || a.todayScore || 0)));
+      }
     }
 
     users.forEach((user, idx) => {
       const rankNum = idx + 1;
       const rankClass = rankNum === 1 ? 'rank-1' : rankNum === 2 ? 'rank-2' : rankNum === 3 ? 'rank-3' : 'rank-other';
       const rankBadgeIcon = rankNum === 1 ? '👑' : rankNum === 2 ? '🥈' : rankNum === 3 ? '🥉' : rankNum;
-      const roundTag = user.maxRoundToday && user.maxRoundToday > 1 
-        ? `<span class="rank-tag-round" style="background:#ffedd5; color:#ea580c; font-size:0.7rem; font-weight:700; padding:1px 6px; border-radius:10px; margin-left:4px;">🔥 ${user.maxRoundToday}R</span>`
+      
+      const relevantRound = currentSubject === 'hanja' ? (user.maxRoundHanja || 1) : (user.maxRoundSpelling || user.maxRoundToday || 1);
+      const roundTag = relevantRound > 1 
+        ? `<span class="rank-tag-round">🔥 ${relevantRound}R</span>`
         : '';
+
+      let scoreDisplay = '';
+      if (currentType === 'round') {
+        scoreDisplay = `${relevantRound} <span>라운드</span>`;
+      } else if (currentType === 'daily') {
+        const dScore = currentSubject === 'hanja' ? (user.todayScoreHanja || 0) : (user.todayScoreSpelling || user.todayScore || 0);
+        scoreDisplay = `${dScore} <span>점</span>`;
+      } else {
+        const tPoints = currentSubject === 'hanja' ? (user.pointsHanja || user.totalPoints || 0) : (user.pointsSpelling || user.totalPoints || 0);
+        scoreDisplay = `${tPoints} <span>P</span>`;
+      }
 
       const item = document.createElement('div');
       item.className = `rank-item ${rankClass} ${user.isMe ? 'is-me' : ''}`;
@@ -986,8 +1344,7 @@ class HaruMatchumApp {
           <div class="rank-sub">${user.grade || '일반'} · 🔥 ${user.streak || 1}일 연속</div>
         </div>
         <div class="rank-score">
-          ${type === 'daily' ? (user.todayScore || 0) : user.totalPoints}
-          <span>${type === 'daily' ? '점' : 'P'}</span>
+          ${scoreDisplay}
         </div>
       `;
       listContainer.appendChild(item);
