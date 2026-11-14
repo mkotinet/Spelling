@@ -14,6 +14,14 @@ sys.path.append("/Users/kotinet/.gemini/antigravity/brain/88ccfbae-9403-4c93-8f7
 
 from build_idiom_bank_full import create_idiom_level_data, LEVEL_NAMES
 
+LEVEL_PROMPTS_IDIOM = {
+    "초등/기초": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요.",
+    "중등/필수": "다음 문장의 빈칸에 들어갈 올바른 속담이나 관용 표현을 고르세요.",
+    "고등/심화": "문맥의 흐름에 비추어 빈칸에 들어갈 가장 적절한 관용구를 고르세요.",
+    "수능/기출": "다음 제시문의 상황과 함의에 가장 부합하는 속담 또는 관용구를 고르세요.",
+    "일반/실무": "다음 사회·비즈니스 맥락의 빈칸에 적절한 속담 및 관용 표현을 고르세요."
+}
+
 all_questions = []
 current_id = 5001
 
@@ -48,11 +56,12 @@ for lvl_idx, level_name in enumerate(LEVEL_NAMES):
             first_word = item["word"].split()[0]
             dict_link = f"https://stdict.korean.go.kr/search/searchResult.do?searchKeyword={urllib.parse.quote(first_word)}"
 
+            prompt_text = LEVEL_PROMPTS_IDIOM.get(level_name, "다음 문장의 빈칸에 들어갈 알맞은 속담 또는 관용구를 고르세요.")
             q_obj = {
                 "id": current_id,
                 "category": item["category"],
                 "level": level_name,
-                "question": f"다음 문장의 빈칸에 들어갈 알맞은 속담 또는 관용구를 고르세요. (문항 #{current_id - 5000})",
+                "question": f"{prompt_text} (문항 #{current_id - 5000})",
                 "sentence": s,
                 "options": options,
                 "answerIndex": 0,

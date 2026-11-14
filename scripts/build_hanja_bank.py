@@ -14,6 +14,14 @@ sys.path.append("/Users/kotinet/.gemini/antigravity/brain/88ccfbae-9403-4c93-8f7
 
 from build_hanja_bank_full import get_hanja_level_data, LEVEL_NAMES
 
+LEVEL_PROMPTS_HANJA = {
+    "초등/기초": "문장을 읽고 빈칸에 어울리는 쉬운 사자성어를 골라보세요.",
+    "중등/필수": "다음 문장의 빈칸에 들어갈 알맞은 필수 한자성어 표기를 고르세요.",
+    "고등/심화": "문맥상 빈칸에 들어갈 가장 알맞은 사자성어의 한자 표기를 고르세요.",
+    "수능/기출": "다음 글의 핵심 함의를 담은 가장 적절한 한자성어를 고르세요.",
+    "일반/실무": "다음 시사 및 비즈니스 문맥에 가장 부합하는 한자성어를 고르세요."
+}
+
 all_questions = []
 current_id = 10001
 
@@ -47,11 +55,12 @@ for lvl_idx, level_name in enumerate(LEVEL_NAMES):
 
             dict_link = f"https://stdict.korean.go.kr/search/searchResult.do?searchKeyword={urllib.parse.quote(item['sound'])}"
 
+            prompt_text = LEVEL_PROMPTS_HANJA.get(level_name, "다음 문장의 빈칸에 들어갈 알맞은 사자성어 또는 한자 표기를 고르세요.")
             q_obj = {
                 "id": current_id,
                 "category": "사자성어",
                 "level": level_name,
-                "question": f"다음 문장의 빈칸에 들어갈 알맞은 사자성어 또는 한자 표기를 고르세요. (문항 #{current_id - 10000})",
+                "question": f"{prompt_text} (문항 #{current_id - 10000})",
                 "sentence": s,
                 "options": options,
                 "answerIndex": 0,

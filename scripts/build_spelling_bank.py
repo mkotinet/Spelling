@@ -26,6 +26,14 @@ LEVELS = [
     ("일반/실무", WORDS_LVL5, 4001)
 ]
 
+LEVEL_PROMPTS = {
+    "초등/기초": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요.",
+    "중등/필수": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요.",
+    "고등/심화": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요.",
+    "수능/기출": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요.",
+    "일반/실무": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요."
+}
+
 all_questions = []
 current_id = 1
 
@@ -56,11 +64,12 @@ for level_name, word_list, start_id in LEVELS:
             options = unique_options[:4]
             assert len(set(options)) == 4, f"Options must be 4 unique for {w['word']}: {options}"
                 
+            prompt_text = LEVEL_PROMPTS.get(level_name, "다음 문장의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요.")
             q_obj = {
                 "id": current_id,
                 "category": "어휘·표기",
                 "level": level_name,
-                "question": f"다음 문장의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #{current_id})",
+                "question": f"{prompt_text} (문항 #{current_id})",
                 "sentence": s,
                 "options": options[:4],
                 "answerIndex": 0,

@@ -1,0 +1,434 @@
+{
+  "app.js": {
+    "mtime": 1794692797.5856693,
+    "seen": 1794692838.136767,
+    "ast_hash": "511a1ebffa8a5399bc7de844d78df6be",
+    "semantic_hash": ""
+  },
+  "data/access_logs.json": {
+    "mtime": 1794692803.4850368,
+    "seen": 1794692838.13677,
+    "ast_hash": "5bc2e71d969b18ac04314e958fd3282b",
+    "semantic_hash": ""
+  },
+  "data/users.json": {
+    "mtime": 1794692819.1290941,
+    "seen": 1794692838.1367722,
+    "ast_hash": "69c81576e2e9f121c3da1ee9f270e909",
+    "semantic_hash": ""
+  },
+  "docker-compose.yml": {
+    "mtime": 1794640365.270327,
+    "seen": 1794692004.391325,
+    "ast_hash": "32477047539e8c2ec52adb528a3884b5",
+    "semantic_hash": ""
+  },
+  "english_questions.js": {
+    "mtime": 1794692645.6442494,
+    "seen": 1794692838.136775,
+    "ast_hash": "0491ae4fb9d572c968bcdc3e556f1e43",
+    "semantic_hash": ""
+  },
+  "hanja_questions.js": {
+    "mtime": 1794692642.2442415,
+    "seen": 1794692838.136776,
+    "ast_hash": "1a513cf67100e44aa495a3170211ea8e",
+    "semantic_hash": ""
+  },
+  "idiom_questions.js": {
+    "mtime": 1794692639.4469697,
+    "seen": 1794692838.136777,
+    "ast_hash": "5fd69557b5ef8e67fcfffbe5699af5a0",
+    "semantic_hash": ""
+  },
+  "questions.js": {
+    "mtime": 1794692636.4828866,
+    "seen": 1794692838.136779,
+    "ast_hash": "83d1db85a5aa2c022ad7a5d8e229cf67",
+    "semantic_hash": ""
+  },
+  "scripts/build_english_bank.py": {
+    "mtime": 1794692633.3382924,
+    "seen": 1794692838.13678,
+    "ast_hash": "fafb0bf4a091e5ca77ae472dd8f3ee4c",
+    "semantic_hash": ""
+  },
+  "scripts/build_hanja_bank.py": {
+    "mtime": 1794692626.6162095,
+    "seen": 1794692838.136781,
+    "ast_hash": "349033046a0d0db42a50fd0cb45166f7",
+    "semantic_hash": ""
+  },
+  "scripts/build_idiom_bank.py": {
+    "mtime": 1794692618.1525655,
+    "seen": 1794692838.1367822,
+    "ast_hash": "970298fd6759ec325a7957036a7a8a19",
+    "semantic_hash": ""
+  },
+  "scripts/build_spelling_bank.py": {
+    "mtime": 1794692609.3499014,
+    "seen": 1794692838.1367831,
+    "ast_hash": "11d4e6539cc95e99968b8e7dc07bcca4",
+    "semantic_hash": ""
+  },
+  "scripts/gen_english_lvl1.py": {
+    "mtime": 1794660878.137937,
+    "seen": 1794692004.391335,
+    "ast_hash": "5aaa3d2a583a4b5329876db680f6a4aa",
+    "semantic_hash": ""
+  },
+  "scripts/gen_english_lvl2.py": {
+    "mtime": 1794661564.6569402,
+    "seen": 1794692004.391336,
+    "ast_hash": "6243e89408795c0254a2cafea89e4ffd",
+    "semantic_hash": ""
+  },
+  "scripts/gen_english_lvl3.py": {
+    "mtime": 1794661173.4566824,
+    "seen": 1794692004.391337,
+    "ast_hash": "9083302c81e037c70cd3e0f97181e10c",
+    "semantic_hash": ""
+  },
+  "scripts/gen_english_lvl4.py": {
+    "mtime": 1794661384.4722197,
+    "seen": 1794692004.3913379,
+    "ast_hash": "c7a6a5efbc01a0e4707311b9a8b3f856",
+    "semantic_hash": ""
+  },
+  "scripts/gen_english_lvl5.py": {
+    "mtime": 1794661488.7539632,
+    "seen": 1794692004.391339,
+    "ast_hash": "eba4ee79115f4d855f1f2582fed05d6e",
+    "semantic_hash": ""
+  },
+  "scripts/gen_spelling_lvl1.py": {
+    "mtime": 1794692457.438841,
+    "seen": 1794692838.136794,
+    "ast_hash": "b880419d9dc4fdf087ff71a1bb144cff",
+    "semantic_hash": ""
+  },
+  "scripts/gen_spelling_lvl2.py": {
+    "mtime": 1794692565.189022,
+    "seen": 1794692838.1367948,
+    "ast_hash": "a52109b819afcadafd22dca6cd6d9220",
+    "semantic_hash": ""
+  },
+  "scripts/gen_spelling_lvl3.py": {
+    "mtime": 1794692520.3489864,
+    "seen": 1794692838.136796,
+    "ast_hash": "cd18afa8b7edcdd329de876b4d87c4f6",
+    "semantic_hash": ""
+  },
+  "scripts/gen_spelling_lvl4.py": {
+    "mtime": 1794692548.73946,
+    "seen": 1794692838.136797,
+    "ast_hash": "fc1abd824c2dc57f2711eeea3ca4a474",
+    "semantic_hash": ""
+  },
+  "scripts/gen_spelling_lvl5.py": {
+    "mtime": 1794661775.9283278,
+    "seen": 1794692004.391344,
+    "ast_hash": "3c2663b4dd8cef29a1406812edf88b25",
+    "semantic_hash": ""
+  },
+  "scripts/generate_english_5000.js": {
+    "mtime": 1794653551.122389,
+    "seen": 1794692004.3913448,
+    "ast_hash": "c531c5ce062b8b422d1f8bfe68598ac6",
+    "semantic_hash": ""
+  },
+  "scripts/generate_hanja_5000.js": {
+    "mtime": 1794653483.5884027,
+    "seen": 1794692004.391346,
+    "ast_hash": "403b22185dc49ee9fb2b2bd0402b7ad1",
+    "semantic_hash": ""
+  },
+  "scripts/generate_idiom_5000.js": {
+    "mtime": 1794653403.592813,
+    "seen": 1794692004.391347,
+    "ast_hash": "ed3f762cc51208146bac974092afcf2a",
+    "semantic_hash": ""
+  },
+  "scripts/generate_spelling_5000.js": {
+    "mtime": 1794653341.1550925,
+    "seen": 1794692004.391349,
+    "ast_hash": "2fd54c30572d4da1b9e7efba4a5d167c",
+    "semantic_hash": ""
+  },
+  "server.js": {
+    "mtime": 1794653639.8593845,
+    "seen": 1794692004.39135,
+    "ast_hash": "64b0a2f1c0e9da2320a787f1f77a4d8a",
+    "semantic_hash": ""
+  },
+  "tests/test_20000_questions_and_permutations.js": {
+    "mtime": 1794653855.6773272,
+    "seen": 1794692004.391351,
+    "ast_hash": "9e5ad286443536261f80e2ff81664c70",
+    "semantic_hash": ""
+  },
+  "tests/test_audit_logs_ui.js": {
+    "mtime": 1794640206.5515215,
+    "seen": 1794692004.3913522,
+    "ast_hash": "eedbc3d366d22954313fa73dcab8b27c",
+    "semantic_hash": ""
+  },
+  "tests/test_dual_leaderboard.js": {
+    "mtime": 1794645265.350892,
+    "seen": 1794692004.3913522,
+    "ast_hash": "4c6f1e4b59ad2d7b8abe56ef4d2200a2",
+    "semantic_hash": ""
+  },
+  "tests/test_english_5000.js": {
+    "mtime": 1794653505.5312922,
+    "seen": 1794692004.3913531,
+    "ast_hash": "7da9038a339408570f37bb3b62732c32",
+    "semantic_hash": ""
+  },
+  "tests/test_four_subjects_integration.js": {
+    "mtime": 1794653843.727142,
+    "seen": 1794692004.391354,
+    "ast_hash": "fbd5176fd995ec0faee637f6bb785816",
+    "semantic_hash": ""
+  },
+  "tests/test_game_guide_and_ui.js": {
+    "mtime": 1794647099.1709783,
+    "seen": 1794692004.3913548,
+    "ast_hash": "45d23e56da0ea2c0e652798a2e6ac8fc",
+    "semantic_hash": ""
+  },
+  "tests/test_game_items.js": {
+    "mtime": 1794647094.007364,
+    "seen": 1794692004.391356,
+    "ast_hash": "26de6a03740136d4b0a599ace7f7aaec",
+    "semantic_hash": ""
+  },
+  "tests/test_gamification_mechanics.js": {
+    "mtime": 1794646149.634277,
+    "seen": 1794692004.391357,
+    "ast_hash": "3f73c60a4e7a3bbb3e5861365091baea",
+    "semantic_hash": ""
+  },
+  "tests/test_hanja_5000.js": {
+    "mtime": 1794653423.8639872,
+    "seen": 1794692004.391358,
+    "ast_hash": "8ec7f072643ba7a8105556de64d999f9",
+    "semantic_hash": ""
+  },
+  "tests/test_hanja_bank.js": {
+    "mtime": 1794639867.7107604,
+    "seen": 1794692004.391359,
+    "ast_hash": "307e200b62dd9ba8dc804b32f2b67486",
+    "semantic_hash": ""
+  },
+  "tests/test_hanja_duplicate_sentence.js": {
+    "mtime": 1794640850.1137774,
+    "seen": 1794692004.39136,
+    "ast_hash": "7c728a70336f31af8354e2acf53c59b7",
+    "semantic_hash": ""
+  },
+  "tests/test_idiom_5000.js": {
+    "mtime": 1794653365.36193,
+    "seen": 1794692004.391361,
+    "ast_hash": "86fb0b400b48efe902accc1879a88134",
+    "semantic_hash": ""
+  },
+  "tests/test_leaderboard_clean.js": {
+    "mtime": 1794639713.4918835,
+    "seen": 1794692004.391362,
+    "ast_hash": "06c27f3234f505c82f4f6a76d4f4fbda",
+    "semantic_hash": ""
+  },
+  "tests/test_mobile_auth_persistence.js": {
+    "mtime": 1794642348.6886926,
+    "seen": 1794692004.3913631,
+    "ast_hash": "871316bd96524a91b135959f780f5cfc",
+    "semantic_hash": ""
+  },
+  "tests/test_mobile_lifecycle_refresh.js": {
+    "mtime": 1794640865.7734866,
+    "seen": 1794692004.391364,
+    "ast_hash": "5e797d7d96b8ac26bd0d751f951ef2db",
+    "semantic_hash": ""
+  },
+  "tests/test_mode_toggle.js": {
+    "mtime": 1794640011.0846663,
+    "seen": 1794692004.391365,
+    "ast_hash": "f5d58bd4126f582167b51b7b95499d32",
+    "semantic_hash": ""
+  },
+  "tests/test_permutation_and_lazy_loading.js": {
+    "mtime": 1794653755.613181,
+    "seen": 1794692004.391367,
+    "ast_hash": "1cb8e80ac28e112465889b87a9c078e4",
+    "semantic_hash": ""
+  },
+  "tests/test_random_answer_distribution.js": {
+    "mtime": 1794661927.1447828,
+    "seen": 1794692004.391368,
+    "ast_hash": "50f9d97527a009e43a7d841c8664f227",
+    "semantic_hash": ""
+  },
+  "tests/test_responsive_layout.js": {
+    "mtime": 1794646936.7629535,
+    "seen": 1794692004.3913689,
+    "ast_hash": "4b7254101946e1352be07fb40f585f93",
+    "semantic_hash": ""
+  },
+  "tests/test_round_progression.js": {
+    "mtime": 1794640069.9377232,
+    "seen": 1794692004.39137,
+    "ast_hash": "f247415c21e28eef000afa24c80648d2",
+    "semantic_hash": ""
+  },
+  "tests/test_server_compression.js": {
+    "mtime": 1794653245.359277,
+    "seen": 1794692004.391371,
+    "ast_hash": "b49e6190b755c4495e3f83dee7b16835",
+    "semantic_hash": ""
+  },
+  "tests/test_server_logs.js": {
+    "mtime": 1794639638.809122,
+    "seen": 1794692004.391372,
+    "ast_hash": "a684a97110e35c886b0fe6cb978d6bb9",
+    "semantic_hash": ""
+  },
+  "tests/test_spelling_5000.js": {
+    "mtime": 1794653282.0048099,
+    "seen": 1794692004.3913732,
+    "ast_hash": "4fa28b47539217fdcbde51e6d8c092b0",
+    "semantic_hash": ""
+  },
+  "tests/test_v230_features.js": {
+    "mtime": 1794650607.7922008,
+    "seen": 1794692004.391374,
+    "ast_hash": "38a106be111daac3651e0b84676cc8df",
+    "semantic_hash": ""
+  },
+  "tests/test_v240_level_rounds_and_items.js": {
+    "mtime": 1794653887.2457438,
+    "seen": 1794692004.391375,
+    "ast_hash": "47c7a00a96bb1a09782620f487640834",
+    "semantic_hash": ""
+  },
+  "tests/verify_all.js": {
+    "mtime": 1794661658.79089,
+    "seen": 1794692004.3913758,
+    "ast_hash": "f627173df9dcfbe17368c965a38de81f",
+    "semantic_hash": ""
+  },
+  "GEMINI.md": {
+    "mtime": 1794645621.2092092,
+    "seen": 1794692004.391377,
+    "ast_hash": "1e2d2f643333a398a21416745beeead4",
+    "semantic_hash": ""
+  },
+  "HISTORY.md": {
+    "mtime": 1794407575.1637232,
+    "seen": 1794692004.391378,
+    "ast_hash": "811915196a1a589bce9e0aec81577aca",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1794640351.5236497,
+    "seen": 1794692004.3913789,
+    "ast_hash": "f2dce5ec5912e207395020f7dda5fd8a",
+    "semantic_hash": ""
+  },
+  "TECH_REPORT.md": {
+    "mtime": 1794407554.7944381,
+    "seen": 1794692004.39138,
+    "ast_hash": "082b9ecc2bdefd573e2e885b6211d883",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-20000-questions-round-scaling.md": {
+    "mtime": 1794653230.4374058,
+    "seen": 1794692004.391381,
+    "ast_hash": "06d7d7729092a8714b8c630abd867b5e",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-4000-questions-round-scaling.md": {
+    "mtime": 1794653022.088316,
+    "seen": 1794692004.391382,
+    "ast_hash": "330fbf29887c85c54e35652ba191e1bb",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-four-new-game-items.md": {
+    "mtime": 1794647083.6900432,
+    "seen": 1794692004.391383,
+    "ast_hash": "8300e4a7df63b20ddead37b0be42e70e",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-gamification-and-dual-ranking.md": {
+    "mtime": 1794645251.1427577,
+    "seen": 1794692004.3913841,
+    "ast_hash": "7f4ac76e89b1064e2b68d75fc739c773",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-haru-spelling-hanja-enhancement.md": {
+    "mtime": 1794639554.534456,
+    "seen": 1794692004.391385,
+    "ast_hash": "54392ae442f9e2c943a1ff61f2e1dc7d",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-11-14-level-daily-luckybox-english.md": {
+    "mtime": 1794647709.6025512,
+    "seen": 1794692004.391386,
+    "ast_hash": "f4013a2b800bb83640502e64c014a517",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-11-14-1000-questions-round-scaling-design.md": {
+    "mtime": 1794652883.8086007,
+    "seen": 1794692004.391387,
+    "ast_hash": "469abd0e6c10dce2d60b3b800fef71ec",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-11-14-haru-spelling-hanja-enhancement-design.md": {
+    "mtime": 1794639481.1358347,
+    "seen": 1794692004.391388,
+    "ast_hash": "53cf4641054959e93174d86e7e4605f9",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1794692683.0916169,
+    "seen": 1794692838.136852,
+    "ast_hash": "eb1e4b912ff87a19fd35d671404dfb59",
+    "semantic_hash": ""
+  },
+  "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
+    "mtime": 1794662060.0232651,
+    "seen": 1794692004.3913898,
+    "ast_hash": "d73bf59257c11254d4141cf0f073dac3",
+    "semantic_hash": ""
+  },
+  "\uc81c\uc791\ud788\uc2a4\ud1a0\ub9ac.md": {
+    "mtime": 1794662072.2488697,
+    "seen": 1794692004.391391,
+    "ast_hash": "553d0a2d9c5c335379d1f61c069630b8",
+    "semantic_hash": ""
+  },
+  "scripts/fix_spelling_lvl1_2.py": {
+    "mtime": 1794692453.593995,
+    "seen": 1794692838.1367838,
+    "ast_hash": "b926f9b95622835dc0a128749c1f0c3f",
+    "semantic_hash": ""
+  },
+  "scripts/fix_spelling_lvl3.py": {
+    "mtime": 1794692517.470186,
+    "seen": 1794692838.1367848,
+    "ast_hash": "559653aab499815313608e4c3cd47228",
+    "semantic_hash": ""
+  },
+  "scripts/fix_spelling_lvl4.py": {
+    "mtime": 1794692545.1944542,
+    "seen": 1794692838.136786,
+    "ast_hash": "9eba0fe3cbe13c49138c500696fbb80b",
+    "semantic_hash": ""
+  },
+  "tests/test_v252_ending_and_shield_decision.js": {
+    "mtime": 1794692783.0341167,
+    "seen": 1794692838.136835,
+    "ast_hash": "6fdf982cb62dcde51fe93af50a073612",
+    "semantic_hash": ""
+  }
+}

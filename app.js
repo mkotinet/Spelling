@@ -364,8 +364,8 @@ class HaruMatchumApp {
     this.maxCombo = 0;
     this.selectedOption = null;
 
-    // Gamification & Item Mechanics State
-    this.shields = parseInt(localStorage.getItem('haru_game_shields') || '0', 10);
+    // Gamification & Item Mechanics State (Shield Max 2)
+    this.shields = Math.min(2, Math.max(0, parseInt(localStorage.getItem('haru_game_shields') || '0', 10)));
     this.perfectRoundStreak = 0;
     this.isReviveQuiz = false;
     this.pointMultiplier = 1;
@@ -890,7 +890,7 @@ class HaruMatchumApp {
     document.getElementById('userGrade').textContent = u.grade;
     document.getElementById('userStreak').textContent = u.streak + '일';
     const userShieldsEl = document.getElementById('userShields');
-    if (userShieldsEl) userShieldsEl.textContent = (this.shields || 0) + '개';
+    if (userShieldsEl) userShieldsEl.textContent = (this.shields || 0) + '/2개';
     document.getElementById('userPoints').textContent = u.totalPoints + 'P';
     document.getElementById('streakBadge').textContent = `🔥 ${u.streak}일 연속`;
   }
@@ -1423,11 +1423,11 @@ class HaruMatchumApp {
     if (isPerfect) {
       this.perfectRoundStreak++;
 
-      // 2 consecutive perfect rounds -> +1 shield
+      // 2 consecutive perfect rounds -> +1 shield (Max 2)
       if (this.perfectRoundStreak % 2 === 0) {
-        this.shields = Math.min(3, this.shields + 1);
+        this.shields = Math.min(2, this.shields + 1);
         localStorage.setItem('haru_game_shields', this.shields);
-        this.showToastNotice(`🛡️ 2연속 만점 달성! 방패 1개를 획득했습니다! (보유: ${this.shields}개)`);
+        this.showToastNotice(`🛡️ 2연속 만점 달성! 방패 1개를 획득했습니다! (보유: ${this.shields}/2개)`);
       }
 
       // 3 consecutive perfect rounds -> +300P bonus
@@ -1435,12 +1435,6 @@ class HaruMatchumApp {
         this.currentScore += 300;
         this.showToastNotice('👑 3연속 만점 마스터! 보너스 +300P를 획득했습니다! 🥳');
       }
-    } else if (mistakes <= 2 && this.shields > 0) {
-      // Shield protects up to 2 mistakes!
-      this.useShield();
-      isRoundCleared = true;
-      shieldDefended = true;
-      this.showToastNotice(`🛡️ 방패가 오답(${mistakes}개)을 방어하여 다음 라운드 진출 자격을 획득했습니다!`);
     } else {
       this.perfectRoundStreak = 0;
     }
@@ -1572,6 +1566,9 @@ class HaruMatchumApp {
       btnLevelChange.style.display = isLevelDaily ? 'block' : 'none';
     }
 
+    const shieldDecisionBox = document.getElementById('shieldDecisionBox');
+    if (shieldDecisionBox) shieldDecisionBox.style.display = 'none';
+
     if (isRoundCleared && isRoundMode) {
       const modePrefix = isLevelDaily ? `[${this.selectedLevel}] ` : '';
       document.getElementById('resultTitle').textContent = shieldDefended 
@@ -1595,62 +1592,163 @@ class HaruMatchumApp {
       if (btnEliminated) btnEliminated.style.display = 'none';
     } else if (isRoundMode) {
       const modePrefix = isLevelDaily ? `[${this.selectedLevel}] ` : '';
-      // Failed round
-      if (mistakes >= 3) {
-        // Complete Elimination! Drop to Round 1
-        document.getElementById('resultTitle').textContent = `💥 ${modePrefix}탈락! (3문제 이상 오답)`;
-        document.getElementById('resultSubtitle').textContent = `3문제 이상 틀려 탈락했습니다! 1라운드부터 다시 풀어야 합니다. 힘내서 다시 도전해보세요! 💪`;
-        document.getElementById('resultMascot').textContent = '🥺';
 
-        if (btnNextRound) btnNextRound.style.display = 'none';
-        if (resultFailActions) resultFailActions.style.display = 'none';
-        if (btnEliminated) {
-          btnEliminated.style.display = 'block';
-          btnEliminated.disabled = false;
-          btnEliminated.textContent = `🔁 3문제 이상 탈락! ${modePrefix}1라운드부터 다시 풀기 🔥`;
-          btnEliminated.onclick = () => {
-            btnEliminated.disabled = true;
-            if (isLevelDaily) {
-              this.startLevelDailyQuiz(this.selectedLevel, 1);
-            } else {
-              this.startQuiz('daily', 1);
-            }
-          };
-        }
-      } else {
-        // 1 or 2 mistakes: Give chance! (Revive or Checkpoint R-1)
-        const fallbackRound = Math.max(1, this.currentRound - 1);
-        document.getElementById('resultTitle').textContent = `${modePrefix}라운드 ${this.currentRound} 아쉬운 오답 (${mistakes}개) 💫`;
-        document.getElementById('resultSubtitle').textContent = `2문제까지는 재도전 기회가 주어집니다! 부활 찬스 1문제를 맞히고 현재 라운드를 유지하거나, 전단계에서 다시 도전해보세요!`;
-        document.getElementById('resultMascot').textContent = '🌸';
+      const renderFailureActions = () => {
+        if (mistakes >= 3) {
+          // Complete Elimination! Drop to Round 1
+          document.getElementById('resultTitle').textContent = `💥 ${modePrefix}탈락! (3문제 이상 오답)`;
+          document.getElementById('resultSubtitle').textContent = `3문제 이상 틀려 탈락했습니다! 1라운드부터 다시 풀어야 합니다. 힘내서 다시 도전해보세요! 💪`;
+          document.getElementById('resultMascot').textContent = '🥺';
 
-        if (btnNextRound) btnNextRound.style.display = 'none';
-        if (btnEliminated) btnEliminated.style.display = 'none';
-        if (resultFailActions) {
-          resultFailActions.style.display = 'flex';
-          const btnRevive = document.getElementById('btnReviveQuiz');
-          const btnFallback = document.getElementById('btnFallbackRound');
-          if (btnRevive) {
-            btnRevive.disabled = false;
-            btnRevive.textContent = `💫 부활 찬스: 보너스 1문제 맞추고 라운드 ${this.currentRound} 유지!`;
-            btnRevive.onclick = () => {
-              btnRevive.disabled = true;
-              this.handleReviveQuiz();
-            };
-          }
-          if (btnFallback) {
-            btnFallback.disabled = false;
-            btnFallback.textContent = `🔙 전단계 라운드 ${fallbackRound}에서 다시 도전하기`;
-            btnFallback.onclick = () => {
-              btnFallback.disabled = true;
+          if (btnNextRound) btnNextRound.style.display = 'none';
+          if (resultFailActions) resultFailActions.style.display = 'none';
+          if (btnEliminated) {
+            btnEliminated.style.display = 'block';
+            btnEliminated.disabled = false;
+            btnEliminated.textContent = `🔁 3문제 이상 탈락! ${modePrefix}1라운드부터 다시 풀기 🔥`;
+            btnEliminated.onclick = () => {
+              btnEliminated.disabled = true;
               if (isLevelDaily) {
-                this.startLevelDailyQuiz(this.selectedLevel, fallbackRound);
+                this.startLevelDailyQuiz(this.selectedLevel, 1);
               } else {
-                this.startQuiz('daily', fallbackRound);
+                this.startQuiz('daily', 1);
               }
             };
           }
+        } else {
+          // 1 or 2 mistakes: Give chance! (Revive or Checkpoint R-1)
+          const fallbackRound = Math.max(1, this.currentRound - 1);
+          document.getElementById('resultTitle').textContent = `${modePrefix}라운드 ${this.currentRound} 아쉬운 오답 (${mistakes}개) 💫`;
+          document.getElementById('resultSubtitle').textContent = `2문제까지는 재도전 기회가 주어집니다! 부활 찬스 1문제를 맞히고 현재 라운드를 유지하거나, 전단계에서 다시 도전해보세요!`;
+          document.getElementById('resultMascot').textContent = '🌸';
+
+          if (btnNextRound) btnNextRound.style.display = 'none';
+          if (btnEliminated) btnEliminated.style.display = 'none';
+          if (resultFailActions) {
+            resultFailActions.style.display = 'flex';
+            const btnRevive = document.getElementById('btnReviveQuiz');
+            const btnFallback = document.getElementById('btnFallbackRound');
+            if (btnRevive) {
+              btnRevive.disabled = false;
+              btnRevive.textContent = `💫 부활 찬스: 보너스 1문제 맞추고 라운드 ${this.currentRound} 유지!`;
+              btnRevive.onclick = () => {
+                btnRevive.disabled = true;
+                this.handleReviveQuiz();
+              };
+            }
+            if (btnFallback) {
+              btnFallback.disabled = false;
+              btnFallback.textContent = `🔙 전단계 라운드 ${fallbackRound}에서 다시 도전하기`;
+              btnFallback.onclick = () => {
+                btnFallback.disabled = true;
+                if (isLevelDaily) {
+                  this.startLevelDailyQuiz(this.selectedLevel, fallbackRound);
+                } else {
+                  this.startQuiz('daily', fallbackRound);
+                }
+              };
+            }
+          }
         }
+      };
+
+      // Check if user has shields to defend failure!
+      if (this.shields > 0) {
+        document.getElementById('resultTitle').textContent = `🛡️ ${modePrefix}라운드 ${this.currentRound} 방패 사용 여부 선택`;
+        document.getElementById('resultSubtitle').textContent = `오답(${mistakes}개)이 발생했습니다! 보유 중인 방패를 사용해 다음 라운드로 진출하시겠습니까?`;
+        document.getElementById('resultMascot').textContent = '🛡️';
+
+        if (btnNextRound) btnNextRound.style.display = 'none';
+        if (resultFailActions) resultFailActions.style.display = 'none';
+        if (btnEliminated) btnEliminated.style.display = 'none';
+
+        if (shieldDecisionBox) {
+          shieldDecisionBox.style.display = 'block';
+          const countEl = document.getElementById('shieldDecisionCount');
+          if (countEl) countEl.textContent = this.shields;
+
+          const btnUse = document.getElementById('btnUseShieldDefense');
+          const btnDec = document.getElementById('btnDeclineShield');
+
+          if (btnUse) {
+            btnUse.disabled = false;
+            btnUse.onclick = () => {
+              btnUse.disabled = true;
+              this.useShield();
+              isRoundCleared = true;
+              shieldDefended = true;
+
+              // Round clear bonus +50P
+              pointsEarned += 50;
+              u.totalPoints += 50;
+              u.maxRoundToday = Math.max(u.maxRoundToday || 1, this.currentRound);
+              if (this.quizSubject === 'idiom') {
+                u.maxRoundIdiom = Math.max(u.maxRoundIdiom || 1, this.currentRound);
+                u.pointsIdiom = (u.pointsIdiom || 0) + 50;
+              } else if (this.quizSubject === 'hanja') {
+                u.maxRoundHanja = Math.max(u.maxRoundHanja || 1, this.currentRound);
+                u.pointsHanja = (u.pointsHanja || 0) + 50;
+              } else if (this.quizSubject === 'english') {
+                u.maxRoundEnglish = Math.max(u.maxRoundEnglish || 1, this.currentRound);
+                u.pointsEnglish = (u.pointsEnglish || 0) + 50;
+              } else {
+                u.maxRoundSpelling = Math.max(u.maxRoundSpelling || 1, this.currentRound);
+                u.pointsSpelling = (u.pointsSpelling || 0) + 50;
+              }
+
+              if (me) {
+                me.totalPoints = u.totalPoints;
+                me.maxRoundToday = u.maxRoundToday;
+                if (this.quizSubject === 'idiom') { me.maxRoundIdiom = u.maxRoundIdiom; me.pointsIdiom = u.pointsIdiom; }
+                else if (this.quizSubject === 'hanja') { me.maxRoundHanja = u.maxRoundHanja; me.pointsHanja = u.pointsHanja; }
+                else if (this.quizSubject === 'english') { me.maxRoundEnglish = u.maxRoundEnglish; me.pointsEnglish = u.pointsEnglish; }
+                else { me.maxRoundSpelling = u.maxRoundSpelling; me.pointsSpelling = u.pointsSpelling; }
+              }
+
+              DataManager.save(this.data);
+              this.syncToCloud('ROUND_CLEAR', {
+                mode: this.quizSubject,
+                round: this.currentRound,
+                score: this.currentScore,
+                pointsEarned,
+                maxRoundToday: u.maxRoundToday,
+                todayScore: u.todayScore
+              });
+              this.renderUserProfile();
+
+              shieldDecisionBox.style.display = 'none';
+              document.getElementById('resultTitle').textContent = `🛡️ 방패 방어로 ${modePrefix}라운드 ${this.currentRound} 통과!`;
+              document.getElementById('resultSubtitle').textContent = `방패를 사용하여 오답을 막고 다음 라운드 진출 자격을 획득했습니다! (남은 방패: ${this.shields}/2개)`;
+              document.getElementById('resultMascot').textContent = '🛡️';
+              document.getElementById('resultPoints').textContent = `+${pointsEarned}P`;
+
+              if (btnNextRound) {
+                btnNextRound.style.display = 'block';
+                btnNextRound.disabled = false;
+                btnNextRound.textContent = `🎉 ${modePrefix}라운드 ${this.currentRound + 1} (새 5문제) 도전하기 🔥`;
+                btnNextRound.onclick = () => {
+                  btnNextRound.disabled = true;
+                  this.startNextRound();
+                };
+              }
+              this.showToastNotice(`🛡️ 방패를 사용하여 라운드 ${this.currentRound}를 통과했습니다! (남은 방패: ${this.shields}/2개)`);
+            };
+          }
+
+          if (btnDec) {
+            btnDec.disabled = false;
+            btnDec.onclick = () => {
+              btnDec.disabled = true;
+              shieldDecisionBox.style.display = 'none';
+              this.showToastNotice(`🏳️ 방패를 아꼈습니다. (보유: ${this.shields}/2개)`);
+              renderFailureActions();
+            };
+          }
+        } else {
+          renderFailureActions();
+        }
+      } else {
+        renderFailureActions();
       }
     } else {
       document.getElementById('resultTitle').textContent = '오늘의 퀴즈 완료! 💕';
@@ -1729,13 +1827,13 @@ class HaruMatchumApp {
       { key: 'clover', type: 'item', emoji: '🍀', name: '행운의 클로버', desc: '문제를 즉시 정답으로 통과하는 프리패스 획득!' },
       { key: 'timemachine', type: 'item', emoji: '⌛', name: '타임머신 시계', desc: '방금 고른 오답을 취소하고 시간을 되돌리는 시계 획득!' },
       { key: 'magnet', type: 'item', emoji: '🧲', name: '콤보 자석', desc: '연속 정답 시 콤보 점수를 4배로 흡수하는 자석 획득!' },
-      { key: 'shield', type: 'shield', emoji: '🛡️', name: '수호 방패', desc: '라운드 오답 2회까지 든든하게 막아주는 방패 획득!' }
+      { key: 'shield', type: 'shield', emoji: '🛡️', name: '수호 방패', desc: '라운드 실패 시 방어하여 통과시켜 주는 방패 획득! (최대 2개)' }
     ];
 
     const pick = pool[Math.floor(Math.random() * pool.length)];
 
     if (pick.type === 'shield') {
-      this.shields = Math.min(5, (this.shields || 0) + 1);
+      this.shields = Math.min(2, (this.shields || 0) + 1);
       localStorage.setItem('haru_game_shields', this.shields);
     } else {
       this.items[pick.key] = (this.items[pick.key] || 0) + 1;

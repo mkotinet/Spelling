@@ -29,13 +29,25 @@ def build_english_bank():
     print(f"Total English questions combined: {len(all_questions)}")
     assert len(all_questions) == 5000, f"Expected 5000, got {len(all_questions)}"
 
-    # Schema integrity check
+    LEVEL_PROMPTS_ENGLISH = {
+        "초등/기초": "문장을 읽고 빈칸에 들어갈 알맞은 영어 단어를 골라보세요.",
+        "중등/필수": "다음 영어 문장의 빈칸에 들어갈 올바른 철자의 영단어를 고르세요.",
+        "고등/심화": "문맥상 빈칸에 가장 적절한 어휘의 올바른 영문 철자를 고르세요.",
+        "수능/기출": "다음 수능 지문 문맥의 빈칸에 들어갈 가장 적절한 영어 어휘를 고르세요.",
+        "일반/실무": "다음 비즈니스 실무 문맥의 빈칸에 들어갈 올바른 영어 어휘를 고르세요."
+    }
+
+    # Schema integrity check & level-appropriate question prompt assignment
     seen_ids = set()
     for idx, q in enumerate(all_questions):
         expected_id = 15001 + idx
         assert q["id"] == expected_id, f"ID mismatch at index {idx}: {q['id']} vs {expected_id}"
         assert q["id"] not in seen_ids, f"Duplicate ID: {q['id']}"
         seen_ids.add(q["id"])
+
+        q_num = q["id"] - 15000
+        prompt_prefix = LEVEL_PROMPTS_ENGLISH.get(q["level"], "다음 영어 문장의 빈칸에 들어갈 올바른 철자의 단어를 고르세요.")
+        q["question"] = f"{prompt_prefix} (문항 #{q_num})"
 
         assert len(q["options"]) == 4, f"Options length != 4 at ID {q['id']}"
         assert len(set(q["options"])) == 4, f"Duplicate options at ID {q['id']}: {q['options']}"
