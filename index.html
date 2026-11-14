@@ -356,6 +356,22 @@
         </div>
       </div>
 
+      <!-- User Activity / Access History Section -->
+      <div id="userActivityHistorySection" style="margin-top: 18px; border-top: 1px dashed #e2d9e5; padding-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 style="font-size: 0.92rem; color: var(--text-dark); font-weight: 700;">📋 내 최근 접속 및 활동 이력</h4>
+          <span style="font-size: 0.72rem; color: var(--text-sub);">최근 활동</span>
+        </div>
+        <div id="userLogsContainer" style="max-height: 140px; overflow-y: auto; background: #faf7fb; border-radius: 10px; padding: 8px; font-size: 0.75rem; border: 1px solid #ebdbe8;">
+          <div style="text-align: center; color: var(--text-muted); padding: 10px;">로그인 시 이용 기록이 표시됩니다.</div>
+        </div>
+      </div>
+
+      <!-- Admin Audit Log Trigger (Visible only for '단민러브') -->
+      <button id="btnOpenAdminLogs" class="main-action-btn" style="display: none; margin-top: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; font-size: 0.88rem;">
+        👑 전체 회원 접속 감사 로그 조회 (관리자)
+      </button>
+
       <button id="btnSaveProfile" class="main-action-btn" style="margin-top: 14px;">
         프로필 저장하기 💕
       </button>
@@ -485,6 +501,27 @@
       <button id="btnSubmitAuth" class="main-action-btn" style="margin-top: 6px;">
         로그인하기 💕
       </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 5: ADMIN SYSTEM AUDIT LOGS MODAL (Only '단민러브')
+       ============================================================ -->
+  <div id="modalAdminLogs" class="modal-overlay">
+    <div class="modal-box" style="max-width: 540px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3>👑 전체 회원 접속 감사 로그</h3>
+        <button id="btnCloseAdminLogsModal" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-size: 0.8rem; color: var(--text-sub);">시놀로지 NAS 감사 로깅 (최대 1,000건)</span>
+        <button id="btnRefreshAdminLogs" class="icon-btn" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 8px;">새로고침 🔄</button>
+      </div>
+
+      <div id="adminLogsContainer" style="flex: 1; overflow-y: auto; background: #fafafa; border-radius: 12px; padding: 10px; font-size: 0.74rem; border: 1px solid #e5e7eb; min-height: 280px; max-height: 420px;">
+        <div style="text-align: center; color: var(--text-muted); padding: 20px;">로그를 불러오는 중입니다...</div>
+      </div>
     </div>
   </div>
 

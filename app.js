@@ -278,6 +278,7 @@ class HaruMatchumApp {
     this.modalApi = document.getElementById('modalApi');
     this.modalDictSearch = document.getElementById('modalDictSearch');
     this.modalAuth = document.getElementById('modalAuth');
+    this.modalAdminLogs = document.getElementById('modalAdminLogs');
 
     // Mascot
     this.mascotBubble = document.getElementById('mascotSpeech');
@@ -350,6 +351,14 @@ class HaruMatchumApp {
     document.getElementById('btnOpenApiSettings').addEventListener('click', () => this.openApiModal());
     document.getElementById('btnCloseApiModal').addEventListener('click', () => this.closeApiModal());
     document.getElementById('btnSaveApiSettings').addEventListener('click', () => this.saveApiSettings());
+
+    // Admin Logs modal
+    const btnOpenAdmin = document.getElementById('btnOpenAdminLogs');
+    const btnCloseAdmin = document.getElementById('btnCloseAdminLogsModal');
+    const btnRefreshAdmin = document.getElementById('btnRefreshAdminLogs');
+    if (btnOpenAdmin) btnOpenAdmin.addEventListener('click', () => this.openAdminLogsModal());
+    if (btnCloseAdmin) btnCloseAdmin.addEventListener('click', () => this.closeAdminLogsModal());
+    if (btnRefreshAdmin) btnRefreshAdmin.addEventListener('click', () => this.fetchAdminLogs());
 
     // Sound toggle
     const soundBtn = document.getElementById('btnToggleSound');
@@ -907,7 +916,115 @@ class HaruMatchumApp {
       opt.classList.toggle('selected', opt.dataset.avatar === u.avatar);
     });
 
+    // Check if user is '단민러브'
+    const btnAdmin = document.getElementById('btnOpenAdminLogs');
+    if (btnAdmin) {
+      btnAdmin.style.display = (u.name === '단민러브' || u.username === '단민러브') ? 'block' : 'none';
+    }
+
+    this.fetchUserLogs();
     this.modalProfile.classList.add('active');
+  }
+
+  async fetchUserLogs() {
+    const container = document.getElementById('userLogsContainer');
+    if (!container) return;
+
+    if (!this.cloudToken) {
+      container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">로그인 시 기기 접속 및 퀴즈 활동 이력이 기록됩니다.</div>';
+      return;
+    }
+
+    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">이력을 불러오는 중...</div>';
+
+    try {
+      const res = await fetch('/api/user/logs', {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.logs) && body.logs.length > 0) {
+          container.innerHTML = body.logs.map(l => {
+            const badgeClass = l.action || 'DEFAULT';
+            const actionText = l.action === 'LOGIN_SUCCESS' ? '로그인 성공'
+              : l.action === 'LOGIN_FAIL' ? '로그인 실패'
+              : l.action === 'REGISTER' ? '회원가입'
+              : l.action === 'ROUND_CLEAR' ? `라운드 클리어 (${l.details && l.details.round ? l.details.round + 'R' : ''})`
+              : '퀴즈 활동';
+            return `
+              <div class="log-item-row">
+                <span class="log-badge ${badgeClass}">${actionText}</span>
+                <span class="log-ip">${l.ip || '-'}</span>
+                <span class="log-time">${l.kstTime || (l.timestamp ? l.timestamp.substring(5, 16) : '')}</span>
+              </div>
+            `;
+          }).join('');
+          return;
+        }
+      }
+      container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">기록된 이용 이력이 없습니다.</div>';
+    } catch (e) {
+      container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 10px;">이력을 불러올 수 없습니다.</div>';
+    }
+  }
+
+  openAdminLogsModal() {
+    if (this.modalAdminLogs) {
+      this.modalAdminLogs.classList.add('active');
+      this.fetchAdminLogs();
+    }
+  }
+
+  closeAdminLogsModal() {
+    if (this.modalAdminLogs) {
+      this.modalAdminLogs.classList.remove('active');
+    }
+  }
+
+  async fetchAdminLogs() {
+    const container = document.getElementById('adminLogsContainer');
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">감사 로그를 동기화하는 중...</div>';
+
+    try {
+      const res = await fetch('/api/admin/logs', {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.logs)) {
+          if (body.logs.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">저장된 감사 로그가 없습니다.</div>';
+            return;
+          }
+          container.innerHTML = body.logs.map(l => {
+            const badgeClass = l.action || 'DEFAULT';
+            const actionText = l.action === 'LOGIN_SUCCESS' ? '로그인 성공'
+              : l.action === 'LOGIN_FAIL' ? '로그인 실패'
+              : l.action === 'REGISTER' ? '회원가입'
+              : l.action === 'ROUND_CLEAR' ? `라운드 클리어 (${l.details && l.details.round ? l.details.round + 'R' : ''})`
+              : '활동 완료';
+            return `
+              <div class="log-item-row" style="padding: 7px 6px; border-bottom: 1px solid #eee;">
+                <div>
+                  <strong style="color: var(--text-dark);">${l.username}</strong>
+                  <span class="log-badge ${badgeClass}" style="margin-left: 6px;">${actionText}</span>
+                  <div style="font-size: 0.68rem; color: #888; margin-top: 2px;">IP: ${l.ip} | ${l.userAgent || '-'}</div>
+                </div>
+                <div class="log-time" style="white-space: nowrap; text-align: right;">
+                  ${l.kstTime || (l.timestamp ? l.timestamp.substring(0, 19).replace('T', ' ') : '')}
+                </div>
+              </div>
+            `;
+          }).join('');
+          return;
+        }
+      }
+      container.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 20px;">감사 로그 조회 권한이 없거나 오류가 발생했습니다.</div>';
+    } catch (e) {
+      container.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 20px;">서버와 통신할 수 없습니다.</div>';
+    }
   }
 
   closeProfileModal() {

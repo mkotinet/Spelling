@@ -1334,3 +1334,42 @@ body.theme-hanja .mode-switch-btn.active {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Access Log Styles */
+.log-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0e6ee;
+  gap: 6px;
+}
+
+.log-item-row:last-child {
+  border-bottom: none;
+}
+
+.log-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.log-badge.LOGIN_SUCCESS { background: #dcfce7; color: #166534; }
+.log-badge.LOGIN_FAIL { background: #fee2e2; color: #991b1b; }
+.log-badge.REGISTER { background: #e0e7ff; color: #3730a3; }
+.log-badge.ROUND_CLEAR { background: #fef3c7; color: #b45309; }
+.log-badge.QUIZ_FINISH { background: #f3e8ff; color: #6b21a8; }
+
+.log-time {
+  color: var(--text-sub);
+  font-size: 0.7rem;
+}
+
+.log-ip {
+  color: #64748b;
+  font-family: monospace;
+  font-size: 0.72rem;
+}
