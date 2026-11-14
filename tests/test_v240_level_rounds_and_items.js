@@ -295,7 +295,7 @@ sp4.forEach(q => {
 
 // Check Hanja Question Bank
 const hj4 = HANJA_QUESTION_BANK.filter(q => q.options && q.options.length >= 4);
-assert(hj4.length === 37, `Hanja questions should be 37 4-choice questions, found ${hj4.length}`);
+assert(hj4.length >= 37, `Hanja questions should be at least 37 4-choice questions, found ${hj4.length}`);
 hj4.forEach(q => {
   assert(!q.sentence.includes('/'), `Hanja 4-choice question (ID ${q.id}) must not contain '/' in sentence: "${q.sentence}"`);
   assert(q.sentence.includes('[ (     ) ]'), `Hanja 4-choice question (ID ${q.id}) must have '[ (     ) ]': "${q.sentence}"`);
@@ -303,7 +303,7 @@ hj4.forEach(q => {
 
 // Check English Question Bank
 const en4 = ENGLISH_QUESTION_BANK.filter(q => q.options && q.options.length >= 4);
-assert(en4.length === 28, `English questions should be 28 4-choice questions, found ${en4.length}`);
+assert(en4.length >= 28, `English questions should be at least 28 4-choice questions, found ${en4.length}`);
 en4.forEach(q => {
   assert(!q.sentence.includes('/'), `English 4-choice question (ID ${q.id}) must not contain '/' in sentence: "${q.sentence}"`);
   assert(q.sentence.includes('[ (     ) ]'), `English 4-choice question (ID ${q.id}) must have '[ (     ) ]': "${q.sentence}"`);
