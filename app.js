@@ -171,6 +171,115 @@ if (typeof window !== 'undefined') {
 }
 
 // ============================================================
+// English Speech Synthesis Engine (Native Web Speech API)
+// Provides crystal-clear native US/EN pronunciation for English questions & answers
+// ============================================================
+class EnglishSpeechEngine {
+  constructor() {
+    this.synth = (typeof window !== 'undefined' && 'speechSynthesis' in window) ? window.speechSynthesis : null;
+    this.voice = null;
+    this.rate = 0.88; // Optimized clear educational playback speed
+    this.pitch = 1.0;
+    this.isPlaying = false;
+    this.activeBtn = null;
+    this.initVoices();
+    if (this.synth) {
+      if (typeof this.synth.addEventListener === 'function') {
+        this.synth.addEventListener('voiceschanged', () => this.initVoices());
+      } else if (this.synth.onvoiceschanged !== undefined) {
+        this.synth.onvoiceschanged = () => this.initVoices();
+      }
+    }
+  }
+
+  initVoices() {
+    if (!this.synth) return;
+    try {
+      const voices = this.synth.getVoices();
+      if (!Array.isArray(voices) || voices.length === 0) return;
+      // Preferred high quality native English voices
+      const preferred = ['Google US English', 'Samantha', 'Daniel', 'Karen', 'Microsoft Zira', 'Natural', 'en-US', 'en_US'];
+      for (const pref of preferred) {
+        const found = voices.find(v => (v.name && v.name.includes(pref)) || (v.lang && v.lang.replace('_', '-').startsWith(pref)));
+        if (found) {
+          this.voice = found;
+          break;
+        }
+      }
+      if (!this.voice) {
+        this.voice = voices.find(v => v.lang && v.lang.startsWith('en')) || null;
+      }
+    } catch (e) {}
+  }
+
+  speak(text, btnElement = null, onComplete = null) {
+    if (!this.synth || !text) return;
+    try {
+      this.stop();
+
+      // Clean bracket notations: [ (     ) ] or [ ( ? ) ] -> "blank" for audio natural flow
+      let clean = String(text)
+        .replace(/\[\s*\(\s*\?*\s*\)\s*\]/g, ' blank ')
+        .replace(/\[\s*\(.*?\)\s*\]/g, ' blank ')
+        .replace(/\[(.*?)\]/g, ' $1 ')
+        .replace(/[\/\\#_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!clean) return;
+
+      const utter = new SpeechSynthesisUtterance(clean);
+      utter.lang = 'en-US';
+      utter.rate = this.rate;
+      utter.pitch = this.pitch;
+      if (this.voice) utter.voice = this.voice;
+
+      this.isPlaying = true;
+      if (btnElement) {
+        this.activeBtn = btnElement;
+        btnElement.classList.add('speaking-animation');
+      }
+
+      const finishHandler = () => {
+        this.isPlaying = false;
+        if (this.activeBtn) {
+          this.activeBtn.classList.remove('speaking-animation');
+          this.activeBtn = null;
+        }
+        if (typeof onComplete === 'function') onComplete();
+      };
+
+      utter.onend = finishHandler;
+      utter.onerror = finishHandler;
+
+      this.synth.speak(utter);
+    } catch (e) {
+      this.isPlaying = false;
+      if (btnElement) btnElement.classList.remove('speaking-animation');
+      console.warn('English Speech error:', e);
+    }
+  }
+
+  stop() {
+    if (this.synth) {
+      try {
+        this.synth.cancel();
+      } catch (e) {}
+    }
+    this.isPlaying = false;
+    if (this.activeBtn) {
+      this.activeBtn.classList.remove('speaking-animation');
+      this.activeBtn = null;
+    }
+  }
+}
+
+const englishVoice = new EnglishSpeechEngine();
+if (typeof window !== 'undefined') {
+  window.englishVoice = englishVoice;
+}
+
+// ============================================================
 // 2. Confetti Particle Animation
 // ============================================================
 class ConfettiManager {
@@ -749,6 +858,9 @@ class HaruMatchumApp {
   }
 
   switchView(viewName) {
+    if (typeof englishVoice !== 'undefined') {
+      englishVoice.stop();
+    }
     this.currentViewName = viewName;
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -1230,6 +1342,23 @@ class HaruMatchumApp {
     document.getElementById('quizPrompt').textContent = `Q${this.currentIndex + 1}. ${q.question}`;
     let sentenceHtml = q.sentence || '';
 
+    // English Voice Bar visibility & binding
+    const isEnglishQuiz = this.quizSubject === 'english' || Boolean(q.englishWord);
+    const engVoiceBar = document.getElementById('englishVoiceBar');
+    if (engVoiceBar) {
+      if (isEnglishQuiz) {
+        engVoiceBar.style.display = 'flex';
+        const btnVoiceSent = document.getElementById('btnQuizVoiceSentence');
+        if (btnVoiceSent) {
+          btnVoiceSent.onclick = () => {
+            englishVoice.speak(q.sentence || sentenceHtml, btnVoiceSent);
+          };
+        }
+      } else {
+        engVoiceBar.style.display = 'none';
+      }
+    }
+
     // Runtime guard: 4-choice questions must always use bracket blank format instead of [ A / B ]
     if (q.options && q.options.length >= 4 && /\[\s*[^\]]+\/[^\]]+\]/.test(sentenceHtml)) {
       sentenceHtml = sentenceHtml.replace(/\[\s*[^\]]+\/[^\]]+\]/g, '[ (     ) ]');
@@ -1256,7 +1385,24 @@ class HaruMatchumApp {
     q.options.forEach((optText, idx) => {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
-      btn.innerHTML = `<span>${idx + 1}. ${optText}</span><span class="opt-icon">✨</span>`;
+      if (isEnglishQuiz) {
+        btn.innerHTML = `
+          <div class="opt-left">
+            <span>${idx + 1}. ${optText}</span>
+            <button type="button" class="opt-speech-mini-btn" title="'${optText}' 발음 듣기" data-word="${optText}">🔊</button>
+          </div>
+          <span class="opt-icon">✨</span>
+        `;
+        const miniBtn = btn.querySelector('.opt-speech-mini-btn');
+        if (miniBtn) {
+          miniBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            englishVoice.speak(optText, miniBtn);
+          });
+        }
+      } else {
+        btn.innerHTML = `<span>${idx + 1}. ${optText}</span><span class="opt-icon">✨</span>`;
+      }
       btn.addEventListener('click', () => this.handleOptionSelect(idx, btn));
       optionsContainer.appendChild(btn);
     });
@@ -1459,6 +1605,33 @@ class HaruMatchumApp {
         if (naverEnglishLink) {
           naverEnglishLink.href = q.dictLink || `https://en.dict.naver.com/#/search?query=${encodeURIComponent(q.englishWord || targetWord)}`;
         }
+
+        // Voice Listeners for English Explanation
+        const btnExpVoiceWord = document.getElementById('btnExpVoiceWord');
+        if (btnExpVoiceWord) {
+          btnExpVoiceWord.onclick = () => englishVoice.speak(q.englishWord || targetWord, btnExpVoiceWord);
+        }
+        const btnExpVoiceSentence = document.getElementById('btnExpVoiceSentence');
+        if (btnExpVoiceSentence) {
+          btnExpVoiceSentence.onclick = () => {
+            const cleanSent = (document.getElementById('englishFullSentence').textContent || q.sentence || '').trim();
+            englishVoice.speak(cleanSent, btnExpVoiceSentence);
+          };
+        }
+        const btnExpVoiceExample = document.getElementById('btnExpVoiceExample');
+        if (btnExpVoiceExample) {
+          btnExpVoiceExample.onclick = () => {
+            const cleanEx = (document.getElementById('englishExampleText').textContent || q.exampleSentence || '').trim();
+            englishVoice.speak(cleanEx, btnExpVoiceExample);
+          };
+        }
+
+        // Auto-play correct answer pronunciation when answered correctly (gentle 350ms delay after sfx)
+        if (isCorrect) {
+          setTimeout(() => {
+            englishVoice.speak(q.englishWord || targetWord, btnExpVoiceWord);
+          }, 360);
+        }
       } else {
         expEnglishArea.style.display = 'none';
       }
@@ -1470,6 +1643,9 @@ class HaruMatchumApp {
   }
 
   handleNextQuestion() {
+    if (typeof englishVoice !== 'undefined') {
+      englishVoice.stop();
+    }
     this.activeItem5050Indices = [];
     this.isHintOpen = false;
     this.currentIndex++;
@@ -3259,5 +3435,5 @@ if (typeof document !== 'undefined' && document.addEventListener) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { HaruMatchumApp };
+  module.exports = { HaruMatchumApp, EnglishSpeechEngine, englishVoice };
 }

@@ -10,7 +10,7 @@ import os
 import urllib.parse
 import sys
 
-sys.path.append("/Users/kotinet/.gemini/antigravity/brain/88ccfbae-9403-4c93-8f74-36f6804eb626/scratch")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from build_idiom_bank_full import create_idiom_level_data, LEVEL_NAMES
 

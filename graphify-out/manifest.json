@@ -1,20 +1,20 @@
 {
   "app.js": {
-    "mtime": 1794693660.0946822,
-    "seen": 1794693709.981637,
-    "ast_hash": "12cf9c7fe460056615ff0b2572558f65",
+    "mtime": 1794695589.4446495,
+    "seen": 1794695726.0153291,
+    "ast_hash": "70822ecb739d855e550db4df510f4dcb",
     "semantic_hash": ""
   },
   "data/access_logs.json": {
-    "mtime": 1794693696.1485896,
-    "seen": 1794693709.9816399,
-    "ast_hash": "e7df94cea31eb2490111080e44e7f1a4",
+    "mtime": 1794695717.0119174,
+    "seen": 1794695726.015331,
+    "ast_hash": "6f80f07d6efdd615fedbe0dbe73e6c32",
     "semantic_hash": ""
   },
   "data/users.json": {
-    "mtime": 1794693702.475349,
-    "seen": 1794693709.981641,
-    "ast_hash": "39639626e5703090dbe5eac8962c4a52",
+    "mtime": 1794695717.0116808,
+    "seen": 1794695726.0153332,
+    "ast_hash": "d477c1787da93f5e1b90643baf47b336",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -30,20 +30,20 @@
     "semantic_hash": ""
   },
   "hanja_questions.js": {
-    "mtime": 1794692642.2442415,
-    "seen": 1794692838.136776,
-    "ast_hash": "1a513cf67100e44aa495a3170211ea8e",
+    "mtime": 1794695684.7710633,
+    "seen": 1794695726.015338,
+    "ast_hash": "78ddaea3f2e4f3eb43261d130495a0f4",
     "semantic_hash": ""
   },
   "idiom_questions.js": {
-    "mtime": 1794692639.4469697,
-    "seen": 1794692838.136777,
-    "ast_hash": "5fd69557b5ef8e67fcfffbe5699af5a0",
+    "mtime": 1794695439.979928,
+    "seen": 1794695726.015339,
+    "ast_hash": "3df0d40c60d9cc340a614fa0f19a12fd",
     "semantic_hash": ""
   },
   "questions.js": {
-    "mtime": 1794692636.4828866,
-    "seen": 1794692838.136779,
+    "mtime": 1794695637.225649,
+    "seen": 1794695726.01534,
     "ast_hash": "83d1db85a5aa2c022ad7a5d8e229cf67",
     "semantic_hash": ""
   },
@@ -54,15 +54,15 @@
     "semantic_hash": ""
   },
   "scripts/build_hanja_bank.py": {
-    "mtime": 1794692626.6162095,
-    "seen": 1794692838.136781,
-    "ast_hash": "349033046a0d0db42a50fd0cb45166f7",
+    "mtime": 1794695436.9632955,
+    "seen": 1794695726.015342,
+    "ast_hash": "8a8673dd6933ff0ed71fe32f7b9087a1",
     "semantic_hash": ""
   },
   "scripts/build_idiom_bank.py": {
-    "mtime": 1794692618.1525655,
-    "seen": 1794692838.1367822,
-    "ast_hash": "970298fd6759ec325a7957036a7a8a19",
+    "mtime": 1794695433.1384594,
+    "seen": 1794695726.0153449,
+    "ast_hash": "94543b9f9c7d2cf0ab65e051cd4bb5bf",
     "semantic_hash": ""
   },
   "scripts/build_spelling_bank.py": {
@@ -126,8 +126,8 @@
     "semantic_hash": ""
   },
   "scripts/gen_spelling_lvl5.py": {
-    "mtime": 1794661775.9283278,
-    "seen": 1794692004.391344,
+    "mtime": 1794695637.1091506,
+    "seen": 1794695726.015363,
     "ast_hash": "3c2663b4dd8cef29a1406812edf88b25",
     "semantic_hash": ""
   },
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/verify_all.js": {
-    "mtime": 1794661658.79089,
-    "seen": 1794692004.3913758,
-    "ast_hash": "f627173df9dcfbe17368c965a38de81f",
+    "mtime": 1794695714.3192677,
+    "seen": 1794695726.015402,
+    "ast_hash": "b20b6e8eca30fd893592537325002b46",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -390,21 +390,21 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794692885.3941834,
-    "seen": 1794693709.981725,
-    "ast_hash": "97e3978bd57c1b67f1bc4b94d1f29485",
+    "mtime": 1794695530.8189347,
+    "seen": 1794695726.015417,
+    "ast_hash": "35df3eb1b9b7c2b731f28d545c7a45d1",
     "semantic_hash": ""
   },
   "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
-    "mtime": 1794692861.2375681,
-    "seen": 1794693709.981727,
-    "ast_hash": "f9a00aa959fef3ff2803994e786c4906",
+    "mtime": 1794693726.0746956,
+    "seen": 1794695726.0154188,
+    "ast_hash": "ed50c3373a86ae77ea119a5d7f0e0461",
     "semantic_hash": ""
   },
   "\uc81c\uc791\ud788\uc2a4\ud1a0\ub9ac.md": {
-    "mtime": 1794692877.6599145,
-    "seen": 1794693709.981728,
-    "ast_hash": "8368b2c62cd75ba01f5b756f7c0099ee",
+    "mtime": 1794693740.949089,
+    "seen": 1794695726.01542,
+    "ast_hash": "46061c9bec7a8d6644e86c8f67d51c67",
     "semantic_hash": ""
   },
   "scripts/fix_spelling_lvl1_2.py": {
@@ -435,6 +435,24 @@
     "mtime": 1794693682.8229964,
     "seen": 1794693709.981708,
     "ast_hash": "365957d1c4371b43d13d4b88622a21fd",
+    "semantic_hash": ""
+  },
+  "scripts/build_hanja_bank_full.py": {
+    "mtime": 1794695678.4275594,
+    "seen": 1794695726.0153441,
+    "ast_hash": "17218dd9159e45b3125ee19314ddef60",
+    "semantic_hash": ""
+  },
+  "scripts/build_idiom_bank_full.py": {
+    "mtime": 1794695427.0055537,
+    "seen": 1794695726.0153458,
+    "ast_hash": "f69bf3bb4e3194bdf200763861396e9c",
+    "semantic_hash": ""
+  },
+  "tests/test_v260_voice_and_concise_questions.js": {
+    "mtime": 1794695701.553408,
+    "seen": 1794695726.015401,
+    "ast_hash": "264375847061a80d02fef80301b72be4",
     "semantic_hash": ""
   }
 }

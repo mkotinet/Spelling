@@ -178,6 +178,18 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 12. Mobile Auth Persistence check
     assert(appCode.includes('haru_auth_username'), 'app.js must backup haru_auth_username in localStorage');
+
+    // 13. v2.6.0 English Voice (TTS) & Concise Questions (No Awkward Prefix) check
+    assert(appCode.includes('EnglishSpeechEngine'), 'app.js must include EnglishSpeechEngine');
+    assert(appCode.includes('englishVoiceBar'), 'app.js must handle englishVoiceBar');
+    const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    assert(indexHtml.includes('id="btnQuizVoiceSentence"'), 'index.html must have btnQuizVoiceSentence');
+    assert(indexHtml.includes('id="btnExpVoiceWord"'), 'index.html must have btnExpVoiceWord');
+    assert(indexHtml.includes('id="btnExpVoiceSentence"'), 'index.html must have btnExpVoiceSentence');
+    const rawIdiom = require('../idiom_questions.js');
+    const idiomBank = rawIdiom.IDIOM_QUESTION_BANK || rawIdiom;
+    assert(!idiomBank[0].sentence.includes('학교 교실에서 학급 친구들과 함께'), 'Idiom question must be concise without awkward prefix');
+    assert(!hanjaBank[0].sentence.includes('학교 교실에서 학급 친구들과 함께'), 'Hanja question must be concise without awkward prefix');
     assert(appCode.includes("res.status === 401"), 'app.js must strictly check for 401 before wiping tokens');
     assert(appCode.includes("window.addEventListener('online'"), 'app.js must re-verify session on online event');
 

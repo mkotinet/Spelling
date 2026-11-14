@@ -206,6 +206,12 @@
           <div id="quizPrompt" class="quiz-prompt">Q1. 다음 중 올바른 맞춤법을 골라보세요.</div>
           
           <div class="quiz-sentence-box">
+            <div id="englishVoiceBar" class="english-voice-bar" style="display: none;">
+              <button id="btnQuizVoiceSentence" class="btn-voice-pill" type="button" title="원어민 발음으로 영어 문장 듣기">
+                <span class="v-icon">🔊</span>
+                <span class="v-text">문장 듣기 (Listen)</span>
+              </button>
+            </div>
             <div id="quizSentence" class="quiz-sentence">
               오늘따라 <span class="highlight">[ 왠지 / 웬지 ]</span> 기분이 좋아!
             </div>
@@ -305,9 +311,14 @@
             <div id="expEnglishArea" class="english-exp-card" style="display: none; margin-top: 14px; padding: 14px; background: rgba(255, 255, 255, 0.95); border-radius: var(--radius-md); border: 1px solid #c7d2fe; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.08);">
               <!-- Top Word & Phonetic -->
               <div class="english-exp-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <span class="dict-title-tag" style="background: #e0e7ff; color: #4338ca; font-size: 0.76rem; font-weight: 800; padding: 3px 8px; border-radius: 12px;">🔤 올바른 영어 단어</span>
-                <strong id="englishWordTitle" style="font-size: 1.15rem; color: #4338ca;">calendar</strong>
-                <span id="englishPhonetic" class="phonetic-tag" style="font-size: 0.8rem; color: #6366f1; background: #eef2ff; padding: 2px 8px; border-radius: 8px;">/ˈkæl.ən.dɚ/</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span class="dict-title-tag" style="background: #e0e7ff; color: #4338ca; font-size: 0.76rem; font-weight: 800; padding: 3px 8px; border-radius: 12px;">🔤 올바른 영어 단어</span>
+                  <strong id="englishWordTitle" style="font-size: 1.15rem; color: #4338ca;">calendar</strong>
+                  <span id="englishPhonetic" class="phonetic-tag" style="font-size: 0.8rem; color: #6366f1; background: #eef2ff; padding: 2px 8px; border-radius: 8px;">/ˈkæl.ən.dɚ/</span>
+                </div>
+                <button id="btnExpVoiceWord" class="btn-voice-action" type="button" title="정답 단어 발음 듣기">
+                  <span class="v-icon">🔊</span> <span class="v-text">단어 발음</span>
+                </button>
               </div>
               <div style="font-size: 0.86rem; color: #4b5563; margin: 6px 0 10px 0;">
                 <strong>뜻:</strong> <span id="englishMeaning" style="color: #1e1b4b; font-weight: 700;">-</span>
@@ -315,8 +326,13 @@
 
               <!-- Problem Sentence & Korean Translation -->
               <div class="english-detail-box" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;">
-                <div style="font-size: 0.76rem; font-weight: 800; color: #4f46e5; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                  <span>📖</span> <span>제시 문장 & 한국어 번역</span>
+                <div style="font-size: 0.76rem; font-weight: 800; color: #4f46e5; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <span>📖</span> <span>제시 문장 & 한국어 번역</span>
+                  </div>
+                  <button id="btnExpVoiceSentence" class="btn-voice-action" type="button" title="완성된 전체 문장 발음 듣기">
+                    <span class="v-icon">🔊</span> <span class="v-text">전체 문장 듣기</span>
+                  </button>
                 </div>
                 <div id="englishFullSentence" style="font-size: 0.88rem; font-weight: 700; color: #1e293b; line-height: 1.45; margin-bottom: 4px;">
                   -
@@ -340,8 +356,13 @@
               </div>
 
               <!-- Additional Real-Life Example -->
-              <div style="font-size: 0.8rem; color: #475569; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px;">
-                <strong style="color: #64748b;">📝 추가 실생활 예문:</strong> <span id="englishExampleText">-</span>
+              <div style="font-size: 0.8rem; color: #475569; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <strong style="color: #64748b;">📝 추가 실생활 예문:</strong> <span id="englishExampleText">-</span>
+                </div>
+                <button id="btnExpVoiceExample" class="btn-voice-action mini" type="button" title="예문 발음 듣기" style="flex-shrink: 0; margin-left: 8px;">
+                  <span class="v-icon">🔊</span>
+                </button>
               </div>
 
               <!-- Dictionary Deep Link -->
