@@ -213,8 +213,8 @@ server.listen(TEST_PORT, async () => {
     console.log('\n--- Test 6: Reload Buttons & Cache-Control Headers ---');
     assert(indexHtml.includes('id="btnReloadPage"'), 'index.html must include btnReloadPage');
     assert(indexHtml.includes('id="btnQuickReload"'), 'index.html must include btnQuickReload');
-    assert(indexHtml.includes('style.css?v=2.3.1'), 'index.html must version-tag style.css');
-    assert(indexHtml.includes('app.js?v=2.3.1'), 'index.html must version-tag app.js');
+    assert(indexHtml.includes('style.css?v=2.4.0'), 'index.html must version-tag style.css');
+    assert(indexHtml.includes('app.js?v=2.4.0'), 'index.html must version-tag app.js');
 
     assert(styleCss.includes('.icon-btn.reload-btn'), 'style.css must have .reload-btn style');
     assert(styleCss.includes('spinReload'), 'style.css must have spinReload animation');

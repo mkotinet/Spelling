@@ -49,7 +49,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1003,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "회사에서 상사에게 서류의 허가를 받을 때 알맞은 한자어는?",
     sentence: "부장님께 이번 주 출장 계획서에 대한 [ 결재 / 결제 ]를 올렸다.",
     options: ["結裁 (결재)", "決裁 (결재)", "決濟 (결제)", "結濟 (결제)"],
@@ -68,7 +68,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1004,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "신용카드나 현금으로 물건값을 치를 때 올바른 한자어는?",
     sentence: "온라인 쇼핑몰에서 상품을 고른 뒤 카드 [ 결제 / 결재 ]를 완료했다.",
     options: ["決濟 (결제)", "決裁 (결재)", "結濟 (결제)", "潔濟 (결제)"],
@@ -314,7 +314,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1016,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "원래의 형태나 성질을 잘 간직하여 보존할 때 알맞은 한자어는?",
     sentence: "귀중한 문화재는 훼손되지 않도록 원형 그대로 [ 보존 / 보전 ]해야 한다.",
     options: ["保存 (보존)", "保全 (보전)", "保尊 (보존)", "補存 (보존)"],
@@ -333,7 +333,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1017,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "어떤 목표를 향하여 뜻이 쏠리거나 지향할 때 알맞은 한자어는?",
     sentence: "우리는 평화와 상호 번영의 미래를 [ 지향 / 지양 ]해야 한다.",
     options: ["志向 (지향)", "止揚 (지양)", "指向 (지향)", "持向 (지향)"],
@@ -352,7 +352,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1018,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "더 높은 단계로 나아가기 위해 피하거나 삼가야 할 것을 이르는 말은?",
     sentence: "근거 없는 비방과 소모적인 논쟁은 이제 [ 지양 / 지향 ]해야 합니다.",
     options: ["止揚 (지양)", "志向 (지향)", "遲揚 (지양)", "止陽 (지양)"],
@@ -554,7 +554,7 @@ const HANJA_QUESTION_BANK = [
   {
     id: 1028,
     category: "동음이의어",
-    level: "실무/고등",
+    level: "고등/일반실무",
     question: "조세나 공과금, 벌금 따위를 의무자에게 물릴 때 올바른 한자어는?",
     sentence: "환경 오염 방지를 위해 폐기물 배출 기업에 부담금을 [ (     ) ]했다.",
     options: ["賦課 (부과)", "附課 (부과)", "負課 (부과)", "付課 (부과)"],
@@ -649,6 +649,111 @@ const HANJA_QUESTION_BANK = [
     exampleSentence: "독립운동가들의 뜨거운 애국(愛國)심이 오늘날의 대한민국을 만들었다.",
     dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=애국",
     naverLink: "https://hanja.dict.naver.com/search?query=愛國"
+  },
+  {
+    id: 1033,
+    category: "수능한자",
+    level: "수능/심화",
+    question: "갈림길이 많아 잃어버린 양을 찾지 못한다는 뜻으로, 학문의 갈래가 너무 많아 진리를 찾기 어려움을 비유하는 사자성어는?",
+    sentence: "철학적 질문에 명쾌한 답을 얻지 못하고 [ (     ) ]의 혼란에 빠졌다.",
+    options: ["多岐亡羊 (다기망양)", "多歧亡洋 (다기망양)", "多氣忘羊 (다기망양)", "多奇亡羊 (다기망양)"],
+    answerIndex: 0,
+    hanjaWord: "多岐亡羊",
+    hanjaChars: [
+      { char: "多", sound: "다", meaning: "많을" },
+      { char: "岐", sound: "기", meaning: "갈림길" },
+      { char: "亡", sound: "망", meaning: "잃을" },
+      { char: "羊", sound: "양", meaning: "양" }
+    ],
+    explanation: "열자 탕문편에 나오는 고사로, 갈림길이 너무 많아 달아난 양을 찾지 못했다는 데서 비롯하여 두 갈래 세 갈래로 갈려 방향을 잡기 어려움을 뜻합니다.",
+    usage: "진로 선택의 혼란, 학문적 방황, 다원화된 사회 가치관 갈등",
+    exampleSentence: "현대 사회는 정보가 너무 넘쳐나 오히려 다기망양(多岐亡羊)의 딜레마에 처하기 쉽다.",
+    dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=다기망양",
+    naverLink: "https://hanja.dict.naver.com/search?query=多岐亡羊"
+  },
+  {
+    id: 1034,
+    category: "수능한자",
+    level: "수능/심화",
+    question: "한 번 패배한 사람이 흙먼지를 일으키며 다시 세력을 떨쳐 쳐들어온다는 뜻의 사자성어는?",
+    sentence: "비록 이번 대회는 준우승에 그쳤지만, [ (     ) ]의 각오로 다음 시즌을 준비하겠다.",
+    options: ["捲土重來 (권토중래)", "權土重來 (권토중래)", "捲土重大 (권토중래)", "圈土重來 (권토중래)"],
+    answerIndex: 0,
+    hanjaWord: "捲土重來",
+    hanjaChars: [
+      { char: "捲", sound: "권", meaning: "말" },
+      { char: "土", sound: "토", meaning: "흙" },
+      { char: "重", sound: "중", meaning: "거듭/다시" },
+      { char: "來", sound: "래", meaning: "올" }
+    ],
+    explanation: "당나라 시인 두목의 시 '제오강정'에 나오는 구절로, 실패에 굴하지 않고 힘을 길러 다시 일어남을 이르는 말입니다.",
+    usage: "재도전, 설욕전, 실패 극복 및 재기",
+    exampleSentence: "청년 창업가는 첫 사업의 실패를 딛고 권토중래(捲土重來)의 자세로 유니콘 기업을 일궈냈다.",
+    dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=권토중래",
+    naverLink: "https://hanja.dict.naver.com/search?query=捲土重來"
+  },
+  {
+    id: 1035,
+    category: "수능한자",
+    level: "수능/심화",
+    question: "변방 노인의 말처럼 인생의 길흉화복은 변화가 많아 예측하기 어렵다는 사자성어는?",
+    sentence: "지금 겪는 불운이 나중에 더 큰 복이 될 수도 있으니 [ (     ) ]라며 마음을 달랬다.",
+    options: ["塞翁之馬 (새옹지마)", "塞翁之罵 (새옹지마)", "賽翁之馬 (새옹지마)", "塞王之馬 (새옹지마)"],
+    answerIndex: 0,
+    hanjaWord: "塞翁之馬",
+    hanjaChars: [
+      { char: "塞", sound: "새", meaning: "변방" },
+      { char: "翁", sound: "옹", meaning: "늙은이" },
+      { char: "之", sound: "지", meaning: "갈/의" },
+      { char: "馬", sound: "마", meaning: "말" }
+    ],
+    explanation: "회남자 인간훈에 나오는 고사로, 화가 복이 되고 복이 화가 되는 등 인간사의 복과 화는 예측할 수 없음을 뜻합니다.",
+    usage: "전화위복, 인생무상, 일희일비 경계",
+    exampleSentence: "취업 탈락이 오히려 더 적성에 맞는 직업을 찾는 계기가 되었으니 진정 새옹지마(塞翁之馬)다.",
+    dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=새옹지마",
+    naverLink: "https://hanja.dict.naver.com/search?query=塞翁之馬"
+  },
+  {
+    id: 1036,
+    category: "수능한자",
+    level: "수능/심화",
+    question: "이치에 맞지 않는 말을 억지로 끌어다 붙여 자기 주장에 맞추려 함을 뜻하는 사자성어는?",
+    sentence: "명백한 통계 증거를 두고도 억지 논리를 펼치는 것은 [ (     ) ]에 불과하다.",
+    options: ["牽强附會 (견강부회)", "牽强富會 (견강부회)", "見强附會 (견강부회)", "牽剛附會 (견강부회)"],
+    answerIndex: 0,
+    hanjaWord: "牽强附會",
+    hanjaChars: [
+      { char: "牽", sound: "견", meaning: "끌" },
+      { char: "强", sound: "강", meaning: "굳셀/억지" },
+      { char: "附", sound: "부", meaning: "붙을" },
+      { char: "會", sound: "회", meaning: "모일" }
+    ],
+    explanation: "가당치도 않은 말을 억지로 끌어대어 자기에게 유리하도록 맞춤을 비판할 때 쓰는 고사성어입니다.",
+    usage: "억지 논리 비판, 왜곡된 해석 반박",
+    exampleSentence: "자신의 과오를 남의 탓으로 돌리며 견강부회(牽强附會)하는 태도는 신뢰를 잃게 만든다.",
+    dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=견강부회",
+    naverLink: "https://hanja.dict.naver.com/search?query=牽强附會"
+  },
+  {
+    id: 1037,
+    category: "수능한자",
+    level: "수능/심화",
+    question: "입술이 없으면 이가 시리다는 뜻으로, 서로 밀접하게 의지하여 한쪽이 망하면 다른 쪽도 위태로워짐을 이르는 사자성어는?",
+    sentence: "두 이웃 국가는 안보와 경제 면에서 떼려야 뗄 수 없는 [ (     ) ]의 관계다.",
+    options: ["脣亡齒寒 (순망치한)", "脣亡齒限 (순망치한)", "純亡齒寒 (순망치한)", "脣望齒寒 (순망치한)"],
+    answerIndex: 0,
+    hanjaWord: "脣亡齒寒",
+    hanjaChars: [
+      { char: "脣", sound: "순", meaning: "입술" },
+      { char: "亡", sound: "망", meaning: "망할/없어질" },
+      { char: "齒", sound: "치", meaning: "이" },
+      { char: "寒", sound: "한", meaning: "찰/시릴" }
+    ],
+    explanation: "춘추좌씨전에 나오는 고사로, 진나라가 괵나라를 치기 위해 우나라에 길을 빌려달라고 했을 때 궁지기가 간언한 데서 유래했습니다.",
+    usage: "순망치한의 동맹 관계, 공생 협력 관계",
+    exampleSentence: "협력업체의 위기는 곧 본사의 위기로 직결되므로 양사는 순망치한(脣亡齒寒)의 동반자다.",
+    dictLink: "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=순망치한",
+    naverLink: "https://hanja.dict.naver.com/search?query=脣亡齒寒"
   }
 ];
 
