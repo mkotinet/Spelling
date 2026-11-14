@@ -64,6 +64,29 @@ body.theme-hanja .logo-text h1 {
   -webkit-text-fill-color: transparent;
 }
 
+/* Theme English Overrides */
+body.theme-english {
+  --primary-pink: #4f46e5;
+  --primary-soft-pink: #e0e7ff;
+  --lavender: #6366f1;
+  --lavender-light: #eef2ff;
+  --sky-blue: #3b82f6;
+  --accent-coral: #4338ca;
+  --accent-purple: #7c3aed;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 40%, #ede9fe 75%, #f5f3ff 100%);
+}
+
+body.theme-english .logo-text h1 {
+  background: linear-gradient(45deg, #4338ca, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.theme-english .mode-switch-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
 /* Mode Switcher Wrapper */
 .mode-switch-wrapper {
   display: flex;
@@ -544,6 +567,27 @@ body.theme-hanja .mode-switch-btn.active {
   text-align: left;
   padding: 20px 22px;
   gap: 18px;
+}
+
+.mode-card.highlight-level {
+  grid-column: span 2;
+  background: linear-gradient(135deg, rgba(240, 245, 255, 0.95), rgba(255, 255, 255, 0.9));
+  border: 2px solid #c7d2fe;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 18px 22px;
+  gap: 18px;
+}
+
+.mode-card.highlight-level .mode-icon {
+  font-size: 3rem;
+  margin-bottom: 0;
+}
+
+.mode-card.highlight-level:hover {
+  border-color: #818cf8;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
 }
 
 .mode-icon {
@@ -1825,4 +1869,80 @@ body.theme-hanja .quiz-sentence .quiz-blank {
   border-radius: 10px;
   margin-left: 4px;
   border: 1px solid #fed7aa;
+}
+
+/* ============================================================
+   Level Selector Modal & Surprise Lucky Box Styles (v2.3.0)
+   ============================================================ */
+.level-select-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.level-opt-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-main);
+}
+
+.level-opt-card:hover {
+  transform: translateY(-2px);
+  border-color: #818cf8;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+  background: #f8fafc;
+}
+
+.level-opt-card .level-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.level-opt-card .level-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.level-opt-card .level-text strong {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.level-opt-card .level-text span {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+/* Surprise Lucky Box Styles */
+.lucky-box-content {
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lucky-gift-icon {
+  font-size: 3.6rem;
+  margin: 6px auto 12px auto;
+  animation: giftWiggle 1.4s infinite ease-in-out;
+  cursor: pointer;
+}
+
+@keyframes giftWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-12deg) scale(1.1); }
+  40% { transform: rotate(12deg) scale(1.1); }
+  60% { transform: rotate(-8deg) scale(1.05); }
+  80% { transform: rotate(8deg) scale(1.05); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
 }

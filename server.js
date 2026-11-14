@@ -244,10 +244,13 @@ const server = http.createServer(async (req, res) => {
         maxRoundToday: 1,
         maxRoundSpelling: 1,
         maxRoundHanja: 1,
+        maxRoundEnglish: 1,
         todayScoreSpelling: 100,
         todayScoreHanja: 0,
+        todayScoreEnglish: 0,
         pointsSpelling: 100,
         pointsHanja: 0,
+        pointsEnglish: 0,
         lastActiveDate: todayStr,
         completedDates: [todayStr],
         badges: ["starter"],
@@ -346,16 +349,20 @@ const server = http.createServer(async (req, res) => {
       if (uData.avatar) target.avatar = uData.avatar;
       if (uData.name) target.name = uData.name;
 
-      // Subject-specific sync (Spelling vs Hanja)
+      // Subject-specific sync (Spelling vs Hanja vs English)
       const mode = body.mode || (body.details && body.details.mode) || uData.mode || "spelling";
-      const roundVal = typeof body.round === "number" ? body.round : (typeof uData.maxRoundToday === "number" ? uData.maxRoundToday : null);
-      const scoreVal = typeof body.todayScore === "number" ? body.todayScore : (typeof uData.todayScore === "number" ? uData.todayScore : null);
-      const pointsVal = typeof body.pointsEarned === "number" ? body.pointsEarned : 0;
+      const roundVal = typeof body.round === "number" ? body.round : (body.details && typeof body.details.round === "number" ? body.details.round : (typeof uData.maxRoundToday === "number" ? uData.maxRoundToday : null));
+      const scoreVal = typeof body.todayScore === "number" ? body.todayScore : (body.details && typeof body.details.score === "number" ? body.details.score : (typeof uData.todayScore === "number" ? uData.todayScore : null));
+      const pointsVal = typeof body.pointsEarned === "number" ? body.pointsEarned : (body.details && typeof body.details.pointsEarned === "number" ? body.details.pointsEarned : 0);
 
       if (mode === "hanja") {
         if (roundVal !== null) target.maxRoundHanja = Math.max(target.maxRoundHanja || 1, roundVal);
         if (scoreVal !== null) target.todayScoreHanja = Math.max(target.todayScoreHanja || 0, scoreVal);
         if (pointsVal > 0) target.pointsHanja = (target.pointsHanja || 0) + pointsVal;
+      } else if (mode === "english") {
+        if (roundVal !== null) target.maxRoundEnglish = Math.max(target.maxRoundEnglish || 1, roundVal);
+        if (scoreVal !== null) target.todayScoreEnglish = Math.max(target.todayScoreEnglish || 0, scoreVal);
+        if (pointsVal > 0) target.pointsEnglish = (target.pointsEnglish || 0) + pointsVal;
       } else {
         if (roundVal !== null) target.maxRoundSpelling = Math.max(target.maxRoundSpelling || 1, roundVal);
         if (scoreVal !== null) target.todayScoreSpelling = Math.max(target.todayScoreSpelling || 0, scoreVal);
@@ -413,21 +420,28 @@ const server = http.createServer(async (req, res) => {
       maxRoundToday: u.maxRoundToday || 1,
       maxRoundSpelling: u.maxRoundSpelling || (u.maxRoundToday || 1),
       maxRoundHanja: u.maxRoundHanja || 1,
+      maxRoundEnglish: u.maxRoundEnglish || 1,
       todayScoreSpelling: u.todayScoreSpelling || (u.todayScore || 0),
       todayScoreHanja: u.todayScoreHanja || 0,
-      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 2),
-      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 2)
+      todayScoreEnglish: u.todayScoreEnglish || 0,
+      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 3),
+      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 3),
+      pointsEnglish: u.pointsEnglish || Math.round((u.totalPoints || 0) / 3)
     }));
 
     if (type === "round") {
       if (mode === "hanja") {
         list.sort((a, b) => (b.maxRoundHanja - a.maxRoundHanja) || (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
+      } else if (mode === "english") {
+        list.sort((a, b) => (b.maxRoundEnglish - a.maxRoundEnglish) || (b.pointsEnglish - a.pointsEnglish) || (b.totalPoints - a.totalPoints));
       } else {
         list.sort((a, b) => (b.maxRoundSpelling - a.maxRoundSpelling) || (b.pointsSpelling - a.pointsSpelling) || (b.totalPoints - a.totalPoints));
       }
     } else if (type === "total") {
       if (mode === "hanja") {
         list.sort((a, b) => (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
+      } else if (mode === "english") {
+        list.sort((a, b) => (b.pointsEnglish - a.pointsEnglish) || (b.totalPoints - a.totalPoints));
       } else if (mode === "spelling") {
         list.sort((a, b) => (b.pointsSpelling - a.pointsSpelling) || (b.totalPoints - a.totalPoints));
       } else {
@@ -437,6 +451,8 @@ const server = http.createServer(async (req, res) => {
       // type === "daily"
       if (mode === "hanja") {
         list.sort((a, b) => (b.todayScoreHanja - a.todayScoreHanja) || (b.pointsHanja - a.pointsHanja));
+      } else if (mode === "english") {
+        list.sort((a, b) => (b.todayScoreEnglish - a.todayScoreEnglish) || (b.pointsEnglish - a.pointsEnglish));
       } else if (mode === "spelling") {
         list.sort((a, b) => (b.todayScoreSpelling - a.todayScoreSpelling) || (b.pointsSpelling - a.pointsSpelling));
       } else {
