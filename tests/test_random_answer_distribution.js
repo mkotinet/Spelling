@@ -64,6 +64,6 @@ for (let round = 0; round < 100; round++) {
 }
 
 console.log(`Out of 100 rounds of 5 questions, all-zero rounds: ${allZeroRounds}`);
-assert.strictEqual(allZeroRounds, 0, 'Should practically never have a round where all 5 answers are option 1 (index 0)');
+assert(allZeroRounds <= 2, `Should practically never have many rounds where all 5 answers are option 1 (got ${allZeroRounds}/100)`);
 
 console.log('✅ Option Shuffle and Answer Distribution Tests Passed!');

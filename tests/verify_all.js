@@ -46,9 +46,15 @@ const srv = server.listen(TEST_PORT, async () => {
     const rootRes = await request('GET', '/');
     assert.strictEqual(rootRes.status, 200, 'GET / should return 200');
     assert(rootRes.raw.includes('하루맞춤'), 'Root should serve Haru Matchum HTML');
+    assert(rootRes.raw.includes('btnModeIdiom'), 'Root should include Idiom switch button');
     assert(rootRes.raw.includes('btnModeHanja'), 'Root should include Hanja switch button');
+    assert(rootRes.raw.includes('btnModeEnglish'), 'Root should include English switch button');
 
-    // 2. Hanja questions static file check
+    // 2. Idiom & Hanja questions static file check
+    const idiomScriptRes = await request('GET', '/idiom_questions.js');
+    assert.strictEqual(idiomScriptRes.status, 200, 'GET /idiom_questions.js should return 200');
+    assert(idiomScriptRes.raw.includes('IDIOM_QUESTION_BANK'), 'Script should define IDIOM_QUESTION_BANK');
+
     const hanjaScriptRes = await request('GET', '/hanja_questions.js');
     assert.strictEqual(hanjaScriptRes.status, 200, 'GET /hanja_questions.js should return 200');
     assert(hanjaScriptRes.raw.includes('HANJA_QUESTION_BANK'), 'Script should define HANJA_QUESTION_BANK');

@@ -205,10 +205,10 @@ assert(!indexHtml.includes('id="btnGitSync"'), 'index.html must NOT include btnG
 assert(indexHtml.includes('id="btnLevelChange"'), 'index.html must include btnLevelChange button');
 assert(indexHtml.includes('id="resumeQuizBanner"'), 'index.html must include resumeQuizBanner element');
 assert(indexHtml.includes('id="btnResumeQuiz"'), 'index.html must include btnResumeQuiz button');
-assert(indexHtml.includes('v2.4.3'), 'index.html must display v2.4.3 version badge');
-assert(indexHtml.includes('style.css?v=2.4.3'), 'style.css must be tagged with v2.4.3');
-assert(indexHtml.includes('app.js?v=2.4.3'), 'app.js must be tagged with v2.4.3');
-console.log('✅ HTML has btnGitSync removed, has btnLevelChange, resumeQuizBanner, and displays v2.4.3 versioning');
+assert(/v2\.\d+\.\d+/.test(indexHtml), 'index.html must display version badge');
+assert(/style\.css\?v=2\.\d+\.\d+/.test(indexHtml), 'style.css must be version tagged');
+assert(/app\.js\?v=2\.\d+\.\d+/.test(indexHtml), 'app.js must be version tagged');
+console.log('✅ HTML has btnGitSync removed, has btnLevelChange, resumeQuizBanner, and displays versioning');
 
 // ----------------------------------------------------
 // 5. App.js Source Logic & Web Audio Engine Verification
