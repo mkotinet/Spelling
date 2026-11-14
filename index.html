@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.3.1">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -40,6 +40,7 @@
         <button id="btnOpenGameGuide" class="icon-btn" title="게임 룰 및 아이템 도감">🎮</button>
         <button id="btnOpenDictSearch" class="icon-btn" title="국립국어원 표준국어대사전 검색">📖</button>
         <button id="btnOpenAuthModal" class="icon-btn" title="간단 로그인 / 회원가입">🔑</button>
+        <button id="btnReloadPage" class="icon-btn reload-btn" title="화면 새로고침 (최신 버전 불러오기)">🔄</button>
         <button id="btnGitSync" class="icon-btn" title="GitHub 즉시 동기화">☁️</button>
         <button id="btnToggleSound" class="icon-btn" title="효과음 켜기/끄기">🔔</button>
         <button id="btnOpenApiSettings" class="icon-btn" title="국립국어원 API 설정">⚙️</button>
@@ -154,6 +155,15 @@
         <div id="calendarWeek" class="calendar-week">
           <!-- Dynamically populated 7 days -->
         </div>
+      </div>
+
+      <!-- App Version & Quick Reload Card -->
+      <div class="quick-reload-bar">
+        <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다">
+          <span class="reload-spin-icon">🔄</span>
+          <span>최신 버전으로 화면 새로고침</span>
+          <span class="version-badge">v2.3.1</span>
+        </button>
       </div>
 
     </section>
@@ -798,9 +808,9 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js"></script>
-  <script src="hanja_questions.js"></script>
-  <script src="english_questions.js"></script>
-  <script src="app.js"></script>
+  <script src="questions.js?v=2.3.1"></script>
+  <script src="hanja_questions.js?v=2.3.1"></script>
+  <script src="english_questions.js?v=2.3.1"></script>
+  <script src="app.js?v=2.3.1"></script>
 </body>
 </html>

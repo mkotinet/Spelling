@@ -416,6 +416,12 @@ class HaruMatchumApp {
     document.getElementById('btnLogout').addEventListener('click', () => this.logout());
     document.getElementById('btnGitSync').addEventListener('click', () => this.syncGitRepo());
 
+    // Page Reload (Cache-busting reload)
+    const btnReloadPage = document.getElementById('btnReloadPage');
+    const btnQuickReload = document.getElementById('btnQuickReload');
+    if (btnReloadPage) btnReloadPage.addEventListener('click', () => this.forcePageReload());
+    if (btnQuickReload) btnQuickReload.addEventListener('click', () => this.forcePageReload());
+
     // API settings modal
     document.getElementById('btnOpenApiSettings').addEventListener('click', () => this.openApiModal());
     document.getElementById('btnCloseApiModal').addEventListener('click', () => this.closeApiModal());
@@ -2416,6 +2422,39 @@ class HaruMatchumApp {
       btn.disabled = false;
       btn.textContent = '☁️';
     }
+  }
+
+  async forcePageReload() {
+    const btnReload = document.getElementById('btnReloadPage');
+    const btnQuick = document.getElementById('btnQuickReload');
+    if (btnReload) btnReload.classList.add('spinning');
+    if (btnQuick) btnQuick.classList.add('spinning');
+
+    if (window.sfx && typeof window.sfx.combo === 'function') {
+      try { window.sfx.combo(); } catch (e) {}
+    }
+
+    this.showToastNotice('🔄 최신 버전을 불러오는 중입니다... 잠시만 기다려주세요!');
+
+    // Purge browser CacheStorage if supported
+    if ('caches' in window) {
+      try {
+        const cacheNames = await window.caches.keys();
+        await Promise.all(cacheNames.map(name => window.caches.delete(name)));
+      } catch (err) {
+        console.warn('Cache purge failed:', err);
+      }
+    }
+
+    setTimeout(() => {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('_t', Date.now());
+        window.location.replace(url.toString());
+      } catch (e) {
+        window.location.reload();
+      }
+    }, 450);
   }
 }
 

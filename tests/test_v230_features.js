@@ -133,7 +133,7 @@ assert(indexHtml.includes('id="englishSentenceTranslation"'), 'index.html must i
 assert(indexHtml.includes('id="englishIdiomsText"'), 'index.html must include englishIdiomsText');
 assert(indexHtml.includes('id="englishGrammarText"'), 'index.html must include englishGrammarText');
 assert(indexHtml.includes('id="rankSubjectEnglish"'), 'index.html must include English leaderboard tab');
-assert(indexHtml.includes('src="english_questions.js"'), 'index.html must link english_questions.js');
+assert(indexHtml.includes('english_questions.js'), 'index.html must link english_questions.js');
 
 assert(styleCss.includes('.theme-english'), 'style.css must have .theme-english styles');
 assert(styleCss.includes('.lucky-gift-icon'), 'style.css must have .lucky-gift-icon styles');
@@ -207,8 +207,31 @@ server.listen(TEST_PORT, async () => {
     assert.strictEqual(bodyProfile.user.pointsEnglish, 150, 'pointsEnglish should be 150');
     console.log('✅ Server sync confirmed English stats updating and segregated from Spelling/Hanja');
 
+    // ----------------------------------------------------
+    // 6. Mobile Cache-Busting & Screen Reload Verification
+    // ----------------------------------------------------
+    console.log('\n--- Test 6: Reload Buttons & Cache-Control Headers ---');
+    assert(indexHtml.includes('id="btnReloadPage"'), 'index.html must include btnReloadPage');
+    assert(indexHtml.includes('id="btnQuickReload"'), 'index.html must include btnQuickReload');
+    assert(indexHtml.includes('style.css?v=2.3.1'), 'index.html must version-tag style.css');
+    assert(indexHtml.includes('app.js?v=2.3.1'), 'index.html must version-tag app.js');
+
+    assert(styleCss.includes('.icon-btn.reload-btn'), 'style.css must have .reload-btn style');
+    assert(styleCss.includes('spinReload'), 'style.css must have spinReload animation');
+    assert(styleCss.includes('.quick-reload-btn'), 'style.css must have .quick-reload-btn style');
+    assert(styleCss.includes('.version-badge'), 'style.css must have .version-badge style');
+
+    const resAppJs = await makeRequestHeaders(`http://localhost:${TEST_PORT}/app.js`);
+    assert.strictEqual(resAppJs.statusCode, 200);
+    assert.strictEqual(resAppJs.headers['cache-control'], 'no-cache, must-revalidate', 'app.js must serve no-cache header');
+
+    const resStyleCss = await makeRequestHeaders(`http://localhost:${TEST_PORT}/style.css`);
+    assert.strictEqual(resStyleCss.statusCode, 200);
+    assert.strictEqual(resStyleCss.headers['cache-control'], 'no-cache, must-revalidate', 'style.css must serve no-cache header');
+    console.log('✅ Static asset Cache-Control header fixed to no-cache, must-revalidate to prevent stale mobile cache');
+
     server.close(() => {
-      console.log('\n🎉 ALL v2.3.0 FEATURE TESTS PASSED SUCCESSFULLY! 🚀\n');
+      console.log('\n🎉 ALL v2.3.0 & v2.3.1 FEATURE TESTS PASSED SUCCESSFULLY! 🚀\n');
       process.exit(0);
     });
   } catch (err) {
@@ -218,6 +241,21 @@ server.listen(TEST_PORT, async () => {
     });
   }
 });
+
+function makeRequestHeaders(url) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const req = http.get({
+      hostname: urlObj.hostname,
+      port: urlObj.port,
+      path: urlObj.pathname,
+    }, (res) => {
+      res.resume();
+      resolve({ statusCode: res.statusCode, headers: res.headers });
+    });
+    req.on('error', reject);
+  });
+}
 
 function makeRequest(url, method = 'GET', data = null) {
   return new Promise((resolve, reject) => {
