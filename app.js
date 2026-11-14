@@ -440,11 +440,13 @@ class HaruMatchumApp {
       });
     });
 
-    // Subject Mode Switch Buttons (Spelling vs Hanja vs English)
+    // Subject Mode Switch Buttons (Spelling vs Idiom vs Hanja vs English)
     const btnSpelling = document.getElementById('btnModeSpelling');
+    const btnIdiom = document.getElementById('btnModeIdiom');
     const btnHanja = document.getElementById('btnModeHanja');
     const btnEnglish = document.getElementById('btnModeEnglish');
     if (btnSpelling) btnSpelling.addEventListener('click', () => this.setQuizSubject('spelling'));
+    if (btnIdiom) btnIdiom.addEventListener('click', () => this.setQuizSubject('idiom'));
     if (btnHanja) btnHanja.addEventListener('click', () => this.setQuizSubject('hanja'));
     if (btnEnglish) btnEnglish.addEventListener('click', () => this.setQuizSubject('english'));
 
@@ -781,9 +783,10 @@ class HaruMatchumApp {
     this.mascotBubble.innerHTML = msgs[mood] || msgs.happy;
   }
 
-  setQuizSubject(subject) {
+  async setQuizSubject(subject) {
     this.quizSubject = subject;
     const btnSpelling = document.getElementById('btnModeSpelling');
+    const btnIdiom = document.getElementById('btnModeIdiom');
     const btnHanja = document.getElementById('btnModeHanja');
     const btnEnglish = document.getElementById('btnModeEnglish');
     const dailyCardTitle = document.querySelector('#btnStartDaily h3');
@@ -791,12 +794,24 @@ class HaruMatchumApp {
     const dailyBadge = document.querySelector('#btnStartDaily .mode-badge');
     const levelCardTitle = document.querySelector('#btnStartLevelDaily h3');
 
-    document.body.classList.remove('theme-hanja', 'theme-english');
+    document.body.classList.remove('theme-idiom', 'theme-hanja', 'theme-english');
     if (btnSpelling) btnSpelling.classList.remove('active');
+    if (btnIdiom) btnIdiom.classList.remove('active');
     if (btnHanja) btnHanja.classList.remove('active');
     if (btnEnglish) btnEnglish.classList.remove('active');
 
-    if (subject === 'hanja') {
+    // On-demand script loading
+    await this.loadSubjectBank(subject);
+
+    if (subject === 'idiom') {
+      document.body.classList.add('theme-idiom');
+      if (btnIdiom) btnIdiom.classList.add('active');
+      if (dailyCardTitle) dailyCardTitle.textContent = '오늘의 속담·관용구 5제';
+      if (dailyCardDesc) dailyCardDesc.textContent = '매일 갱신되는 속담 5문제 풀고 문해력과 어휘력 UP!';
+      if (dailyBadge) dailyBadge.textContent = '오늘의 속담 챌린지 🍯';
+      if (levelCardTitle) levelCardTitle.textContent = '오늘의 레벨별 속담 5제';
+      this.updateMascotMood('happy', `안녕, <strong>${this.data.currentUser.name}</strong>야! 오늘은 지혜가 샘솟는 속담·관용구 퀴즈 도전해볼까? 🍯✨`);
+    } else if (subject === 'hanja') {
       document.body.classList.add('theme-hanja');
       if (btnHanja) btnHanja.classList.add('active');
       if (dailyCardTitle) dailyCardTitle.textContent = '오늘의 한자·고사성어 5제';
@@ -822,14 +837,50 @@ class HaruMatchumApp {
     }
   }
 
+  async loadSubjectBank(subject) {
+    if (subject === 'spelling') return true;
+    if (subject === 'idiom') {
+      if (typeof IDIOM_QUESTION_BANK !== 'undefined') return true;
+      return this._injectScript('idiom_questions.js?v=2.5.0');
+    }
+    if (subject === 'hanja') {
+      if (typeof HANJA_QUESTION_BANK !== 'undefined') return true;
+      return this._injectScript('hanja_questions.js?v=2.5.0');
+    }
+    if (subject === 'english') {
+      if (typeof ENGLISH_QUESTION_BANK !== 'undefined') return true;
+      return this._injectScript('english_questions.js?v=2.5.0');
+    }
+    return true;
+  }
+
+  _injectScript(src) {
+    return new Promise((resolve) => {
+      if (typeof document === 'undefined' || !document.head) return resolve(false);
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing) return resolve(true);
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve(true);
+      s.onerror = (e) => {
+        console.warn('Failed to load bank script dynamically:', src, e);
+        resolve(false);
+      };
+      document.head.appendChild(s);
+    });
+  }
+
   getActiveBank() {
+    if (this.quizSubject === 'idiom' && typeof IDIOM_QUESTION_BANK !== 'undefined') {
+      return IDIOM_QUESTION_BANK;
+    }
     if (this.quizSubject === 'hanja' && typeof HANJA_QUESTION_BANK !== 'undefined') {
       return HANJA_QUESTION_BANK;
     }
     if (this.quizSubject === 'english' && typeof ENGLISH_QUESTION_BANK !== 'undefined') {
       return ENGLISH_QUESTION_BANK;
     }
-    return SPELLING_QUESTION_BANK;
+    return typeof SPELLING_QUESTION_BANK !== 'undefined' ? SPELLING_QUESTION_BANK : [];
   }
 
   renderUserProfile() {
@@ -951,30 +1002,48 @@ class HaruMatchumApp {
     this.saveActiveQuizSession();
   }
 
+  getPermutedBlockQuestions(pool, round = 1, seedKey = '') {
+    if (!pool || pool.length === 0) return [];
+    const questionsPerRound = 5;
+    const totalRoundsPerCycle = Math.max(1, Math.floor(pool.length / questionsPerRound));
+    const cycleIndex = Math.floor((round - 1) / totalRoundsPerCycle);
+    const roundInCycle = (round - 1) % totalRoundsPerCycle;
+
+    // Stable 32-bit FNV-1a hash for seedKey combined with cycleIndex
+    const fullSeedStr = `${seedKey}_cycle_${cycleIndex}`;
+    let h = 0x811c9dc5;
+    for (let i = 0; i < fullSeedStr.length; i++) {
+      h ^= fullSeedStr.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    let seed = h >>> 0;
+
+    // Mulberry32 PRNG for deterministic permutation
+    const rng = () => {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    // Seeded Fisher-Yates shuffle
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    const startIdx = roundInCycle * questionsPerRound;
+    return shuffled.slice(startIdx, startIdx + questionsPerRound);
+  }
+
   getLevelDailyQuestions(level, round = 1) {
     const todayStr = getKSTDateString();
-    let hash = 0;
-    const seedStr = `${todayStr}_${this.quizSubject}_${level}`;
-    for (let i = 0; i < seedStr.length; i++) {
-      hash = (hash << 5) - hash + seedStr.charCodeAt(i);
-      hash |= 0;
-    }
-    const seed = Math.abs(hash);
     const bank = this.getActiveBank();
     const filtered = bank.filter(q => q.level && q.level.includes(level));
     const pool = (filtered.length >= 5) ? filtered : bank;
-    const levelSet = [];
-    const usedIndices = new Set();
-
-    for (let i = 0; i < 5; i++) {
-      let idx = (seed + (round - 1) * 31 + i * 7) % pool.length;
-      while (usedIndices.has(idx) && usedIndices.size < pool.length) {
-        idx = (idx + 1) % pool.length;
-      }
-      usedIndices.add(idx);
-      levelSet.push(pool[idx]);
-    }
-    return levelSet;
+    const seedKey = `${todayStr}_${this.quizSubject}_level_${level}`;
+    return this.getPermutedBlockQuestions(pool, round, seedKey);
   }
 
   getRandomQuestionsFromPool(pool, count) {
@@ -995,25 +1064,9 @@ class HaruMatchumApp {
 
   getDailyQuestions(round = 1) {
     const todayStr = getKSTDateString();
-    let hash = 0;
-    for (let i = 0; i < todayStr.length; i++) {
-      hash = (hash << 5) - hash + todayStr.charCodeAt(i);
-      hash |= 0;
-    }
-    const seed = Math.abs(hash);
     const bank = this.getActiveBank();
-    const dailySet = [];
-    const usedIndices = new Set();
-
-    for (let i = 0; i < 5; i++) {
-      let idx = (seed + (round - 1) * 31 + i * 7) % bank.length;
-      while (usedIndices.has(idx) && usedIndices.size < bank.length) {
-        idx = (idx + 1) % bank.length;
-      }
-      usedIndices.add(idx);
-      dailySet.push(bank[idx]);
-    }
-    return dailySet;
+    const seedKey = `${todayStr}_${this.quizSubject}_daily`;
+    return this.getPermutedBlockQuestions(bank, round, seedKey);
   }
 
   getRandomQuestions(count) {
@@ -1418,7 +1471,9 @@ class HaruMatchumApp {
 
     if (this.currentRound === 1) {
       u.todayScore = Math.max(u.todayScore || 0, this.currentScore);
-      if (this.quizSubject === 'hanja') {
+      if (this.quizSubject === 'idiom') {
+        u.todayScoreIdiom = Math.max(u.todayScoreIdiom || 0, this.currentScore);
+      } else if (this.quizSubject === 'hanja') {
         u.todayScoreHanja = Math.max(u.todayScoreHanja || 0, this.currentScore);
       } else if (this.quizSubject === 'english') {
         u.todayScoreEnglish = Math.max(u.todayScoreEnglish || 0, this.currentScore);
@@ -1426,7 +1481,9 @@ class HaruMatchumApp {
         u.todayScoreSpelling = Math.max(u.todayScoreSpelling || 0, this.currentScore);
       }
     }
-    if (this.quizSubject === 'hanja') {
+    if (this.quizSubject === 'idiom') {
+      u.pointsIdiom = (u.pointsIdiom || 0) + pointsEarned;
+    } else if (this.quizSubject === 'hanja') {
       u.pointsHanja = (u.pointsHanja || 0) + pointsEarned;
     } else if (this.quizSubject === 'english') {
       u.pointsEnglish = (u.pointsEnglish || 0) + pointsEarned;
@@ -1436,7 +1493,9 @@ class HaruMatchumApp {
 
     if (isRoundCleared) {
       u.maxRoundToday = Math.max(u.maxRoundToday || 1, this.currentRound);
-      if (this.quizSubject === 'hanja') {
+      if (this.quizSubject === 'idiom') {
+        u.maxRoundIdiom = Math.max(u.maxRoundIdiom || 1, this.currentRound);
+      } else if (this.quizSubject === 'hanja') {
         u.maxRoundHanja = Math.max(u.maxRoundHanja || 1, this.currentRound);
       } else if (this.quizSubject === 'english') {
         u.maxRoundEnglish = Math.max(u.maxRoundEnglish || 1, this.currentRound);
@@ -1466,7 +1525,11 @@ class HaruMatchumApp {
       me.streak = u.streak;
       me.todayScore = u.todayScore;
       me.maxRoundToday = u.maxRoundToday;
-      if (this.quizSubject === 'hanja') {
+      if (this.quizSubject === 'idiom') {
+        me.maxRoundIdiom = u.maxRoundIdiom;
+        me.todayScoreIdiom = u.todayScoreIdiom;
+        me.pointsIdiom = u.pointsIdiom;
+      } else if (this.quizSubject === 'hanja') {
         me.maxRoundHanja = u.maxRoundHanja;
         me.todayScoreHanja = u.todayScoreHanja;
         me.pointsHanja = u.pointsHanja;
@@ -2946,6 +3009,12 @@ class HaruMatchumApp {
 }
 
 // Start app on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.app = new HaruMatchumApp();
-});
+if (typeof document !== 'undefined' && document.addEventListener) {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.app = new HaruMatchumApp();
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { HaruMatchumApp };
+}

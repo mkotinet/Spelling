@@ -356,7 +356,11 @@ const server = http.createServer(async (req, res) => {
       const scoreVal = typeof body.todayScore === "number" ? body.todayScore : (body.details && typeof body.details.score === "number" ? body.details.score : (typeof uData.todayScore === "number" ? uData.todayScore : null));
       const pointsVal = typeof body.pointsEarned === "number" ? body.pointsEarned : (body.details && typeof body.details.pointsEarned === "number" ? body.details.pointsEarned : 0);
 
-      if (mode === "hanja") {
+      if (mode === "idiom") {
+        if (roundVal !== null) target.maxRoundIdiom = Math.max(target.maxRoundIdiom || 1, roundVal);
+        if (scoreVal !== null) target.todayScoreIdiom = Math.max(target.todayScoreIdiom || 0, scoreVal);
+        if (pointsVal > 0) target.pointsIdiom = (target.pointsIdiom || 0) + pointsVal;
+      } else if (mode === "hanja") {
         if (roundVal !== null) target.maxRoundHanja = Math.max(target.maxRoundHanja || 1, roundVal);
         if (scoreVal !== null) target.todayScoreHanja = Math.max(target.todayScoreHanja || 0, scoreVal);
         if (pointsVal > 0) target.pointsHanja = (target.pointsHanja || 0) + pointsVal;
@@ -420,18 +424,23 @@ const server = http.createServer(async (req, res) => {
       todayScore: u.todayScore || 0,
       maxRoundToday: u.maxRoundToday || 1,
       maxRoundSpelling: u.maxRoundSpelling || (u.maxRoundToday || 1),
+      maxRoundIdiom: u.maxRoundIdiom || 1,
       maxRoundHanja: u.maxRoundHanja || 1,
       maxRoundEnglish: u.maxRoundEnglish || 1,
       todayScoreSpelling: u.todayScoreSpelling || (u.todayScore || 0),
+      todayScoreIdiom: u.todayScoreIdiom || 0,
       todayScoreHanja: u.todayScoreHanja || 0,
       todayScoreEnglish: u.todayScoreEnglish || 0,
-      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 3),
-      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 3),
-      pointsEnglish: u.pointsEnglish || Math.round((u.totalPoints || 0) / 3)
+      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 4),
+      pointsIdiom: u.pointsIdiom || Math.round((u.totalPoints || 0) / 4),
+      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 4),
+      pointsEnglish: u.pointsEnglish || Math.round((u.totalPoints || 0) / 4)
     }));
 
     if (type === "round") {
-      if (mode === "hanja") {
+      if (mode === "idiom") {
+        list.sort((a, b) => (b.maxRoundIdiom - a.maxRoundIdiom) || (b.pointsIdiom - a.pointsIdiom) || (b.totalPoints - a.totalPoints));
+      } else if (mode === "hanja") {
         list.sort((a, b) => (b.maxRoundHanja - a.maxRoundHanja) || (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
       } else if (mode === "english") {
         list.sort((a, b) => (b.maxRoundEnglish - a.maxRoundEnglish) || (b.pointsEnglish - a.pointsEnglish) || (b.totalPoints - a.totalPoints));
@@ -439,7 +448,9 @@ const server = http.createServer(async (req, res) => {
         list.sort((a, b) => (b.maxRoundSpelling - a.maxRoundSpelling) || (b.pointsSpelling - a.pointsSpelling) || (b.totalPoints - a.totalPoints));
       }
     } else if (type === "total") {
-      if (mode === "hanja") {
+      if (mode === "idiom") {
+        list.sort((a, b) => (b.pointsIdiom - a.pointsIdiom) || (b.totalPoints - a.totalPoints));
+      } else if (mode === "hanja") {
         list.sort((a, b) => (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
       } else if (mode === "english") {
         list.sort((a, b) => (b.pointsEnglish - a.pointsEnglish) || (b.totalPoints - a.totalPoints));
@@ -450,7 +461,9 @@ const server = http.createServer(async (req, res) => {
       }
     } else {
       // type === "daily"
-      if (mode === "hanja") {
+      if (mode === "idiom") {
+        list.sort((a, b) => (b.todayScoreIdiom - a.todayScoreIdiom) || (b.pointsIdiom - a.pointsIdiom));
+      } else if (mode === "hanja") {
         list.sort((a, b) => (b.todayScoreHanja - a.todayScoreHanja) || (b.pointsHanja - a.pointsHanja));
       } else if (mode === "english") {
         list.sort((a, b) => (b.todayScoreEnglish - a.todayScoreEnglish) || (b.pointsEnglish - a.pointsEnglish));
