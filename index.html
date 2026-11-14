@@ -82,6 +82,16 @@
          ============================================================ -->
     <section id="viewHome" class="view-section active">
 
+      <!-- Quiz Subject Switcher (Spelling vs Hanja) -->
+      <div class="mode-switch-wrapper" aria-label="학습 과목 선택">
+        <button id="btnModeSpelling" class="mode-switch-btn active" type="button">
+          <span class="switch-icon">🌸</span> 우리말 맞춤법
+        </button>
+        <button id="btnModeHanja" class="mode-switch-btn" type="button">
+          <span class="switch-icon">📜</span> 한자·고사성어
+        </button>
+      </div>
+
       <!-- Cute Mascot Speech Card -->
       <div class="mascot-card">
         <div id="mascotAvatar" class="mascot-avatar">🐰</div>
@@ -137,7 +147,10 @@
     <section id="viewQuiz" class="view-section">
       <div class="quiz-screen">
         <div class="quiz-top-bar">
-          <span id="quizCategory" class="quiz-category-pill">어휘·표기 · 기초</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="quizRoundBadge" class="quiz-round-pill">라운드 1</span>
+            <span id="quizCategory" class="quiz-category-pill">어휘·표기 · 기초</span>
+          </div>
           <span id="quizCombo" class="quiz-combo-pill" style="display: none;">🔥 2 콤보!</span>
         </div>
 
@@ -183,6 +196,28 @@
                 </a>
               </div>
             </div>
+
+            <!-- Hanja Character Breakdown, Usage & Examples -->
+            <div id="expHanjaArea" class="hanja-exp-card" style="display: none;">
+              <div class="hanja-exp-header">
+                <span class="hanja-title-tag">📜 한자 음훈 및 용례</span>
+                <strong id="hanjaWordTitle" style="font-size: 1.05rem; color: #028090;">溫故知新</strong>
+              </div>
+              <div id="hanjaCharsList" class="hanja-chars-grid"></div>
+              <div class="hanja-detail-row">
+                <span class="detail-label">💡 단어 용례:</span>
+                <span id="hanjaUsageText" class="detail-text"></span>
+              </div>
+              <div class="hanja-detail-row">
+                <span class="detail-label">📝 실생활 예문:</span>
+                <span id="hanjaExampleText" class="detail-text"></span>
+              </div>
+              <div class="hanja-links-row" style="margin-top: 10px; display: flex; gap: 8px; justify-content: flex-end;">
+                <a id="hanjaNaverLink" class="dict-link-btn" href="#" target="_blank" rel="noopener noreferrer" style="background:#e8f5e9; color:#2e7d32;">
+                  네이버 한자사전 검색 ↗
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -216,6 +251,11 @@
             <div class="label">적립 포인트</div>
           </div>
         </div>
+
+        <!-- Next Round Action Button (Shown only on 100% 5/5 score) -->
+        <button id="btnNextRound" class="main-action-btn" style="display: none; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; margin-bottom: 12px; font-weight: 800; font-size: 1.02rem; box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);">
+          🎉 100점 만점 통과! 다음 라운드(새 5문제) 도전하기 🔥
+        </button>
 
         <div style="display: flex; gap: 12px; margin-top: auto;">
           <button id="btnResultRetry" class="main-action-btn" style="background: linear-gradient(135deg, #ffd6e0, #c8b6ff); color: #4a3e4e;">

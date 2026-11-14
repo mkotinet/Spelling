@@ -242,7 +242,10 @@ class HaruMatchumApp {
     sfx.enabled = this.data.soundEnabled !== false;
 
     this.confetti = new ConfettiManager('confettiCanvas');
+    this.quizSubject = 'spelling'; // 'spelling' | 'hanja'
     this.currentMode = 'daily'; // 'daily' | 'practice' | 'review'
+    this.currentRound = 1;
+    this.roundCorrectCount = 0;
     this.activeQuestions = [];
     this.currentIndex = 0;
     this.currentScore = 0;
@@ -289,6 +292,12 @@ class HaruMatchumApp {
         this.switchView(view);
       });
     });
+
+    // Subject Mode Switch Buttons (Spelling vs Hanja)
+    const btnSpelling = document.getElementById('btnModeSpelling');
+    const btnHanja = document.getElementById('btnModeHanja');
+    if (btnSpelling) btnSpelling.addEventListener('click', () => this.setQuizSubject('spelling'));
+    if (btnHanja) btnHanja.addEventListener('click', () => this.setQuizSubject('hanja'));
 
     // Start Mode Buttons
     document.getElementById('btnStartDaily').addEventListener('click', () => this.startQuiz('daily'));
@@ -393,6 +402,40 @@ class HaruMatchumApp {
       review: `오답노트를 복습하면 헷갈리던 단어도 확실하게 내 것이 돼! 📖`
     };
     this.mascotBubble.innerHTML = msgs[mood] || msgs.happy;
+  }
+
+  setQuizSubject(subject) {
+    this.quizSubject = subject;
+    const btnSpelling = document.getElementById('btnModeSpelling');
+    const btnHanja = document.getElementById('btnModeHanja');
+    const dailyCardTitle = document.querySelector('#btnStartDaily h3');
+    const dailyCardDesc = document.querySelector('#btnStartDaily p');
+    const dailyBadge = document.querySelector('#btnStartDaily .mode-badge');
+
+    if (subject === 'hanja') {
+      document.body.classList.add('theme-hanja');
+      if (btnHanja) btnHanja.classList.add('active');
+      if (btnSpelling) btnSpelling.classList.remove('active');
+      if (dailyCardTitle) dailyCardTitle.textContent = '오늘의 한자·고사성어 5제';
+      if (dailyCardDesc) dailyCardDesc.textContent = '매일 갱신되는 한자 5문제 풀고 실생활 어휘력 UP!';
+      if (dailyBadge) dailyBadge.textContent = '오늘의 한자 챌린지 📜';
+      this.updateMascotMood('happy', `안녕, <strong>${this.data.currentUser.name}</strong>야! 오늘은 지혜가 담긴 한자·고사성어 퀴즈에 도전해볼까? 📜✨`);
+    } else {
+      document.body.classList.remove('theme-hanja');
+      if (btnSpelling) btnSpelling.classList.add('active');
+      if (btnHanja) btnHanja.classList.remove('active');
+      if (dailyCardTitle) dailyCardTitle.textContent = '오늘의 맞춤법 5제';
+      if (dailyCardDesc) dailyCardDesc.textContent = '매일 갱신되는 5문제 풀고 출석 도장 & 랭킹 포인트 적립!';
+      if (dailyBadge) dailyBadge.textContent = '오늘의 데일리 챌린지 🌸';
+      this.updateMascotMood('happy', `안녕, <strong>${this.data.currentUser.name}</strong>야! 오늘도 반짝이는 맞춤법 퀴즈 도전해볼까? ✨`);
+    }
+  }
+
+  getActiveBank() {
+    if (this.quizSubject === 'hanja' && typeof HANJA_QUESTION_BANK !== 'undefined') {
+      return HANJA_QUESTION_BANK;
+    }
+    return SPELLING_QUESTION_BANK;
   }
 
   renderUserProfile() {
