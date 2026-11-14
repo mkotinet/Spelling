@@ -242,6 +242,12 @@ const server = http.createServer(async (req, res) => {
         totalCorrect: 5,
         todayScore: 100,
         maxRoundToday: 1,
+        maxRoundSpelling: 1,
+        maxRoundHanja: 1,
+        todayScoreSpelling: 100,
+        todayScoreHanja: 0,
+        pointsSpelling: 100,
+        pointsHanja: 0,
         lastActiveDate: todayStr,
         completedDates: [todayStr],
         badges: ["starter"],
@@ -340,6 +346,22 @@ const server = http.createServer(async (req, res) => {
       if (uData.avatar) target.avatar = uData.avatar;
       if (uData.name) target.name = uData.name;
 
+      // Subject-specific sync (Spelling vs Hanja)
+      const mode = body.mode || (body.details && body.details.mode) || uData.mode || "spelling";
+      const roundVal = typeof body.round === "number" ? body.round : (typeof uData.maxRoundToday === "number" ? uData.maxRoundToday : null);
+      const scoreVal = typeof body.todayScore === "number" ? body.todayScore : (typeof uData.todayScore === "number" ? uData.todayScore : null);
+      const pointsVal = typeof body.pointsEarned === "number" ? body.pointsEarned : 0;
+
+      if (mode === "hanja") {
+        if (roundVal !== null) target.maxRoundHanja = Math.max(target.maxRoundHanja || 1, roundVal);
+        if (scoreVal !== null) target.todayScoreHanja = Math.max(target.todayScoreHanja || 0, scoreVal);
+        if (pointsVal > 0) target.pointsHanja = (target.pointsHanja || 0) + pointsVal;
+      } else {
+        if (roundVal !== null) target.maxRoundSpelling = Math.max(target.maxRoundSpelling || 1, roundVal);
+        if (scoreVal !== null) target.todayScoreSpelling = Math.max(target.todayScoreSpelling || 0, scoreVal);
+        if (pointsVal > 0) target.pointsSpelling = (target.pointsSpelling || 0) + pointsVal;
+      }
+
       // Merge completedDates array uniquely
       if (Array.isArray(uData.completedDates)) {
         const dateSet = new Set([...(target.completedDates || []), ...uData.completedDates]);
@@ -374,8 +396,11 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 5. 전체 회원 실시간 랭킹 (Leaderboard)
+  // 5. 전체 회원 실시간 랭킹 (Leaderboard: Dual Subject & Highest Round)
   if (req.method === "GET" && pathname === "/api/leaderboard") {
+    const mode = parsedUrl.searchParams.get("mode") || "all"; // spelling | hanja | all
+    const type = parsedUrl.searchParams.get("type") || "daily"; // round | daily | total
+
     const db = loadDB();
     const list = Object.values(db.users).map(u => ({
       id: u.id,
@@ -385,12 +410,41 @@ const server = http.createServer(async (req, res) => {
       streak: u.streak || 1,
       totalPoints: u.totalPoints || 0,
       todayScore: u.todayScore || 0,
-      maxRoundToday: u.maxRoundToday || 1
+      maxRoundToday: u.maxRoundToday || 1,
+      maxRoundSpelling: u.maxRoundSpelling || (u.maxRoundToday || 1),
+      maxRoundHanja: u.maxRoundHanja || 1,
+      todayScoreSpelling: u.todayScoreSpelling || (u.todayScore || 0),
+      todayScoreHanja: u.todayScoreHanja || 0,
+      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 2),
+      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 2)
     }));
 
-    list.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+    if (type === "round") {
+      if (mode === "hanja") {
+        list.sort((a, b) => (b.maxRoundHanja - a.maxRoundHanja) || (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
+      } else {
+        list.sort((a, b) => (b.maxRoundSpelling - a.maxRoundSpelling) || (b.pointsSpelling - a.pointsSpelling) || (b.totalPoints - a.totalPoints));
+      }
+    } else if (type === "total") {
+      if (mode === "hanja") {
+        list.sort((a, b) => (b.pointsHanja - a.pointsHanja) || (b.totalPoints - a.totalPoints));
+      } else if (mode === "spelling") {
+        list.sort((a, b) => (b.pointsSpelling - a.pointsSpelling) || (b.totalPoints - a.totalPoints));
+      } else {
+        list.sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
+      }
+    } else {
+      // type === "daily"
+      if (mode === "hanja") {
+        list.sort((a, b) => (b.todayScoreHanja - a.todayScoreHanja) || (b.pointsHanja - a.pointsHanja));
+      } else if (mode === "spelling") {
+        list.sort((a, b) => (b.todayScoreSpelling - a.todayScoreSpelling) || (b.pointsSpelling - a.pointsSpelling));
+      } else {
+        list.sort((a, b) => (b.todayScore || 0) - (a.todayScore || 0));
+      }
+    }
 
-    return sendJSON(res, 200, { success: true, leaderboard: list });
+    return sendJSON(res, 200, { success: true, mode, type, leaderboard: list });
   }
 
   // 6. 사용자 접속/이용 이력 조회 (User Access Logs)
