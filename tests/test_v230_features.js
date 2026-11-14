@@ -50,8 +50,10 @@ ENGLISH_QUESTION_BANK.forEach((q, idx) => {
   assert(q.meaning, `English Q[${idx}] missing meaning`);
   assert(q.explanation, `English Q[${idx}] missing explanation`);
   assert(q.dictLink && q.dictLink.includes('naver.com'), `English Q[${idx}] missing valid naver dictLink`);
+  assert(q.sentence.includes('[ (     ) ]') || q.sentence.includes('[ ( ? ) ]'), `English Q[${idx}] sentence must have blank [ (     ) ]`);
+  assert(!q.sentence.includes(' / '), `English Q[${idx}] sentence must not contain 2-choice comparison [ A / B ]`);
 });
-console.log(`✅ All ${ENGLISH_QUESTION_BANK.length} English questions passed strict schema validation`);
+console.log(`✅ All ${ENGLISH_QUESTION_BANK.length} English questions passed strict schema validation & 4-choice blank standard`);
 
 // Verify English level distribution
 targetLevels.forEach(lvl => {

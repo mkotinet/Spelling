@@ -973,6 +973,14 @@ class HaruMatchumApp {
     document.getElementById('expRule').textContent = `규정/출전: ${q.rule || q.category}`;
 
     const targetWord = q.standardWord || q.hanjaWord || q.englishWord || q.options[q.answerIndex];
+
+    // If sentence has a blank, fill it with the correct target word
+    const blankEl = document.querySelector('.quiz-blank');
+    if (blankEl) {
+      blankEl.textContent = ` ${targetWord} `;
+      blankEl.classList.add('answered');
+    }
+
     document.getElementById('dictWord').textContent = targetWord;
     document.getElementById('dictPos').textContent = q.pos || (q.hanjaWord ? '한자어' : (q.englishWord ? '영단어' : '표준어'));
     document.getElementById('dictDefText').textContent = q.dictDefinition || q.meaning || q.explanation;
@@ -1656,6 +1664,13 @@ class HaruMatchumApp {
     if (expHanjaArea) expHanjaArea.style.display = 'none';
     const expEnglishArea = document.getElementById('expEnglishArea');
     if (expEnglishArea) expEnglishArea.style.display = 'none';
+
+    // Restore blank if it was filled
+    const blankEl = document.querySelector('.quiz-blank');
+    if (blankEl) {
+      blankEl.innerHTML = `( &nbsp;?&nbsp; )`;
+      blankEl.classList.remove('answered');
+    }
 
     // Disable Next Button again
     const nextBtn = document.getElementById('btnQuizNext');

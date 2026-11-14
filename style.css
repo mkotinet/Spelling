@@ -827,6 +827,23 @@ body.theme-hanja .quiz-sentence .quiz-blank {
   color: #047857;
 }
 
+body.theme-english .quiz-sentence .quiz-blank {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: #6366f1;
+  color: #4338ca;
+}
+
+.quiz-sentence .quiz-blank.answered {
+  border-style: solid;
+  animation: pulseBlank 0.4s ease;
+}
+
+@keyframes pulseBlank {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 /* Choice Buttons */
 .options-grid {
   display: flex;
