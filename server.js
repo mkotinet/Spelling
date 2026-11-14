@@ -538,6 +538,32 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
+  if (pathname === "/api/version" && req.method === "GET") {
+    let verData = { version: "2.6.0", build: "20261115_0745" };
+    try {
+      const vFile = path.join(__dirname, "version.json");
+      if (fs.existsSync(vFile)) {
+        verData = JSON.parse(fs.readFileSync(vFile, "utf8"));
+      }
+    } catch (e) {}
+
+    // Attach git commit hash if available
+    try {
+      const commit = execSync("git rev-parse --short HEAD", { timeout: 1000 }).toString().trim();
+      if (commit) verData.commit = commit;
+    } catch (e) {}
+
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    return sendJSON(res, 200, {
+      success: true,
+      ...verData,
+      serverTime: new Date().toISOString()
+    });
+  }
+
   // ============================================================
   // Static File Serving
   // ============================================================
@@ -575,11 +601,15 @@ const server = http.createServer(async (req, res) => {
     const shouldGzip = /\bgzip\b/.test(acceptEncoding) && (ext === ".js" || ext === ".css" || ext === ".html" || ext === ".json");
     const isVersioned = (ext === ".js" || ext === ".css") && (req.url && req.url.includes("?v="));
 
+    const isVersionJson = path.basename(filePath) === "version.json";
+
     const headers = {
       "Content-Type": contentType,
-      "Cache-Control": isVersioned
-        ? "public, max-age=31536000, immutable"
-        : ((ext === ".html" || ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600")
+      "Cache-Control": isVersionJson
+        ? "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+        : (isVersioned
+          ? "public, max-age=31536000, immutable"
+          : ((ext === ".html" || ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600"))
     };
 
     if (shouldGzip) {

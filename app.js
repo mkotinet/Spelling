@@ -502,6 +502,14 @@ class HaruMatchumApp {
     this.activeItem5050Indices = [];
     this.isHintOpen = false;
 
+    // App Version & Auto-update State (Mobile auto-refresh on stale version)
+    const metaVer = (typeof document !== 'undefined' && document.querySelector)
+      ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
+      : null;
+    this.APP_VERSION = metaVer || '2.6.0';
+    this.isCheckingVersion = false;
+    this.lastVersionCheckTime = 0;
+
     this.initDOM();
     this.bindEvents();
     this.renderUserProfile();
@@ -512,6 +520,11 @@ class HaruMatchumApp {
 
     // Check & restore active quiz session (e.g. returning after KakaoTalk app switch or page reload)
     this.restoreActiveQuizSession();
+
+    // Auto-check version on app launch (with slight delay for network stabilization)
+    if (typeof window !== 'undefined') {
+      setTimeout(() => this.checkAppVersionUpdate(), 1200);
+    }
   }
 
   initDOM() {
@@ -760,6 +773,8 @@ class HaruMatchumApp {
       if (document.visibilityState === 'hidden') {
         this.saveActiveQuizSession();
       } else if (document.visibilityState === 'visible') {
+        // Automatically check if server version is newer and refresh if needed
+        this.checkAppVersionUpdate();
         const transitioned = this.checkDateTransition();
         if (!transitioned && this.currentViewName !== 'quiz') {
           const raw = localStorage.getItem('haru_active_quiz_session');
@@ -770,6 +785,7 @@ class HaruMatchumApp {
       }
     });
     window.addEventListener('pageshow', () => {
+      this.checkAppVersionUpdate();
       const transitioned = this.checkDateTransition();
       if (!transitioned && this.currentViewName !== 'quiz') {
         const raw = localStorage.getItem('haru_active_quiz_session');
@@ -779,6 +795,7 @@ class HaruMatchumApp {
       }
     });
     window.addEventListener('focus', () => {
+      this.checkAppVersionUpdate();
       const transitioned = this.checkDateTransition();
       if (!transitioned && this.currentViewName !== 'quiz') {
         const raw = localStorage.getItem('haru_active_quiz_session');
@@ -795,7 +812,8 @@ class HaruMatchumApp {
     });
     // Re-verify and sync session automatically when mobile device restores network connection
     window.addEventListener('online', () => {
-      console.log('[Haru Matchum] Network restored. Validating session...');
+      console.log('[Haru Matchum] Network restored. Validating session and checking version...');
+      this.checkAppVersionUpdate(true);
       if (this.cloudToken) {
         this.checkCloudAuth();
       }
@@ -804,6 +822,10 @@ class HaruMatchumApp {
     setInterval(() => {
       this.checkDateTransition();
     }, 60000);
+    // Periodically check for app updates every 3 minutes
+    setInterval(() => {
+      this.checkAppVersionUpdate();
+    }, 180000);
   }
 
   checkDateTransition(overrideDateStr) {
@@ -3390,6 +3412,76 @@ class HaruMatchumApp {
     } finally {
       btn.disabled = false;
       btn.textContent = '☁️';
+    }
+  }
+
+  isServerVersionNewer(serverVer, clientVer) {
+    if (!serverVer || !clientVer) return false;
+    const sClean = String(serverVer).replace(/^v/i, '').trim();
+    const cClean = String(clientVer).replace(/^v/i, '').trim();
+    if (sClean === cClean) return false;
+
+    const sParts = sClean.split('.').map(n => parseInt(n, 10) || 0);
+    const cParts = cClean.split('.').map(n => parseInt(n, 10) || 0);
+    const maxLen = Math.max(sParts.length, cParts.length);
+
+    for (let i = 0; i < maxLen; i++) {
+      const s = sParts[i] || 0;
+      const c = cParts[i] || 0;
+      if (s > c) return true;
+      if (s < c) return false;
+    }
+    return false;
+  }
+
+  async checkAppVersionUpdate(force = false) {
+    if (this.isCheckingVersion) return;
+    const now = Date.now();
+    if (!force && (now - this.lastVersionCheckTime < 15000)) return;
+
+    this.isCheckingVersion = true;
+    this.lastVersionCheckTime = now;
+
+    try {
+      const res = await fetch('/api/version?_t=' + now, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (!data || !data.version) return;
+
+      const serverVersion = data.version;
+      const clientVersion = this.APP_VERSION || '2.6.0';
+
+      if (this.isServerVersionNewer(serverVersion, clientVersion)) {
+        console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
+
+        // Loop guard: prevent infinite reload if browser cache repeatedly serves stale bundle
+        const guardKey = 'haru_auto_reload_to_' + serverVersion;
+        const lastReloadAttempt = parseInt(sessionStorage.getItem(guardKey) || '0', 10);
+        if (now - lastReloadAttempt < 60000) {
+          console.warn('[Haru Matchum] Auto-reload already attempted recently for v' + serverVersion + ', skipping loop.');
+          return;
+        }
+        sessionStorage.setItem(guardKey, String(now));
+
+        // Save active quiz session to avoid data loss
+        if (this.currentViewName === 'quiz' || (this.activeQuestions && this.activeQuestions.length > 0)) {
+          this.saveActiveQuizSession();
+        }
+
+        this.showToastNotice(`🚀 새 버전(v${serverVersion})으로 업데이트되었습니다. 최신 화면으로 새로고침합니다...`);
+
+        setTimeout(() => {
+          this.forcePageReload();
+        }, 800);
+      }
+    } catch (err) {
+      console.warn('[Haru Matchum] Version check failed (offline or network error):', err.message);
+    } finally {
+      this.isCheckingVersion = false;
     }
   }
 

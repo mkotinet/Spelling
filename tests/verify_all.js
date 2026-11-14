@@ -205,6 +205,36 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.strictEqual(lbRoundRes.status, 200);
     assert(Array.isArray(lbRoundRes.data.leaderboard));
 
+    // 14. v2.6.0 Mobile Auto-Update & Version Check check
+    assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
+    assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
+    assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
+    assert(indexHtml.includes('<meta name="app-version" content="2.6.0">'), 'index.html must include meta app-version 2.6.0');
+
+    const verRes = await request('GET', '/api/version');
+    assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
+    assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
+    assert.strictEqual(verRes.data.version, '2.6.0', 'GET /api/version version must be 2.6.0');
+    const verCc = verRes.headers['cache-control'] || '';
+    assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
+
+    // Clean up temporary test user to strictly maintain 4 authentic users
+    const usersFilePath = path.join(__dirname, '../data/users.json');
+    if (fs.existsSync(usersFilePath)) {
+      try {
+        const usersObj = JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
+        if (usersObj.users && usersObj.users[testUsername]) {
+          delete usersObj.users[testUsername];
+        }
+        if (usersObj.tokens) {
+          for (const [t, u] of Object.entries(usersObj.tokens)) {
+            if (u === testUsername) delete usersObj.tokens[t];
+          }
+        }
+        fs.writeFileSync(usersFilePath, JSON.stringify(usersObj, null, 2), 'utf8');
+      } catch (err) {}
+    }
+
     console.log('🎉 ALL End-to-End System Tests Passed Pristine and Green!');
     srv.close();
     process.exit(0);
