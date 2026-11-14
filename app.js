@@ -310,6 +310,10 @@ class HaruMatchumApp {
     // Result buttons
     document.getElementById('btnResultHome').addEventListener('click', () => this.switchView('home'));
     document.getElementById('btnResultRetry').addEventListener('click', () => this.startQuiz(this.currentMode));
+    const btnNextRound = document.getElementById('btnNextRound');
+    if (btnNextRound) {
+      btnNextRound.addEventListener('click', () => this.startNextRound());
+    }
 
     // Profile click
     document.getElementById('userBar').addEventListener('click', () => this.openProfileModal());
@@ -475,18 +479,26 @@ class HaruMatchumApp {
   }
 
   // ============================================================
-  // Quiz Flow
+  // Quiz Flow & Consecutive Round Progression
   // ============================================================
-  startQuiz(mode) {
+  startQuiz(mode, round = 1) {
     this.currentMode = mode;
+    this.currentRound = round;
+    this.roundCorrectCount = 0;
     this.currentIndex = 0;
     this.currentScore = 0;
     this.combo = 0;
     this.maxCombo = 0;
     this.selectedOption = null;
 
+    const roundBadge = document.getElementById('quizRoundBadge');
+    if (roundBadge) {
+      roundBadge.textContent = `라운드 ${this.currentRound}`;
+      roundBadge.style.display = mode === 'daily' ? 'inline-block' : 'none';
+    }
+
     if (mode === 'daily') {
-      this.activeQuestions = this.getDailyQuestions();
+      this.activeQuestions = this.getDailyQuestions(this.currentRound);
     } else if (mode === 'practice') {
       this.activeQuestions = this.getRandomQuestions(5);
     } else if (mode === 'review') {
@@ -501,8 +513,7 @@ class HaruMatchumApp {
     this.renderCurrentQuestion();
   }
 
-  getDailyQuestions() {
-    // Generate deterministic 5 questions using date hash
+  getDailyQuestions(round = 1) {
     const todayStr = new Date().toISOString().split('T')[0];
     let hash = 0;
     for (let i = 0; i < todayStr.length; i++) {
@@ -510,18 +521,24 @@ class HaruMatchumApp {
       hash |= 0;
     }
     const seed = Math.abs(hash);
-
-    const questionsCopy = [...SPELLING_QUESTION_BANK];
+    const bank = this.getActiveBank();
     const dailySet = [];
+    const usedIndices = new Set();
+
     for (let i = 0; i < 5; i++) {
-      const idx = (seed + i * 7) % questionsCopy.length;
-      dailySet.push(questionsCopy[idx]);
+      let idx = (seed + (round - 1) * 31 + i * 7) % bank.length;
+      while (usedIndices.has(idx) && usedIndices.size < bank.length) {
+        idx = (idx + 1) % bank.length;
+      }
+      usedIndices.add(idx);
+      dailySet.push(bank[idx]);
     }
     return dailySet;
   }
 
   getRandomQuestions(count) {
-    const shuffled = [...SPELLING_QUESTION_BANK].sort(() => 0.5 - Math.random());
+    const bank = this.getActiveBank();
+    const shuffled = [...bank].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   }
 
@@ -590,8 +607,9 @@ class HaruMatchumApp {
       }
     });
 
-    // Audio & Score
+    // Audio & Score & Round correct tracking
     if (isCorrect) {
+      this.roundCorrectCount++;
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
       const comboBonus = (this.combo - 1) * 5;
@@ -616,23 +634,52 @@ class HaruMatchumApp {
       }
     }
 
-    // Show Explanation & National Institute Dictionary Definition
+    // Show Explanation & Dictionary
     const expCard = document.getElementById('quizExplanation');
     expCard.classList.add('active');
     document.getElementById('expText').textContent = q.explanation;
-    document.getElementById('expRule').textContent = `규정: ${q.rule}`;
+    document.getElementById('expRule').textContent = `규정/출전: ${q.rule || q.category}`;
 
-    const targetWord = q.standardWord || q.options[q.answerIndex];
+    const targetWord = q.standardWord || q.hanjaWord || q.options[q.answerIndex];
     document.getElementById('dictWord').textContent = targetWord;
-    document.getElementById('dictPos').textContent = q.pos || '표준어';
+    document.getElementById('dictPos').textContent = q.pos || (q.hanjaWord ? '한자어' : '표준어');
     document.getElementById('dictDefText').textContent = q.dictDefinition || q.explanation;
 
-    // National Institute of Korean Language Dictionary search link
+    // National Institute of Korean Language Dictionary link
     const dictLink = document.getElementById('expDictLink');
     dictLink.href = q.dictLink || `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(targetWord)}`;
     dictLink.onclick = () => {
       this.trackDictionarySearch();
     };
+
+    // Hanja specific breakdown
+    const expHanjaArea = document.getElementById('expHanjaArea');
+    if (expHanjaArea) {
+      if (q.hanjaChars && q.hanjaChars.length > 0) {
+        expHanjaArea.style.display = 'block';
+        document.getElementById('hanjaWordTitle').textContent = q.hanjaWord || targetWord;
+        const charsList = document.getElementById('hanjaCharsList');
+        charsList.innerHTML = '';
+        q.hanjaChars.forEach(c => {
+          const pill = document.createElement('div');
+          pill.className = 'hanja-char-pill';
+          pill.innerHTML = `
+            <span class="c-char">${c.char}</span>
+            <span class="c-sound">${c.meaning} ${c.sound}</span>
+          `;
+          charsList.appendChild(pill);
+        });
+
+        document.getElementById('hanjaUsageText').textContent = q.usage || '-';
+        document.getElementById('hanjaExampleText').textContent = q.exampleSentence || '-';
+        const naverLink = document.getElementById('hanjaNaverLink');
+        if (naverLink) {
+          naverLink.href = q.naverLink || `https://hanja.dict.naver.com/search?query=${encodeURIComponent(q.hanjaWord || targetWord)}`;
+        }
+      } else {
+        expHanjaArea.style.display = 'none';
+      }
+    }
 
     document.getElementById('btnQuizNext').disabled = false;
   }
@@ -651,13 +698,17 @@ class HaruMatchumApp {
     this.confetti.explode();
 
     const totalQuestions = this.activeQuestions.length;
-    const isPerfect = this.currentScore >= 100;
-
-    // Update user stats
+    const isRoundCleared = this.roundCorrectCount === 5; // 5/5 perfect score
     const u = this.data.currentUser;
+
     u.totalSolved += totalQuestions;
-    u.totalPoints += this.currentScore;
-    u.totalCorrect += Math.round(this.currentScore / 20);
+    u.totalCorrect += this.roundCorrectCount;
+
+    let pointsEarned = this.currentScore;
+    if (this.currentRound > 1 && isRoundCleared) {
+      pointsEarned += 50; // Bonus +50P for round clear
+    }
+    u.totalPoints += pointsEarned;
 
     const todayStr = new Date().toISOString().split('T')[0];
     if (!u.completedDates.includes(todayStr)) {
@@ -666,8 +717,15 @@ class HaruMatchumApp {
       u.lastActiveDate = todayStr;
     }
 
+    if (this.currentRound === 1) {
+      u.todayScore = Math.max(u.todayScore || 0, this.currentScore);
+    }
+    if (isRoundCleared) {
+      u.maxRoundToday = Math.max(u.maxRoundToday || 1, this.currentRound);
+    }
+
     // Check badges
-    if (isPerfect && !this.data.badges.includes('perfect_100')) {
+    if (isRoundCleared && !this.data.badges.includes('perfect_100')) {
       this.data.badges.push('perfect_100');
     }
     if (u.streak >= 3 && !this.data.badges.includes('streak_3')) {
@@ -680,35 +738,55 @@ class HaruMatchumApp {
       this.data.badges.push('combo_master');
     }
 
-    // Update peer ranking with new score
+    // Update peer ranking
     const me = this.data.allUsers.find(p => p.id === u.id);
     if (me) {
       me.totalPoints = u.totalPoints;
       me.streak = u.streak;
-      me.todayScore = this.currentScore;
+      me.todayScore = u.todayScore;
+      me.maxRoundToday = u.maxRoundToday;
     }
 
     DataManager.save(this.data);
-    this.syncToCloud();
+
+    this.syncToCloud(isRoundCleared ? 'ROUND_CLEAR' : 'QUIZ_FINISH', {
+      mode: this.quizSubject,
+      round: this.currentRound,
+      score: this.currentScore,
+      pointsEarned
+    });
+
     this.renderUserProfile();
     this.renderCalendarWeek();
 
     // Render Result Screen
     document.getElementById('resultScore').textContent = `${this.currentScore}점`;
     document.getElementById('resultCombo').textContent = `${this.maxCombo}회`;
-    document.getElementById('resultPoints').textContent = `+${this.currentScore}P`;
+    document.getElementById('resultPoints').textContent = `+${pointsEarned}P`;
 
-    if (isPerfect) {
-      document.getElementById('resultTitle').textContent = '완벽한 100점 만점! 🌟';
-      document.getElementById('resultSubtitle').textContent = '국어 맞춤법 천재 아니야?! 너무 완벽해요!';
+    const btnNextRound = document.getElementById('btnNextRound');
+    if (isRoundCleared && this.currentMode === 'daily') {
+      document.getElementById('resultTitle').textContent = `🎉 라운드 ${this.currentRound} 만점 통과!`;
+      document.getElementById('resultSubtitle').textContent = `5문제를 모두 맞히셨어요! 다음 라운드에 도전해 실력을 뽐내보세요! 🔥`;
       document.getElementById('resultMascot').textContent = '🥳';
+      if (btnNextRound) {
+        btnNextRound.style.display = 'block';
+        btnNextRound.textContent = `🎉 100점 만점 통과! 라운드 ${this.currentRound + 1} (새 5문제) 도전하기 🔥`;
+      }
     } else {
       document.getElementById('resultTitle').textContent = '오늘의 퀴즈 완료! 💕';
-      document.getElementById('resultSubtitle').textContent = '꾸준히 풀다 보면 맞춤법 실력이 쑥쑥 자라나요!';
+      document.getElementById('resultSubtitle').textContent = '꾸준히 풀다 보면 우리말과 한자 실력이 쑥쑥 자라나요!';
       document.getElementById('resultMascot').textContent = '🌸';
+      if (btnNextRound) {
+        btnNextRound.style.display = 'none';
+      }
     }
 
     this.switchView('result');
+  }
+
+  startNextRound() {
+    this.startQuiz('daily', this.currentRound + 1);
   }
 
   // ============================================================
@@ -1035,7 +1113,7 @@ class HaruMatchumApp {
     }
   }
 
-  async syncToCloud() {
+  async syncToCloud(action = null, details = {}) {
     if (!this.cloudToken) return;
     try {
       await fetch('/api/user/sync', {
@@ -1046,7 +1124,9 @@ class HaruMatchumApp {
         },
         body: JSON.stringify({
           token: this.cloudToken,
-          userData: this.data.currentUser
+          userData: this.data.currentUser,
+          action: action,
+          details: details
         })
       });
     } catch (e) {
