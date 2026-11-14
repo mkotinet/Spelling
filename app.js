@@ -15,69 +15,160 @@ class SoundEffects {
   init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
-  playTone(freq, type, duration, delay = 0, gainVal = 0.15) {
+  unlockAudio() {
+    this.init();
+    if (this.ctx) {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+      try {
+        const buffer = this.ctx.createBuffer(1, 1, 22050);
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.ctx.destination);
+        source.start(0);
+      } catch (e) {}
+    }
+  }
+
+  playTone(freq, type, duration, delay = 0, gainVal = 0.35) {
     if (!this.enabled) return;
     this.init();
     if (!this.ctx) return;
 
-    setTimeout(() => {
-      try {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
-        gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + duration);
-      } catch (e) {
-        // Audio error ignore
+    try {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
       }
-    }, delay * 1000);
+      const now = this.ctx.currentTime;
+      const startTime = now + delay;
+      const stopTime = startTime + duration;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.linearRampToValueAtTime(gainVal, startTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(stopTime);
+    } catch (e) {
+      console.warn('Audio play error:', e);
+    }
   }
 
   correct() {
-    // Joyful major arpeggio
-    this.playTone(523.25, 'triangle', 0.18, 0, 0.2); // C5
-    this.playTone(659.25, 'triangle', 0.18, 0.1, 0.2); // E5
-    this.playTone(783.99, 'triangle', 0.18, 0.2, 0.2); // G5
-    this.playTone(1046.50, 'sine', 0.35, 0.3, 0.25); // C6
+    if (!this.enabled) return;
+    // Bright joyful major ascending arpeggio (D5 -> F#5 -> A5 -> D6)
+    this.playTone(587.33, 'triangle', 0.12, 0, 0.35);
+    this.playTone(739.99, 'triangle', 0.12, 0.08, 0.38);
+    this.playTone(880.00, 'triangle', 0.14, 0.16, 0.40);
+    this.playTone(1174.66, 'sine', 0.28, 0.24, 0.45);
   }
 
   wrong() {
-    // Soft low buzzer
-    this.playTone(261.63, 'sawtooth', 0.15, 0, 0.15);
-    this.playTone(233.08, 'sawtooth', 0.25, 0.15, 0.15);
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+      const now = this.ctx.currentTime;
+
+      // Pulse 1: descending sawtooth pitch bend (320Hz -> 200Hz)
+      const osc1 = this.ctx.createOscillator();
+      const gain1 = this.ctx.createGain();
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(320, now);
+      osc1.frequency.linearRampToValueAtTime(200, now + 0.16);
+
+      gain1.gain.setValueAtTime(0.0001, now);
+      gain1.gain.linearRampToValueAtTime(0.35, now + 0.015);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+      osc1.connect(gain1);
+      gain1.connect(this.ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.16);
+
+      // Pulse 2: lower descending pitch bend (240Hz -> 140Hz)
+      const osc2 = this.ctx.createOscillator();
+      const gain2 = this.ctx.createGain();
+      osc2.type = 'sawtooth';
+      osc2.frequency.setValueAtTime(240, now + 0.14);
+      osc2.frequency.linearRampToValueAtTime(140, now + 0.35);
+
+      gain2.gain.setValueAtTime(0.0001, now + 0.14);
+      gain2.gain.linearRampToValueAtTime(0.35, now + 0.155);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+      osc2.connect(gain2);
+      gain2.connect(this.ctx.destination);
+      osc2.start(now + 0.14);
+      osc2.stop(now + 0.35);
+    } catch (e) {
+      console.warn('Audio wrong sound error:', e);
+    }
   }
 
   combo() {
+    if (!this.enabled) return;
     // High sparkle chime
-    this.playTone(880, 'sine', 0.15, 0, 0.18);
-    this.playTone(1174.66, 'sine', 0.15, 0.08, 0.2);
-    this.playTone(1396.91, 'sine', 0.25, 0.16, 0.22);
+    this.playTone(880, 'sine', 0.12, 0, 0.35);
+    this.playTone(1174.66, 'sine', 0.14, 0.08, 0.40);
+    this.playTone(1396.91, 'sine', 0.16, 0.16, 0.42);
+    this.playTone(1760.00, 'sine', 0.28, 0.24, 0.45);
   }
 
   fanfare() {
+    if (!this.enabled) return;
     // Victory fanfare
     const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
-    const delays = [0, 0.12, 0.24, 0.36, 0.52, 0.7];
-    notes.forEach((n, i) => this.playTone(n, 'triangle', 0.25, delays[i], 0.2));
+    const delays = [0, 0.10, 0.20, 0.30, 0.42, 0.56];
+    notes.forEach((n, i) => this.playTone(n, 'triangle', 0.22, delays[i], 0.38));
   }
 }
 
 const sfx = new SoundEffects();
+if (typeof window !== 'undefined') {
+  window.sfx = sfx;
+}
+
+// Global Mobile/Desktop AudioContext unlocker on first user interaction
+if (typeof window !== 'undefined') {
+  const unlockAudioListener = () => {
+    sfx.unlockAudio();
+    ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
+      window.removeEventListener(evt, unlockAudioListener, true);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener(evt, unlockAudioListener, true);
+      }
+    });
+  };
+  ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, unlockAudioListener, { once: true, capture: true });
+    if (typeof document !== 'undefined') {
+      document.addEventListener(evt, unlockAudioListener, { once: true, capture: true });
+    }
+  });
+}
 
 // ============================================================
 // 2. Confetti Particle Animation
@@ -327,6 +418,11 @@ class HaruMatchumApp {
     // Leaderboard state
     this.rankSubject = 'spelling';
     this.rankType = 'round';
+
+    const soundBtn = document.getElementById('btnToggleSound');
+    if (soundBtn) {
+      soundBtn.textContent = sfx.enabled ? '🔔' : '🔕';
+    }
   }
 
   bindEvents() {
@@ -428,7 +524,8 @@ class HaruMatchumApp {
     document.getElementById('tabAuthRegister').addEventListener('click', () => this.setAuthMode('register'));
     document.getElementById('btnSubmitAuth').addEventListener('click', () => this.submitAuth());
     document.getElementById('btnLogout').addEventListener('click', () => this.logout());
-    document.getElementById('btnGitSync').addEventListener('click', () => this.syncGitRepo());
+    const btnGitSync = document.getElementById('btnGitSync');
+    if (btnGitSync) btnGitSync.addEventListener('click', () => this.syncGitRepo());
 
     // Page Reload (Cache-busting reload)
     const btnReloadPage = document.getElementById('btnReloadPage');

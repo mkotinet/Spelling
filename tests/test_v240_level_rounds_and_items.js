@@ -196,21 +196,22 @@ assert.strictEqual(res.restartRound, 1, '3 mistakes must eliminate player back t
 console.log('✅ Level Daily round failure rules (Shield defense, Revive / Fallback chance, 3-mistake elimination) verified');
 
 // ----------------------------------------------------
-// 4. HTML Elements & Version Check for v2.4.0
+// 4. HTML Elements & Version Check for v2.4.1
 // ----------------------------------------------------
-console.log('\n--- Test 4: HTML Elements & Version 2.4.0 Verification ---');
+console.log('\n--- Test 4: HTML Elements, Header Sync Removal & Version 2.4.1 Verification ---');
 const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 
+assert(!indexHtml.includes('id="btnGitSync"'), 'index.html must NOT include btnGitSync in top header menu');
 assert(indexHtml.includes('id="btnLevelChange"'), 'index.html must include btnLevelChange button');
-assert(indexHtml.includes('v2.4.0'), 'index.html must display v2.4.0 version badge');
-assert(indexHtml.includes('style.css?v=2.4.0'), 'style.css must be tagged with v2.4.0');
-assert(indexHtml.includes('app.js?v=2.4.0'), 'app.js must be tagged with v2.4.0');
-console.log('✅ HTML has btnLevelChange and v2.4.0 versioning tags');
+assert(indexHtml.includes('v2.4.1'), 'index.html must display v2.4.1 version badge');
+assert(indexHtml.includes('style.css?v=2.4.1'), 'style.css must be tagged with v2.4.1');
+assert(indexHtml.includes('app.js?v=2.4.1'), 'app.js must be tagged with v2.4.1');
+console.log('✅ HTML has btnGitSync removed from top menu, has btnLevelChange, and displays v2.4.1 versioning');
 
 // ----------------------------------------------------
-// 5. App.js Source Logic Verification
+// 5. App.js Source Logic & Web Audio Engine Verification
 // ----------------------------------------------------
-console.log('\n--- Test 5: app.js Implementation Logic Verification ---');
+console.log('\n--- Test 5: app.js Implementation Logic & Audio Synthesizer Verification ---');
 const appJs = fs.readFileSync(path.join(__dirname, '../app.js'), 'utf8');
 
 assert(appJs.includes('startLevelDailyQuiz(level, round = 1)'), 'startLevelDailyQuiz must accept round parameter');
@@ -220,6 +221,61 @@ assert(appJs.includes('btnLevelChange'), 'app.js must handle btnLevelChange');
 assert(appJs.includes('this.startLevelDailyQuiz(this.selectedLevel, this.currentRound + 1)'), 'startNextRound must support level_daily');
 assert(appJs.includes('this.startLevelDailyQuiz(this.selectedLevel, prev)'), 'fallbackRound must support level_daily');
 assert(appJs.includes('reviveMode === \'level_daily\''), 'Revival finish must support level_daily');
-console.log('✅ app.js implements all required level_daily round progression and revival methods');
+assert(appJs.includes('unlockAudio()'), 'app.js must implement unlockAudio for iOS/Safari Web Audio unlock');
 
-console.log('\n🎉 ALL v2.4.0 LEVEL DAILY ROUNDS & ITEMS TESTS PASSED PRISTINE! 🚀\n');
+// Audio Synthesizer Execution Test with Mock Web Audio API
+class MockAudioContext {
+  constructor() {
+    this.state = 'running';
+    this.currentTime = 1.0;
+    this.destination = {};
+  }
+  createOscillator() {
+    return {
+      type: 'sine',
+      frequency: {
+        setValueAtTime(val, t) {},
+        linearRampToValueAtTime(val, t) {}
+      },
+      connect(dest) {},
+      start(t) {},
+      stop(t) {}
+    };
+  }
+  createGain() {
+    return {
+      gain: {
+        setValueAtTime(val, t) {},
+        linearRampToValueAtTime(val, t) {},
+        exponentialRampToValueAtTime(val, t) {}
+      },
+      connect(dest) {}
+    };
+  }
+  createBuffer() { return {}; }
+  createBufferSource() {
+    return {
+      connect() {},
+      start() {}
+    };
+  }
+}
+
+// Sandbox test for SoundEffects class
+const soundSandbox = {
+  window: { AudioContext: MockAudioContext, addEventListener() {}, removeEventListener() {} },
+  document: { addEventListener() {}, removeEventListener() {} },
+  console: console
+};
+vm.createContext(soundSandbox);
+vm.runInContext(appJs.slice(0, appJs.indexOf('class ConfettiManager')), soundSandbox);
+
+assert(soundSandbox.window.sfx, 'sfx instance must be defined on window');
+soundSandbox.window.sfx.unlockAudio();
+soundSandbox.window.sfx.correct();
+soundSandbox.window.sfx.wrong();
+soundSandbox.window.sfx.combo();
+soundSandbox.window.sfx.fanfare();
+console.log('✅ Web Audio synthesizer verified: correct, wrong buzzer, combo, and fanfare executed successfully without errors');
+
+console.log('\n🎉 ALL v2.4.0 & v2.4.1 LEVEL DAILY ROUNDS, ITEMS & AUDIO TESTS PASSED PRISTINE! 🚀\n');
