@@ -506,7 +506,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.6.1';
+    this.APP_VERSION = metaVer || '2.6.2';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -3462,7 +3462,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.6.1';
+      const clientVersion = this.APP_VERSION || '2.6.2';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

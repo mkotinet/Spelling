@@ -49,20 +49,26 @@ for level_name, word_list, start_id in LEVELS:
             s = scenarios[cycle]
             assert s.count("[ (     ) ]") == 1, f"Invalid blank in: {s}"
             
-            # Options: [correct, wrong1, wrong2, wrong3] with uniqueness check
+            # Options: [correct, wrong1, wrong2, wrong3] with uniqueness check (including whitespace normalization)
             raw_options = [w["word"]] + w["wrong"]
             unique_options = []
+            seen_normalized = set()
             for opt in raw_options:
-                if opt not in unique_options:
-                    unique_options.append(opt)
+                norm = " ".join(opt.strip().split())
+                if norm not in seen_normalized:
+                    seen_normalized.add(norm)
+                    unique_options.append(opt.strip())
             suffix_idx = 1
             while len(unique_options) < 4:
                 cand = f"{w['word']}은" if suffix_idx == 1 else f"{w['word']}는"
-                if cand not in unique_options:
-                    unique_options.append(cand)
+                norm_cand = " ".join(cand.strip().split())
+                if norm_cand not in seen_normalized:
+                    seen_normalized.add(norm_cand)
+                    unique_options.append(cand.strip())
                 suffix_idx += 1
             options = unique_options[:4]
             assert len(set(options)) == 4, f"Options must be 4 unique for {w['word']}: {options}"
+            assert len(set(" ".join(o.strip().split()) for o in options)) == 4, f"Options must be 4 visually unique for {w['word']}: {options}"
                 
             prompt_text = LEVEL_PROMPTS.get(level_name, "다음 문장의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요.")
             q_obj = {

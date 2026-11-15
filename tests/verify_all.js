@@ -188,6 +188,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('id="btnExpVoiceSentence"'), 'index.html must have btnExpVoiceSentence');
     const rawIdiom = require('../idiom_questions.js');
     const idiomBank = rawIdiom.IDIOM_QUESTION_BANK || rawIdiom;
+    const rawSpelling = require('../questions.js');
+    const spellingBank = rawSpelling.SPELLING_QUESTION_BANK || rawSpelling;
     assert(!idiomBank[0].sentence.includes('학교 교실에서 학급 친구들과 함께'), 'Idiom question must be concise without awkward prefix');
     assert(!hanjaBank[0].sentence.includes('학교 교실에서 학급 친구들과 함께'), 'Hanja question must be concise without awkward prefix');
     assert(appCode.includes("res.status === 401"), 'app.js must strictly check for 401 before wiping tokens');
@@ -205,11 +207,12 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.strictEqual(lbRoundRes.status, 200);
     assert(Array.isArray(lbRoundRes.data.leaderboard));
 
-    // 14. v2.6.1 Mobile Auto-Update & Version Check check
+    // 14. v2.6.2 Mobile Auto-Update & Version Check check
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.6.1">'), 'index.html must include meta app-version 2.6.1');
+    assert(indexHtml.includes('<meta name="app-version" content="2.6.2">'), 'index.html must include meta app-version 2.6.2');
+    assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
     assert(appCode.includes(']겠다는/g'), 'app.js must include self-healing guard for 겠다는');
@@ -217,10 +220,18 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(sample4694, 'Question #4694 must exist in idiom bank');
     assert(sample4694.sentence.includes("'[ (     ) ]'라는 당찬 포부를 밝혔다"), 'Question #4694 must use clean quote citation');
 
+    // 16. v2.6.2 User Bug Fixes: Q3662 & Q2414 check
+    const sample3662 = spellingBank.find(q => q.id === 3662);
+    assert(sample3662, 'Question #3662 must exist');
+    assert.strictEqual(new Set(sample3662.options.map(o => o.trim().replace(/\s+/g, ' '))).size, 4, 'Q3662 must have 4 unique options');
+    const sample2414 = spellingBank.find(q => q.id === 2414);
+    assert(sample2414, 'Question #2414 must exist');
+    assert.strictEqual(sample2414.options[sample2414.answerIndex], '희한한', 'Q2414 answer must be 희한한');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.6.1', 'GET /api/version version must be 2.6.1');
+    assert.strictEqual(verRes.data.version, '2.6.2', 'GET /api/version version must be 2.6.2');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

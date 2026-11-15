@@ -40273,18 +40273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2014)",
     "sentence": "현대 과학으로도 도무지 명쾌하게 설명하기 어려운 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2015,
@@ -40653,18 +40653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2033)",
     "sentence": "대중교통도 다니지 않는 강원도 산골짜기의 깊고 외진 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2034,
@@ -41273,18 +41273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2064)",
     "sentence": "꿈속에서 하늘을 날아다니고 동물들이 말을 하는 아주 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2065,
@@ -41653,18 +41653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2083)",
     "sentence": "도시의 소음을 피해 조용히 요양하기 위해 찾아간 한적하고 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2084,
@@ -42273,18 +42273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2114)",
     "sentence": "맞춤법 규정상 '희안하다'는 틀린 표기이며 '희한할 희(稀)' 자를 쓴 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2115,
@@ -42653,18 +42653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2133)",
     "sentence": "표준어 규정상 '구석지고 후미짐'을 뜻하는 올바른 표준어는 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2134,
@@ -43273,18 +43273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2164)",
     "sentence": "바닷가 해안 절벽에서 오랜 비바람이 깎아 만든 도깨비 형상의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2165,
@@ -43653,18 +43653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2183)",
     "sentence": "세상과 인연을 끊고 홀로 묵언 수행을 이어가던 은자의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2184,
@@ -44273,18 +44273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2214)",
     "sentence": "마술사가 텅 빈 모자 속에서 살아있는 비둘기를 꺼내는 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2215,
@@ -44653,18 +44653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2233)",
     "sentence": "일제강점기 독립군들이 일제의 감시망을 피해 은신했던 산속의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2234,
@@ -45273,18 +45273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2264)",
     "sentence": "우연히 길을 가다가 20년 전 헤어진 친구를 해외 여행지에서 마주친 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2265,
@@ -45653,18 +45653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2283)",
     "sentence": "오랜 세월 사람의 발길이 닿지 않아 잡초만 무성한 시골의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2284,
@@ -46273,18 +46273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2314)",
     "sentence": "사막 한가운데서 한여름에 함박눈이 펑펑 쏟아지는 기상이변의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2315,
@@ -46653,18 +46653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2333)",
     "sentence": "조선시대 선비가 유배형을 선고받고 귀양살이를 하던 남쪽 끝의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2334,
@@ -47273,18 +47273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2364)",
     "sentence": "바다 깊은 심해 속에서 스스로 푸른빛을 내뿜는 신비롭고 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2365,
@@ -47653,18 +47653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2383)",
     "sentence": "휴대폰 전파도 잡히지 않는 험준한 산악 지대의 오지이자 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2384,
@@ -48273,18 +48273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2414)",
     "sentence": "평소에 책을 전혀 읽지 않던 동생이 스스로 도서관에 가다니 참으로 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2415,
@@ -48653,18 +48653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2433)",
     "sentence": "비포장도로를 한참 달려서야 겨우 나타나는 첩첩산중의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2434,
@@ -49273,18 +49273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2464)",
     "sentence": "말하는 앵무새가 사람의 목소리를 똑같이 흉내 내며 노래를 부르는 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2465,
@@ -49653,18 +49653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2483)",
     "sentence": "전쟁의 참화를 피해 피란민들이 모여 살던 산비탈의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2484,
@@ -50273,18 +50273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2514)",
     "sentence": "고대 유적지 발굴 현장에서 천 년 전의 형태를 그대로 간직한 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2515,
@@ -50653,18 +50653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2533)",
     "sentence": "소설 속 주인공이 복수를 다짐하며 무예를 연마하던 산골의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2534,
@@ -51273,18 +51273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2564)",
     "sentence": "한겨울 얼음 호수 속에서 얼지 않고 살아 숨 쉬는 북극 물고기의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2565,
@@ -51653,18 +51653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2583)",
     "sentence": "옛날 화전민들이 척박한 땅을 일구며 살아가던 골짜기 깊숙한 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2584,
@@ -52273,18 +52273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2614)",
     "sentence": "숲속을 걷다가 나뭇잎과 완벽하게 똑같은 모양을 한 나뭇잎벌레의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2615,
@@ -52653,18 +52653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2633)",
     "sentence": "도시의 화려한 불빛에서 멀리 떨어진 시골 어촌의 조용하고 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2634,
@@ -53273,18 +53273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2664)",
     "sentence": "컴퓨터 화면에 알 수 없는 외계 문자 같은 기호들이 깜빡거리는 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2665,
@@ -53653,18 +53653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2683)",
     "sentence": "세속의 번뇌를 털어내고 명상에 잠기기에 안성맞춤인 산사의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2684,
@@ -54273,18 +54273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2714)",
     "sentence": "같은 날 같은 시각에 똑같은 꿈을 꾼 쌍둥이 형제의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2715,
@@ -54653,18 +54653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2733)",
     "sentence": "전기조차 들어오지 않던 시절 등잔불을 밝히고 살던 산간 오지의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2734,
@@ -55273,18 +55273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2764)",
     "sentence": "열대 밀림에서 달콤한 고기 냄새를 풍겨 곤충을 유인하는 식충식물의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2765,
@@ -55653,18 +55653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2783)",
     "sentence": "지도에도 제대로 표시되어 있지 않은 험한 바위산 기슭의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2784,
@@ -56273,18 +56273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2814)",
     "sentence": "동전 던지기를 했는데 열 번 연속으로 동전이 똑바로 서는 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2815,
@@ -56653,18 +56653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2833)",
     "sentence": "자연 속에서 자급자족하며 살아가는 자연인의 소박하고 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2834,
@@ -57273,18 +57273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2864)",
     "sentence": "한 번도 가본 적 없는 낯선 장소인데 아주 익숙하게 느껴지는 데자뷔의 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2865,
@@ -57653,18 +57653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2883)",
     "sentence": "인적이 드문 숲속 깊은 곳에 홀로 서 있는 오두막의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2884,
@@ -58273,18 +58273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2914)",
     "sentence": "세상에는 상식의 틀을 깨는 기상천외하고 신기하며 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2915,
@@ -58653,18 +58653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2933)",
     "sentence": "세파에 시달린 마음을 치유하기 위해 머물렀던 강원도 정선의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2934,
@@ -59273,18 +59273,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2964)",
     "sentence": "인공지능 로봇이 인간의 미묘한 감정을 읽어내고 눈물을 흘리는 [ (     ) ] 일이 실제로 눈앞에 벌어졌다.",
     "options": [
-      "희한하다",
-      "희안하다",
       "희한한",
-      "희안한"
+      "희안한",
+      "희한하다",
+      "희안하다"
     ],
     "answerIndex": 0,
-    "explanation": "'희한하다'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다. (한글 맞춤법 (드물 희 稀))",
+    "explanation": "'희한한'(이)가 올바른 표준 표기입니다. 매우 드물거나 기이하다 ('희한하다'의 관형사형). (한글 맞춤법 (드물 희 稀))",
     "rule": "한글 맞춤법 (드물 희 稀)",
-    "standardWord": "희한하다",
-    "dictDefinition": "매우 드물거나 기이하다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%98%EB%8B%A4"
+    "standardWord": "희한한",
+    "dictDefinition": "매우 드물거나 기이하다 ('희한하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%ED%9D%AC%ED%95%9C%ED%95%9C"
   },
   {
     "id": 2965,
@@ -59653,18 +59653,18 @@ const SPELLING_QUESTION_BANK = [
     "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2983)",
     "sentence": "현대 문명의 손길이 닿지 않은 태고의 자연을 간직한 산골의 [ (     ) ] 산골 마을에 정착했다.",
     "options": [
-      "궁벽하다",
-      "궁벽스럽다",
       "궁벽한",
-      "궁벽한곳"
+      "궁벽스럽다",
+      "궁벽하다",
+      "궁벽한 곳"
     ],
     "answerIndex": 0,
-    "explanation": "'궁벽하다'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다. (표준어 규정 (구석지고 으슥함))",
+    "explanation": "'궁벽한'(이)가 올바른 표준 표기입니다. 외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형). (표준어 규정 (구석지고 으슥함))",
     "rule": "표준어 규정 (구석지고 으슥함)",
-    "standardWord": "궁벽하다",
-    "dictDefinition": "외지고 구석져서 몹시 후미지다",
-    "pos": "형용사",
-    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%98%EB%8B%A4"
+    "standardWord": "궁벽한",
+    "dictDefinition": "외지고 구석져서 몹시 후미지다 ('궁벽하다'의 관형사형)",
+    "pos": "형용사 (관형사형)",
+    "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EA%B6%81%EB%B2%BD%ED%95%9C"
   },
   {
     "id": 2984,
@@ -60235,7 +60235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -61235,7 +61235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -62235,7 +62235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -63235,7 +63235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -64235,7 +64235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -65235,7 +65235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -66235,7 +66235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -67235,7 +67235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -68235,7 +68235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -69235,7 +69235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -70235,7 +70235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -71235,7 +71235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -72235,7 +72235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -73235,7 +73235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -74235,7 +74235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -75235,7 +75235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -76235,7 +76235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -77235,7 +77235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -78235,7 +78235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
@@ -79235,7 +79235,7 @@ const SPELLING_QUESTION_BANK = [
     "options": [
       "먹을 만큼",
       "먹을만큼",
-      "먹을  만큼",
+      "먹을만 큼",
       "먹을-만큼"
     ],
     "answerIndex": 0,
