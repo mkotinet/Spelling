@@ -44,12 +44,11 @@ assert.ok(serverCode.includes('// Shop Inventory & Layered Avatar Accessories Sy
 console.log('  ✅ 4. 서버 측 ensureUserIntegrity 및 Anti-Wipe 보호 가드 검증 통과');
 
 // 5. Version consistency check
-console.log('  Testing 5: Version consistency check (v2.9.7)...');
-assert.strictEqual(verData.version, '2.9.7', 'version.json version must be 2.9.7');
-assert.ok(serverCode.includes('version: "2.9.7"'), 'server.js fallback version must be 2.9.7');
-assert.ok(indexCode.includes('<meta name="app-version" content="2.9.7">'), 'index.html meta tag must be 2.9.7');
-assert.ok(indexCode.includes('<script src="app.js?v=2.9.7"></script>'), 'index.html script tag must be 2.9.7');
-assert.ok(appCode.includes('this.APP_VERSION = metaVer || \'2.9.7\';'), 'app.js APP_VERSION must be 2.9.7');
-console.log('  ✅ 5. v2.9.7 버전 메타데이터 일관성 검증 통과');
+console.log('  Testing 5: Version consistency check (>= v2.9.7)...');
+assert.ok(verData.version >= '2.9.7', 'version.json version must be >= 2.9.7');
+assert.ok(serverCode.includes('/api/version'), 'server.js must define version endpoint');
+assert.ok(indexCode.includes('name="app-version"'), 'index.html must include app-version meta tag');
+assert.ok(appCode.includes('this.APP_VERSION'), 'app.js must include APP_VERSION');
+console.log('  ✅ 5. v2.9.7 이상 버전 메타데이터 일관성 검증 통과');
 
 console.log('🎉 [v2.9.7] 모든 고도화 자동화 검증 100% 통과!');

@@ -15,6 +15,7 @@ const PERSISTENT_DIR = "/app/data";
 const DATA_DIR = (fs.existsSync(PERSISTENT_DIR) && process.env.NODE_ENV !== "test") ? PERSISTENT_DIR : path.join(__dirname, "data");
 const DB_FILE = path.join(DATA_DIR, "users.json");
 const LOGS_FILE = path.join(DATA_DIR, "access_logs.json");
+const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -44,6 +45,14 @@ if (DATA_DIR === PERSISTENT_DIR) {
       } catch (e) {
         console.error("Failed to bootstrap access_logs.json:", e);
       }
+    }
+    const srcMessages = path.join(fallbackDir, "messages.json");
+    const targetMessages = path.join(DATA_DIR, "messages.json");
+    if (!fs.existsSync(targetMessages) && fs.existsSync(srcMessages)) {
+      try {
+        fs.copyFileSync(srcMessages, targetMessages);
+        console.log("[Persistence] Bootstrapped messages.json into /app/data");
+      } catch (e) {}
     }
   }
 }
@@ -120,6 +129,27 @@ function saveLogs(logs) {
     fs.writeFileSync(LOGS_FILE, JSON.stringify(trimmed, null, 2), "utf8");
   } catch (e) {
     console.error("Logs Save Error:", e);
+  }
+}
+
+// User-to-User Messages helper (Max 1,000 entries rotation)
+function loadMessages() {
+  try {
+    if (fs.existsSync(MESSAGES_FILE)) {
+      return JSON.parse(fs.readFileSync(MESSAGES_FILE, "utf8"));
+    }
+  } catch (e) {
+    console.error("Messages Load Error:", e);
+  }
+  return [];
+}
+
+function saveMessages(messages) {
+  try {
+    const trimmed = (messages || []).slice(-1000);
+    fs.writeFileSync(MESSAGES_FILE, JSON.stringify(trimmed, null, 2), "utf8");
+  } catch (e) {
+    console.error("Messages Save Error:", e);
   }
 }
 
@@ -597,7 +627,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.7", build: "20261115_1945" };
+    let verData = { version: "2.9.8", build: "20261115_2000" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -620,6 +650,158 @@ const server = http.createServer(async (req, res) => {
       ...verData,
       serverTime: new Date().toISOString()
     });
+  }
+
+  // 10. 실시간 메시지 전송 (Send Message to Another User)
+  if (req.method === "POST" && pathname === "/api/messages/send") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const toTarget = (body.toName || body.toUsername || "").trim();
+      const rawContent = (body.content || "").trim();
+
+      if (!toTarget) {
+        return sendJSON(res, 400, { success: false, message: "받는 사람을 지정해 주세요." });
+      }
+      if (!rawContent) {
+        return sendJSON(res, 400, { success: false, message: "메시지 내용을 입력해 주세요." });
+      }
+      if (rawContent.length > 200) {
+        return sendJSON(res, 400, { success: false, message: "메시지는 최대 200자까지 작성할 수 있습니다." });
+      }
+
+      // Find recipient user in DB (by username, name, or id)
+      let recipient = db.users[toTarget];
+      if (!recipient) {
+        recipient = Object.values(db.users).find(u => u.name === toTarget || u.username === toTarget || u.id === body.toId || u.id === toTarget);
+      }
+      if (!recipient) {
+        return sendJSON(res, 404, { success: false, message: `'${toTarget}' 님을 찾을 수 없습니다.` });
+      }
+
+      const safeContent = rawContent
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      const msgEntry = {
+        id: "msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+        fromUsername: username,
+        fromName: sender.name || username,
+        fromAvatar: sender.avatar || "🌸",
+        fromAccessories: sender.avatarAccessories || {},
+        toUsername: recipient.username,
+        toName: recipient.name || recipient.username,
+        toAvatar: recipient.avatar || "🌸",
+        toAccessories: recipient.avatarAccessories || {},
+        content: safeContent,
+        emojiTag: body.emojiTag || null,
+        timestamp: new Date().toISOString(),
+        kstTime: getKSTTime(),
+        read: false
+      };
+
+      const messages = loadMessages();
+      messages.push(msgEntry);
+      saveMessages(messages);
+
+      recordAccessLog(username, "SEND_MESSAGE", clientIp, userAgent, { to: recipient.username });
+
+      return sendJSON(res, 201, { success: true, message: msgEntry });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 11. 미확인 실시간 메시지 확인 (Check Unread Messages Polling)
+  if (req.method === "GET" && pathname === "/api/messages/check") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || !db.users[username]) {
+      return sendJSON(res, 200, { success: true, unreadCount: 0, messages: [] });
+    }
+
+    const messages = loadMessages();
+    const unread = messages.filter(m => m.toUsername === username && !m.read);
+    return sendJSON(res, 200, {
+      success: true,
+      unreadCount: unread.length,
+      messages: unread
+    });
+  }
+
+  // 12. 전체 메시지 보관함 (Inbox & Sent History)
+  if (req.method === "GET" && pathname === "/api/messages/inbox") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || !db.users[username]) {
+      return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+    }
+
+    const messages = loadMessages();
+    const myMessages = messages
+      .filter(m => m.toUsername === username || m.fromUsername === username)
+      .slice(-50)
+      .reverse();
+
+    return sendJSON(res, 200, {
+      success: true,
+      messages: myMessages
+    });
+  }
+
+  // 13. 메시지 읽음 처리 (Mark Messages as Read)
+  if (req.method === "POST" && pathname === "/api/messages/read") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const messageId = body.messageId;
+      const markAll = body.all === true;
+      const messages = loadMessages();
+      let updatedCount = 0;
+
+      messages.forEach(m => {
+        if (m.toUsername === username) {
+          if (markAll || m.id === messageId) {
+            if (!m.read) {
+              m.read = true;
+              updatedCount++;
+            }
+          }
+        }
+      });
+
+      if (updatedCount > 0) {
+        saveMessages(messages);
+      }
+
+      return sendJSON(res, 200, { success: true, updatedCount });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
   }
 
   // ============================================================

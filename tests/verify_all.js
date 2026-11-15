@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.7">'), 'index.html must include meta app-version 2.9.7');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.8">'), 'index.html must include meta app-version 2.9.8');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.7', 'GET /api/version version must be 2.9.7');
+    assert.strictEqual(verRes.data.version, '2.9.8', 'GET /api/version version must be 2.9.8');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -321,6 +321,19 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('AUTO_INITIAL_PUSH_ACCESSORIES'), 'app.js must support initial accessory push');
     assert(appCode.includes('acc-compact-outfit'), 'app.js must support compact outfit badge');
     assert(serverCode.includes('ensureUserIntegrity(db)'), 'server.js must define ensureUserIntegrity');
+
+    // 28. v2.9.8 EmojiHub API, 1:1 Realtime Messaging & Inbox System
+    assert(appCode.includes('emojihub.yurace.pro/api/all/category'), 'app.js must call EmojiHub API');
+    assert(appCode.includes('openSendMessageModal'), 'app.js must support openSendMessageModal');
+    assert(appCode.includes('startMessagePolling'), 'app.js must support startMessagePolling');
+    assert(serverCode.includes('/api/messages/send'), 'server.js must implement /api/messages/send');
+    assert(serverCode.includes('/api/messages/check'), 'server.js must implement /api/messages/check');
+    assert(serverCode.includes('/api/messages/inbox'), 'server.js must implement /api/messages/inbox');
+    assert(serverCode.includes('/api/messages/read'), 'server.js must implement /api/messages/read');
+    assert(indexHtml.includes('id="btnOpenInbox"'), 'index.html must include btnOpenInbox');
+    assert(indexHtml.includes('id="modalSendMessage"'), 'index.html must include modalSendMessage');
+    assert(indexHtml.includes('id="modalIncomingMessage"'), 'index.html must include modalIncomingMessage');
+    assert(indexHtml.includes('id="modalInbox"'), 'index.html must include modalInbox');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
