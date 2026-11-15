@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 기본 네트워크 트래픽 설정: 시스템 및 사용자 인증서 신뢰 -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- 도메인별 보안 예외 구성 (하루맞춤 API & EmojiHub) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">haru.danminlove.com</domain>
+        <domain includeSubdomains="true">danminlove.com</domain>
+        <domain includeSubdomains="true">emojihub.yurace.pro</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.13">'), 'index.html must include meta app-version 2.9.13');
+    assert(indexHtml.includes('<meta name="app-version" content="3.0.0">'), 'index.html must include meta app-version 3.0.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.13', 'GET /api/version version must be 2.9.13');
+    assert.strictEqual(verRes.data.version, '3.0.0', 'GET /api/version version must be 3.0.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -388,6 +388,35 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('toggleEmojiPicker'), 'app.js must implement toggleEmojiPicker');
     assert(styleCode.includes('.message-modal-footer {'), 'style.css must define .message-modal-footer');
     assert(styleCode.includes('.btn-close-emoji-picker'), 'style.css must define .btn-close-emoji-picker');
+
+    // 34. v3.0.0 Universal Mobile App (iOS / Android Capacitor & Pre-validated Security)
+    assert(appCode.includes('getApiUrl'), 'app.js must implement getApiUrl for native mobile bridge');
+    assert(appCode.includes('HARU_PROD_API_BASE'), 'app.js must define HARU_PROD_API_BASE');
+    assert(indexHtml.includes('viewport-fit=cover'), 'index.html must specify viewport-fit=cover for notch/dynamic island');
+    assert(styleCode.includes('safe-area-inset-top'), 'style.css must support safe-area-inset-top');
+    assert(styleCode.includes('safe-area-inset-bottom'), 'style.css must support safe-area-inset-bottom');
+
+    const capConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '../capacitor.config.json'), 'utf8'));
+    assert.strictEqual(capConfig.appId, 'com.danminlove.haru', 'capacitor appId must be com.danminlove.haru');
+    assert(capConfig.server.allowNavigation.includes('haru.danminlove.com'), 'capacitor must allow navigation to haru.danminlove.com');
+
+    const androidManifest = fs.readFileSync(path.join(__dirname, '../android/app/src/main/AndroidManifest.xml'), 'utf8');
+    assert(androidManifest.includes('networkSecurityConfig'), 'AndroidManifest.xml must include networkSecurityConfig');
+    assert(androidManifest.includes('usesCleartextTraffic'), 'AndroidManifest.xml must allow cleartext traffic');
+    assert(androidManifest.includes('ACCESS_NETWORK_STATE'), 'AndroidManifest.xml must include ACCESS_NETWORK_STATE');
+    assert(androidManifest.includes('READ_MEDIA_IMAGES'), 'AndroidManifest.xml must include READ_MEDIA_IMAGES');
+
+    const netSecConfig = fs.readFileSync(path.join(__dirname, '../android/app/src/main/res/xml/network_security_config.xml'), 'utf8');
+    assert(netSecConfig.includes('haru.danminlove.com'), 'network_security_config must trust haru.danminlove.com');
+
+    const iosPlist = fs.readFileSync(path.join(__dirname, '../ios/App/App/Info.plist'), 'utf8');
+    assert(iosPlist.includes('NSAppTransportSecurity'), 'Info.plist must configure NSAppTransportSecurity');
+    assert(iosPlist.includes('NSPhotoLibraryUsageDescription'), 'Info.plist must provide NSPhotoLibraryUsageDescription to avoid crash');
+    assert(iosPlist.includes('NSCameraUsageDescription'), 'Info.plist must provide NSCameraUsageDescription to avoid crash');
+    assert(iosPlist.includes('WKAllowsInlineMediaPlayback'), 'Info.plist must allow inline audio/media playback');
+
+    assert(fs.existsSync(path.join(__dirname, '../scripts/prepare_mobile.js')), 'scripts/prepare_mobile.js must exist');
+    assert(fs.existsSync(path.join(__dirname, '../scripts/build_signed_apk.sh')), 'scripts/build_signed_apk.sh must exist');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

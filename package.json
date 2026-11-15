@@ -1,0 +1,51 @@
+{
+  "name": "spelling_app",
+  "version": "3.0.0",
+  "description": "국어 맞춤법, 한자·고사성어, 속담, 영어 퀴즈 하이브리드 모바일 앱 (iOS/Android/Web) - 하루맞춤",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/verify_all.js",
+    "mobile:prepare": "node scripts/prepare_mobile.js",
+    "mobile:sync": "node scripts/prepare_mobile.js && npx cap sync",
+    "mobile:open:ios": "node scripts/prepare_mobile.js && npx cap sync ios && npx cap open ios",
+    "mobile:open:android": "node scripts/prepare_mobile.js && npx cap sync android && npx cap open android",
+    "mobile:build:apk": "bash scripts/build_signed_apk.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkotinet/spelling_app.git"
+  },
+  "keywords": [
+    "korean",
+    "spelling",
+    "quiz",
+    "hanja",
+    "idiom",
+    "english",
+    "ios",
+    "android",
+    "capacitor",
+    "pwa"
+  ],
+  "author": "Antigravity & mkotinet",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mkotinet/spelling_app/issues"
+  },
+  "homepage": "https://github.com/mkotinet/spelling_app#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  }
+}

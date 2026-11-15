@@ -1,4 +1,21 @@
 .DS_Store
 *.log
 data/uploads/
+node_modules/
 
+# Android build outputs & caches
+.gradle/
+build/
+android/.gradle/
+android/build/
+android/app/build/
+*.apk
+*.aab
+
+# iOS build outputs & caches
+ios/App/Pods/
+ios/App/DerivedData/
+ios/App/.build/
+*.xcuserstate
+xcuserdata/
+graphify-out/cache/

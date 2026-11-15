@@ -1,0 +1,29 @@
+{
+  "appId": "com.danminlove.haru",
+  "appName": "하루맞춤",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": [
+      "haru.danminlove.com",
+      "danminlove.com",
+      "*.danminlove.com",
+      "emojihub.yurace.pro"
+    ]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#FFF5F7",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#FFF5F7"
+    }
+  }
+}

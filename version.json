@@ -1,6 +1,6 @@
 {
-  "version": "2.9.13",
-  "build": "20261115_2200",
-  "name": "하루맞춤 (Haru Matchum)",
-  "releaseNotes": "메시지 창 이모지 팩 닫기/토글 버튼 탑재, 전송 버튼 하단 고정(Sticky Footer) 및 모달 본문 독립 스크롤 최적화로 모바일 가림 현상 완전 해결"
+  "version": "3.0.0",
+  "build": "20261115_2230",
+  "name": "하루맞춤 (Haru Matchum) - iOS & Android Universal Mobile Edition",
+  "releaseNotes": "하이브리드 모바일 앱(iOS/Android) 정식 지원 에디션: HTML 웹과 100% 동일 기능 및 실시간 계정 연동, iOS ATS & 권한 크래시 방지 및 Android 서명/네트워크 보안 구성 탑재"
 }

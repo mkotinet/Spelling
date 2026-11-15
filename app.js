@@ -1,7 +1,48 @@
 /**
  * 하루맞춤 (Haru Matchum) - Application Logic
  * 국립국어원 표준국어대사전 연동 & 맞춤법 퀴즈/랭킹/출석 시스템
+ * iOS / Android / Web Hybrid Universal Edition
  */
+
+// ============================================================
+// 0. API Base URL & Native Hybrid Bridge (Web / iOS / Android)
+// ============================================================
+const HARU_PROD_API_BASE = 'https://haru.danminlove.com';
+
+function getApiUrl(url) {
+  if (typeof url !== 'string') return url;
+  if (!url.startsWith('/api/')) return url; // 외부 API(예: emojihub 등)는 유지
+
+  if (typeof window !== 'undefined') {
+    // Capacitor 네이티브 앱, 로컬 파일(file://), 또는 로컬 개발 환경(localhost)인 경우 원격 서버 타겟팅
+    const isLocalOrHybridApp =
+      window.location.protocol === 'file:' ||
+      window.location.protocol === 'capacitor:' ||
+      window.location.protocol === 'ionic:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+    if (isLocalOrHybridApp) {
+      return HARU_PROD_API_BASE + url;
+    }
+  }
+  return url;
+}
+
+// Global fetch wrapper for transparent API routing between Web & Native Apps
+if (typeof window !== 'undefined' && window.fetch) {
+  const originalFetch = window.fetch;
+  window.fetch = function (resource, init) {
+    if (typeof resource === 'string' && resource.startsWith('/api/')) {
+      return originalFetch(getApiUrl(resource), init);
+    }
+    return originalFetch(resource, init);
+  };
+}
+if (typeof window !== 'undefined') {
+  window.getApiUrl = getApiUrl;
+}
 
 // ============================================================
 // 1. Audio Synthesizer (Web Audio API - No External Files)
