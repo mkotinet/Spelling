@@ -1265,6 +1265,7 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
       ${hatItem ? `<span class="${hatClass}">${hatItem.emoji}</span>` : ''}
       ${handItem ? `<span class="acc-layer acc-hand">${handItem.emoji}</span>` : ''}
       ${petItem ? `<span class="acc-layer acc-pet">${petItem.emoji}</span>` : ''}
+      ${outfitItem ? `<span class="acc-layer acc-compact-outfit" title="${outfitItem.name}">${outfitItem.emoji}</span>` : ''}
     </div>
   `;
 }
@@ -1419,7 +1420,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.6';
+    this.APP_VERSION = metaVer || '2.9.7';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -4113,7 +4114,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.6';
+    let currentVer = this.APP_VERSION || '2.9.7';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4141,7 +4142,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.6';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.7';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4161,7 +4162,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.6';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.7';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4943,6 +4944,31 @@ class HaruMatchumApp {
           this.data.currentUser.badges = Array.from(new Set([...(this.data.currentUser.badges || []), ...(u.badges || [])]));
           this.data.wrongQuestions = u.wrongQuestions || this.data.wrongQuestions || [];
 
+          // Smart Bidirectional Avatar & Accessory Sync (Never lose equipped accessories)
+          const serverAcc = (u.avatarAccessories && typeof u.avatarAccessories === 'object') ? u.avatarAccessories : {};
+          const localAcc = (this.data.currentUser.avatarAccessories && typeof this.data.currentUser.avatarAccessories === 'object') ? this.data.currentUser.avatarAccessories : {};
+
+          const hasLocalEquipped = Object.values(localAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+          const hasServerEquipped = Object.values(serverAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+
+          if (hasLocalEquipped && !hasServerEquipped) {
+            // Local has outfit/hat, but server is empty -> push local to server immediately!
+            this.syncUserData('AUTO_INITIAL_PUSH_ACCESSORIES');
+          } else if (!hasLocalEquipped && hasServerEquipped) {
+            // Local is empty, but server has outfit/hat -> pull server accessories into local!
+            this.data.currentUser.avatarAccessories = { ...serverAcc };
+          } else if (hasLocalEquipped && hasServerEquipped) {
+            // Both have accessories -> merge with local priority and persist
+            this.data.currentUser.avatarAccessories = { ...serverAcc, ...localAcc };
+            this.syncUserData('AUTO_MERGE_ACCESSORIES');
+          }
+
+          // Inventory accessories union
+          if (Array.isArray(u.inventoryAccessories)) {
+            const mergedInv = new Set([...(this.data.currentUser.inventoryAccessories || []), ...u.inventoryAccessories]);
+            this.data.currentUser.inventoryAccessories = Array.from(mergedInv);
+          }
+
           DataManager.save(this.data);
           localStorage.setItem('haru_auth_username', u.name || u.username);
           this.renderUserProfile();
@@ -5127,6 +5153,24 @@ class HaruMatchumApp {
       this.data.currentUser.totalPoints = u.totalPoints || this.data.currentUser.totalPoints;
       this.data.currentUser.completedDates = u.completedDates || this.data.currentUser.completedDates;
       this.data.currentUser.badges = u.badges || this.data.currentUser.badges;
+
+      // Smart Accessory Sync on Login
+      const serverAcc = (u.avatarAccessories && typeof u.avatarAccessories === 'object') ? u.avatarAccessories : {};
+      const localAcc = (this.data.currentUser.avatarAccessories && typeof this.data.currentUser.avatarAccessories === 'object') ? this.data.currentUser.avatarAccessories : {};
+      const hasLocalEquipped = Object.values(localAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+      const hasServerEquipped = Object.values(serverAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+
+      if (hasLocalEquipped && !hasServerEquipped) {
+        this.syncUserData('LOGIN_PUSH_ACCESSORIES');
+      } else if (hasServerEquipped) {
+        this.data.currentUser.avatarAccessories = { ...serverAcc, ...(hasLocalEquipped ? localAcc : {}) };
+        if (hasLocalEquipped) this.syncUserData('LOGIN_MERGE_ACCESSORIES');
+      }
+
+      if (Array.isArray(u.inventoryAccessories)) {
+        const mergedInv = new Set([...(this.data.currentUser.inventoryAccessories || []), ...u.inventoryAccessories]);
+        this.data.currentUser.inventoryAccessories = Array.from(mergedInv);
+      }
       if (u.solvedQuestionMap && typeof u.solvedQuestionMap === 'object') {
         this.data.currentUser.solvedQuestionMap = u.solvedQuestionMap;
         for (const sub of ['spelling', 'idiom', 'hanja', 'english']) {
@@ -5221,7 +5265,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.6';
+      const clientVersion = this.APP_VERSION || '2.9.7';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
@@ -5276,7 +5320,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', '2.9.6');
+        url.searchParams.set('_v', '2.9.7');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

@@ -2308,6 +2308,15 @@ body.theme-english .quiz-sentence .quiz-blank {
   user-select: none;
 }
 
+.composite-avatar:not(.fullbody) .acc-compact-outfit {
+  bottom: -6%;
+  right: -8%;
+  font-size: 0.52em;
+  z-index: 12;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  animation: gentleBob 2s infinite ease-in-out;
+}
+
 .acc-hat {
   top: -6%;
   left: 50%;

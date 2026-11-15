@@ -75,10 +75,12 @@
   "73": "app.js",
   "74": "renderCompositeAvatar",
   "75": "23. v2.9.5 랭킹 상대방 착장 아바타 갤러리 팝업, 귀여운 아바타 24종 & 신규 코스튬 54종 대거 추가 및 안정성 최적화",
-  "76": "17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)",
+  "76": "test_v297_other_users_avatar_sync.js",
   "77": "test_v296_avatar_sync_to_leaderboard.js",
-  "78": ".handleOptionSelect",
+  "78": "EnglishSpeechEngine",
   "79": "19.2 해결 방안 및 구현 상세 (Implementation Details)",
   "80": ".explode",
-  "81": "10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)"
+  "81": "recordAccessLog",
+  "82": "Proposed Changes",
+  "83": "25. v2.9.7 다른 유저 아바타 실시간 양방향 동기화 완벽 복구, 랭킹 리스트 의상 미니 뱃지 표시, 서버 측 악세사리 유실 방지 가드 탑재"
 }

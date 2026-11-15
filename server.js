@@ -48,11 +48,45 @@ if (DATA_DIR === PERSISTENT_DIR) {
   }
 }
 
+// Self-Healing helper for authentic users (Rule 6)
+function ensureUserIntegrity(db) {
+  if (!db || !db.users) return false;
+  let changed = false;
+
+  // If user 미니미니채 exists and has empty avatarAccessories, restore cute costume set
+  const m = db.users["미니미니채"];
+  if (m) {
+    const acc = m.avatarAccessories || {};
+    const hasValidAcc = Object.values(acc).some(v => v !== null && v !== undefined && v !== 'eyes');
+    if (!hasValidAcc) {
+      m.avatarAccessories = {
+        pin: "pin_clover_mini",
+        hat: "hat_straw",
+        outfit: "outfit_strawberry_milk_pajama",
+        shoes: "shoes_rabbit_slippers",
+        pet: "pet_bunny"
+      };
+      const inv = new Set([
+        ...(m.inventoryAccessories || []),
+        "pin_clover_mini", "hat_straw", "outfit_strawberry_milk_pajama", "shoes_rabbit_slippers", "pet_bunny"
+      ]);
+      m.inventoryAccessories = Array.from(inv);
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
 // In-memory / JSON Database helper
 function loadDB() {
   try {
     if (fs.existsSync(DB_FILE)) {
-      return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+      const db = JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+      if (ensureUserIntegrity(db)) {
+        saveDB(db);
+      }
+      return db;
     }
   } catch (e) {
     console.error("DB Load Error:", e);
@@ -350,10 +384,23 @@ const server = http.createServer(async (req, res) => {
       if (uData.avatar) target.avatar = uData.avatar;
       if (uData.name) target.name = uData.name;
 
-      // Shop Inventory & Layered Avatar Accessories Sync
+      // Shop Inventory & Layered Avatar Accessories Sync (Anti-Wipe Protected)
       if (uData.items && typeof uData.items === "object") target.items = { ...(target.items || {}), ...uData.items };
       if (typeof uData.shields === "number") target.shields = Math.min(2, Math.max(0, uData.shields));
-      if (uData.avatarAccessories && typeof uData.avatarAccessories === "object") target.avatarAccessories = uData.avatarAccessories;
+      if (uData.avatarAccessories && typeof uData.avatarAccessories === "object") {
+        const incomingAcc = uData.avatarAccessories;
+        const hasIncomingValues = Object.values(incomingAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+        const existingAcc = (target.avatarAccessories && typeof target.avatarAccessories === "object") ? target.avatarAccessories : {};
+        const hasExistingValues = Object.values(existingAcc).some(v => v !== null && v !== undefined && v !== 'eyes');
+
+        if (hasIncomingValues) {
+          target.avatarAccessories = incomingAcc;
+        } else if (!hasIncomingValues && hasExistingValues) {
+          // Keep existing accessories if incoming payload is uninitialized
+        } else {
+          target.avatarAccessories = incomingAcc;
+        }
+      }
       if (Array.isArray(uData.inventoryAccessories)) {
         const accSet = new Set([...(target.inventoryAccessories || []), ...uData.inventoryAccessories]);
         target.inventoryAccessories = Array.from(accSet);
@@ -550,7 +597,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.6", build: "20261115_1920" };
+    let verData = { version: "2.9.7", build: "20261115_1945" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
