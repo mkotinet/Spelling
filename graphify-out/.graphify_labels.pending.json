@@ -99,13 +99,13 @@
   "97": "Review Focus",
   "98": "19.2 해결 방안 및 구현 상세 (Implementation Details)",
   "99": "20.2 해결 방안 및 구현 상세 (Implementation Details)",
-  "100": "prepare_mobile.js",
+  "100": "ref_assert",
   "101": "18.2 해결 방안 및 구현 상세 (Implementation Details)",
   "102": "gradlew",
   "103": "www/korean_grammar_validator.js",
   "104": "10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)",
-  "105": "17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)",
-  "106": "24. v2.9.6 아바타 꾸미기 랭킹 실시간 즉시 반영 및 동기화 무결성 고도화",
+  "105": "MockEngine",
+  "106": "33. v3.1.0 아이폰(.ipa) & 안드로이드(.apk) 정식 설치 바이너리 직접 빌드 및 GitHub Releases 버전업 배포 기술 보고",
   "107": "30. v2.9.12 메시지 및 사진 한 사람 이상 다중 수신자(다수 친구) 동시 발송 고도화 기술 보고",
   "108": "32. v3.0.0 아이폰(iOS) & 안드로이드(Android) 하이브리드 모바일 앱 구축 및 설치 보안 사전 검증 기술 보고",
   "109": "MainActivity.java",
@@ -122,5 +122,6 @@
   "120": "capacitor.settings.gradle",
   "121": "settings.gradle",
   "122": "variables.gradle",
-  "123": "CapApp-SPM.swift"
+  "123": "CapApp-SPM.swift",
+  "124": "5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)"
 }

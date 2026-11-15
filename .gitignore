@@ -19,3 +19,5 @@ ios/App/.build/
 *.xcuserstate
 xcuserdata/
 graphify-out/cache/
+!releases/*.apk
+!releases/*.ipa

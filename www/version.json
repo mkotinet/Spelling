@@ -1,6 +1,6 @@
 {
-  "version": "3.0.0",
-  "build": "20261115_2230",
-  "name": "하루맞춤 (Haru Matchum) - iOS & Android Universal Mobile Edition",
-  "releaseNotes": "하이브리드 모바일 앱(iOS/Android) 정식 지원 에디션: HTML 웹과 100% 동일 기능 및 실시간 계정 연동, iOS ATS & 권한 크래시 방지 및 Android 서명/네트워크 보안 구성 탑재"
+  "version": "3.1.0",
+  "build": "20261115_2245",
+  "name": "하루맞춤 (Haru Matchum) - iOS (.ipa) & Android (.apk) Standalone Binary Edition",
+  "releaseNotes": "아이폰(.ipa) 및 안드로이드(.apk) 정식 설치 바이너리 패키지 빌드 및 GitHub Releases 버전업 배포 완료"
 }

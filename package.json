@@ -1,6 +1,6 @@
 {
   "name": "spelling_app",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "국어 맞춤법, 한자·고사성어, 속담, 영어 퀴즈 하이브리드 모바일 앱 (iOS/Android/Web) - 하루맞춤",
   "main": "server.js",
   "directories": {
@@ -14,7 +14,8 @@
     "mobile:sync": "node scripts/prepare_mobile.js && npx cap sync",
     "mobile:open:ios": "node scripts/prepare_mobile.js && npx cap sync ios && npx cap open ios",
     "mobile:open:android": "node scripts/prepare_mobile.js && npx cap sync android && npx cap open android",
-    "mobile:build:apk": "bash scripts/build_signed_apk.sh"
+    "mobile:build:apk": "bash scripts/build_signed_apk.sh",
+    "mobile:package": "python3 scripts/generate_mobile_binaries.py"
   },
   "repository": {
     "type": "git",
