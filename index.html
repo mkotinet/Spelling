@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.9.3">
+  <meta name="app-version" content="2.9.4">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -84,7 +84,7 @@
       <button class="nav-tab active" data-view="home">🏠 퀴즈 홈</button>
       <button class="nav-tab" data-view="leaderboard">🏆 회원 랭킹</button>
       <button class="nav-tab" data-view="badges">🎀 스티커북</button>
-      <button id="btnOpenShop" class="nav-tab" type="button" style="color: #e11d48; font-weight: 800;">🏪 상점</button>
+      <button id="btnOpenShop" class="nav-tab" type="button" data-action="open-shop" style="color: #e11d48; font-weight: 800;">🏪 상점</button>
     </nav>
 
     <!-- ============================================================
@@ -498,6 +498,9 @@
         <div class="mode-switch-wrapper" style="margin-bottom: 12px;">
           <button id="rankSubjectSpelling" class="mode-switch-btn active" type="button">
             <span class="switch-icon">🌸</span> 맞춤법
+          </button>
+          <button id="rankSubjectIdiom" class="mode-switch-btn" type="button">
+            <span class="switch-icon">🍯</span> 속담·관용구
           </button>
           <button id="rankSubjectHanja" class="mode-switch-btn" type="button">
             <span class="switch-icon">📜</span> 한자
@@ -1000,20 +1003,20 @@
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.3</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.4</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">🛡️💎🔊⚡✨</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">🏪🔊🍯🏆✨</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            치팅 방지, 아이템 가격 개편 & 듀얼 사운드 엔진 대공개!
+            상점 홈 화면 복원, 아이폰 무음 모드 사운드 & 속담 랭킹 신설!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              퀴즈 중도 이탈 치팅 원천 차단, 상점 최소 가격 200P 전면 상향 조정, Web Audio & HTML5 듀얼 사운드 엔진, No-Store 무캐시 즉시 업데이트 탑재
+              아이템 드레스룸 닫기 시 홈 화면 완벽 복원, 아이폰(iOS Safari) 무음 스위치 및 잠금 상태에서도 생생한 효과음 출력, 명예의 전당 우리말 속담·관용구 랭킹 신설
             </p>
           </div>
         </div>
@@ -1021,37 +1024,37 @@
         <div class="update-card-list">
           <!-- Card 1 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🦊</div>
+            <div class="update-card-icon">🏪</div>
             <div class="update-card-content">
-              <div class="update-card-title">동물의 숲 2.5등신 전신 아바타 & 11대 카테고리</div>
-              <div class="update-card-desc">얼굴 뱃지를 넘어 머리부터 발끝까지 사랑스러운 2.5등신 전신 아바타를 지원합니다. 신규 👗 의상/멜빵, 👟 신발 카테고리가 추가되어 총 11개 카테고리 코디가 가능합니다!</div>
+              <div class="update-card-title">아이템 드레스룸 닫기 시 홈 화면 완벽 복원</div>
+              <div class="update-card-desc">상점(드레스룸)을 이용하고 창을 닫았을 때 홈 화면이 사라지거나 흰 화면으로 멈추던 문제를 완전히 해결하여 부드럽고 안전하게 이전 뷰로 복귀합니다.</div>
             </div>
           </div>
 
           <!-- Card 2 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">👓</div>
+            <div class="update-card-icon">🔊</div>
             <div class="update-card-content">
-              <div class="update-card-title">안경 듀얼 핏팅 (눈에 직접 쓰기 vs 머리에 걸치기)</div>
-              <div class="update-card-desc">안경이 더 이상 이마에 어정쩡하게 걸치지 않습니다! 동물 얼굴 눈 위치에 딱 맞는 '눈 착용'과 멋쟁이 '머리 얹기' 스타일을 완벽하게 지원합니다.</div>
+              <div class="update-card-title">아이폰(iOS Safari) 무음 모드 사운드 완벽 지원</div>
+              <div class="update-card-desc">아이폰 측면 무음 스위치가 켜져 있거나 모바일 사파리 정책에서도 정답·오답 딩동 사운드와 원어민 영어 발음이 지연 없이 즉각 재생되는 하이브리드 오디오 풀을 탑재했습니다.</div>
             </div>
           </div>
 
           <!-- Card 3 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🍄</div>
+            <div class="update-card-icon">🍯</div>
             <div class="update-card-content">
-              <div class="update-card-title">진짜 마리오 & 동물의 숲 시그니처 캐릭터 변신</div>
-              <div class="update-card-desc">입체 마리오 캡, 콧수염, 데님 멜빵과 동숲 초록 나뭇잎 셔츠, 너굴 에이프런, 잠자리채가 머리부터 손끝까지 딱 맞아떨어져 진짜 캐릭터 느낌이 살아납니다.</div>
+              <div class="update-card-title">명예의 전당 '우리말 속담·관용구' 랭킹 신설</div>
+              <div class="update-card-desc">맞춤법, 한자, 영어에 이어 '속담·관용구' 전용 랭킹 탭이 추가되었습니다! 최고 라운드, 오늘의 점수, 누적 랭킹을 친구들과 실시간으로 겨뤄보세요.</div>
             </div>
           </div>
 
           <!-- Card 4 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🏃</div>
+            <div class="update-card-icon">👗</div>
             <div class="update-card-content">
-              <div class="update-card-title">퀴즈 동반자 실시간 인터랙티브 리액션</div>
-              <div class="update-card-desc">문제를 풀 때 전신 아바타가 통통 살랑살랑 대기하며 함께하고, 정답 시 폴짝 환호 점프, 오답 시 흠칫 당황 땀방울 리액션을 60fps 부드러운 모션으로 선보입니다.</div>
+              <div class="update-card-title">동물의 숲 2.5등신 치비 전신 아바타 & 11대 카테고리</div>
+              <div class="update-card-desc">머리핀, 안경 듀얼 착용(눈/머리), 모자, 볼터치, 목걸이/타이, 날개/망토, 펫/오브젝트, 손도구, 이펙트, 의상, 신발 등 다채로운 아이템으로 나만의 캐릭터를 꾸며보세요!</div>
             </div>
           </div>
         </div>
@@ -1074,6 +1077,6 @@
   <script src="idiom_questions.js?v=2.9.0"></script>
   <script src="hanja_questions.js?v=2.9.0"></script>
   <script src="english_questions.js?v=2.9.0"></script>
-  <script src="app.js?v=2.9.3"></script>
+  <script src="app.js?v=2.9.4"></script>
 </body>
 </html>

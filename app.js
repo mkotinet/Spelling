@@ -10,7 +10,10 @@ class SoundEffects {
   constructor() {
     this.ctx = null;
     this.enabled = true;
-    this.fallbackAudio = {};
+    this.audioUris = {};
+    this.audioPool = {};
+    this.isUnlocked = false;
+    this.isMobile = (typeof navigator !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)));
   }
 
   init() {
@@ -27,10 +30,31 @@ class SoundEffects {
         this.ctx.resume().catch(() => {});
       } catch (e) {}
     }
+    this.initAudioPool();
+  }
+
+  initAudioPool() {
+    if (typeof window === 'undefined' || typeof Audio === 'undefined') return;
+    const types = ['correct', 'wrong', 'combo', 'fanfare'];
+    types.forEach(type => {
+      if (!this.audioPool[type]) {
+        const uri = this.getAudioUri(type);
+        if (uri) {
+          try {
+            const a = new Audio(uri);
+            a.preload = 'auto';
+            a.volume = 0.8;
+            this.audioPool[type] = a;
+          } catch (e) {}
+        }
+      }
+    });
   }
 
   unlockAudio() {
     this.init();
+
+    // 1. Unlock Web Audio API
     if (this.ctx) {
       if (this.ctx.state === 'suspended') {
         try { this.ctx.resume().catch(() => {}); } catch (e) {}
@@ -43,27 +67,59 @@ class SoundEffects {
         source.start(0);
       } catch (e) {}
     }
+
+    // 2. Unlock HTML5 Audio Pool (Crucial for iOS Safari Silent Switch Bypass)
+    if (!this.isUnlocked && typeof window !== 'undefined') {
+      Object.values(this.audioPool).forEach(audio => {
+        try {
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+            }).catch(() => {});
+          }
+        } catch (e) {}
+      });
+      this.isUnlocked = true;
+    }
   }
 
-  playFallbackAudio(type) {
+  getAudioUri(type) {
+    if (!this.audioUris[type]) {
+      this.audioUris[type] = this.createWavDataUri(type);
+    }
+    return this.audioUris[type];
+  }
+
+  playHtmlAudio(type, volume = 0.8) {
     if (!this.enabled || typeof window === 'undefined' || typeof Audio === 'undefined') return;
     try {
-      if (!this.fallbackAudio[type]) {
-        this.fallbackAudio[type] = this.createFallbackAudioUri(type);
+      let audio = this.audioPool[type];
+      if (!audio) {
+        const uri = this.getAudioUri(type);
+        if (!uri) return;
+        audio = new Audio(uri);
+        this.audioPool[type] = audio;
       }
-      const uri = this.fallbackAudio[type];
-      if (uri) {
-        const audio = new Audio(uri);
-        audio.volume = 0.65;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {});
-        }
+      audio.volume = volume;
+      audio.currentTime = 0;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
       }
     } catch (e) {}
   }
 
+  playFallbackAudio(type, volume = 0.8) {
+    return this.playHtmlAudio(type, volume);
+  }
+
   createFallbackAudioUri(type) {
+    return this.createWavDataUri(type);
+  }
+
+  createWavDataUri(type) {
     const sampleRate = 11025;
     const samples = [];
     if (type === 'correct') {
@@ -100,6 +156,20 @@ class SoundEffects {
         if (t > 0.24) freq = 1760.00;
         const env = Math.max(0, 1 - (t / dur));
         const val = 128 + 80 * env * Math.sin(2 * Math.PI * freq * t);
+        samples.push(val);
+      }
+    } else if (type === 'fanfare') {
+      const dur = 0.65;
+      const total = Math.floor(sampleRate * dur);
+      const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+      const step = dur / notes.length;
+      for (let i = 0; i < total; i++) {
+        const t = i / sampleRate;
+        const noteIdx = Math.min(notes.length - 1, Math.floor(t / step));
+        const freq = notes[noteIdx];
+        const stepT = t - (noteIdx * step);
+        const env = Math.max(0, 1 - (stepT / step));
+        const val = 128 + 85 * env * Math.sin(2 * Math.PI * freq * t);
         samples.push(val);
       }
     } else {
@@ -141,7 +211,9 @@ class SoundEffects {
       if (this.ctx.state === 'suspended') {
         this.ctx.resume().catch(() => {});
       }
-      const now = this.ctx.currentTime || 0;
+      const rawNow = this.ctx.currentTime || 0;
+      // Prevent scheduling in the past when AudioContext was just resumed (iOS Safari fix)
+      const now = Math.max(rawNow, 0.04);
       const startTime = now + delay;
       const stopTime = startTime + duration;
 
@@ -168,25 +240,23 @@ class SoundEffects {
   correct() {
     if (!this.enabled) return;
     this.unlockAudio();
-    // 1. Play via Web Audio API
+    // 1. Play via Web Audio API (Synthesizer)
     this.playTone(587.33, 'triangle', 0.12, 0, 0.35);
     this.playTone(739.99, 'triangle', 0.12, 0.08, 0.38);
     this.playTone(880.00, 'triangle', 0.14, 0.16, 0.40);
     this.playTone(1174.66, 'sine', 0.28, 0.24, 0.45);
-    // 2. Dual Engine Fallback (guaranteed sound on mobile/safari)
-    if (!this.ctx || this.ctx.state === 'suspended') {
-      this.playFallbackAudio('correct');
-    }
+    // 2. Play via HTML5 Audio (Guaranteed sound on Mobile Safari / iPhone silent switch)
+    this.playHtmlAudio('correct', 0.85);
   }
 
   wrong() {
     if (!this.enabled) return;
     this.unlockAudio();
-    // 1. Play via Web Audio API (safe linear ramps)
-    this.init();
+    // 1. Play via Web Audio API (sawtooth slide)
     if (this.ctx && this.ctx.state !== 'suspended') {
       try {
-        const now = this.ctx.currentTime || 0;
+        const rawNow = this.ctx.currentTime || 0;
+        const now = Math.max(rawNow, 0.04);
         const osc1 = this.ctx.createOscillator();
         const gain1 = this.ctx.createGain();
         osc1.type = 'sawtooth';
@@ -212,13 +282,10 @@ class SoundEffects {
         gain2.connect(this.ctx.destination);
         osc2.start(now + 0.14);
         osc2.stop(now + 0.35);
-      } catch (e) {
-        this.playFallbackAudio('wrong');
-      }
-    } else {
-      // 2. Dual Engine Fallback
-      this.playFallbackAudio('wrong');
+      } catch (e) {}
     }
+    // 2. Play via HTML5 Audio
+    this.playHtmlAudio('wrong', 0.85);
   }
 
   combo() {
@@ -228,9 +295,7 @@ class SoundEffects {
     this.playTone(1174.66, 'sine', 0.14, 0.08, 0.40);
     this.playTone(1396.91, 'sine', 0.16, 0.16, 0.42);
     this.playTone(1760.00, 'sine', 0.28, 0.24, 0.45);
-    if (!this.ctx || this.ctx.state === 'suspended') {
-      this.playFallbackAudio('combo');
-    }
+    this.playHtmlAudio('combo', 0.85);
   }
 
   fanfare() {
@@ -239,6 +304,7 @@ class SoundEffects {
     const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
     const delays = [0, 0.10, 0.20, 0.30, 0.42, 0.56];
     notes.forEach((n, i) => this.playTone(n, 'triangle', 0.22, delays[i], 0.38));
+    this.playHtmlAudio('fanfare', 0.85);
   }
 }
 
@@ -293,9 +359,9 @@ class EnglishSpeechEngine {
       if (this.synth.paused) {
         this.synth.resume();
       }
-      // Micro silent utterance to unlock iOS Webkit Speech Engine
-      const silentUtter = new SpeechSynthesisUtterance(' ');
-      silentUtter.volume = 0.01;
+      // Micro subtle word utterance to unlock iOS Webkit Speech Engine without stall
+      const silentUtter = new SpeechSynthesisUtterance('hi');
+      silentUtter.volume = 0.001;
       silentUtter.rate = 2.0;
       this.synth.speak(silentUtter);
       this.isWarmedUp = true;
@@ -1290,7 +1356,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.3';
+    this.APP_VERSION = metaVer || '2.9.4';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1355,6 +1421,7 @@ class HaruMatchumApp {
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.addEventListener('click', (e) => {
         const view = e.currentTarget.dataset.view;
+        if (!view) return; // Prevent breaking views on action tabs like btnOpenShop
         this.switchView(view);
       });
     });
@@ -1580,37 +1647,25 @@ class HaruMatchumApp {
 
     // Fail Actions (Revive & Fallback) are dynamically wired in showQuizResult()
 
-    // Leaderboard Subject Switcher
+    // Leaderboard Subject Switcher (Spelling vs Idiom vs Hanja vs English)
     const rankSubjSpelling = document.getElementById('rankSubjectSpelling');
+    const rankSubjIdiom = document.getElementById('rankSubjectIdiom');
     const rankSubjHanja = document.getElementById('rankSubjectHanja');
     const rankSubjEnglish = document.getElementById('rankSubjectEnglish');
-    if (rankSubjSpelling) {
-      rankSubjSpelling.addEventListener('click', () => {
-        rankSubjSpelling.classList.add('active');
-        if (rankSubjHanja) rankSubjHanja.classList.remove('active');
-        if (rankSubjEnglish) rankSubjEnglish.classList.remove('active');
-        this.rankSubject = 'spelling';
-        this.renderLeaderboard(this.rankType);
-      });
-    }
-    if (rankSubjHanja) {
-      rankSubjHanja.addEventListener('click', () => {
-        rankSubjHanja.classList.add('active');
-        if (rankSubjSpelling) rankSubjSpelling.classList.remove('active');
-        if (rankSubjEnglish) rankSubjEnglish.classList.remove('active');
-        this.rankSubject = 'hanja';
-        this.renderLeaderboard(this.rankType);
-      });
-    }
-    if (rankSubjEnglish) {
-      rankSubjEnglish.addEventListener('click', () => {
-        rankSubjEnglish.classList.add('active');
-        if (rankSubjSpelling) rankSubjSpelling.classList.remove('active');
-        if (rankSubjHanja) rankSubjHanja.classList.remove('active');
-        this.rankSubject = 'english';
-        this.renderLeaderboard(this.rankType);
-      });
-    }
+
+    const updateRankSubject = (subj) => {
+      this.rankSubject = subj;
+      if (rankSubjSpelling) rankSubjSpelling.classList.toggle('active', subj === 'spelling');
+      if (rankSubjIdiom) rankSubjIdiom.classList.toggle('active', subj === 'idiom');
+      if (rankSubjHanja) rankSubjHanja.classList.toggle('active', subj === 'hanja');
+      if (rankSubjEnglish) rankSubjEnglish.classList.toggle('active', subj === 'english');
+      this.renderLeaderboard(this.rankType);
+    };
+
+    if (rankSubjSpelling) rankSubjSpelling.addEventListener('click', () => updateRankSubject('spelling'));
+    if (rankSubjIdiom) rankSubjIdiom.addEventListener('click', () => updateRankSubject('idiom'));
+    if (rankSubjHanja) rankSubjHanja.addEventListener('click', () => updateRankSubject('hanja'));
+    if (rankSubjEnglish) rankSubjEnglish.addEventListener('click', () => updateRankSubject('english'));
 
     // Sound toggle
     const soundBtn = document.getElementById('btnToggleSound');
@@ -1750,6 +1805,7 @@ class HaruMatchumApp {
   }
 
   switchView(viewName) {
+    if (!viewName || typeof viewName !== 'string') return;
     if (typeof englishVoice !== 'undefined') {
       englishVoice.stop();
     }
@@ -3548,6 +3604,13 @@ class HaruMatchumApp {
     this.previewAccessories = null;
     this.renderUserProfile();
     this.renderItemBar();
+
+    // Ensure active view section is properly restored (Fix for blank screen bug on shop exit)
+    const activeSection = document.querySelector('.view-section.active');
+    if (!activeSection) {
+      const targetView = (this.currentViewName && this.currentViewName !== 'undefined') ? this.currentViewName : 'home';
+      this.switchView(targetView);
+    }
   }
 
   switchShopTab(tab = 'items') {
@@ -3972,7 +4035,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.3';
+    let currentVer = this.APP_VERSION || '2.9.4';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4000,7 +4063,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.3';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.4';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4020,7 +4083,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.3';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.4';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4331,12 +4394,15 @@ class HaruMatchumApp {
               todayScore: this.data.currentUser.todayScore || 0,
               maxRoundToday: this.data.currentUser.maxRoundToday || 1,
               maxRoundSpelling: this.data.currentUser.maxRoundSpelling || (this.data.currentUser.maxRoundToday || 1),
+              maxRoundIdiom: this.data.currentUser.maxRoundIdiom || 1,
               maxRoundHanja: this.data.currentUser.maxRoundHanja || 1,
               maxRoundEnglish: this.data.currentUser.maxRoundEnglish || 1,
               todayScoreSpelling: this.data.currentUser.todayScoreSpelling || 0,
+              todayScoreIdiom: this.data.currentUser.todayScoreIdiom || 0,
               todayScoreHanja: this.data.currentUser.todayScoreHanja || 0,
               todayScoreEnglish: this.data.currentUser.todayScoreEnglish || 0,
               pointsSpelling: this.data.currentUser.pointsSpelling || 0,
+              pointsIdiom: this.data.currentUser.pointsIdiom || 0,
               pointsHanja: this.data.currentUser.pointsHanja || 0,
               pointsEnglish: this.data.currentUser.pointsEnglish || 0,
               isMe: true
@@ -4354,7 +4420,9 @@ class HaruMatchumApp {
 
     // Local sort fallback
     if (currentType === 'round') {
-      if (currentSubject === 'hanja') {
+      if (currentSubject === 'idiom') {
+        users.sort((a, b) => ((b.maxRoundIdiom || 1) - (a.maxRoundIdiom || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      } else if (currentSubject === 'hanja') {
         users.sort((a, b) => ((b.maxRoundHanja || 1) - (a.maxRoundHanja || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
       } else if (currentSubject === 'english') {
         users.sort((a, b) => ((b.maxRoundEnglish || 1) - (a.maxRoundEnglish || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
@@ -4362,7 +4430,9 @@ class HaruMatchumApp {
         users.sort((a, b) => ((b.maxRoundSpelling || b.maxRoundToday || 1) - (a.maxRoundSpelling || a.maxRoundToday || 1)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
       }
     } else if (currentType === 'total') {
-      if (currentSubject === 'hanja') {
+      if (currentSubject === 'idiom') {
+        users.sort((a, b) => ((b.pointsIdiom || 0) - (a.pointsIdiom || 0)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
+      } else if (currentSubject === 'hanja') {
         users.sort((a, b) => ((b.pointsHanja || 0) - (a.pointsHanja || 0)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
       } else if (currentSubject === 'english') {
         users.sort((a, b) => ((b.pointsEnglish || 0) - (a.pointsEnglish || 0)) || ((b.totalPoints || 0) - (a.totalPoints || 0)));
@@ -4373,7 +4443,9 @@ class HaruMatchumApp {
       }
     } else {
       // daily
-      if (currentSubject === 'hanja') {
+      if (currentSubject === 'idiom') {
+        users.sort((a, b) => ((b.todayScoreIdiom || 0) - (a.todayScoreIdiom || 0)) || ((b.todayScore || 0) - (a.todayScore || 0)));
+      } else if (currentSubject === 'hanja') {
         users.sort((a, b) => ((b.todayScoreHanja || 0) - (a.todayScoreHanja || 0)) || ((b.todayScore || 0) - (a.todayScore || 0)));
       } else if (currentSubject === 'english') {
         users.sort((a, b) => ((b.todayScoreEnglish || 0) - (a.todayScoreEnglish || 0)) || ((b.todayScore || 0) - (a.todayScore || 0)));
@@ -4388,7 +4460,8 @@ class HaruMatchumApp {
       const rankBadgeIcon = rankNum === 1 ? '👑' : rankNum === 2 ? '🥈' : rankNum === 3 ? '🥉' : rankNum;
       
       let relevantRound = 1;
-      if (currentSubject === 'hanja') relevantRound = user.maxRoundHanja || 1;
+      if (currentSubject === 'idiom') relevantRound = user.maxRoundIdiom || 1;
+      else if (currentSubject === 'hanja') relevantRound = user.maxRoundHanja || 1;
       else if (currentSubject === 'english') relevantRound = user.maxRoundEnglish || 1;
       else relevantRound = user.maxRoundSpelling || user.maxRoundToday || 1;
 
@@ -4401,13 +4474,15 @@ class HaruMatchumApp {
         scoreDisplay = `${relevantRound} <span>라운드</span>`;
       } else if (currentType === 'daily') {
         let dScore = 0;
-        if (currentSubject === 'hanja') dScore = user.todayScoreHanja || 0;
+        if (currentSubject === 'idiom') dScore = user.todayScoreIdiom || 0;
+        else if (currentSubject === 'hanja') dScore = user.todayScoreHanja || 0;
         else if (currentSubject === 'english') dScore = user.todayScoreEnglish || 0;
         else dScore = user.todayScoreSpelling || user.todayScore || 0;
         scoreDisplay = `${dScore} <span>점</span>`;
       } else {
         let tPoints = 0;
-        if (currentSubject === 'hanja') tPoints = user.pointsHanja || user.totalPoints || 0;
+        if (currentSubject === 'idiom') tPoints = user.pointsIdiom || user.totalPoints || 0;
+        else if (currentSubject === 'hanja') tPoints = user.pointsHanja || user.totalPoints || 0;
         else if (currentSubject === 'english') tPoints = user.pointsEnglish || user.totalPoints || 0;
         else tPoints = user.pointsSpelling || user.totalPoints || 0;
         scoreDisplay = `${tPoints} <span>P</span>`;
@@ -5005,7 +5080,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.3';
+      const clientVersion = this.APP_VERSION || '2.9.4';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
@@ -5060,7 +5135,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', '2.9.3');
+        url.searchParams.set('_v', '2.9.4');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
