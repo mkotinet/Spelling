@@ -1428,7 +1428,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.8';
+    this.APP_VERSION = metaVer || '2.9.9';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -4674,7 +4674,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.8';
+    let currentVer = this.APP_VERSION || '2.9.9';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4702,7 +4702,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.8';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.9';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4722,7 +4722,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.8';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.9';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -5832,7 +5832,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.8';
+      const clientVersion = this.APP_VERSION || '2.9.9';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

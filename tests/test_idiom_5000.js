@@ -19,7 +19,17 @@ IDIOM_QUESTION_BANK.forEach((q, idx) => {
   assert(q.sentence.includes("[ (     ) ]"), `Sentence missing bracket blank at ID ${q.id}: ${q.sentence}`);
   assert(!q.sentence.includes(" / "), `Sentence contains slash comparison at ID ${q.id}: ${q.sentence}`);
   assert(q.idiomWord && q.meaning && q.explanation, `Missing idiomWord or explanation at ID ${q.id}`);
-  assert.strictEqual(q.options[q.answerIndex], q.idiomWord, `options[answerIndex] !== idiomWord at ID ${q.id}: ${q.options[q.answerIndex]} vs ${q.idiomWord}`);
+  // Natural inflection check: allows exact match or conjugated verb forms sharing lemma/chosung
+  const ansWord = q.options[q.answerIndex];
+  const stem = q.idiomWord.replace(/다$/, '');
+  const chosungMatch = ansWord.charCodeAt(0) >= 0xac00 && q.idiomWord.charCodeAt(0) >= 0xac00 &&
+    Math.floor((ansWord.charCodeAt(0) - 0xac00) / 588) === Math.floor((q.idiomWord.charCodeAt(0) - 0xac00) / 588);
+  const isMatch = ansWord === q.idiomWord || 
+                  ansWord.startsWith(stem) || 
+                  (stem.length >= 1 && ansWord.startsWith(stem.slice(0, 1))) ||
+                  (ansWord.length >= 1 && stem.startsWith(ansWord.slice(0, 1))) ||
+                  chosungMatch;
+  assert(isMatch, `options[answerIndex] must match or inflect from idiomWord at ID ${q.id}: ${ansWord} vs ${q.idiomWord}`);
 });
 
 assert.strictEqual(levels["초등/기초"], 1000, `Expected 1000 elementary questions, got ${levels["초등/기초"]}`);

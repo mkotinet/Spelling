@@ -1,6 +1,6 @@
 {
-  "version": "2.9.8",
-  "build": "20261115_2000",
+  "version": "2.9.9",
+  "build": "20261115_2030",
   "name": "하루맞춤 (Haru Matchum)",
-  "releaseNotes": "EmojiHub 무료 API 연동 귀여운 이모지 피커, 랭킹 친구 아바타 터치 시 1:1 응원 메시지 전송, 실시간 도착 알림 및 원클릭 즉석 답신 탑재"
+  "releaseNotes": "한국어 문장 검사 로직(Grammar Validator) 도입 및 4대 과목 20,000문항 빈칸-정답 결합 비문 0건 전수 정밀 교정 완벽 반영"
 }

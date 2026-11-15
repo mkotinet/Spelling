@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.8">'), 'index.html must include meta app-version 2.9.8');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.9">'), 'index.html must include meta app-version 2.9.9');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.8', 'GET /api/version version must be 2.9.8');
+    assert.strictEqual(verRes.data.version, '2.9.9', 'GET /api/version version must be 2.9.9');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -334,6 +334,22 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('id="modalSendMessage"'), 'index.html must include modalSendMessage');
     assert(indexHtml.includes('id="modalIncomingMessage"'), 'index.html must include modalIncomingMessage');
     assert(indexHtml.includes('id="modalInbox"'), 'index.html must include modalInbox');
+
+    // 29. v2.9.9 Korean Sentence Grammar Validator & 20,000 Questions Integrity
+    const validator = require('../korean_grammar_validator.js');
+    assert.strictEqual(typeof validator.validateSentenceIntegrity, 'function', 'validateSentenceIntegrity must be exported');
+    assert.strictEqual(typeof validator.validateBank, 'function', 'validateBank must be exported');
+    
+    // Check regression item #168 & #1676
+    const spellingQuestions = require('../questions.js').SPELLING_QUESTION_BANK;
+    const q168 = spellingQuestions.find(q => q.id === 168);
+    assert.strictEqual(q168.options[q168.answerIndex], '맞추어', 'Q168 correct answer must be 맞추어');
+    const q1676 = spellingQuestions.find(q => q.id === 1676);
+    assert.strictEqual(q1676.options[q1676.answerIndex], '부스스한', 'Q1676 correct answer must be 부스스한');
+    
+    // Quick grammar check on sample questions
+    const valRes = validator.validateSentenceIntegrity(q168);
+    assert.strictEqual(valRes.isValid, true, 'Q168 must pass grammar validation');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
