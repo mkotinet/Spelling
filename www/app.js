@@ -364,6 +364,30 @@ class SoundEffects {
       this.playTone(880, 'sine', 0.04, 0, 0.15);
     } catch (e) {}
   }
+
+  notification() {
+    if (!this.enabled) return;
+    this.unlockAudio();
+    // Clear pleasant notification chime (E5 -> A5 -> C6)
+    this.playTone(659.25, 'sine', 0.16, 0, 0.45);
+    this.playTone(880.00, 'sine', 0.28, 0.12, 0.50);
+    this.playTone(1046.50, 'sine', 0.40, 0.24, 0.55);
+    this.playHtmlAudio('combo', 0.85);
+  }
+}
+
+// VAPID Public Key Base64 Converter for Web Push
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = typeof window !== 'undefined' ? window.atob(base64) : Buffer.from(base64, 'base64').toString('binary');
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
 
 const sfx = new SoundEffects();
@@ -1491,9 +1515,11 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.13';
+    this.APP_VERSION = metaVer || '3.2.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
+    this.swRegistration = null;
+    this.isPushSubscribed = false;
 
     this.initDOM();
     this.bindEvents();
@@ -1505,6 +1531,11 @@ class HaruMatchumApp {
 
     // Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session so users cannot cheat by closing and reopening
     this.clearActiveQuizSession();
+
+    // Initialize Service Worker & Web Push (v3.2.0)
+    if (typeof window !== 'undefined') {
+      setTimeout(() => this.initServiceWorkerAndPush(), 300);
+    }
 
     // Auto-check What's New Popup (v2.7 update announcement)
     if (typeof window !== 'undefined') {
@@ -1539,6 +1570,16 @@ class HaruMatchumApp {
     this.modalIncomingMessage = document.getElementById('modalIncomingMessage');
     this.modalInbox = document.getElementById('modalInbox');
     this.modalPhotoLightbox = document.getElementById('modalPhotoLightbox');
+    this.modalPwaGuide = document.getElementById('modalPwaGuide');
+    this.btnPwaInstall = document.getElementById('btnPwaInstall');
+    this.btnTogglePush = document.getElementById('btnTogglePush');
+    this.btnTestPush = document.getElementById('btnTestPush');
+    this.pushStatusBadge = document.getElementById('pushStatusBadge');
+    this.btnOpenPwaGuideFromInbox = document.getElementById('btnOpenPwaGuideFromInbox');
+    this.btnClosePwaGuide = document.getElementById('btnClosePwaGuide');
+    this.btnPwaGuideDone = document.getElementById('btnPwaGuideDone');
+    this.btnPwaDirectInstall = document.getElementById('btnPwaDirectInstall');
+    this.pwaDirectInstallBox = document.getElementById('pwaDirectInstallBox');
     this.emojiPickerContainer = document.getElementById('emojiPickerContainer');
     this.btnToggleEmojiPicker = document.getElementById('btnToggleEmojiPicker');
     this.btnToggleEmojiText = document.getElementById('btnToggleEmojiText');
@@ -1857,8 +1898,17 @@ class HaruMatchumApp {
     // Photo attachment and lightbox event bindings
     this.initPhotoAttachment();
 
+    // PWA & Web Push Notification Bindings (v3.2.0)
+    if (this.btnPwaInstall) this.btnPwaInstall.addEventListener('click', () => this.openPwaGuideModal());
+    if (this.btnOpenPwaGuideFromInbox) this.btnOpenPwaGuideFromInbox.addEventListener('click', () => this.openPwaGuideModal());
+    if (this.btnClosePwaGuide) this.btnClosePwaGuide.addEventListener('click', () => this.closePwaGuideModal());
+    if (this.btnPwaGuideDone) this.btnPwaGuideDone.addEventListener('click', () => this.closePwaGuideModal());
+    if (this.btnTogglePush) this.btnTogglePush.addEventListener('click', () => this.togglePushNotifications());
+    if (this.btnTestPush) this.btnTestPush.addEventListener('click', () => this.sendTestPushNotification());
+    if (this.btnPwaDirectInstall) this.btnPwaDirectInstall.addEventListener('click', () => this.triggerDirectPwaInstall());
+
     // Modal background click dismiss
-    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox, this.modalPhotoLightbox].forEach(modal => {
+    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox, this.modalPhotoLightbox, this.modalPwaGuide].forEach(modal => {
       if (modal) {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
@@ -1866,6 +1916,7 @@ class HaruMatchumApp {
             else if (modal === this.modalIncomingMessage) this.closeIncomingMessageModal(true);
             else if (modal === this.modalInbox) this.closeInboxModal();
             else if (modal === this.modalPhotoLightbox) this.closePhotoLightbox();
+            else if (modal === this.modalPwaGuide) this.closePwaGuideModal();
           }
         });
       }
@@ -5135,6 +5186,7 @@ class HaruMatchumApp {
   async openInboxModal(tab = 'all') {
     if (this.modalInbox) this.modalInbox.classList.add('active');
     sfx.combo();
+    this.updatePushNotificationUI();
 
     if (!this.cloudToken) {
       this.renderGuestInbox();
@@ -5324,10 +5376,290 @@ class HaruMatchumApp {
   }
 
   // ============================================================
+  // PWA & Web Push Notification Engine (v3.2.0)
+  // ============================================================
+  async initServiceWorkerAndPush() {
+    if (typeof window === 'undefined') return;
+
+    // 1. Capture beforeinstallprompt for Android / Desktop Chrome
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window.deferredPwaPrompt = e;
+      if (this.pwaDirectInstallBox) this.pwaDirectInstallBox.style.display = 'block';
+      console.log('[PWA] beforeinstallprompt captured and ready.');
+    });
+
+    // 2. Register Service Worker
+    if ('serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        this.swRegistration = reg;
+        console.log('[PWA] Service Worker registered with scope:', reg.scope);
+
+        // Listen for foreground push messages
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'HARU_PUSH_RECEIVED') {
+            console.log('[PWA] Foreground Push Received:', event.data.payload);
+            if (sfx && typeof sfx.notification === 'function') {
+              sfx.notification();
+            }
+            this.checkUnreadMessages();
+          }
+        });
+      } catch (err) {
+        console.warn('[PWA] Service Worker registration failed:', err);
+      }
+    }
+
+    // 3. Update initial push status in UI
+    this.updatePushNotificationUI();
+  }
+
+  openPwaGuideModal() {
+    if (!this.modalPwaGuide) return;
+    if (window.deferredPwaPrompt && this.pwaDirectInstallBox) {
+      this.pwaDirectInstallBox.style.display = 'block';
+    }
+    this.modalPwaGuide.classList.add('active');
+    sfx.combo();
+  }
+
+  closePwaGuideModal() {
+    if (this.modalPwaGuide) this.modalPwaGuide.classList.remove('active');
+  }
+
+  async triggerDirectPwaInstall() {
+    if (!window.deferredPwaPrompt) {
+      this.showToastNotice('브라우저 메뉴에서 "홈 화면에 추가"를 선택해주세요! 📲');
+      return;
+    }
+    window.deferredPwaPrompt.prompt();
+    const { outcome } = await window.deferredPwaPrompt.userChoice;
+    console.log('[PWA] User choice outcome:', outcome);
+    window.deferredPwaPrompt = null;
+    if (this.pwaDirectInstallBox) this.pwaDirectInstallBox.style.display = 'none';
+    if (outcome === 'accepted') {
+      this.showToastNotice('하루맞춤 앱이 홈 화면에 추가되었습니다! ✨');
+      this.closePwaGuideModal();
+    }
+  }
+
+  async updatePushNotificationUI() {
+    const badge = this.pushStatusBadge || document.getElementById('pushStatusBadge');
+    const toggleBtn = this.btnTogglePush || document.getElementById('btnTogglePush');
+    const testBtn = this.btnTestPush || document.getElementById('btnTestPush');
+
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      if (badge) {
+        badge.textContent = '미지원 기기';
+        badge.className = 'push-status-badge badge-unsupported';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = '지원 불가';
+        toggleBtn.disabled = true;
+      }
+      if (testBtn) testBtn.style.display = 'none';
+      return;
+    }
+
+    if (Notification.permission === 'denied') {
+      if (badge) {
+        badge.textContent = '차단됨 (설정 필요)';
+        badge.className = 'push-status-badge badge-unsupported';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = '권한 차단됨';
+        toggleBtn.classList.remove('active');
+      }
+      if (testBtn) testBtn.style.display = 'none';
+      return;
+    }
+
+    if (!this.swRegistration && navigator.serviceWorker.ready) {
+      try {
+        this.swRegistration = await navigator.serviceWorker.ready;
+      } catch (e) {}
+    }
+
+    let sub = null;
+    if (this.swRegistration && this.swRegistration.pushManager) {
+      try {
+        sub = await this.swRegistration.pushManager.getSubscription();
+      } catch (e) {}
+    }
+
+    if (sub && Notification.permission === 'granted') {
+      this.isPushSubscribed = true;
+      if (badge) {
+        badge.textContent = '알림 켜짐 ✨';
+        badge.className = 'push-status-badge badge-enabled';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = '알림 끄기';
+        toggleBtn.classList.add('active');
+        toggleBtn.disabled = false;
+      }
+      if (testBtn) testBtn.style.display = 'inline-block';
+    } else {
+      this.isPushSubscribed = false;
+      if (badge) {
+        badge.textContent = '알림 꺼짐';
+        badge.className = 'push-status-badge badge-disabled';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = '알림 켜기';
+        toggleBtn.classList.remove('active');
+        toggleBtn.disabled = false;
+      }
+      if (testBtn) testBtn.style.display = 'none';
+    }
+  }
+
+  async togglePushNotifications() {
+    if (!this.cloudToken) {
+      this.showToastNotice('알림을 등록하려면 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
+    if (this.isPushSubscribed) {
+      await this.unsubscribePushNotifications();
+    } else {
+      await this.subscribePushNotifications();
+    }
+  }
+
+  async subscribePushNotifications() {
+    sfx.unlockAudio();
+
+    if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+      this.showToastNotice('이 브라우저는 웹 푸시 알림을 지원하지 않습니다.');
+      return;
+    }
+
+    // iOS Check: requires standalone PWA installed on Home Screen (iOS 16.4+)
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIos && !isStandalone) {
+      this.openPwaGuideModal();
+      this.showToastNotice('아이폰은 홈 화면에 추가된 앱에서만 알림을 켤 수 있습니다! 📲');
+      return;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        this.showToastNotice('알림 권한이 허용되지 않았습니다. 브라우저 설정에서 허용해주세요.');
+        this.updatePushNotificationUI();
+        return;
+      }
+
+      if (!this.swRegistration) {
+        this.swRegistration = await navigator.serviceWorker.ready;
+      }
+
+      // Fetch VAPID public key
+      const vapidRes = await fetch('/api/push/vapid-public-key');
+      const vapidData = await vapidRes.json();
+      if (!vapidData.success || !vapidData.publicKey) {
+        throw new Error('VAPID public key fetch failed');
+      }
+
+      const convertedVapidKey = urlBase64ToUint8Array(vapidData.publicKey);
+      const subscription = await this.swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      });
+
+      // Register with backend
+      const regRes = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.cloudToken}`
+        },
+        body: JSON.stringify({
+          token: this.cloudToken,
+          subscription: subscription
+        })
+      });
+
+      const regData = await regRes.json();
+      if (regData.success) {
+        this.showToastNotice('홈 바로가기 알림이 켜졌습니다! 🔔✨');
+        sfx.notification();
+      } else {
+        this.showToastNotice(regData.message || '푸시 구독 등록 중 오류가 발생했습니다.');
+      }
+    } catch (err) {
+      console.error('[Web Push] Subscribe error:', err);
+      this.showToastNotice('푸시 알림 등록 실패: ' + err.message);
+    } finally {
+      this.updatePushNotificationUI();
+    }
+  }
+
+  async unsubscribePushNotifications() {
+    try {
+      if (!this.swRegistration) {
+        this.swRegistration = await navigator.serviceWorker.ready;
+      }
+      const subscription = await this.swRegistration.pushManager.getSubscription();
+      if (subscription) {
+        await subscription.unsubscribe();
+        await fetch('/api/push/unsubscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({
+            token: this.cloudToken,
+            endpoint: subscription.endpoint
+          })
+        });
+      }
+      this.showToastNotice('홈 바로가기 알림이 꺼졌습니다. 🔕');
+      sfx.combo();
+    } catch (err) {
+      console.error('[Web Push] Unsubscribe error:', err);
+      this.showToastNotice('알림 해제 중 오류가 발생했습니다.');
+    } finally {
+      this.updatePushNotificationUI();
+    }
+  }
+
+  async sendTestPushNotification() {
+    if (!this.cloudToken) {
+      this.showToastNotice('로그인이 필요합니다.');
+      return;
+    }
+    sfx.notification();
+    try {
+      const res = await fetch('/api/push/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.cloudToken}`
+        },
+        body: JSON.stringify({ token: this.cloudToken })
+      });
+      const data = await res.json();
+      if (data.success && data.sentCount > 0) {
+        this.showToastNotice('🔔 알림 테스트 발송 완료! 상단 알림 배너와 소리를 확인해보세요.');
+      } else {
+        this.showToastNotice(data.message || '테스트 알림 발송 실패');
+      }
+    } catch (err) {
+      this.showToastNotice('테스트 통신 오류: ' + err.message);
+    }
+  }
+
+  // ============================================================
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.13';
+    let currentVer = this.APP_VERSION || '3.2.0';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -5355,7 +5687,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.13';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '3.2.0';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -5375,7 +5707,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.13';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '3.2.0';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -6510,7 +6842,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.13';
+      const clientVersion = this.APP_VERSION || '3.2.0';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

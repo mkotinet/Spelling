@@ -1,6 +1,6 @@
 {
-  "version": "3.1.1",
-  "build": "20261116_0110",
-  "name": "하루맞춤 (Haru Matchum) - Messaging Touch & UX Polish Edition",
-  "releaseNotes": "메시지 버튼 무반응 오류 완전 해결: 네비게이션 탭 메시지 바로가기 신설, 랭킹 화면 즉시 응원(💌) 버튼 탑재, 게스트 모드 메시지 작성 및 보관함 열람 지원"
+  "version": "3.2.0",
+  "build": "20261116_0630",
+  "name": "하루맞춤 (Haru Matchum) - PWA Home Shortcut & Web Push Edition",
+  "releaseNotes": "아이폰 & 안드로이드 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재"
 }

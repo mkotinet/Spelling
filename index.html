@@ -5,11 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.1.0">
+  <meta name="app-version" content="3.2.0">
+  <meta name="theme-color" content="#ec4899">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="하루맞춤">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="/public/icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/public/icons/apple-touch-icon.png">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.1.0">
+  <link rel="stylesheet" href="style.css?v=3.2.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -41,6 +49,7 @@
         </div>
       </div>
       <div class="header-actions">
+        <button id="btnPwaInstall" class="icon-btn pwa-btn" title="앱 설치 및 홈 바로가기 추가">📲</button>
         <button id="btnOpenGameGuide" class="icon-btn" title="게임 룰 및 아이템 도감">🎮</button>
         <button id="btnOpenDictSearch" class="icon-btn" title="국립국어원 표준국어대사전 검색">📖</button>
         <button id="btnOpenInbox" class="icon-btn inbox-btn" title="응원 메시지 보관함" style="position: relative;">
@@ -1221,6 +1230,25 @@
         <button type="button" class="inbox-tab" data-tab="sent">보낸 편지</button>
       </div>
 
+      <!-- Web Push Notification Status & Settings Card (v3.2.0) -->
+      <div id="pushNotificationCard" class="inbox-push-card">
+        <div class="push-card-header">
+          <div class="push-card-title">
+            <span class="push-card-icon">🔔</span>
+            <span style="font-weight: 700; font-size: 0.88rem; color: #1e293b;">홈 바로가기 알림 & 소리</span>
+            <span id="pushStatusBadge" class="push-status-badge badge-checking">확인 중</span>
+          </div>
+          <button id="btnTogglePush" class="btn-push-toggle" type="button">알림 켜기</button>
+        </div>
+        <p class="push-card-desc">
+          홈 화면에 추가하면 화면이 꺼져 있어도 새 메시지 도착 시 배너 알림과 알림 사운드가 울려요! ✨
+        </p>
+        <div class="push-card-actions">
+          <button id="btnTestPush" class="btn-push-test" type="button" style="display: none;">🔔 알림 소리 테스트</button>
+          <button id="btnOpenPwaGuideFromInbox" class="btn-pwa-guide-trigger" type="button">📲 바로가기 설치 방법</button>
+        </div>
+      </div>
+
       <div id="inboxListContainer" class="inbox-list-container" style="flex: 1; overflow-y: auto; padding: 8px 4px;">
         <!-- Dynamically rendered messages -->
       </div>
@@ -1248,30 +1276,105 @@
   </div>
 
   <!-- ============================================================
+       MODAL 16: PWA HOME SCREEN SHORTCUT GUIDE (iOS & Android)
+       ============================================================ -->
+  <div id="modalPwaGuide" class="modal-overlay">
+    <div class="modal-box pwa-guide-box" style="max-width: 460px; max-height: 85vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 class="modal-title">📲 홈 화면에 바로가기 앱 추가</h3>
+        <button id="btnClosePwaGuide" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="pwa-guide-body" style="overflow-y: auto; padding: 12px 4px;">
+        <div class="pwa-guide-intro" style="text-align: center; margin-bottom: 16px;">
+          <img src="/public/icons/apple-touch-icon.png" alt="하루맞춤 아이콘" style="width: 68px; height: 68px; border-radius: 16px; box-shadow: 0 4px 12px rgba(236,72,153,0.25); margin-bottom: 8px;">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #1e293b; margin: 0 0 4px 0;">하루맞춤 앱을 홈 화면에 추가해보세요!</h4>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0;">앱스토어 설치 없이 홈 화면에서 진짜 앱처럼 빠르게 실행하고 실시간 알림을 받을 수 있어요.</p>
+        </div>
+
+        <!-- Android A2HS Direct Install Prompt Button -->
+        <div id="pwaDirectInstallBox" style="display: none; margin-bottom: 16px; text-align: center;">
+          <button id="btnPwaDirectInstall" class="btn-pwa-direct-install" type="button">
+            ✨ 지금 바로 원클릭 앱 설치하기
+          </button>
+        </div>
+
+        <!-- iOS Guide -->
+        <div class="pwa-device-card ios-card">
+          <div class="device-card-header">
+            <span class="device-icon">🍎</span>
+            <strong>아이폰 / 아이패드 (iOS Safari)</strong>
+          </div>
+          <ol class="guide-steps">
+            <li>화면 하단 중앙의 <strong>공유 버튼(<span style="font-size: 1rem;">􀈂</span> 또는 [공유])</strong>을 누릅니다.</li>
+            <li>메뉴를 아래로 내려 <strong>'홈 화면에 추가'</strong> 항목을 선택합니다.</li>
+            <li>우측 상단의 <strong>'추가'</strong>를 누르면 홈 화면에 예쁜 하루맞춤 아이콘 앱이 생성됩니다!</li>
+            <li>홈 화면의 하루맞춤 앱을 실행한 후 우체통(📬)에서 <strong>'알림 켜기'</strong>를 누르면 끝!</li>
+          </ol>
+        </div>
+
+        <!-- Android Guide -->
+        <div class="pwa-device-card android-card" style="margin-top: 12px;">
+          <div class="device-card-header">
+            <span class="device-icon">🤖</span>
+            <strong>안드로이드 (Galaxy / Chrome)</strong>
+          </div>
+          <ol class="guide-steps">
+            <li>상단 브라우저의 <strong>'앱 설치'</strong> 또는 우측 상단 더보기(⋮)를 누릅니다.</li>
+            <li><strong>'홈 화면에 추가'</strong> 또는 <strong>'앱 설치'</strong>를 누릅니다.</li>
+            <li>홈 화면에 추가된 앱을 열고 <strong>'알림 허용'</strong>을 누르면 백그라운드 푸시와 알림음이 작동합니다!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="margin-top: 12px; text-align: center;">
+        <button id="btnPwaGuideDone" class="modal-btn-primary" type="button" style="width: 100%;">확인했어요 ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        MODAL 11: WHAT'S NEW & UPDATE ANNOUNCEMENT
        ============================================================ -->
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v3.1.0</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v3.2.0</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">📱📦🍎🤖✨</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">📲🔔💌✨🎶</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            아이폰(.ipa) & 안드로이드(.apk) 정식 설치 파일 릴리즈!
+            홈 바로가기(PWA) 설치 & 실시간 푸시 알림/소리 엔진 탑재!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              아이폰 설치용 .ipa 및 안드로이드 설치용 .apk 정식 바이너리 패키지 빌드 및 GitHub Releases 다운로드 지원
+              아이폰 & 안드로이드 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재
             </p>
           </div>
         </div>
 
         <div class="update-card-list">
+          <!-- Card 1: PWA 홈 바로가기 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">📲</div>
+            <div class="update-card-content">
+              <div class="update-card-title">아이폰 & 안드로이드 홈 바로가기 (PWA)</div>
+              <div class="update-card-desc">사파리나 크롬에서 '홈 화면에 추가'를 누르면 별도 앱스토어 설치 없이 예쁜 하루맞춤 아이콘 앱으로 홈 화면에 즉시 등록됩니다!</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Web Push 백그라운드 알림 및 소리 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">🔔</div>
+            <div class="update-card-content">
+              <div class="update-card-title">실시간 백그라운드 푸시 & 알림음 재생</div>
+              <div class="update-card-desc">화면이 꺼져 있거나 앱을 닫고 있어도 새 메시지 도착 시 배너 알림과 진동이 울리고, 앱 실행 중에는 귀여운 차임벨 소리가 울립니다!</div>
+            </div>
+          </div>
           <!-- Card 1: 이모지 팩 닫기 & 전송 버튼 고정 최적화 -->
           <div class="update-feature-card">
             <div class="update-card-icon">😊</div>
@@ -1341,10 +1444,10 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.1.0"></script>
-  <script src="idiom_questions.js?v=3.1.0"></script>
-  <script src="hanja_questions.js?v=3.1.0"></script>
-  <script src="english_questions.js?v=3.1.0"></script>
-  <script src="app.js?v=3.1.0"></script>
+  <script src="questions.js?v=3.2.0"></script>
+  <script src="idiom_questions.js?v=3.2.0"></script>
+  <script src="hanja_questions.js?v=3.2.0"></script>
+  <script src="english_questions.js?v=3.2.0"></script>
+  <script src="app.js?v=3.2.0"></script>
 </body>
 </html>

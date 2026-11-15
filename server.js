@@ -17,7 +17,49 @@ const DB_FILE = path.join(DATA_DIR, "users.json");
 const LOGS_FILE = path.join(DATA_DIR, "access_logs.json");
 const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 const PHOTOS_DIR = path.join(DATA_DIR, "uploads", "photos");
+const VAPID_FILE = path.join(DATA_DIR, "vapid_keys.json");
+const PUSH_SUBS_FILE = path.join(DATA_DIR, "push_subscriptions.json");
 const PHOTO_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (1 day) automatic deletion
+
+// Web Push Module & VAPID Setup (v2.9.14)
+let webpush = null;
+try {
+  webpush = require(path.join(__dirname, "vendor", "node_modules", "web-push"));
+} catch (e1) {
+  try {
+    webpush = require("web-push");
+  } catch (e2) {
+    console.warn("[Web Push] web-push module not available:", e2.message);
+  }
+}
+
+let vapidKeys = null;
+if (fs.existsSync(VAPID_FILE)) {
+  try {
+    vapidKeys = JSON.parse(fs.readFileSync(VAPID_FILE, "utf8"));
+  } catch (e) {}
+}
+if (!vapidKeys && webpush) {
+  try {
+    vapidKeys = webpush.generateVAPIDKeys();
+    fs.writeFileSync(VAPID_FILE, JSON.stringify(vapidKeys, null, 2), "utf8");
+    console.log("[Web Push] Generated fresh VAPID keys saved to", VAPID_FILE);
+  } catch (e) {
+    console.error("[Web Push] Failed to generate VAPID keys:", e);
+  }
+}
+if (webpush && vapidKeys) {
+  try {
+    webpush.setVapidDetails(
+      "mailto:admin@danminlove.com",
+      vapidKeys.publicKey,
+      vapidKeys.privateKey
+    );
+    console.log("[Web Push] VAPID details configured successfully.");
+  } catch (e) {
+    console.error("[Web Push] Failed to set VAPID details:", e);
+  }
+}
 
 // Ensure data and photo directories exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -57,6 +99,14 @@ if (DATA_DIR === PERSISTENT_DIR) {
       try {
         fs.copyFileSync(srcMessages, targetMessages);
         console.log("[Persistence] Bootstrapped messages.json into /app/data");
+      } catch (e) {}
+    }
+    const srcVapid = path.join(fallbackDir, "vapid_keys.json");
+    const targetVapid = path.join(DATA_DIR, "vapid_keys.json");
+    if (!fs.existsSync(targetVapid) && fs.existsSync(srcVapid)) {
+      try {
+        fs.copyFileSync(srcVapid, targetVapid);
+        console.log("[Persistence] Bootstrapped vapid_keys.json into /app/data");
       } catch (e) {}
     }
   }
@@ -267,12 +317,67 @@ function generateToken() {
   return crypto.randomBytes(24).toString("hex");
 }
 
+// Push Subscriptions DB Helpers
+function getPushSubscriptions() {
+  if (!fs.existsSync(PUSH_SUBS_FILE)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(PUSH_SUBS_FILE, "utf8")) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function savePushSubscriptions(subs) {
+  try {
+    fs.writeFileSync(PUSH_SUBS_FILE, JSON.stringify(subs, null, 2), "utf8");
+  } catch (e) {
+    console.error("[Web Push] Failed to save push subscriptions:", e);
+  }
+}
+
+async function sendWebPushToUsers(usernames, payload) {
+  if (!webpush || !vapidKeys) return 0;
+  const subs = getPushSubscriptions();
+  if (subs.length === 0) return 0;
+
+  const targetSubs = subs.filter(s => usernames.includes(s.username));
+  if (targetSubs.length === 0) return 0;
+
+  const payloadStr = typeof payload === "string" ? payload : JSON.stringify(payload);
+  const deadEndpoints = new Set();
+  let sentCount = 0;
+
+  await Promise.allSettled(targetSubs.map(async (entry) => {
+    try {
+      await webpush.sendNotification(entry.subscription, payloadStr, {
+        TTL: 60 * 60 * 24 // 24 hours
+      });
+      sentCount++;
+    } catch (err) {
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        deadEndpoints.add(entry.subscription.endpoint);
+      } else {
+        console.warn(`[Web Push] Send notice for ${entry.username}:`, err.message);
+      }
+    }
+  }));
+
+  if (deadEndpoints.size > 0) {
+    const updatedSubs = subs.filter(s => !deadEndpoints.has(s.subscription.endpoint));
+    savePushSubscriptions(updatedSubs);
+    console.log(`[Web Push] Cleaned up ${deadEndpoints.size} expired push subscriptions.`);
+  }
+
+  return sentCount;
+}
+
 // MIME types
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".svg": "image/svg+xml",
@@ -685,7 +790,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.13", build: "20261115_2200" };
+    let verData = { version: "3.2.0", build: "20261116_0630" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -695,7 +800,7 @@ const server = http.createServer(async (req, res) => {
 
     // Attach git commit hash if available
     try {
-      const commit = execSync("git rev-parse --short HEAD", { timeout: 1000 }).toString().trim();
+      const commit = execSync("git rev-parse --short HEAD", { cwd: __dirname, timeout: 1000, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
       if (commit) verData.commit = commit;
     } catch (e) {}
 
@@ -930,6 +1035,32 @@ const server = http.createServer(async (req, res) => {
         hasPhoto: !!photoUrl
       });
 
+      // Web Push Background Notification Trigger (v2.9.14)
+      try {
+        const targetUsernames = resolvedRecipients.map(r => r.username || r.name);
+        const pushTitle = `💌 ${sender.name || username}님의 새 메시지 도착!`;
+        const pushBody = photoUrl 
+          ? (rawContent ? `📷 [사진] ${rawContent}` : "📷 새로운 사진이 도착했습니다! (24시간 내 확인)")
+          : (rawContent || "새로운 응원 메시지가 도착했습니다!");
+        
+        sendWebPushToUsers(targetUsernames, {
+          title: pushTitle,
+          body: pushBody,
+          icon: "/public/icons/icon-192.png",
+          badge: "/public/icons/badge-72.png",
+          url: "/?open=inbox",
+          tag: "haru-message-" + Date.now(),
+          data: {
+            fromUsername: username,
+            fromName: sender.name || username,
+            hasPhoto: !!photoUrl,
+            timestamp: nowIso
+          }
+        }).catch(err => console.warn("[Web Push] Async push dispatch error:", err.message));
+      } catch (pushErr) {
+        console.warn("[Web Push] Dispatch trigger error:", pushErr.message);
+      }
+
       return sendJSON(res, 201, {
         success: true,
         count: createdEntries.length,
@@ -1027,6 +1158,123 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // 14. Web Push: VAPID 공개키 조회 (GET /api/push/vapid-public-key)
+  if (req.method === "GET" && pathname === "/api/push/vapid-public-key") {
+    if (!vapidKeys || !vapidKeys.publicKey) {
+      return sendJSON(res, 503, { success: false, message: "VAPID 키가 아직 준비되지 않았습니다." });
+    }
+    return sendJSON(res, 200, {
+      success: true,
+      publicKey: vapidKeys.publicKey
+    });
+  }
+
+  // 15. Web Push: 기기 푸시 구독 등록 (POST /api/push/subscribe)
+  if (req.method === "POST" && pathname === "/api/push/subscribe") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const subscription = body.subscription;
+      if (!subscription || !subscription.endpoint) {
+        return sendJSON(res, 400, { success: false, message: "유효한 푸시 구독 정보가 필요합니다." });
+      }
+
+      const subs = getPushSubscriptions();
+      const existingIdx = subs.findIndex(s => s.subscription && s.subscription.endpoint === subscription.endpoint);
+      const subRecord = {
+        username,
+        subscription,
+        userAgent,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (existingIdx >= 0) {
+        subs[existingIdx] = subRecord;
+      } else {
+        subs.push(subRecord);
+      }
+
+      savePushSubscriptions(subs);
+      return sendJSON(res, 200, { success: true, message: "푸시 알림 구독이 등록되었습니다." });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 16. Web Push: 기기 푸시 구독 해제 (POST /api/push/unsubscribe)
+  if (req.method === "POST" && pathname === "/api/push/unsubscribe") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const endpoint = body.endpoint || (body.subscription && body.subscription.endpoint);
+      const subs = getPushSubscriptions();
+      const filtered = subs.filter(s => {
+        if (s.username !== username) return true;
+        if (endpoint && s.subscription && s.subscription.endpoint === endpoint) return false;
+        if (!endpoint) return false;
+        return true;
+      });
+
+      savePushSubscriptions(filtered);
+      return sendJSON(res, 200, { success: true, message: "푸시 알림 구독이 해제되었습니다." });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 17. Web Push: 즉시 테스트 알림 발송 (POST /api/push/test)
+  if (req.method === "POST" && pathname === "/api/push/test") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const testPayload = {
+        title: "🔔 [하루맞춤] 푸시 알림 테스트 성공!",
+        body: "웹 푸시 알림과 알림 사운드가 정상 작동합니다! 💌✨",
+        icon: "/public/icons/icon-192.png",
+        badge: "/public/icons/badge-72.png",
+        url: "/?open=inbox",
+        tag: "haru-test-" + Date.now(),
+        data: {
+          test: true,
+          timestamp: new Date().toISOString()
+        }
+      };
+
+      const sentCount = await sendWebPushToUsers([username], testPayload);
+      return sendJSON(res, 200, {
+        success: true,
+        sentCount,
+        message: sentCount > 0 ? "테스트 알림이 발송되었습니다." : "등록된 기기 푸시 구독 정보를 찾을 수 없습니다. 푸시 권한을 확인해주세요."
+      });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
   // ============================================================
   // Static File Serving
   // ============================================================
@@ -1069,7 +1317,9 @@ const server = http.createServer(async (req, res) => {
     const acceptEncoding = req.headers["accept-encoding"] || "";
     const shouldGzip = /\bgzip\b/.test(acceptEncoding) && (ext === ".js" || ext === ".css" || ext === ".html" || ext === ".json");
     const isVersioned = (ext === ".js" || ext === ".css") && (req.url && req.url.includes("?v="));
-    const isHtmlOrVersionMeta = ext === ".html" || path.basename(filePath) === "version.json";
+    const isServiceWorker = path.basename(filePath) === "sw.js";
+    const isManifest = path.basename(filePath) === "manifest.json" || ext === ".webmanifest";
+    const isHtmlOrVersionMeta = ext === ".html" || path.basename(filePath) === "version.json" || isServiceWorker || isManifest;
 
     const headers = {
       "Content-Type": contentType,
@@ -1082,6 +1332,10 @@ const server = http.createServer(async (req, res) => {
       "Expires": isHtmlOrVersionMeta ? "0" : undefined,
       "Surrogate-Control": isHtmlOrVersionMeta ? "no-store" : undefined
     };
+
+    if (isServiceWorker) {
+      headers["Service-Worker-Allowed"] = "/";
+    }
 
     // Remove undefined headers
     Object.keys(headers).forEach(k => headers[k] === undefined && delete headers[k]);
@@ -1128,3 +1382,7 @@ module.exports = server;
 module.exports.cleanupExpiredPhotos = cleanupExpiredPhotos;
 module.exports.PHOTOS_DIR = PHOTOS_DIR;
 module.exports.PHOTO_TTL_MS = PHOTO_TTL_MS;
+module.exports.sendWebPushToUsers = sendWebPushToUsers;
+module.exports.getPushSubscriptions = getPushSubscriptions;
+module.exports.savePushSubscriptions = savePushSubscriptions;
+module.exports.vapidKeys = vapidKeys;

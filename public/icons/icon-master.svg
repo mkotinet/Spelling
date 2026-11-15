@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff758c"/>
+      <stop offset="35%" stop-color="#ff7eb3"/>
+      <stop offset="70%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fff1f5"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4c0519" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="4"/>
+
+  <!-- Golden Stars & Sparkles -->
+  <g filter="url(#glow)">
+    <!-- Top-left sparkle -->
+    <path d="M 120 100 Q 120 130 90 130 Q 120 130 120 160 Q 120 130 150 130 Q 120 130 120 100 Z" fill="url(#goldGrad)"/>
+    <!-- Top-right big sparkle -->
+    <path d="M 390 90 Q 390 130 350 130 Q 390 130 390 170 Q 390 130 430 130 Q 390 130 390 90 Z" fill="url(#goldGrad)"/>
+    <!-- Little star -->
+    <circle cx="340" cy="80" r="8" fill="#ffffff" opacity="0.9"/>
+    <circle cx="150" cy="190" r="6" fill="#ffffff" opacity="0.9"/>
+  </g>
+
+  <!-- Central Open Book & Mascot Symbol -->
+  <g filter="url(#shadow)">
+    <!-- Book Base / Cover -->
+    <path d="M 256 250 Q 200 240 100 250 L 100 370 Q 200 360 256 380 Q 312 360 412 370 L 412 250 Q 312 240 256 250 Z" fill="#701a75" opacity="0.4"/>
+    <!-- Open Book Pages Left -->
+    <path d="M 256 240 C 200 225 110 235 90 245 L 90 355 C 110 345 200 335 256 350 Z" fill="url(#bookGrad)"/>
+    <!-- Open Book Pages Right -->
+    <path d="M 256 240 C 312 225 402 235 422 245 L 422 355 C 402 345 312 335 256 350 Z" fill="url(#bookGrad)"/>
+    <!-- Spine Line -->
+    <path d="M 256 240 L 256 350" stroke="#f472b6" stroke-width="4" stroke-linecap="round"/>
+    <!-- Decorative Text Lines Left -->
+    <line x1="120" y1="275" x2="225" y2="270" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+    <line x1="120" y1="300" x2="215" y2="295" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+    <line x1="120" y1="325" x2="200" y2="320" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+    <!-- Decorative Text Lines Right -->
+    <line x1="287" y1="270" x2="392" y2="275" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+    <line x1="297" y1="295" x2="392" y2="300" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+    <line x1="312" y1="320" x2="392" y2="325" stroke="#fbcfe8" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Cute Puppy Mascot Face over Book -->
+  <g filter="url(#shadow)">
+    <!-- Face Background -->
+    <ellipse cx="256" cy="180" rx="68" ry="58" fill="#ffffff"/>
+    <!-- Patch over left eye -->
+    <path d="M 230 145 C 205 145 195 165 195 185 C 195 200 210 215 230 215 C 245 215 250 200 250 185 C 250 165 245 145 230 145 Z" fill="#d97706"/>
+    <!-- Ears -->
+    <ellipse cx="178" cy="165" rx="22" ry="42" fill="#b45309" transform="rotate(-20 178 165)"/>
+    <ellipse cx="334" cy="165" rx="22" ry="42" fill="#b45309" transform="rotate(20 334 165)"/>
+    <!-- Eyes -->
+    <ellipse cx="225" cy="182" rx="7" ry="10" fill="#1e1b4b"/>
+    <circle cx="227" cy="179" r="3" fill="#ffffff"/>
+    <ellipse cx="287" cy="182" rx="7" ry="10" fill="#1e1b4b"/>
+    <circle cx="289" cy="179" r="3" fill="#ffffff"/>
+    <!-- Nose & Mouth -->
+    <ellipse cx="256" cy="198" rx="10" ry="7" fill="#0f172a"/>
+    <path d="M 252 208 Q 256 215 260 208" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    <!-- Pink Cheek Blush -->
+    <circle cx="205" cy="198" r="10" fill="#f43f5e" opacity="0.5"/>
+    <circle cx="307" cy="198" r="10" fill="#f43f5e" opacity="0.5"/>
+    <!-- Tongue -->
+    <path d="M 252 210 C 252 224 260 224 260 210 Z" fill="#f43f5e"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="256" y="445" font-family="-apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif" font-size="52" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4" filter="url(#shadow)">하루맞춤</text>
+</svg>
