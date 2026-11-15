@@ -1328,5 +1328,226 @@
       "score": 100,
       "pointsEarned": 150
     }
+  },
+  {
+    "id": "log_1794744830593_f2bpk",
+    "timestamp": "2026-11-15T12:13:50.593Z",
+    "kstTime": "2026-11-15 12:13:50",
+    "username": "e2e_runner_1794744830575",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794744830594_lo6eh",
+    "timestamp": "2026-11-15T12:13:50.594Z",
+    "kstTime": "2026-11-15 12:13:50",
+    "username": "e2e_runner_1794744830575",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794744830595_020td",
+    "timestamp": "2026-11-15T12:13:50.595Z",
+    "kstTime": "2026-11-15 12:13:50",
+    "username": "e2e_runner_1794744830575",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794745393207_e1vfz",
+    "timestamp": "2026-11-15T12:23:13.207Z",
+    "kstTime": "2026-11-15 12:23:13",
+    "username": "맞춤요정",
+    "action": "UPLOAD_PHOTO",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "fileName": "photo_1794745393206_76bd7b2daea8.png",
+      "size": 70
+    }
+  },
+  {
+    "id": "log_1794745393210_0jb0h",
+    "timestamp": "2026-11-15T12:23:13.210Z",
+    "kstTime": "2026-11-15 12:23:13",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "to": "민지",
+      "hasPhoto": true
+    }
+  },
+  {
+    "id": "log_1794745411990_skta7",
+    "timestamp": "2026-11-15T12:23:31.990Z",
+    "kstTime": "2026-11-15 12:23:31",
+    "username": "맞춤요정",
+    "action": "UPLOAD_PHOTO",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "fileName": "photo_1794745411989_8522588c8ecf.png",
+      "size": 70
+    }
+  },
+  {
+    "id": "log_1794745411994_zyye4",
+    "timestamp": "2026-11-15T12:23:31.994Z",
+    "kstTime": "2026-11-15 12:23:31",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "to": "민지",
+      "hasPhoto": true
+    }
+  },
+  {
+    "id": "log_1794745444801_lz4ph",
+    "timestamp": "2026-11-15T12:24:04.801Z",
+    "kstTime": "2026-11-15 12:24:04",
+    "username": "e2e_runner_1794745444784",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794745444802_bxdsq",
+    "timestamp": "2026-11-15T12:24:04.802Z",
+    "kstTime": "2026-11-15 12:24:04",
+    "username": "e2e_runner_1794745444784",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794745444803_2lak8",
+    "timestamp": "2026-11-15T12:24:04.803Z",
+    "kstTime": "2026-11-15 12:24:04",
+    "username": "e2e_runner_1794745444784",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794745449285_s1jil",
+    "timestamp": "2026-11-15T12:24:09.285Z",
+    "kstTime": "2026-11-15 12:24:09",
+    "username": "맞춤요정",
+    "action": "UPLOAD_PHOTO",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "fileName": "photo_1794745449284_2e0e5f98cbc4.png",
+      "size": 70
+    }
+  },
+  {
+    "id": "log_1794745449288_gvi7p",
+    "timestamp": "2026-11-15T12:24:09.288Z",
+    "kstTime": "2026-11-15 12:24:09",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "to": "민지",
+      "hasPhoto": true
+    }
+  },
+  {
+    "id": "log_1794745534166_di3k1",
+    "timestamp": "2026-11-15T12:25:34.166Z",
+    "kstTime": "2026-11-15 12:25:34",
+    "username": "맞춤요정",
+    "action": "UPLOAD_PHOTO",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "fileName": "photo_1794745534165_65107ff85c5b.png",
+      "size": 70
+    }
+  },
+  {
+    "id": "log_1794745534170_d22jg",
+    "timestamp": "2026-11-15T12:25:34.170Z",
+    "kstTime": "2026-11-15 12:25:34",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "to": "민지",
+      "hasPhoto": true
+    }
+  },
+  {
+    "id": "log_1794745534335_mnnzr",
+    "timestamp": "2026-11-15T12:25:34.335Z",
+    "kstTime": "2026-11-15 12:25:34",
+    "username": "e2e_runner_1794745534320",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794745534337_1pp6f",
+    "timestamp": "2026-11-15T12:25:34.337Z",
+    "kstTime": "2026-11-15 12:25:34",
+    "username": "e2e_runner_1794745534320",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794745534338_aer5y",
+    "timestamp": "2026-11-15T12:25:34.338Z",
+    "kstTime": "2026-11-15 12:25:34",
+    "username": "e2e_runner_1794745534320",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
   }
 ]

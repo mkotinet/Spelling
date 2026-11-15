@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.9.10">
+  <meta name="app-version" content="2.9.11">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=2.9.10">
+  <link rel="stylesheet" href="style.css?v=2.9.11">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -1061,9 +1061,33 @@
 
       <!-- Message Textarea -->
       <div class="msg-input-wrapper">
-        <textarea id="msgSendInput" class="msg-textarea" maxlength="200" placeholder="친구에게 전할 따뜻한 응원이나 축하 메시지를 적어보세요... (이모지 포함 가능!)"></textarea>
+        <textarea id="msgSendInput" class="msg-textarea" maxlength="200" placeholder="친구에게 전할 따뜻한 응원이나 축하 메시지를 적어보세요... (이모지 및 사진 첨부 가능!)"></textarea>
         <div class="msg-input-footer">
           <span id="msgSendCharCount" class="char-count">0/200자</span>
+        </div>
+      </div>
+
+      <!-- Photo Attachment Section (1-Day Automatic Expiration Policy) -->
+      <div class="msg-photo-attachment-section">
+        <input type="file" id="msgPhotoInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
+        <div class="photo-attach-bar">
+          <button type="button" id="btnTriggerPhotoUpload" class="btn-attach-photo">
+            <span class="btn-icon">📷</span> 사진 첨부하기
+          </button>
+          <span class="photo-notice-tag">⏰ 1일(24시간) 후 자동 삭제</span>
+        </div>
+
+        <!-- Preview Box when Photo is Selected -->
+        <div id="msgPhotoPreviewBox" class="msg-photo-preview-box" style="display: none;">
+          <div class="msg-photo-thumb-wrapper">
+            <img id="msgPhotoPreviewImg" class="msg-photo-preview-img" src="" alt="첨부 사진">
+            <button type="button" id="btnRemovePhoto" class="btn-remove-photo" aria-label="사진 제거">✕</button>
+          </div>
+          <div class="msg-photo-info">
+            <div id="msgPhotoFileName" class="msg-photo-filename">photo.jpg</div>
+            <div id="msgPhotoSize" class="msg-photo-size">54 KB (자동 압축됨)</div>
+            <div class="msg-photo-expiry-desc">⏰ 개인정보 보호를 위해 서버에서 24시간 후 자동 영구 삭제됩니다.</div>
+          </div>
         </div>
       </div>
 
@@ -1119,6 +1143,16 @@
           <div id="incomingContent" class="incoming-content">
             오늘도 멋진 하루 보내세요! 파이팅 ✨
           </div>
+          <!-- Attached Photo in Incoming Message -->
+          <div id="incomingPhotoContainer" class="incoming-photo-container" style="display: none; margin-top: 10px;">
+            <div class="incoming-photo-card">
+              <img id="incomingPhotoImg" class="incoming-photo-img" src="" alt="친구가 보낸 사진" style="max-width: 100%; max-height: 220px; border-radius: 12px; cursor: pointer; object-fit: contain;">
+              <div class="photo-ttl-badge">⏰ 24시간 후 자동 삭제 (터치하여 확대)</div>
+            </div>
+          </div>
+          <div id="incomingPhotoExpiredBox" class="photo-expired-notice" style="display: none; margin-top: 8px; padding: 6px 10px; background: #f1f5f9; border-radius: 10px; color: #64748b; font-size: 0.78rem; font-weight: 600;">
+            ⏳ 24시간이 경과하여 자동 삭제된 사진입니다
+          </div>
         </div>
       </div>
 
@@ -1156,31 +1190,69 @@
   </div>
 
   <!-- ============================================================
+       MODAL 15: PHOTO LIGHTBOX & FULLSCREEN VIEWER (24h Expiry)
+       ============================================================ -->
+  <div id="modalPhotoLightbox" class="modal-overlay">
+    <div class="modal-box photo-lightbox-box" style="max-width: 440px; text-align: center; padding: 16px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📷 사진 크게 보기</h3>
+        <button id="btnClosePhotoLightbox" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="lightbox-img-container" style="margin: 12px 0; background: #0f172a; border-radius: 16px; padding: 8px; display: flex; align-items: center; justify-content: center;">
+        <img id="lightboxTargetImg" class="lightbox-target-img" src="" alt="확대 사진" style="max-width: 100%; max-height: 55vh; border-radius: 12px; object-fit: contain;">
+      </div>
+
+      <div class="photo-ttl-warning" style="font-size: 0.8rem; color: #e11d48; font-weight: 700; background: #ffe4e6; padding: 8px 12px; border-radius: 12px; border: 1px solid #fecdd3; line-height: 1.4;">
+        ⏰ <strong>개인정보 보호 정책</strong>: 이 사진은 전송된 지 1일(24시간) 후 서버 디스크 및 보관함에서 완전 영구 삭제됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        MODAL 11: WHAT'S NEW & UPDATE ANNOUNCEMENT
        ============================================================ -->
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.10</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.11</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">💌✨🐾📖🎉</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">💌📸✨🐾📖</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            한국어 문장 검사 엔진 & EmojiHub 1:1 실시간 응원 메시지!
+            1:1 메시지 실시간 사진 전송 & 24시간 자동 삭제 & 문장 검사 엔진!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              한국어 문장 검사 로직(Grammar Validator) 도입 및 4대 과목 20,000문항 빈칸-정답 결합 비문 0건 전수 정밀 교정, EmojiHub 1:1 응원 메시지 시스템 완벽 탑재
+              1:1 친구 응원 메시지 실시간 사진 첨부 및 수신 기능 탑재, 24시간(1일) 후 서버 자동 영구 삭제 개인정보 보호 엔진 적용, 초경량 모바일 Canvas 압축 및 라이트박스 뷰어 지원
             </p>
           </div>
         </div>
 
         <div class="update-card-list">
-          <!-- Card 1: 문장 검사 엔진 및 20,000제 비문 교정 -->
+          <!-- Card 1: 사진 첨부 및 실시간 전송 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">📸</div>
+            <div class="update-card-content">
+              <div class="update-card-title">1:1 응원 메시지 실시간 사진 첨부 & 수신</div>
+              <div class="update-card-desc">친구에게 메시지를 보낼 때 사진을 함께 첨부해 보낼 수 있습니다! 모바일에서도 초경량으로 자동 최적화 압축되어 빠르고 부드럽게 전송됩니다.</div>
+            </div>
+          </div>
+
+          <!-- Card 2: 24시간 후 자동 삭제 보안 정책 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">⏰</div>
+            <div class="update-card-content">
+              <div class="update-card-title">사진 1일(24시간) 후 서버 자동 완전 영구 삭제</div>
+              <div class="update-card-desc">개인정보 보호를 위해 사진은 전송 후 정확히 1일(24시간)이 지나면 서버 디스크와 메시지 보관함에서 흔적 없이 완전 삭제됩니다!</div>
+            </div>
+          </div>
+
+          <!-- Card 3: 문장 검사 엔진 및 20,000제 비문 교정 -->
           <div class="update-feature-card">
             <div class="update-card-icon">📖</div>
             <div class="update-card-content">
@@ -1189,30 +1261,12 @@
             </div>
           </div>
 
-          <!-- Card 2: 1:1 응원 메시지 -->
+          <!-- Card 4: 1:1 응원 메시지 & EmojiHub -->
           <div class="update-feature-card">
             <div class="update-card-icon">💌</div>
             <div class="update-card-content">
-              <div class="update-card-title">랭킹 친구에게 1:1 실시간 응원 메시지 전송</div>
-              <div class="update-card-desc">랭킹에서 다른 친구의 아바타를 누르고 [💌 응원 메시지 보내기]를 눌러 따뜻한 축하와 응원 한마디를 바로 전달할 수 있습니다!</div>
-            </div>
-          </div>
-
-          <!-- Card 3: EmojiHub 이모지 피커 -->
-          <div class="update-feature-card">
-            <div class="update-card-icon">✨</div>
-            <div class="update-card-content">
               <div class="update-card-title">EmojiHub 무료 API 연동 귀여운 이모지 피커</div>
-              <div class="update-card-desc">글로벌 오픈 API EmojiHub와 연동되어 스마일리, 동물, 디저트, 별 등 다채롭고 귀여운 이모지를 터치 한 번으로 메시지에 쏙 넣을 수 있습니다!</div>
-            </div>
-          </div>
-
-          <!-- Card 4: 실시간 도착 팝업 & 보관함 -->
-          <div class="update-feature-card">
-            <div class="update-card-icon">📬</div>
-            <div class="update-card-content">
-              <div class="update-card-title">실시간 메시지 도착 팝업 & 헤더 우체통 보관함</div>
-              <div class="update-card-desc">친구가 보낸 응원 메시지가 실시간으로 도착하며, 즉시 답신을 보내거나 헤더의 📬 우체통을 통해 전체 대화 내역을 확인할 수 있습니다.</div>
+              <div class="update-card-desc">스마일리, 동물, 디저트 등 다채롭고 귀여운 오픈소스 이모지를 터치 한 번으로 메시지에 넣어 친구에게 전할 수 있습니다!</div>
             </div>
           </div>
 
@@ -1240,10 +1294,10 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=2.9.10"></script>
-  <script src="idiom_questions.js?v=2.9.10"></script>
-  <script src="hanja_questions.js?v=2.9.10"></script>
-  <script src="english_questions.js?v=2.9.10"></script>
-  <script src="app.js?v=2.9.10"></script>
+  <script src="questions.js?v=2.9.11"></script>
+  <script src="idiom_questions.js?v=2.9.11"></script>
+  <script src="hanja_questions.js?v=2.9.11"></script>
+  <script src="english_questions.js?v=2.9.11"></script>
+  <script src="app.js?v=2.9.11"></script>
 </body>
 </html>

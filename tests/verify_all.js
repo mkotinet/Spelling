@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.10">'), 'index.html must include meta app-version 2.9.10');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.11">'), 'index.html must include meta app-version 2.9.11');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.10', 'GET /api/version version must be 2.9.10');
+    assert.strictEqual(verRes.data.version, '2.9.11', 'GET /api/version version must be 2.9.11');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -357,6 +357,18 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(serverCode.includes('username: u.username || u.name,'), 'server.js leaderboard must return username');
     assert(indexHtml.includes('class="whats-new-body"'), 'index.html must include whats-new-body');
     assert(styleCode.includes('overflow-x: hidden;'), 'style.css must prevent horizontal scroll');
+
+    // 31. v2.9.11 1:1 Photo Messaging & 24h Auto-Deletion Engine
+    assert(serverCode.includes('/api/messages/upload-photo'), 'server.js must implement /api/messages/upload-photo');
+    assert(serverCode.includes('/api/uploads/photos/'), 'server.js must implement /api/uploads/photos/ serving');
+    assert(serverCode.includes('cleanupExpiredPhotos()'), 'server.js must implement cleanupExpiredPhotos()');
+    assert(serverCode.includes('PHOTO_TTL_MS'), 'server.js must define PHOTO_TTL_MS');
+    assert(indexHtml.includes('id="msgPhotoInput"'), 'index.html must include msgPhotoInput');
+    assert(indexHtml.includes('id="btnTriggerPhotoUpload"'), 'index.html must include btnTriggerPhotoUpload');
+    assert(indexHtml.includes('id="modalPhotoLightbox"'), 'index.html must include modalPhotoLightbox');
+    assert(appCode.includes('compressImageFile'), 'app.js must implement compressImageFile');
+    assert(appCode.includes('openPhotoLightbox'), 'app.js must implement openPhotoLightbox');
+    assert(appCode.includes('clearAttachedPhoto'), 'app.js must implement clearAttachedPhoto');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

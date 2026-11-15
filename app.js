@@ -1442,7 +1442,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.10';
+    this.APP_VERSION = metaVer || '2.9.11';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1489,6 +1489,8 @@ class HaruMatchumApp {
     this.modalSendMessage = document.getElementById('modalSendMessage');
     this.modalIncomingMessage = document.getElementById('modalIncomingMessage');
     this.modalInbox = document.getElementById('modalInbox');
+    this.modalPhotoLightbox = document.getElementById('modalPhotoLightbox');
+    this.attachedPhotoData = null;
     this.currentAccCategory = 'pin';
 
     // Mascot
@@ -1759,14 +1761,18 @@ class HaruMatchumApp {
     if (btnCloseIncomingX) btnCloseIncomingX.addEventListener('click', () => this.closeIncomingMessageModal(true));
     if (btnReplyIncoming) btnReplyIncoming.addEventListener('click', () => this.replyToIncomingMessage());
 
+    // Photo attachment and lightbox event bindings
+    this.initPhotoAttachment();
+
     // Modal background click dismiss
-    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox].forEach(modal => {
+    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox, this.modalPhotoLightbox].forEach(modal => {
       if (modal) {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
             if (modal === this.modalSendMessage) this.closeSendMessageModal();
             else if (modal === this.modalIncomingMessage) this.closeIncomingMessageModal(true);
             else if (modal === this.modalInbox) this.closeInboxModal();
+            else if (modal === this.modalPhotoLightbox) this.closePhotoLightbox();
           }
         });
       }
@@ -4355,6 +4361,133 @@ class HaruMatchumApp {
     }
   }
 
+  // ============================================================
+  // Photo Attachment & 24h Expiry Protection Engine (v2.9.11)
+  // ============================================================
+  initPhotoAttachment() {
+    const btnTrigger = document.getElementById('btnTriggerPhotoUpload');
+    const inputPhoto = document.getElementById('msgPhotoInput');
+    const btnRemove = document.getElementById('btnRemovePhoto');
+    const btnCloseLightbox = document.getElementById('btnClosePhotoLightbox');
+
+    if (btnTrigger && inputPhoto) {
+      btnTrigger.addEventListener('click', () => {
+        inputPhoto.value = '';
+        inputPhoto.click();
+      });
+      inputPhoto.addEventListener('change', (e) => this.handlePhotoSelect(e));
+    }
+    if (btnRemove) {
+      btnRemove.addEventListener('click', () => this.clearAttachedPhoto());
+    }
+    if (btnCloseLightbox) {
+      btnCloseLightbox.addEventListener('click', () => this.closePhotoLightbox());
+    }
+  }
+
+  async compressImageFile(file, maxWidth = 800, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+      if (!file || !file.type.startsWith('image/')) {
+        return reject(new Error('이미지 파일만 첨부할 수 있습니다.'));
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth || height > maxWidth) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxWidth) / height);
+              height = maxWidth;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Force JPEG with 0.82 quality for ultra compact mobile performance
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          const head = 'data:image/jpeg;base64,';
+          const approxKb = Math.round(((dataUrl.length - head.length) * 3 / 4) / 1024);
+          resolve({
+            base64: dataUrl,
+            fileName: (file.name || 'photo.jpg').replace(/\.[^/.]+$/, "") + ".jpg",
+            sizeKb: Math.max(1, approxKb)
+          });
+        };
+        img.onerror = () => reject(new Error('이미지 파일을 해석할 수 없습니다.'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('파일 읽기 오류가 발생했습니다.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async handlePhotoSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 15 * 1024 * 1024) {
+      this.showToastNotice('15MB 이하의 사진만 선택할 수 있습니다.');
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      this.showToastNotice('사진 압축 최적화 중... 📸');
+      const compressed = await this.compressImageFile(file, 800, 0.82);
+      this.attachedPhotoData = compressed;
+
+      const previewBox = document.getElementById('msgPhotoPreviewBox');
+      const previewImg = document.getElementById('msgPhotoPreviewImg');
+      const fileNameEl = document.getElementById('msgPhotoFileName');
+      const sizeEl = document.getElementById('msgPhotoSize');
+
+      if (previewImg) previewImg.src = compressed.base64;
+      if (fileNameEl) fileNameEl.textContent = compressed.fileName;
+      if (sizeEl) sizeEl.textContent = `${compressed.sizeKb} KB (모바일 최적화)`;
+      if (previewBox) previewBox.style.display = 'flex';
+
+      try {
+        if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+      } catch (sErr) {}
+
+      this.showToastNotice('사진이 첨부되었습니다! ⏰ 24시간 후 자동 삭제');
+    } catch (err) {
+      console.error('Photo select error:', err);
+      this.showToastNotice(err.message || '사진 처리에 실패했습니다.');
+      this.clearAttachedPhoto();
+    }
+  }
+
+  clearAttachedPhoto() {
+    this.attachedPhotoData = null;
+    const inputPhoto = document.getElementById('msgPhotoInput');
+    if (inputPhoto) inputPhoto.value = '';
+    const previewBox = document.getElementById('msgPhotoPreviewBox');
+    if (previewBox) previewBox.style.display = 'none';
+  }
+
+  openPhotoLightbox(photoUrl) {
+    if (!photoUrl) return;
+    const targetImg = document.getElementById('lightboxTargetImg');
+    if (targetImg) targetImg.src = photoUrl;
+    if (this.modalPhotoLightbox) this.modalPhotoLightbox.classList.add('active');
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
+  }
+
+  closePhotoLightbox() {
+    if (this.modalPhotoLightbox) this.modalPhotoLightbox.classList.remove('active');
+  }
+
   openSendMessageModal(targetUser) {
     if (!targetUser) return;
 
@@ -4366,6 +4499,8 @@ class HaruMatchumApp {
     }
 
     this.messageTargetUser = targetUser;
+    this.clearAttachedPhoto();
+
     const titleEl = document.getElementById('msgSendTargetTitle');
     const nameEl = document.getElementById('msgSendTargetName');
     const gradeEl = document.getElementById('msgSendTargetGrade');
@@ -4390,6 +4525,7 @@ class HaruMatchumApp {
 
   closeSendMessageModal() {
     if (this.modalSendMessage) this.modalSendMessage.classList.remove('active');
+    this.clearAttachedPhoto();
   }
 
   async submitSendMessage() {
@@ -4397,8 +4533,8 @@ class HaruMatchumApp {
     const inputEl = document.getElementById('msgSendInput');
     const content = inputEl ? inputEl.value.trim() : '';
 
-    if (!content) {
-      this.showToastNotice('메시지 내용을 입력해 주세요! 💌');
+    if (!content && !this.attachedPhotoData) {
+      this.showToastNotice('메시지 내용이나 사진을 입력해 주세요! 💌');
       if (inputEl) inputEl.focus();
       return;
     }
@@ -4419,6 +4555,44 @@ class HaruMatchumApp {
       btnSubmit.innerHTML = '전송 중... 🚀';
     }
 
+    let photoUrl = null;
+    let photoExpiresAt = null;
+
+    // 1. Upload attached photo if present
+    if (this.attachedPhotoData) {
+      if (btnSubmit) btnSubmit.innerHTML = '사진 업로드 중... 📸';
+      try {
+        const uploadRes = await fetch('/api/messages/upload-photo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({
+            token: this.cloudToken,
+            imageBase64: this.attachedPhotoData.base64,
+            fileName: this.attachedPhotoData.fileName
+          })
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok || !uploadData.success) {
+          throw new Error(uploadData.message || '사진 업로드에 실패했습니다.');
+        }
+        photoUrl = uploadData.photoUrl;
+        photoExpiresAt = uploadData.expiresAt;
+      } catch (uploadErr) {
+        console.error('Photo upload error:', uploadErr);
+        this.showToastNotice(uploadErr.message || '사진 업로드 중 오류가 발생했습니다.');
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '💌 메시지 전송';
+        }
+        return;
+      }
+    }
+
+    if (btnSubmit) btnSubmit.innerHTML = '메시지 전송 중... 🚀';
+
     try {
       const res = await fetch('/api/messages/send', {
         method: 'POST',
@@ -4431,7 +4605,9 @@ class HaruMatchumApp {
           toName: this.messageTargetUser.name,
           toUsername: this.messageTargetUser.username || this.messageTargetUser.name,
           toId: this.messageTargetUser.id,
-          content: content
+          content: content,
+          photoUrl: photoUrl,
+          photoExpiresAt: photoExpiresAt
         })
       });
 
@@ -4451,8 +4627,13 @@ class HaruMatchumApp {
           }
         } catch (sfxErr) {}
 
+        this.clearAttachedPhoto();
         this.closeSendMessageModal();
-        this.showToastNotice(`💌 ${this.messageTargetUser.name}님에게 응원 메시지를 성공적으로 전달했어요! ✨`);
+
+        const toastMsg = photoUrl
+          ? `💌 ${this.messageTargetUser.name}님에게 메시지와 사진을 전달했어요! (사진은 24시간 후 자동 삭제)`
+          : `💌 ${this.messageTargetUser.name}님에게 응원 메시지를 성공적으로 전달했어요! ✨`;
+        this.showToastNotice(toastMsg);
 
         try {
           if (this.confetti && typeof this.confetti.explode === 'function') {
@@ -4542,12 +4723,30 @@ class HaruMatchumApp {
     const timeEl = document.getElementById('incomingTime');
     const contentEl = document.getElementById('incomingContent');
     const avatarEl = document.getElementById('incomingSenderAvatar');
+    const photoContainer = document.getElementById('incomingPhotoContainer');
+    const photoImg = document.getElementById('incomingPhotoImg');
+    const photoExpiredBox = document.getElementById('incomingPhotoExpiredBox');
 
     if (nameEl) nameEl.textContent = msg.fromName || '친구';
     if (timeEl) timeEl.textContent = msg.kstTime ? `${msg.kstTime.split(' ')[1] || msg.kstTime} 도착` : '방금 전';
-    if (contentEl) contentEl.textContent = msg.content;
+    if (contentEl) contentEl.textContent = msg.content || '';
     if (avatarEl) {
       avatarEl.innerHTML = renderCompositeAvatar(msg.fromAvatar || '🌸', msg.fromAccessories || {}, 58, false, 'compact');
+    }
+
+    if (photoContainer && photoImg) {
+      if (msg.photoUrl && !msg.photoExpired) {
+        photoImg.src = msg.photoUrl;
+        photoImg.onclick = () => this.openPhotoLightbox(msg.photoUrl);
+        photoContainer.style.display = 'block';
+        if (photoExpiredBox) photoExpiredBox.style.display = 'none';
+      } else if (msg.photoExpired) {
+        photoContainer.style.display = 'none';
+        if (photoExpiredBox) photoExpiredBox.style.display = 'block';
+      } else {
+        photoContainer.style.display = 'none';
+        if (photoExpiredBox) photoExpiredBox.style.display = 'none';
+      }
     }
 
     this.modalIncomingMessage.classList.add('active');
@@ -4692,6 +4891,18 @@ class HaruMatchumApp {
         42, false, 'compact'
       );
 
+      let photoSnippet = '';
+      if (m.photoUrl && !m.photoExpired) {
+        photoSnippet = `
+          <div class="inbox-card-photo-box" onclick="window.haruApp.openPhotoLightbox('${m.photoUrl}')">
+            <img src="${m.photoUrl}" class="inbox-card-photo-thumb" alt="사진">
+            <span class="inbox-card-photo-badge">📷 사진 보기 (24시간 만료)</span>
+          </div>
+        `;
+      } else if (m.photoExpired) {
+        photoSnippet = `<div class="inbox-card-photo-expired">⏳ 24시간이 경과하여 자동 삭제된 사진입니다</div>`;
+      }
+
       card.innerHTML = `
         <div class="inbox-card-avatar" style="width: 42px; height: 42px;">${avatarHtml}</div>
         <div class="inbox-card-meta">
@@ -4700,6 +4911,7 @@ class HaruMatchumApp {
             <span class="inbox-card-time">${m.kstTime || ''}</span>
           </div>
           <div class="inbox-card-body">${m.content}</div>
+          ${photoSnippet}
           ${isReceived ? `<button type="button" class="inbox-card-reply-btn">💌 답신 보내기</button>` : ''}
         </div>
       `;
@@ -4728,7 +4940,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.10';
+    let currentVer = this.APP_VERSION || '2.9.11';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4756,7 +4968,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.10';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.11';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4776,7 +4988,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.10';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.11';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -5886,7 +6098,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.10';
+      const clientVersion = this.APP_VERSION || '2.9.11';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

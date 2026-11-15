@@ -16,10 +16,15 @@ const DATA_DIR = (fs.existsSync(PERSISTENT_DIR) && process.env.NODE_ENV !== "tes
 const DB_FILE = path.join(DATA_DIR, "users.json");
 const LOGS_FILE = path.join(DATA_DIR, "access_logs.json");
 const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
+const PHOTOS_DIR = path.join(DATA_DIR, "uploads", "photos");
+const PHOTO_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (1 day) automatic deletion
 
-// Ensure data directory exists
+// Ensure data and photo directories exist
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+if (!fs.existsSync(PHOTOS_DIR)) {
+  fs.mkdirSync(PHOTOS_DIR, { recursive: true });
 }
 
 // Initial bootstrap if running in container persistent volume mode
@@ -150,6 +155,58 @@ function saveMessages(messages) {
     fs.writeFileSync(MESSAGES_FILE, JSON.stringify(trimmed, null, 2), "utf8");
   } catch (e) {
     console.error("Messages Save Error:", e);
+  }
+}
+
+// 24-Hour (1-Day) Photo Expiry & Automatic Deletion Engine
+function cleanupExpiredPhotos() {
+  try {
+    const now = Date.now();
+    // 1. Scan filesystem for expired photo files (> 24 hours)
+    if (fs.existsSync(PHOTOS_DIR)) {
+      const files = fs.readdirSync(PHOTOS_DIR);
+      for (const file of files) {
+        const filePath = path.join(PHOTOS_DIR, file);
+        try {
+          const stat = fs.statSync(filePath);
+          if (now - stat.mtimeMs >= PHOTO_TTL_MS) {
+            fs.unlinkSync(filePath);
+            console.log(`[Photo Cleanup] 24-hour expired photo removed from disk: ${file}`);
+          }
+        } catch (fileErr) {
+          // File may have been removed concurrently
+        }
+      }
+    }
+
+    // 2. Scan messages.json and mark expired photos
+    const messages = loadMessages();
+    let updated = false;
+    for (const msg of messages) {
+      if (msg.photoUrl && !msg.photoExpired) {
+        const fileName = path.basename(msg.photoUrl);
+        const filePath = path.join(PHOTOS_DIR, fileName);
+        const fileExists = fs.existsSync(filePath);
+
+        const expiresAt = msg.photoExpiresAt ? new Date(msg.photoExpiresAt).getTime() : 0;
+        const sentAt = msg.timestamp ? new Date(msg.timestamp).getTime() : 0;
+        const isTimeExpired = (expiresAt > 0 && now >= expiresAt) || (sentAt > 0 && (now - sentAt >= PHOTO_TTL_MS));
+
+        if (!fileExists || isTimeExpired) {
+          if (fileExists && isTimeExpired) {
+            try { fs.unlinkSync(filePath); } catch (e) {}
+          }
+          msg.photoUrl = null;
+          msg.photoExpired = true;
+          updated = true;
+        }
+      }
+    }
+    if (updated) {
+      saveMessages(messages);
+    }
+  } catch (err) {
+    console.error("[Photo Cleanup Error]", err);
   }
 }
 
@@ -628,7 +685,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.10", build: "20261115_2100" };
+    let verData = { version: "2.9.11", build: "20261115_2130" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -653,7 +710,113 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 10. 실시간 메시지 전송 (Send Message to Another User)
+  // 10-1. 메시지 첨부 사진 업로드 (Upload Photo for Message - 24h Auto-Deletion Policy)
+  if (req.method === "POST" && pathname === "/api/messages/upload-photo") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const rawBase64 = body.imageBase64 || "";
+      if (!rawBase64) {
+        return sendJSON(res, 400, { success: false, message: "업로드할 사진 데이터가 없습니다." });
+      }
+
+      let mimeMatch = rawBase64.match(/^data:(image\/(jpeg|png|webp|gif));base64,/i);
+      let ext = "jpg";
+      let base64Data = rawBase64;
+      if (mimeMatch) {
+        base64Data = rawBase64.replace(/^data:image\/\w+;base64,/, "");
+        const mimeType = mimeMatch[1].toLowerCase();
+        if (mimeType === "image/png") ext = "png";
+        else if (mimeType === "image/webp") ext = "webp";
+        else if (mimeType === "image/gif") ext = "gif";
+        else ext = "jpg";
+      }
+
+      const buffer = Buffer.from(base64Data, "base64");
+      if (buffer.length > 5 * 1024 * 1024) {
+        return sendJSON(res, 400, { success: false, message: "사진 용량은 최대 5MB까지 가능합니다." });
+      }
+
+      const now = Date.now();
+      const safeFileName = `photo_${now}_${crypto.randomBytes(6).toString("hex")}.${ext}`;
+      const savedPath = path.join(PHOTOS_DIR, safeFileName);
+      fs.writeFileSync(savedPath, buffer);
+
+      const expiresAt = new Date(now + PHOTO_TTL_MS).toISOString();
+      const photoUrl = `/api/uploads/photos/${safeFileName}`;
+
+      recordAccessLog(username, "UPLOAD_PHOTO", clientIp, userAgent, { fileName: safeFileName, size: buffer.length });
+
+      return sendJSON(res, 201, {
+        success: true,
+        photoUrl: photoUrl,
+        expiresAt: expiresAt,
+        fileName: safeFileName
+      });
+    } catch (e) {
+      console.error("Upload photo error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 10-2. 실시간 사진 파일 서빙 및 24시간 만료 자동 삭제 (Serve Uploaded Photos & 24h Expiry Enforcement)
+  if (req.method === "GET" && pathname.startsWith("/api/uploads/photos/")) {
+    const fileName = path.basename(pathname);
+    // Security check: only allow safe photo pattern
+    if (!/^photo_\d+_[a-f0-9]+\.(jpg|jpeg|png|webp|gif)$/i.test(fileName)) {
+      return sendJSON(res, 400, { success: false, message: "잘못된 파일 요청입니다." });
+    }
+
+    const targetPhotoPath = path.join(PHOTOS_DIR, fileName);
+    if (!fs.existsSync(targetPhotoPath)) {
+      return sendJSON(res, 404, {
+        success: false,
+        expired: true,
+        message: "사진을 찾을 수 없거나 보안 정책(24시간)에 따라 자동 삭제되었습니다."
+      });
+    }
+
+    try {
+      const stat = fs.statSync(targetPhotoPath);
+      const now = Date.now();
+      if (now - stat.mtimeMs >= PHOTO_TTL_MS) {
+        // Expired! Delete from disk immediately
+        try { fs.unlinkSync(targetPhotoPath); } catch (e) {}
+        return sendJSON(res, 410, {
+          success: false,
+          expired: true,
+          message: "보안 정책에 따라 24시간이 경과하여 자동 삭제된 사진입니다."
+        });
+      }
+
+      const ext = path.extname(fileName).toLowerCase();
+      let cType = "image/jpeg";
+      if (ext === ".png") cType = "image/png";
+      else if (ext === ".webp") cType = "image/webp";
+      else if (ext === ".gif") cType = "image/gif";
+
+      res.writeHead(200, {
+        "Content-Type": cType,
+        "Content-Length": stat.size,
+        "Cache-Control": "public, max-age=3600",
+        "Access-Control-Allow-Origin": "*"
+      });
+      fs.createReadStream(targetPhotoPath).pipe(res);
+      return;
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 10. 실시간 메시지 전송 (Send Message to Another User with Photo Support)
   if (req.method === "POST" && pathname === "/api/messages/send") {
     try {
       const authHeader = req.headers["authorization"] || "";
@@ -669,12 +832,14 @@ const server = http.createServer(async (req, res) => {
       const sender = db.users[username];
       const toTarget = (body.toName || body.toUsername || "").trim();
       const rawContent = (body.content || "").trim();
+      const photoUrl = (body.photoUrl || "").trim();
+      const photoExpiresAt = body.photoExpiresAt || (photoUrl ? new Date(Date.now() + PHOTO_TTL_MS).toISOString() : null);
 
       if (!toTarget) {
         return sendJSON(res, 400, { success: false, message: "받는 사람을 지정해 주세요." });
       }
-      if (!rawContent) {
-        return sendJSON(res, 400, { success: false, message: "메시지 내용을 입력해 주세요." });
+      if (!rawContent && !photoUrl) {
+        return sendJSON(res, 400, { success: false, message: "메시지 내용이나 사진을 입력해 주세요." });
       }
       if (rawContent.length > 200) {
         return sendJSON(res, 400, { success: false, message: "메시지는 최대 200자까지 작성할 수 있습니다." });
@@ -712,6 +877,9 @@ const server = http.createServer(async (req, res) => {
         toAccessories: recipient.avatarAccessories || {},
         content: safeContent,
         emojiTag: body.emojiTag || null,
+        photoUrl: photoUrl || null,
+        photoExpiresAt: photoExpiresAt || null,
+        photoExpired: false,
         timestamp: new Date().toISOString(),
         kstTime: getKSTTime(),
         read: false
@@ -721,7 +889,7 @@ const server = http.createServer(async (req, res) => {
       messages.push(msgEntry);
       saveMessages(messages);
 
-      recordAccessLog(username, "SEND_MESSAGE", clientIp, userAgent, { to: recipient.username });
+      recordAccessLog(username, "SEND_MESSAGE", clientIp, userAgent, { to: recipient.username, hasPhoto: !!photoUrl });
 
       return sendJSON(res, 201, { success: true, message: msgEntry });
     } catch (e) {
@@ -729,7 +897,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 11. 미확인 실시간 메시지 확인 (Check Unread Messages Polling)
+  // 11. 미확인 실시간 메시지 확인 (Check Unread Messages Polling with Photo Expiry Check)
   if (req.method === "GET" && pathname === "/api/messages/check") {
     const authHeader = req.headers["authorization"] || "";
     const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
@@ -740,6 +908,8 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { success: true, unreadCount: 0, messages: [] });
     }
 
+    cleanupExpiredPhotos();
+
     const messages = loadMessages();
     const unread = messages.filter(m => m.toUsername === username && !m.read);
     return sendJSON(res, 200, {
@@ -749,7 +919,7 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 12. 전체 메시지 보관함 (Inbox & Sent History)
+  // 12. 전체 메시지 보관함 (Inbox & Sent History with Photo Expiry Check)
   if (req.method === "GET" && pathname === "/api/messages/inbox") {
     const authHeader = req.headers["authorization"] || "";
     const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
@@ -759,6 +929,8 @@ const server = http.createServer(async (req, res) => {
     if (!username || !db.users[username]) {
       return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
     }
+
+    cleanupExpiredPhotos();
 
     const messages = loadMessages();
     const myMessages = messages
@@ -885,6 +1057,10 @@ if (require.main === module || !process.env.TEST_ENV) {
   server.listen(PORT, () => {
     console.log(`[Haru Matchum] Server listening on http://0.0.0.0:${PORT}`);
 
+    // Initial 24-hour photo cleanup on startup & recurring every 30 minutes
+    cleanupExpiredPhotos();
+    setInterval(cleanupExpiredPhotos, 30 * 60 * 1000);
+
     // Auto-sync with GitHub every 10 minutes
     setInterval(() => {
       try {
@@ -905,3 +1081,6 @@ if (require.main === module || !process.env.TEST_ENV) {
 }
 
 module.exports = server;
+module.exports.cleanupExpiredPhotos = cleanupExpiredPhotos;
+module.exports.PHOTOS_DIR = PHOTOS_DIR;
+module.exports.PHOTO_TTL_MS = PHOTO_TTL_MS;
