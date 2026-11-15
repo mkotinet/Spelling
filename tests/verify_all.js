@@ -155,6 +155,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 10. Mobile Lifecycle & KST Date logic check
     const appCode = fs.readFileSync(path.join(__dirname, '../app.js'), 'utf8');
+    const styleCss = fs.readFileSync(path.join(__dirname, '../style.css'), 'utf8');
     assert(appCode.includes('visibilitychange'), 'app.js includes visibilitychange');
     assert(appCode.includes('checkDateTransition'), 'app.js includes checkDateTransition');
     assert(appCode.includes('getKSTDateString'), 'app.js includes getKSTDateString');
@@ -211,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.1">'), 'index.html must include meta app-version 2.9.1');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.2">'), 'index.html must include meta app-version 2.9.2');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -276,10 +277,19 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('getHatClass'), 'app.js must include getHatClass');
     assert(appCode.includes('getShoesClass'), 'app.js must include getShoesClass');
 
+    // 22. v2.9.2 SVG Organic Chibi (SD) Body Template & Clipped Outfits
+    assert(appCode.includes('renderChibiSvgBody'), 'app.js must include renderChibiSvgBody');
+    assert(appCode.includes('chibi-body-svg'), 'app.js must render chibi-body-svg');
+    assert(appCode.includes('chibi-svg-skin'), 'app.js must render chibi-svg-skin');
+    assert(appCode.includes('chibi-svg-clothes-layer'), 'app.js must render chibi-svg-clothes-layer');
+    assert(styleCss.includes('.chibi-body-svg'), 'style.css must define .chibi-body-svg');
+    assert(styleCss.includes('.torso-overlay-content'), 'style.css must define .torso-overlay-content');
+    assert(styleCss.includes('.chibi-svg-clothes-base'), 'style.css must define .chibi-svg-clothes-base');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.1', 'GET /api/version version must be 2.9.1');
+    assert.strictEqual(verRes.data.version, '2.9.2', 'GET /api/version version must be 2.9.2');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

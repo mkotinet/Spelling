@@ -868,6 +868,56 @@ function getShoesClass(shoesItem) {
   return 'shoes-default';
 }
 
+function renderChibiSvgBody(outfitInfo, outfitItem, uid = 'av') {
+  // SVG Organic 2.5D Chibi Body Template
+  // Smooth pear silhouette: rounded soft shoulders -> chubby tummy -> rounded hips
+  const bodyPath = "M 34,4 C 24,4 16,14 16,28 C 16,42 20,48 16,66 C 12,82 24,98 50,98 C 76,98 88,82 84,66 C 80,48 84,42 84,28 C 84,14 76,4 66,4 Z";
+  const id = outfitItem ? outfitItem.id : '';
+  const isMario = id.includes('mario');
+  const isLuigi = id.includes('luigi');
+  const isSailor = id.includes('sailor');
+  const isSchool = id.includes('school');
+
+  return `
+    <svg class="chibi-body-svg" viewBox="0 0 100 102" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Chibi Body Skin Gradient -->
+        <linearGradient id="chibi-skin-${uid}" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ffedd5"/>
+          <stop offset="70%" stop-color="#fed7aa"/>
+          <stop offset="100%" stop-color="#fdba74"/>
+        </linearGradient>
+        <!-- 3D Chubby Belly Soft Radial Glow -->
+        <radialGradient id="chibi-belly-${uid}" cx="50%" cy="62%" r="40%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.42)"/>
+          <stop offset="55%" stop-color="rgba(255,255,255,0.08)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0.08)"/>
+        </radialGradient>
+        <!-- Organic Chibi Torso ClipPath -->
+        <clipPath id="chibi-torso-clip-${uid}">
+          <path d="${bodyPath}"/>
+        </clipPath>
+      </defs>
+
+      <!-- 1. Organic Base Skin Layer -->
+      <path class="chibi-svg-skin" d="${bodyPath}" fill="url(#chibi-skin-${uid})"/>
+
+      <!-- 2. Organic Clothing Layer clipped to Chibi Silhouette -->
+      <g clip-path="url(#chibi-torso-clip-${uid})" class="chibi-svg-clothes-layer">
+        <rect class="chibi-svg-clothes-base" x="0" y="0" width="100" height="102"/>
+        ${(isMario || isLuigi) ? `<rect class="chibi-overalls-pants" x="0" y="44" width="100" height="58" fill="#1d4ed8"/>` : ''}
+        ${isSailor ? `<rect class="chibi-sailor-skirt" x="0" y="48" width="100" height="54" fill="#1e3a8a"/>` : ''}
+        ${isSchool ? `<rect class="chibi-school-pants" x="0" y="46" width="100" height="56" fill="#1e293b"/>` : ''}
+        <!-- Soft Chubby Tummy Highlight for true 3D organic feel -->
+        <ellipse class="chibi-svg-belly-highlight" cx="50" cy="65" rx="27" ry="19" fill="url(#chibi-belly-${uid})"/>
+      </g>
+
+      <!-- 3. Organic Torso Soft Contour -->
+      <path class="chibi-svg-outline" d="${bodyPath}" fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="2.5"/>
+    </svg>
+  `;
+}
+
 function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48, clickable = false, mode = 'compact') {
   const acc = accessories || {};
   const auraItem = acc.aura ? findAccessoryById(acc.aura) : null;
@@ -900,6 +950,7 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
     const headFontSize = Math.round(size * 0.52);
     const outfitInfo = getOutfitStyleInfo(outfitItem);
     const shoesCls = getShoesClass(shoesItem);
+    const avatarUid = 'cb_' + Math.floor(Math.random() * 10000000).toString(36);
 
     return `
       <div class="composite-avatar fullbody ${clickable ? 'clickable' : ''}" style="width: ${size}px; height: ${fullHeight}px; font-size: ${headFontSize}px;">
@@ -917,10 +968,13 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
             ${neckItem ? `<span class="acc-layer acc-neck">${neckItem.emoji}</span>` : ''}
           </div>
 
-          <!-- Torso Box (Actual Clothes Silhouette & Texture) -->
+          <!-- Torso Box (Organic SVG Chibi Body & Clothes Silhouette) -->
           <div class="fullbody-torso-box">
             <div class="torso-inner-chibi ${outfitInfo.className}" title="${outfitItem ? outfitItem.name : '기본 복장'}">
-              ${outfitInfo.innerHtml}
+              ${renderChibiSvgBody(outfitInfo, outfitItem, avatarUid)}
+              <div class="torso-overlay-content">
+                ${outfitInfo.innerHtml}
+              </div>
             </div>
             <div class="fullbody-arm left">
               <div class="arm-sleeve"></div>
@@ -1123,7 +1177,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.1';
+    this.APP_VERSION = metaVer || '2.9.2';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -3798,7 +3852,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.1';
+    let currentVer = this.APP_VERSION || '2.9.2';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -3826,7 +3880,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.1';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.2';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -3846,7 +3900,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.1';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.2';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4831,7 +4885,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.1';
+      const clientVersion = this.APP_VERSION || '2.9.2';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

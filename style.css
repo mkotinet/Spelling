@@ -2898,11 +2898,11 @@ body.theme-english .quiz-sentence .quiz-blank {
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.08));
 }
 
-/* Torso & Outfit Box (approx 33% of total height) */
+/* Torso & Outfit Box (approx 34% of total height) */
 .fullbody-torso-box {
   position: relative;
-  width: 50%;
-  height: 33%;
+  width: 52%;
+  height: 34%;
   margin-top: -16%; /* Seamless neck overlap */
   display: flex;
   align-items: center;
@@ -2910,112 +2910,146 @@ body.theme-english .quiz-sentence .quiz-blank {
   z-index: 4;
 }
 
-/* Chibi Torso: Actual clothing silhouette & texture */
+/* Chibi Torso: Organic Silhouette SVG & Overlay */
 .torso-inner-chibi {
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 10px 10px 12px 12px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12), inset 0 -2px 3px rgba(0, 0, 0, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.14));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.25s ease;
 }
 
-/* Outfit Themes: Real clothing patterns & silhouettes */
-.torso-inner-chibi.outfit-default {
-  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
-  border: 1px solid #cbd5e1;
+/* Organic Chibi Body SVG Template */
+.chibi-body-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.torso-inner-chibi.outfit-acnl-leaf {
-  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 3px 6px rgba(5, 150, 105, 0.35);
+.torso-overlay-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.torso-inner-chibi.outfit-mario-overalls {
-  background: linear-gradient(180deg, #ef4444 0%, #dc2626 35%, #1d4ed8 36%, #1e40af 100%);
-  box-shadow: 0 3px 6px rgba(29, 78, 216, 0.35);
+/* Outfit Themes: Organic SVG Clothes Mapping */
+.torso-inner-chibi .chibi-svg-clothes-base {
+  fill: #f1f5f9;
+  transition: fill 0.25s ease;
 }
 
-.torso-inner-chibi.outfit-luigi-overalls {
-  background: linear-gradient(180deg, #22c55e 0%, #16a34a 35%, #1d4ed8 36%, #1e40af 100%);
-  box-shadow: 0 3px 6px rgba(29, 78, 216, 0.35);
+.torso-inner-chibi.outfit-default .chibi-svg-clothes-base {
+  fill: #e2e8f0;
 }
 
-.torso-inner-chibi.outfit-acnl-nook {
-  background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
-  box-shadow: 0 3px 6px rgba(120, 53, 15, 0.35);
+.torso-inner-chibi.outfit-acnl-leaf .chibi-svg-clothes-base {
+  fill: #059669;
 }
 
-.torso-inner-chibi.outfit-acnl-isabelle {
-  background: linear-gradient(180deg, #fef08a 0%, #fde047 30%, #6ee7b7 31%, #34d399 100%);
-  box-shadow: 0 3px 6px rgba(52, 211, 153, 0.35);
+.torso-inner-chibi.outfit-mario-overalls .chibi-svg-clothes-base {
+  fill: #dc2626;
 }
 
-.torso-inner-chibi.outfit-polo-blue {
-  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
-  box-shadow: 0 3px 6px rgba(2, 132, 199, 0.35);
+.torso-inner-chibi.outfit-luigi-overalls .chibi-svg-clothes-base {
+  fill: #16a34a;
 }
 
-.torso-inner-chibi.outfit-hoodie {
-  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
-  box-shadow: 0 3px 6px rgba(100, 116, 139, 0.35);
+.torso-inner-chibi.outfit-acnl-nook .chibi-svg-clothes-base {
+  fill: #78350f;
 }
 
-.torso-inner-chibi.outfit-tuxedo {
-  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-  box-shadow: 0 3px 6px rgba(15, 23, 42, 0.45);
+.torso-inner-chibi.outfit-acnl-isabelle .chibi-svg-clothes-base {
+  fill: #34d399;
 }
 
-.torso-inner-chibi.outfit-hanbok {
-  background: linear-gradient(180deg, #f43f5e 0%, #fb923c 50%, #38bdf8 100%);
-  box-shadow: 0 3px 6px rgba(244, 63, 94, 0.35);
+.torso-inner-chibi.outfit-polo-blue .chibi-svg-clothes-base {
+  fill: #0284c7;
 }
 
-.torso-inner-chibi.outfit-sailor {
-  background: linear-gradient(180deg, #ffffff 0%, #ffffff 50%, #1e3a8a 51%, #1e3a8a 100%);
-  box-shadow: 0 3px 6px rgba(30, 58, 138, 0.35);
+.torso-inner-chibi.outfit-hoodie .chibi-svg-clothes-base {
+  fill: #64748b;
 }
 
-.torso-inner-chibi.outfit-peach-dress {
-  background: linear-gradient(180deg, #f472b6 0%, #ec4899 100%);
-  box-shadow: 0 3px 6px rgba(236, 72, 153, 0.35);
+.torso-inner-chibi.outfit-tuxedo .chibi-svg-clothes-base {
+  fill: #0f172a;
 }
 
-.torso-inner-chibi.outfit-cheerleader {
-  background: linear-gradient(180deg, #facc15 0%, #e11d48 50%, #ffffff 100%);
+.torso-inner-chibi.outfit-hanbok .chibi-svg-clothes-base {
+  fill: #f43f5e;
 }
 
-.torso-inner-chibi.outfit-detective {
-  background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+.torso-inner-chibi.outfit-sailor .chibi-svg-clothes-base {
+  fill: #ffffff;
 }
 
-.torso-inner-chibi.outfit-school {
-  background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #1e293b 41%, #1e293b 100%);
+.torso-inner-chibi.outfit-peach-dress .chibi-svg-clothes-base {
+  fill: #ec4899;
+}
+
+.torso-inner-chibi.outfit-cheerleader .chibi-svg-clothes-base {
+  fill: #e11d48;
+}
+
+.torso-inner-chibi.outfit-detective .chibi-svg-clothes-base {
+  fill: #b45309;
+}
+
+.torso-inner-chibi.outfit-school .chibi-svg-clothes-base {
+  fill: #ffffff;
+}
+
+.torso-inner-chibi.outfit-dinosaur .chibi-svg-clothes-base {
+  fill: #15803d;
+}
+
+.torso-inner-chibi.outfit-bear-overall .chibi-svg-clothes-base {
+  fill: #9a3412;
+}
+
+.torso-inner-chibi.outfit-acnl-kk .chibi-svg-clothes-base {
+  fill: #334155;
 }
 
 /* Clothing Details & Badges */
 .outfit-straps {
   position: absolute;
-  top: 36%;
+  top: 38%;
   left: 0;
   width: 100%;
-  height: 64%;
+  height: 62%;
   display: flex;
   justify-content: space-around;
   pointer-events: none;
 }
 
 .outfit-straps .strap {
-  width: 24%;
+  width: 22%;
   height: 100%;
   background: #1e40af;
   position: relative;
-  border-radius: 2px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .outfit-straps .gold-button {
@@ -3023,22 +3057,22 @@ body.theme-english .quiz-sentence .quiz-blank {
   top: 3px;
   left: 50%;
   transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   background: #fbbf24;
   border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .outfit-collar {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
-  height: 22%;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
-  border-radius: 0 0 6px 6px;
+  width: 56%;
+  height: 20%;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0 0 8px 8px;
   pointer-events: none;
 }
 
@@ -3052,43 +3086,45 @@ body.theme-english .quiz-sentence .quiz-blank {
   margin-top: -4px;
 }
 
-/* Arms & Sleeves */
+/* Organic Curved Arms & Mitten Hands */
 .fullbody-arm {
   position: absolute;
   top: 8%;
-  width: 22%;
-  height: 58%;
-  border-radius: 8px;
+  width: 24%;
+  height: 62%;
+  border-radius: 12px 12px 16px 16px;
   z-index: 3;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+  transform-origin: top center;
+  transition: all 0.2s ease;
 }
 
 .fullbody-arm .arm-sleeve {
   width: 100%;
-  height: 58%;
+  height: 54%;
   background: #ffedd5; /* Matches default torso */
+  border-radius: 12px 12px 3px 3px;
 }
 
 .fullbody-arm .arm-hand {
   width: 100%;
-  height: 42%;
-  background: #fed7aa; /* Chibi bare hand */
-  border-radius: 0 0 6px 6px;
+  height: 46%;
+  background: #fed7aa; /* Chibi bare mitten hand */
+  border-radius: 4px 4px 14px 14px;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.08);
 }
 
 .fullbody-arm.left {
-  left: -16%;
-  transform: rotate(8deg);
-  transform-origin: top center;
+  left: -17%;
+  transform: rotate(10deg);
 }
 
 .fullbody-arm.right {
-  right: -16%;
-  transform: rotate(-8deg);
-  transform-origin: top center;
+  right: -17%;
+  transform: rotate(-10deg);
 }
 
 /* Outfit Sleeve Color Mapping */
@@ -3105,12 +3141,15 @@ body.theme-english .quiz-sentence .quiz-blank {
 .torso-inner-chibi.outfit-hanbok ~ .fullbody-arm .arm-sleeve { background: #38bdf8; }
 .torso-inner-chibi.outfit-peach-dress ~ .fullbody-arm .arm-sleeve { background: #f472b6; }
 .torso-inner-chibi.outfit-sailor ~ .fullbody-arm .arm-sleeve { background: #ffffff; }
+.torso-inner-chibi.outfit-dinosaur ~ .fullbody-arm .arm-sleeve { background: #15803d; }
+.torso-inner-chibi.outfit-bear-overall ~ .fullbody-arm .arm-sleeve { background: #9a3412; }
+.torso-inner-chibi.outfit-acnl-kk ~ .fullbody-arm .arm-sleeve { background: #334155; }
 
-/* Legs & Shoes Box (approx 18% of total height) */
+/* Legs & Shoes Box (approx 19% of total height, 3D Curved Chibi Feet) */
 .fullbody-legs-box {
   position: relative;
-  width: 44%;
-  height: 18%;
+  width: 46%;
+  height: 19%;
   margin-top: -3%;
   display: flex;
   justify-content: space-between;
@@ -3128,19 +3167,19 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 .chibi-leg-pillar {
-  width: 65%;
-  height: 35%;
+  width: 66%;
+  height: 32%;
   background: #fed7aa; /* Bare chibi leg */
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
-/* 3D Chibi Shoe Body */
+/* 3D Curved Chibi Shoe Body */
 .chibi-shoe-body {
   position: relative;
   width: 100%;
-  height: 70%;
-  border-radius: 6px 6px 8px 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+  height: 72%;
+  border-radius: 10px 10px 12px 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -3151,14 +3190,16 @@ body.theme-english .quiz-sentence .quiz-blank {
   width: 100%;
   height: 65%;
   background: #94a3b8;
-  border-radius: 6px 6px 0 0;
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.35);
 }
 
 .chibi-shoe-body .shoe-sole {
   width: 100%;
   height: 35%;
   background: #ffffff;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1.5px solid rgba(0, 0, 0, 0.14);
+  border-radius: 0 0 10px 10px;
 }
 
 /* Shoes Themes */
