@@ -1442,7 +1442,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.11';
+    this.APP_VERSION = metaVer || '2.9.12';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1491,6 +1491,7 @@ class HaruMatchumApp {
     this.modalInbox = document.getElementById('modalInbox');
     this.modalPhotoLightbox = document.getElementById('modalPhotoLightbox');
     this.attachedPhotoData = null;
+    this.selectedMessageRecipients = [];
     this.currentAccCategory = 'pin';
 
     // Mascot
@@ -1727,9 +1728,11 @@ class HaruMatchumApp {
     const btnCloseSendMessage = document.getElementById('btnCloseSendMessage');
     const btnCancelSendMessage = document.getElementById('btnCancelSendMessage');
     const btnSubmitSendMessage = document.getElementById('btnSubmitSendMessage');
+    const btnToggleSelectAll = document.getElementById('btnToggleSelectAllRecipients');
     if (btnCloseSendMessage) btnCloseSendMessage.addEventListener('click', () => this.closeSendMessageModal());
     if (btnCancelSendMessage) btnCancelSendMessage.addEventListener('click', () => this.closeSendMessageModal());
     if (btnSubmitSendMessage) btnSubmitSendMessage.addEventListener('click', () => this.submitSendMessage());
+    if (btnToggleSelectAll) btnToggleSelectAll.addEventListener('click', () => this.toggleSelectAllRecipients());
 
     const msgInput = document.getElementById('msgSendInput');
     if (msgInput) {
@@ -4488,9 +4491,182 @@ class HaruMatchumApp {
     if (this.modalPhotoLightbox) this.modalPhotoLightbox.classList.remove('active');
   }
 
-  openSendMessageModal(targetUser) {
-    if (!targetUser) return;
+  // ============================================================
+  // Multi-Recipient Selection & Photo Messaging Engine (v2.9.12)
+  // ============================================================
+  async populateAvailableRecipients() {
+    const myName = (this.data.currentUser && (this.data.currentUser.username || this.data.currentUser.name)) || '';
+    const myId = (this.data.currentUser && this.data.currentUser.id) || '';
+    let users = [];
 
+    if (Array.isArray(this.data.allUsers) && this.data.allUsers.length > 0) {
+      users = this.data.allUsers.filter(u => !u.isMe && u.name !== myName && u.username !== myName && (!myId || u.id !== myId));
+    }
+
+    if (users.length === 0) {
+      try {
+        const res = await fetch('/api/leaderboard?mode=spelling&type=round');
+        if (res.ok) {
+          const body = await res.json();
+          if (body.success && Array.isArray(body.leaderboard)) {
+            users = body.leaderboard.filter(u => u.name !== myName && u.username !== myName && (!myId || u.id !== myId));
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Deduplicate by name or username
+    const map = new Map();
+    users.forEach(u => {
+      const key = u.username || u.name;
+      if (key && !map.has(key)) {
+        map.set(key, u);
+      }
+    });
+
+    return Array.from(map.values());
+  }
+
+  async renderRecipientSelector(targetUser = null) {
+    const grid = document.getElementById('msgRecipientSelectorGrid');
+    if (!grid) return;
+
+    const availableUsers = await this.populateAvailableRecipients();
+
+    // If a specific targetUser is passed (e.g. clicked on ranking or reply), ensure it's selected
+    if (targetUser) {
+      const exists = this.selectedMessageRecipients.some(u => 
+        (u.id && u.id === targetUser.id) || (u.name === targetUser.name) || (u.username && u.username === targetUser.username)
+      );
+      if (!exists) {
+        this.selectedMessageRecipients = [targetUser];
+      }
+    } else if (this.selectedMessageRecipients.length === 0 && availableUsers.length > 0) {
+      this.selectedMessageRecipients = [availableUsers[0]];
+    }
+
+    // If targetUser not in availableUsers, prepend
+    const allOptions = [...availableUsers];
+    if (targetUser && !allOptions.some(u => u.name === targetUser.name || (u.id && u.id === targetUser.id))) {
+      allOptions.unshift(targetUser);
+    }
+
+    grid.innerHTML = '';
+    allOptions.forEach(user => {
+      const isSelected = this.selectedMessageRecipients.some(u => 
+        (u.id && u.id === user.id) || (u.name === user.name) || (u.username && u.username === user.username)
+      );
+
+      const chip = document.createElement('div');
+      chip.className = `msg-recipient-chip ${isSelected ? 'selected' : ''}`;
+
+      const miniAvatarHtml = renderCompositeAvatar(user.avatar || '🌸', user.avatarAccessories || {}, 24, false, 'compact');
+
+      chip.innerHTML = `
+        <span class="recipient-chip-check">${isSelected ? '✓' : ''}</span>
+        <div class="recipient-chip-avatar">${miniAvatarHtml}</div>
+        <span class="recipient-chip-name">${user.name}</span>
+        <span class="recipient-chip-grade">${user.grade || '친구'}</span>
+      `;
+
+      chip.onclick = () => this.toggleRecipientSelection(user);
+      grid.appendChild(chip);
+    });
+
+    this.updateRecipientSelectionUI(allOptions);
+  }
+
+  toggleRecipientSelection(user) {
+    const idx = this.selectedMessageRecipients.findIndex(u => 
+      (u.id && u.id === user.id) || (u.name === user.name) || (u.username && u.username === user.username)
+    );
+
+    if (idx >= 0) {
+      if (this.selectedMessageRecipients.length === 1) {
+        this.showToastNotice('최소 1명 이상의 받는 친구를 선택해야 합니다. 👥');
+        return;
+      }
+      this.selectedMessageRecipients.splice(idx, 1);
+    } else {
+      this.selectedMessageRecipients.push(user);
+    }
+
+    this.renderRecipientSelector();
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
+  }
+
+  async toggleSelectAllRecipients() {
+    const availableUsers = await this.populateAvailableRecipients();
+    if (!availableUsers || availableUsers.length === 0) return;
+
+    if (this.selectedMessageRecipients.length === availableUsers.length) {
+      // All selected -> keep only 1
+      this.selectedMessageRecipients = [availableUsers[0]];
+      this.showToastNotice('선택을 초기화했습니다. (1명 선택)');
+    } else {
+      // Select all
+      this.selectedMessageRecipients = [...availableUsers];
+      this.showToastNotice(`모든 친구(${availableUsers.length}명)를 모두 선택했습니다! 👥✨`);
+    }
+
+    this.renderRecipientSelector();
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
+  }
+
+  updateRecipientSelectionUI(availableUsers = []) {
+    const count = this.selectedMessageRecipients.length;
+    const badge = document.getElementById('msgSelectedCountBadge');
+    const titleEl = document.getElementById('msgSendTargetTitle');
+    const btnSelectAll = document.getElementById('btnToggleSelectAllRecipients');
+
+    if (badge) {
+      badge.textContent = `${count}명 선택됨`;
+    }
+
+    if (btnSelectAll && availableUsers.length > 0) {
+      btnSelectAll.textContent = (count === availableUsers.length) ? '선택 해제' : '전체 선택';
+    }
+
+    if (titleEl) {
+      if (count === 1) {
+        titleEl.textContent = `${this.selectedMessageRecipients[0].name}님에게 응원 메시지 보내기`;
+      } else if (count > 1) {
+        titleEl.textContent = `${this.selectedMessageRecipients[0].name}님 외 ${count - 1}명에게 응원 메시지 보내기`;
+      } else {
+        titleEl.textContent = '친구들에게 응원 메시지 보내기';
+      }
+    }
+
+    // Profile card update
+    const profileCard = document.getElementById('msgSendTargetProfileCard');
+    const nameEl = document.getElementById('msgSendTargetName');
+    const gradeEl = document.getElementById('msgSendTargetGrade');
+    const avatarEl = document.getElementById('msgSendTargetAvatar');
+
+    if (count === 1) {
+      const u = this.selectedMessageRecipients[0];
+      if (profileCard) profileCard.style.display = 'flex';
+      if (nameEl) nameEl.textContent = u.name;
+      if (gradeEl) gradeEl.textContent = `${u.grade || '일반'} · 💎 ${(u.totalPoints || 0).toLocaleString()}P`;
+      if (avatarEl) {
+        avatarEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 52, false, 'compact');
+      }
+    } else if (count > 1) {
+      if (profileCard) profileCard.style.display = 'flex';
+      if (nameEl) nameEl.textContent = `${this.selectedMessageRecipients[0].name}님 외 ${count - 1}명 (총 ${count}명)`;
+      const names = this.selectedMessageRecipients.map(u => u.name).join(', ');
+      if (gradeEl) gradeEl.textContent = `받는 친구들: ${names}`;
+      if (avatarEl) {
+        avatarEl.innerHTML = `<div style="font-size: 2rem; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">👥</div>`;
+      }
+    }
+  }
+
+  async openSendMessageModal(targetUser) {
     // Check login state: Guests must log in to send message
     if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
       this.showToastNotice('응원 메시지를 보내려면 3초 간편 로그인이 필요해요! 🔑');
@@ -4501,24 +4677,17 @@ class HaruMatchumApp {
     this.messageTargetUser = targetUser;
     this.clearAttachedPhoto();
 
-    const titleEl = document.getElementById('msgSendTargetTitle');
-    const nameEl = document.getElementById('msgSendTargetName');
-    const gradeEl = document.getElementById('msgSendTargetGrade');
-    const avatarEl = document.getElementById('msgSendTargetAvatar');
     const inputEl = document.getElementById('msgSendInput');
-
-    if (titleEl) titleEl.textContent = `${targetUser.name}님에게 응원 메시지 보내기`;
-    if (nameEl) nameEl.textContent = targetUser.name;
-    if (gradeEl) gradeEl.textContent = `${targetUser.grade || '일반'} · 💎 ${(targetUser.totalPoints || 0).toLocaleString()}P`;
-    if (avatarEl) {
-      avatarEl.innerHTML = renderCompositeAvatar(targetUser.avatar || '🌸', targetUser.avatarAccessories || {}, 52, false, 'compact');
-    }
     if (inputEl) {
       inputEl.value = '';
       this.updateCharCount();
     }
 
     this.renderEmojiPicker(this.currentEmojiCategory || 'smileys');
+
+    // Render multi-recipient selector
+    await this.renderRecipientSelector(targetUser);
+
     if (this.modalSendMessage) this.modalSendMessage.classList.add('active');
     sfx.combo();
   }
@@ -4529,7 +4698,11 @@ class HaruMatchumApp {
   }
 
   async submitSendMessage() {
-    if (!this.messageTargetUser) return;
+    if (!this.selectedMessageRecipients || this.selectedMessageRecipients.length === 0) {
+      this.showToastNotice('받는 친구를 1명 이상 선택해 주세요! 👥');
+      return;
+    }
+
     const inputEl = document.getElementById('msgSendInput');
     const content = inputEl ? inputEl.value.trim() : '';
 
@@ -4602,9 +4775,11 @@ class HaruMatchumApp {
         },
         body: JSON.stringify({
           token: this.cloudToken,
-          toName: this.messageTargetUser.name,
-          toUsername: this.messageTargetUser.username || this.messageTargetUser.name,
-          toId: this.messageTargetUser.id,
+          recipients: this.selectedMessageRecipients.map(u => ({
+            name: u.name,
+            username: u.username || u.name,
+            id: u.id
+          })),
           content: content,
           photoUrl: photoUrl,
           photoExpiresAt: photoExpiresAt
@@ -4630,9 +4805,15 @@ class HaruMatchumApp {
         this.clearAttachedPhoto();
         this.closeSendMessageModal();
 
+        const count = this.selectedMessageRecipients.length;
+        const firstName = this.selectedMessageRecipients[0].name;
         const toastMsg = photoUrl
-          ? `💌 ${this.messageTargetUser.name}님에게 메시지와 사진을 전달했어요! (사진은 24시간 후 자동 삭제)`
-          : `💌 ${this.messageTargetUser.name}님에게 응원 메시지를 성공적으로 전달했어요! ✨`;
+          ? (count > 1
+              ? `💌 ${firstName}님 외 ${count - 1}명에게 메시지와 사진을 모두 보냈어요! (24시간 후 자동 삭제)`
+              : `💌 ${firstName}님에게 메시지와 사진을 전달했어요! (24시간 후 자동 삭제)`)
+          : (count > 1
+              ? `💌 ${firstName}님 외 ${count - 1}명에게 응원 메시지를 모두 전달했어요! ✨`
+              : `💌 ${firstName}님에게 응원 메시지를 성공적으로 전달했어요! ✨`);
         this.showToastNotice(toastMsg);
 
         try {
@@ -4940,7 +5121,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.11';
+    let currentVer = this.APP_VERSION || '2.9.12';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4968,7 +5149,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.11';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.12';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4988,7 +5169,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.11';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.12';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -6098,7 +6279,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.11';
+      const clientVersion = this.APP_VERSION || '2.9.12';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

@@ -685,7 +685,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.11", build: "20261115_2130" };
+    let verData = { version: "2.9.12", build: "20261115_2145" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -816,7 +816,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 10. 실시간 메시지 전송 (Send Message to Another User with Photo Support)
+  // 10. 실시간 메시지 전송 (Send Message to One or Multiple Users with Photo Support)
   if (req.method === "POST" && pathname === "/api/messages/send") {
     try {
       const authHeader = req.headers["authorization"] || "";
@@ -830,14 +830,10 @@ const server = http.createServer(async (req, res) => {
       }
 
       const sender = db.users[username];
-      const toTarget = (body.toName || body.toUsername || "").trim();
       const rawContent = (body.content || "").trim();
       const photoUrl = (body.photoUrl || "").trim();
       const photoExpiresAt = body.photoExpiresAt || (photoUrl ? new Date(Date.now() + PHOTO_TTL_MS).toISOString() : null);
 
-      if (!toTarget) {
-        return sendJSON(res, 400, { success: false, message: "받는 사람을 지정해 주세요." });
-      }
       if (!rawContent && !photoUrl) {
         return sendJSON(res, 400, { success: false, message: "메시지 내용이나 사진을 입력해 주세요." });
       }
@@ -845,19 +841,51 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 400, { success: false, message: "메시지는 최대 200자까지 작성할 수 있습니다." });
       }
 
-      // Find recipient user in DB (by username, name, or id)
-      const toId = (body.toId || "").trim();
-      let recipient = db.users[toTarget];
-      if (!recipient) {
-        recipient = Object.values(db.users).find(u => 
-          (toId && u.id === toId) ||
-          (u.name && u.name.trim() === toTarget) || 
-          (u.username && u.username.trim() === toTarget) ||
-          (toTarget && (u.name || "").includes(toTarget))
-        );
+      // Collect target recipients (support Array `recipients` or single target `toName`/`toUsername`)
+      let rawRecipients = [];
+      if (Array.isArray(body.recipients) && body.recipients.length > 0) {
+        rawRecipients = body.recipients;
+      } else {
+        const singleTarget = (body.toName || body.toUsername || "").trim();
+        if (singleTarget) {
+          rawRecipients = [{ toName: singleTarget, toUsername: singleTarget, toId: body.toId || "" }];
+        }
       }
-      if (!recipient) {
-        return sendJSON(res, 404, { success: false, message: `'${toTarget}' 님을 찾을 수 없습니다.` });
+
+      if (rawRecipients.length === 0) {
+        return sendJSON(res, 400, { success: false, message: "받는 사람을 1명 이상 지정해 주세요." });
+      }
+
+      // Resolve each recipient against DB and deduplicate
+      const resolvedRecipients = [];
+      const seenUsernames = new Set();
+
+      for (const item of rawRecipients) {
+        const toTarget = (typeof item === 'string' ? item : (item.toUsername || item.toName || item.name || item.username || "")).trim();
+        const toId = (typeof item === 'object' && item.toId) ? item.toId.trim() : "";
+        if (!toTarget) continue;
+
+        let recipient = db.users[toTarget];
+        if (!recipient) {
+          recipient = Object.values(db.users).find(u => 
+            (toId && u.id === toId) ||
+            (u.name && u.name.trim() === toTarget) || 
+            (u.username && u.username.trim() === toTarget) ||
+            (toTarget && (u.name || "").includes(toTarget))
+          );
+        }
+
+        if (recipient) {
+          const uKey = recipient.username || recipient.name;
+          if (!seenUsernames.has(uKey)) {
+            seenUsernames.add(uKey);
+            resolvedRecipients.push(recipient);
+          }
+        }
+      }
+
+      if (resolvedRecipients.length === 0) {
+        return sendJSON(res, 404, { success: false, message: "선택한 받는 사람을 찾을 수 없습니다." });
       }
 
       const safeContent = rawContent
@@ -865,33 +893,49 @@ const server = http.createServer(async (req, res) => {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
-      const msgEntry = {
-        id: "msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-        fromUsername: username,
-        fromName: sender.name || username,
-        fromAvatar: sender.avatar || "🌸",
-        fromAccessories: sender.avatarAccessories || {},
-        toUsername: recipient.username || recipient.name || toTarget,
-        toName: recipient.name || recipient.username || toTarget,
-        toAvatar: recipient.avatar || "🌸",
-        toAccessories: recipient.avatarAccessories || {},
-        content: safeContent,
-        emojiTag: body.emojiTag || null,
-        photoUrl: photoUrl || null,
-        photoExpiresAt: photoExpiresAt || null,
-        photoExpired: false,
-        timestamp: new Date().toISOString(),
-        kstTime: getKSTTime(),
-        read: false
-      };
-
       const messages = loadMessages();
-      messages.push(msgEntry);
+      const createdEntries = [];
+      const nowIso = new Date().toISOString();
+      const nowKst = getKSTTime();
+
+      for (const recipient of resolvedRecipients) {
+        const msgEntry = {
+          id: "msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+          fromUsername: username,
+          fromName: sender.name || username,
+          fromAvatar: sender.avatar || "🌸",
+          fromAccessories: sender.avatarAccessories || {},
+          toUsername: recipient.username || recipient.name,
+          toName: recipient.name || recipient.username,
+          toAvatar: recipient.avatar || "🌸",
+          toAccessories: recipient.avatarAccessories || {},
+          content: safeContent,
+          emojiTag: body.emojiTag || null,
+          photoUrl: photoUrl || null,
+          photoExpiresAt: photoExpiresAt || null,
+          photoExpired: false,
+          timestamp: nowIso,
+          kstTime: nowKst,
+          read: false
+        };
+        messages.push(msgEntry);
+        createdEntries.push(msgEntry);
+      }
+
       saveMessages(messages);
 
-      recordAccessLog(username, "SEND_MESSAGE", clientIp, userAgent, { to: recipient.username, hasPhoto: !!photoUrl });
+      recordAccessLog(username, "SEND_MESSAGE", clientIp, userAgent, {
+        recipientCount: resolvedRecipients.length,
+        recipients: resolvedRecipients.map(r => r.username || r.name),
+        hasPhoto: !!photoUrl
+      });
 
-      return sendJSON(res, 201, { success: true, message: msgEntry });
+      return sendJSON(res, 201, {
+        success: true,
+        count: createdEntries.length,
+        message: createdEntries[0],
+        messages: createdEntries
+      });
     } catch (e) {
       return sendJSON(res, 500, { success: false, message: e.message });
     }

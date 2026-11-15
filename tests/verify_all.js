@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.11">'), 'index.html must include meta app-version 2.9.11');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.12">'), 'index.html must include meta app-version 2.9.12');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.11', 'GET /api/version version must be 2.9.11');
+    assert.strictEqual(verRes.data.version, '2.9.12', 'GET /api/version version must be 2.9.12');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -369,6 +369,16 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('compressImageFile'), 'app.js must implement compressImageFile');
     assert(appCode.includes('openPhotoLightbox'), 'app.js must implement openPhotoLightbox');
     assert(appCode.includes('clearAttachedPhoto'), 'app.js must implement clearAttachedPhoto');
+
+    // 32. v2.9.12 Multi-Recipient Messaging & Photo Distribution (1 or More Friends)
+    assert(indexHtml.includes('id="msgRecipientSelectorGrid"'), 'index.html must include msgRecipientSelectorGrid');
+    assert(indexHtml.includes('id="msgSelectedCountBadge"'), 'index.html must include msgSelectedCountBadge');
+    assert(indexHtml.includes('id="btnToggleSelectAllRecipients"'), 'index.html must include btnToggleSelectAllRecipients');
+    assert(appCode.includes('renderRecipientSelector'), 'app.js must implement renderRecipientSelector');
+    assert(appCode.includes('toggleRecipientSelection'), 'app.js must implement toggleRecipientSelection');
+    assert(appCode.includes('toggleSelectAllRecipients'), 'app.js must implement toggleSelectAllRecipients');
+    assert(appCode.includes('updateRecipientSelectionUI'), 'app.js must implement updateRecipientSelectionUI');
+    assert(serverCode.includes('Array.isArray(body.recipients)'), 'server.js must support array of recipients');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
