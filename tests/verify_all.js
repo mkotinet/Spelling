@@ -211,7 +211,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.0">'), 'index.html must include meta app-version 2.9.0');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.1">'), 'index.html must include meta app-version 2.9.1');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -270,10 +270,16 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('toggleGlassesMode'), 'app.js must include toggleGlassesMode function');
     assert(appCode.includes('fullbody-frame'), 'app.js must render fullbody-frame for chibi 2.5-head avatar');
 
+    // 21. v2.9.1 SD Body Anatomy, Outfits, Sleeves, 3D Shoes, Hat Fitting & Dual Cheeks
+    assert(appCode.includes('getOutfitStyleInfo'), 'app.js must include getOutfitStyleInfo');
+    assert(appCode.includes('renderBlushLayer'), 'app.js must include renderBlushLayer');
+    assert(appCode.includes('getHatClass'), 'app.js must include getHatClass');
+    assert(appCode.includes('getShoesClass'), 'app.js must include getShoesClass');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.0', 'GET /api/version version must be 2.9.0');
+    assert.strictEqual(verRes.data.version, '2.9.1', 'GET /api/version version must be 2.9.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

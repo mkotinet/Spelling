@@ -2288,11 +2288,41 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 .acc-hat {
-  top: -24%;
+  top: -6%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.65em;
-  z-index: 5;
+  font-size: 0.72em;
+  z-index: 6;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.acc-hat.hat-grad {
+  top: -8%;
+  font-size: 0.70em;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.acc-hat.hat-crown {
+  top: -6%;
+  font-size: 0.62em;
+  filter: drop-shadow(0 2px 5px rgba(234, 179, 8, 0.5));
+}
+
+.acc-hat.hat-party {
+  top: -8%;
+  font-size: 0.72em;
+}
+
+.acc-hat.hat-straw {
+  top: -4%;
+  font-size: 0.82em;
+}
+
+.acc-hat.mario-cap {
+  top: -5%;
+  font-size: 0.84em;
+  filter: drop-shadow(0 3px 5px rgba(220, 38, 38, 0.45));
 }
 
 .acc-glasses {
@@ -2317,35 +2347,110 @@ body.theme-english .quiz-sentence .quiz-blank {
   left: 50%;
   transform: translateX(-50%) rotate(-4deg);
   font-size: 0.52em;
-  z-index: 6;
+  z-index: 7;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .acc-glasses.mario-stache {
   top: 48%;
   font-size: 0.52em;
-  z-index: 6;
-}
-
-.acc-hat.mario-cap {
-  top: -28%;
-  font-size: 0.76em;
-  filter: drop-shadow(0 3px 5px rgba(220, 38, 38, 0.45));
+  z-index: 7;
 }
 
 .acc-pin {
-  top: -12%;
-  right: -12%;
+  top: -8%;
+  right: -8%;
   font-size: 0.48em;
-  z-index: 6;
+  z-index: 7;
+}
+
+/* Natural Cheek Blush System (Left/Right Dual Cheeks) */
+.acc-blush-container {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 84%;
+  height: 26%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.acc-blush-cheek {
+  width: 26%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: blur(0.6px);
+  transition: all 0.2s;
+}
+
+.acc-blush-container.blush-pink .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.78) 0%, rgba(251, 113, 133, 0) 72%);
+}
+
+.acc-blush-container.blush-coral .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.82) 0%, rgba(251, 146, 60, 0) 72%);
+}
+
+.acc-blush-container.blush-peach .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.82) 0%, rgba(244, 114, 182, 0) 72%);
+}
+
+.acc-blush-container.blush-rose .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.78) 0%, rgba(225, 29, 72, 0) 72%);
+}
+
+.acc-blush-container.blush-heart .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.4) 0%, rgba(251, 113, 133, 0) 70%);
+  font-size: 0.38em;
+  filter: drop-shadow(0 1px 2px rgba(244, 63, 94, 0.4));
+}
+
+.acc-blush-container.blush-star .acc-blush-cheek {
+  background: radial-gradient(circle, rgba(253, 224, 71, 0.4) 0%, rgba(253, 224, 71, 0) 70%);
+  font-size: 0.36em;
+  filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.6));
+}
+
+.acc-blush-bandaid {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  font-size: 0.46em;
+  z-index: 5;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.acc-blush-bubble {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.48em;
+  z-index: 5;
+}
+
+.acc-blush-lipstick {
+  position: absolute;
+  top: 50%;
+  right: 14%;
+  font-size: 0.38em;
+  z-index: 5;
+  transform: rotate(12deg);
 }
 
 .acc-blush {
-  bottom: 0%;
+  top: 48%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.42em;
-  z-index: 3;
+  z-index: 4;
 }
 
 .acc-aura {
@@ -2779,103 +2884,307 @@ body.theme-english .quiz-sentence .quiz-blank {
 /* Head Box (approx 52% of total height) */
 .fullbody-head-box {
   position: relative;
-  width: 66%;
+  width: 72%;
   height: 52%;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
+  z-index: 10; /* Seamless neck overlap */
 }
 
 .fullbody-head-box .acc-base-face {
   font-size: 100%;
   line-height: 1;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.08));
 }
 
-/* Torso & Outfit Box (approx 32% of total height) */
+/* Torso & Outfit Box (approx 33% of total height) */
 .fullbody-torso-box {
   position: relative;
-  width: 48%;
-  height: 32%;
-  margin-top: -6%;
+  width: 50%;
+  height: 33%;
+  margin-top: -16%; /* Seamless neck overlap */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 4;
 }
 
+/* Chibi Torso: Actual clothing silhouette & texture */
 .torso-inner-chibi {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, #ffedd5, #fed7aa);
-  border-radius: 12px 12px 8px 8px;
-  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 10px 10px 12px 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12), inset 0 -2px 3px rgba(0, 0, 0, 0.08);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: visible;
+  overflow: hidden;
+  transition: all 0.25s ease;
 }
 
-/* Outfit Layer */
-.acc-outfit-layer {
+/* Outfit Themes: Real clothing patterns & silhouettes */
+.torso-inner-chibi.outfit-default {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
+}
+
+.torso-inner-chibi.outfit-acnl-leaf {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 3px 6px rgba(5, 150, 105, 0.35);
+}
+
+.torso-inner-chibi.outfit-mario-overalls {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 35%, #1d4ed8 36%, #1e40af 100%);
+  box-shadow: 0 3px 6px rgba(29, 78, 216, 0.35);
+}
+
+.torso-inner-chibi.outfit-luigi-overalls {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 35%, #1d4ed8 36%, #1e40af 100%);
+  box-shadow: 0 3px 6px rgba(29, 78, 216, 0.35);
+}
+
+.torso-inner-chibi.outfit-acnl-nook {
+  background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
+  box-shadow: 0 3px 6px rgba(120, 53, 15, 0.35);
+}
+
+.torso-inner-chibi.outfit-acnl-isabelle {
+  background: linear-gradient(180deg, #fef08a 0%, #fde047 30%, #6ee7b7 31%, #34d399 100%);
+  box-shadow: 0 3px 6px rgba(52, 211, 153, 0.35);
+}
+
+.torso-inner-chibi.outfit-polo-blue {
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  box-shadow: 0 3px 6px rgba(2, 132, 199, 0.35);
+}
+
+.torso-inner-chibi.outfit-hoodie {
+  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+  box-shadow: 0 3px 6px rgba(100, 116, 139, 0.35);
+}
+
+.torso-inner-chibi.outfit-tuxedo {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 3px 6px rgba(15, 23, 42, 0.45);
+}
+
+.torso-inner-chibi.outfit-hanbok {
+  background: linear-gradient(180deg, #f43f5e 0%, #fb923c 50%, #38bdf8 100%);
+  box-shadow: 0 3px 6px rgba(244, 63, 94, 0.35);
+}
+
+.torso-inner-chibi.outfit-sailor {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 50%, #1e3a8a 51%, #1e3a8a 100%);
+  box-shadow: 0 3px 6px rgba(30, 58, 138, 0.35);
+}
+
+.torso-inner-chibi.outfit-peach-dress {
+  background: linear-gradient(180deg, #f472b6 0%, #ec4899 100%);
+  box-shadow: 0 3px 6px rgba(236, 72, 153, 0.35);
+}
+
+.torso-inner-chibi.outfit-cheerleader {
+  background: linear-gradient(180deg, #facc15 0%, #e11d48 50%, #ffffff 100%);
+}
+
+.torso-inner-chibi.outfit-detective {
+  background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+}
+
+.torso-inner-chibi.outfit-school {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #1e293b 41%, #1e293b 100%);
+}
+
+/* Clothing Details & Badges */
+.outfit-straps {
   position: absolute;
-  top: 0;
+  top: 36%;
   left: 0;
   width: 100%;
-  height: 100%;
-  border-radius: 12px 12px 8px 8px;
+  height: 64%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65em;
-  z-index: 2;
-  overflow: hidden;
+  justify-content: space-around;
+  pointer-events: none;
 }
 
-/* Arms */
+.outfit-straps .strap {
+  width: 24%;
+  height: 100%;
+  background: #1e40af;
+  position: relative;
+  border-radius: 2px;
+}
+
+.outfit-straps .gold-button {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  background: #fbbf24;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.outfit-collar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 22%;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 0 0 6px 6px;
+  pointer-events: none;
+}
+
+.outfit-badge-leaf {
+  font-size: 0.62em;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.outfit-bowtie {
+  font-size: 0.50em;
+  margin-top: -4px;
+}
+
+/* Arms & Sleeves */
 .fullbody-arm {
   position: absolute;
-  top: 15%;
+  top: 8%;
   width: 22%;
-  height: 50%;
-  background: #fed7aa;
+  height: 58%;
   border-radius: 8px;
   z-index: 3;
-}
-.fullbody-arm.left {
-  left: -16%;
-  transform: rotate(18deg);
-}
-.fullbody-arm.right {
-  right: -16%;
-  transform: rotate(-18deg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* Legs & Shoes Box (approx 16% of total height) */
+.fullbody-arm .arm-sleeve {
+  width: 100%;
+  height: 58%;
+  background: #ffedd5; /* Matches default torso */
+}
+
+.fullbody-arm .arm-hand {
+  width: 100%;
+  height: 42%;
+  background: #fed7aa; /* Chibi bare hand */
+  border-radius: 0 0 6px 6px;
+}
+
+.fullbody-arm.left {
+  left: -16%;
+  transform: rotate(8deg);
+  transform-origin: top center;
+}
+
+.fullbody-arm.right {
+  right: -16%;
+  transform: rotate(-8deg);
+  transform-origin: top center;
+}
+
+/* Outfit Sleeve Color Mapping */
+.torso-inner-chibi.outfit-acnl-leaf ~ .fullbody-arm .arm-sleeve { background: #059669; }
+.torso-inner-chibi.outfit-mario-overalls ~ .fullbody-arm .arm-sleeve { background: #dc2626; }
+.torso-inner-chibi.outfit-mario-overalls ~ .fullbody-arm .arm-hand { background: #ffffff; } /* Mario White Gloves */
+.torso-inner-chibi.outfit-luigi-overalls ~ .fullbody-arm .arm-sleeve { background: #16a34a; }
+.torso-inner-chibi.outfit-luigi-overalls ~ .fullbody-arm .arm-hand { background: #ffffff; }
+.torso-inner-chibi.outfit-acnl-nook ~ .fullbody-arm .arm-sleeve { background: #0d9488; }
+.torso-inner-chibi.outfit-acnl-isabelle ~ .fullbody-arm .arm-sleeve { background: #fef08a; }
+.torso-inner-chibi.outfit-polo-blue ~ .fullbody-arm .arm-sleeve { background: #0284c7; }
+.torso-inner-chibi.outfit-hoodie ~ .fullbody-arm .arm-sleeve { background: #64748b; }
+.torso-inner-chibi.outfit-tuxedo ~ .fullbody-arm .arm-sleeve { background: #1e293b; }
+.torso-inner-chibi.outfit-hanbok ~ .fullbody-arm .arm-sleeve { background: #38bdf8; }
+.torso-inner-chibi.outfit-peach-dress ~ .fullbody-arm .arm-sleeve { background: #f472b6; }
+.torso-inner-chibi.outfit-sailor ~ .fullbody-arm .arm-sleeve { background: #ffffff; }
+
+/* Legs & Shoes Box (approx 18% of total height) */
 .fullbody-legs-box {
   position: relative;
-  width: 42%;
-  height: 16%;
-  margin-top: -2%;
+  width: 44%;
+  height: 18%;
+  margin-top: -3%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   z-index: 3;
 }
 
 .chibi-foot {
   position: relative;
   width: 44%;
-  height: 85%;
-  background: #f97316;
-  border-radius: 6px 6px 8px 8px;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 0.55em;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
+
+.chibi-leg-pillar {
+  width: 65%;
+  height: 35%;
+  background: #fed7aa; /* Bare chibi leg */
+  border-radius: 2px;
+}
+
+/* 3D Chibi Shoe Body */
+.chibi-shoe-body {
+  position: relative;
+  width: 100%;
+  height: 70%;
+  border-radius: 6px 6px 8px 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.chibi-shoe-body .shoe-upper {
+  width: 100%;
+  height: 65%;
+  background: #94a3b8;
+  border-radius: 6px 6px 0 0;
+}
+
+.chibi-shoe-body .shoe-sole {
+  width: 100%;
+  height: 35%;
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Shoes Themes */
+.shoes-default .shoe-upper { background: #cbd5e1; }
+.shoes-default .shoe-sole { background: #f8fafc; }
+
+.shoes-sneakers .shoe-upper { background: #ef4444; } /* Red Canvas */
+.shoes-sneakers .shoe-sole { background: #ffffff; }
+
+.shoes-boots .shoe-upper { background: #78350f; } /* Explorer Leather */
+.shoes-boots .shoe-sole { background: #451a03; }
+
+.shoes-rainboots .shoe-upper { background: #eab308; } /* Yellow Rubber */
+.shoes-rainboots .shoe-sole { background: #ca8a04; }
+
+.shoes-mario-leather .shoe-upper { background: #854d0e; } /* Mario Brown Shoes */
+.shoes-mario-leather .shoe-sole { background: #3f2c1d; }
+
+.shoes-rollerskate .shoe-upper { background: #06b6d4; }
+.shoes-rollerskate .shoe-sole { background: #f43f5e; }
+
+.shoes-jipsin .shoe-upper { background: #d97706; }
+.shoes-jipsin .shoe-sole { background: #b45309; }
+
+.shoes-pumps .shoe-upper { background: #ec4899; }
+.shoes-pumps .shoe-sole { background: #be185d; }
 
 /* Ground Soft Shadow */
 .avatar-soft-shadow {

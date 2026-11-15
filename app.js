@@ -692,6 +692,182 @@ function findAccessoryById(id) {
   return null;
 }
 
+function getHatClass(hatItem) {
+  if (!hatItem) return 'acc-layer acc-hat';
+  let cls = 'acc-layer acc-hat';
+  const id = hatItem.id;
+  if (id.includes('mario') || id.includes('luigi')) {
+    cls += ' mario-cap';
+  } else if (id.includes('grad')) {
+    cls += ' hat-grad';
+  } else if (id.includes('crown')) {
+    cls += ' hat-crown';
+  } else if (id.includes('party')) {
+    cls += ' hat-party';
+  } else if (id.includes('straw') || id.includes('cone') || id.includes('explorer')) {
+    cls += ' hat-straw';
+  }
+  return cls;
+}
+
+function renderBlushLayer(blushItem) {
+  if (!blushItem) return '';
+  const id = blushItem.id;
+  if (id.includes('band')) {
+    return `<span class="acc-layer acc-blush-bandaid" title="${blushItem.name}">🩹</span>`;
+  }
+  if (id.includes('bubble')) {
+    return `<span class="acc-layer acc-blush-bubble" title="${blushItem.name}">🫧</span>`;
+  }
+  if (id.includes('lipstick')) {
+    return `<span class="acc-layer acc-blush-lipstick" title="${blushItem.name}">💋</span>`;
+  }
+
+  let cheekClass = 'blush-pink';
+  let cheekEmoji = '';
+  if (id.includes('heart') || blushItem.name.includes('하트')) {
+    cheekClass = 'blush-heart';
+    cheekEmoji = '💖';
+  } else if (id.includes('star') || blushItem.name.includes('별')) {
+    cheekClass = 'blush-star';
+    cheekEmoji = '✨';
+  } else if (id.includes('cheeks') || id.includes('acnl') || id.includes('주황')) {
+    cheekClass = 'blush-coral';
+  } else if (id.includes('rose') || id.includes('장미')) {
+    cheekClass = 'blush-rose';
+  } else if (id.includes('peach') || id.includes('복숭아')) {
+    cheekClass = 'blush-peach';
+  }
+
+  return `
+    <div class="acc-layer acc-blush-container ${cheekClass}" title="${blushItem.name}">
+      <span class="acc-blush-cheek left">${cheekEmoji}</span>
+      <span class="acc-blush-cheek right">${cheekEmoji}</span>
+    </div>
+  `;
+}
+
+function getOutfitStyleInfo(outfitItem) {
+  if (!outfitItem) {
+    return {
+      className: 'outfit-default',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  const id = outfitItem.id;
+  if (id.includes('leaf')) {
+    return {
+      className: 'outfit-acnl-leaf',
+      innerHtml: '<div class="outfit-collar"></div><span class="outfit-badge-leaf">🍃</span>'
+    };
+  }
+  if (id.includes('mario')) {
+    return {
+      className: 'outfit-mario-overalls',
+      innerHtml: `
+        <div class="outfit-straps">
+          <span class="strap left"><i class="gold-button"></i></span>
+          <span class="strap right"><i class="gold-button"></i></span>
+        </div>
+      `
+    };
+  }
+  if (id.includes('luigi')) {
+    return {
+      className: 'outfit-luigi-overalls',
+      innerHtml: `
+        <div class="outfit-straps">
+          <span class="strap left"><i class="gold-button"></i></span>
+          <span class="strap right"><i class="gold-button"></i></span>
+        </div>
+      `
+    };
+  }
+  if (id.includes('nook')) {
+    return {
+      className: 'outfit-acnl-nook',
+      innerHtml: '<div class="outfit-collar"></div><span class="outfit-badge-leaf">🍃</span>'
+    };
+  }
+  if (id.includes('isabelle')) {
+    return {
+      className: 'outfit-acnl-isabelle',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('polo')) {
+    return {
+      className: 'outfit-polo-blue',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('hoodie')) {
+    return {
+      className: 'outfit-hoodie',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('tuxedo')) {
+    return {
+      className: 'outfit-tuxedo',
+      innerHtml: '<div class="outfit-collar"></div><span class="outfit-bowtie">🎀</span>'
+    };
+  }
+  if (id.includes('hanbok')) {
+    return {
+      className: 'outfit-hanbok',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('sailor')) {
+    return {
+      className: 'outfit-sailor',
+      innerHtml: '<div class="outfit-collar"></div><span class="outfit-bowtie">🎀</span>'
+    };
+  }
+  if (id.includes('peach') || id.includes('dress')) {
+    return {
+      className: 'outfit-peach-dress',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('cheer')) {
+    return {
+      className: 'outfit-cheerleader',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('detective')) {
+    return {
+      className: 'outfit-detective',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  if (id.includes('school')) {
+    return {
+      className: 'outfit-school',
+      innerHtml: '<div class="outfit-collar"></div>'
+    };
+  }
+  return {
+    className: 'outfit-default',
+    innerHtml: `<div class="outfit-collar"></div><span class="outfit-badge-leaf">${outfitItem.emoji}</span>`
+  };
+}
+
+function getShoesClass(shoesItem) {
+  if (!shoesItem) return 'shoes-default';
+  const id = shoesItem.id;
+  if (id.includes('sneaker') || id.includes('red_sneakers')) return 'shoes-sneakers';
+  if (id.includes('boot') || id.includes('acnl_boots')) return 'shoes-boots';
+  if (id.includes('rainboot')) return 'shoes-rainboots';
+  if (id.includes('mario') || id.includes('luigi')) return 'shoes-mario-leather';
+  if (id.includes('roller')) return 'shoes-rollerskate';
+  if (id.includes('straw') || id.includes('jipsin')) return 'shoes-jipsin';
+  if (id.includes('peach') || id.includes('pump')) return 'shoes-pumps';
+  return 'shoes-default';
+}
+
 function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48, clickable = false, mode = 'compact') {
   const acc = accessories || {};
   const auraItem = acc.aura ? findAccessoryById(acc.aura) : null;
@@ -708,7 +884,7 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
 
   const glassesMode = acc.glassesMode || 'eyes';
   const isMarioStache = glassesItem && (glassesItem.id.includes('stache') || glassesItem.id.includes('mario'));
-  const isMarioHat = hatItem && (hatItem.id.includes('mario') || hatItem.id.includes('luigi'));
+  const hatClass = getHatClass(hatItem);
 
   let glassesClass = 'acc-layer acc-glasses';
   if (isMarioStache) {
@@ -719,14 +895,11 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
     glassesClass += ' wear-eyes';
   }
 
-  let hatClass = 'acc-layer acc-hat';
-  if (isMarioHat) {
-    hatClass += ' mario-cap';
-  }
-
   if (mode === 'fullbody') {
     const fullHeight = Math.round(size * 1.38);
     const headFontSize = Math.round(size * 0.52);
+    const outfitInfo = getOutfitStyleInfo(outfitItem);
+    const shoesCls = getShoesClass(shoesItem);
 
     return `
       <div class="composite-avatar fullbody ${clickable ? 'clickable' : ''}" style="width: ${size}px; height: ${fullHeight}px; font-size: ${headFontSize}px;">
@@ -740,26 +913,42 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
             ${hatItem ? `<span class="${hatClass}">${hatItem.emoji}</span>` : ''}
             ${glassesItem ? `<span class="${glassesClass}">${glassesItem.emoji}</span>` : ''}
             ${pinItem ? `<span class="acc-layer acc-pin">${pinItem.emoji}</span>` : ''}
-            ${blushItem ? `<span class="acc-layer acc-blush">${blushItem.emoji}</span>` : ''}
+            ${renderBlushLayer(blushItem)}
             ${neckItem ? `<span class="acc-layer acc-neck">${neckItem.emoji}</span>` : ''}
           </div>
 
-          <!-- Torso Box -->
+          <!-- Torso Box (Actual Clothes Silhouette & Texture) -->
           <div class="fullbody-torso-box">
-            <div class="fullbody-arm left"></div>
-            <div class="fullbody-arm right"></div>
-            <div class="torso-inner-chibi">
-              <div class="acc-outfit-layer">
-                ${outfitItem ? outfitItem.emoji : '👕'}
-              </div>
+            <div class="torso-inner-chibi ${outfitInfo.className}" title="${outfitItem ? outfitItem.name : '기본 복장'}">
+              ${outfitInfo.innerHtml}
+            </div>
+            <div class="fullbody-arm left">
+              <div class="arm-sleeve"></div>
+              <div class="arm-hand"></div>
+            </div>
+            <div class="fullbody-arm right">
+              <div class="arm-sleeve"></div>
+              <div class="arm-hand"></div>
             </div>
             ${handItem ? `<span class="acc-layer acc-hand" title="${handItem.name}">${handItem.emoji}</span>` : ''}
           </div>
 
-          <!-- Legs & Shoes Box -->
-          <div class="fullbody-legs-box">
-            <div class="chibi-foot left">${shoesItem ? shoesItem.emoji : '👟'}</div>
-            <div class="chibi-foot right">${shoesItem ? shoesItem.emoji : '👟'}</div>
+          <!-- Legs & Shoes Box (3D Chibi Shoes) -->
+          <div class="fullbody-legs-box ${shoesCls}">
+            <div class="chibi-foot left" title="${shoesItem ? shoesItem.name : '기본 신발'}">
+              <div class="chibi-leg-pillar"></div>
+              <div class="chibi-shoe-body">
+                <div class="shoe-upper"></div>
+                <div class="shoe-sole"></div>
+              </div>
+            </div>
+            <div class="chibi-foot right" title="${shoesItem ? shoesItem.name : '기본 신발'}">
+              <div class="chibi-leg-pillar"></div>
+              <div class="chibi-shoe-body">
+                <div class="shoe-upper"></div>
+                <div class="shoe-sole"></div>
+              </div>
+            </div>
           </div>
         </div>
         ${petItem ? `<span class="acc-layer acc-pet">${petItem.emoji}</span>` : ''}
@@ -774,7 +963,7 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
       ${backItem ? `<span class="acc-layer acc-back">${backItem.emoji}</span>` : ''}
       <span class="acc-base-face">${baseAvatar || '🌸'}</span>
       ${neckItem ? `<span class="acc-layer acc-neck">${neckItem.emoji}</span>` : ''}
-      ${blushItem ? `<span class="acc-layer acc-blush">${blushItem.emoji}</span>` : ''}
+      ${renderBlushLayer(blushItem)}
       ${glassesItem ? `<span class="${glassesClass}">${glassesItem.emoji}</span>` : ''}
       ${pinItem ? `<span class="acc-layer acc-pin">${pinItem.emoji}</span>` : ''}
       ${hatItem ? `<span class="${hatClass}">${hatItem.emoji}</span>` : ''}
@@ -934,7 +1123,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.0';
+    this.APP_VERSION = metaVer || '2.9.1';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -3609,7 +3798,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.0';
+    let currentVer = this.APP_VERSION || '2.9.1';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -3637,7 +3826,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.0';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.1';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -3657,7 +3846,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.0';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.1';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4642,7 +4831,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.0';
+      const clientVersion = this.APP_VERSION || '2.9.1';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

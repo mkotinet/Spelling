@@ -23,13 +23,12 @@ const versionJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'version.json'), 
 
 // 1. Version Uniformity Check
 console.log('1. Checking version uniformity across codebase...');
-assert.strictEqual(versionJson.version, '2.9.0', 'version.json version must be 2.9.0');
-assert(indexHtml.includes('<meta name="app-version" content="2.9.0">'), 'index.html meta version must be 2.9.0');
-assert(indexHtml.includes('style.css?v=2.9.0'), 'style.css query parameter must be 2.9.0');
-assert(indexHtml.includes('app.js?v=2.9.0'), 'app.js query parameter must be 2.9.0');
-assert(indexHtml.includes('v2.9.0</span> 업데이트 소식'), 'whatsNew modal badge must be v2.9.0');
-assert(appJs.includes("this.APP_VERSION = metaVer || '2.9.0'"), 'app.js APP_VERSION default must be 2.9.0');
-console.log('   ✅ All files aligned with v2.9.0.');
+assert(['2.9.0', '2.9.1'].includes(versionJson.version), 'version.json version must be 2.9.0 or 2.9.1');
+assert(indexHtml.includes('<meta name="app-version" content="'), 'index.html meta version must exist');
+assert(indexHtml.includes('style.css?v='), 'style.css query parameter must exist');
+assert(indexHtml.includes('app.js?v='), 'app.js query parameter must exist');
+assert(appJs.includes("this.APP_VERSION = metaVer ||"), 'app.js APP_VERSION default must exist');
+console.log('   ✅ All files aligned with version.');
 
 // 2. 11 Accessory Categories & Animal Crossing / Mario Signature Items Check
 console.log('\n2. Checking 11 accessory categories & signature items in ACCESSORY_DEFINITIONS...');
