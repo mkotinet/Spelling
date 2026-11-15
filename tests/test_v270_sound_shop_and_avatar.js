@@ -9,18 +9,18 @@ console.log('====================================================');
 const BASE_DIR = path.join(__dirname, '..');
 
 // 1. Check version alignment across version.json, index.html, app.js
-console.log('\n[1] Version Alignment Check (v2.7.0)...');
+console.log('\n[1] Version Alignment Check (v2.7.0+)...');
 const versionJson = JSON.parse(fs.readFileSync(path.join(BASE_DIR, 'version.json'), 'utf-8'));
-assert.strictEqual(versionJson.version, '2.7.0', 'version.json version must be 2.7.0');
+assert(versionJson.version.startsWith('2.7.'), 'version.json version must be 2.7.x');
 
 const indexHtml = fs.readFileSync(path.join(BASE_DIR, 'index.html'), 'utf-8');
-assert(indexHtml.includes('content="2.7.0"'), 'index.html meta app-version must be 2.7.0');
-assert(indexHtml.includes('v2.7.0'), 'index.html version badge must be v2.7.0');
-assert(indexHtml.includes('app.js?v=2.7.0'), 'index.html app.js query must be v2.7.0');
+assert(indexHtml.includes(`content="${versionJson.version}"`), `index.html meta app-version must be ${versionJson.version}`);
+assert(indexHtml.includes(`v${versionJson.version}`), `index.html version badge must be v${versionJson.version}`);
+assert(indexHtml.includes(`app.js?v=${versionJson.version}`), `index.html app.js query must be v${versionJson.version}`);
 
 const appJs = fs.readFileSync(path.join(BASE_DIR, 'app.js'), 'utf-8');
-assert(appJs.includes("this.APP_VERSION = metaVer || '2.7.0'"), 'app.js APP_VERSION must default to 2.7.0');
-console.log('  ✅ Version consistency passed: 2.7.0 across all files');
+assert(appJs.includes(`this.APP_VERSION = metaVer || '${versionJson.version}';`), `app.js APP_VERSION must default to ${versionJson.version}`);
+console.log(`  ✅ Version consistency passed: ${versionJson.version} across all files`);
 
 // 2. 문항 #4333 조사 문맥 검증 ("조달청 를 " -> "조달청을")
 console.log('\n[2] Question #4333 Grammar & Particle Fix Check...');

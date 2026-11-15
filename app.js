@@ -624,7 +624,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.7.0';
+    this.APP_VERSION = metaVer || '2.7.1';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -638,6 +638,11 @@ class HaruMatchumApp {
 
     // Check & restore active quiz session (e.g. returning after KakaoTalk app switch or page reload)
     this.restoreActiveQuizSession();
+
+    // Auto-check What's New Popup (v2.7 update announcement)
+    if (typeof window !== 'undefined') {
+      setTimeout(() => this.checkWhatsNewPopup(), 600);
+    }
 
     // Auto-check version on app launch (with slight delay for network stabilization)
     if (typeof window !== 'undefined') {
@@ -662,6 +667,7 @@ class HaruMatchumApp {
     this.modalGameGuide = document.getElementById('modalGameGuide');
     this.modalShop = document.getElementById('modalShop');
     this.modalAvatarZoom = document.getElementById('modalAvatarZoom');
+    this.modalWhatsNew = document.getElementById('modalWhatsNew');
     this.currentAccCategory = 'pin';
 
     // Mascot
@@ -847,6 +853,23 @@ class HaruMatchumApp {
       userAvatarEl.addEventListener('click', (e) => {
         e.stopPropagation();
         this.openAvatarZoomModal();
+      });
+    }
+
+    // What's New Modal (v2.7 Update)
+    const btnOpenWhatsNew = document.getElementById('btnOpenWhatsNew');
+    const btnCloseWhatsNew = document.getElementById('btnCloseWhatsNew');
+    const btnDismissWhatsNewForever = document.getElementById('btnDismissWhatsNewForever');
+    const btnConfirmWhatsNew = document.getElementById('btnConfirmWhatsNew');
+
+    if (btnOpenWhatsNew) btnOpenWhatsNew.addEventListener('click', () => this.openWhatsNewModal());
+    if (btnCloseWhatsNew) btnCloseWhatsNew.addEventListener('click', () => this.closeWhatsNewModal());
+    if (btnDismissWhatsNewForever) btnDismissWhatsNewForever.addEventListener('click', () => this.dismissWhatsNewForever());
+    if (btnConfirmWhatsNew) btnConfirmWhatsNew.addEventListener('click', () => this.closeWhatsNewModal());
+
+    if (this.modalWhatsNew) {
+      this.modalWhatsNew.addEventListener('click', (e) => {
+        if (e.target === this.modalWhatsNew) this.closeWhatsNewModal();
       });
     }
 
@@ -3054,6 +3077,45 @@ class HaruMatchumApp {
     if (this.modalAvatarZoom) this.modalAvatarZoom.classList.remove('active');
   }
 
+  // ============================================================
+  // What's New & Update Notice Modal (v2.7.1)
+  // ============================================================
+  checkWhatsNewPopup() {
+    const hideKey = 'haru_hide_whats_new_v270';
+    try {
+      if (localStorage.getItem(hideKey)) return;
+    } catch (e) {
+      return;
+    }
+
+    // Do not pop up if currently in middle of quiz
+    if (this.currentViewName && this.currentViewName !== 'home') return;
+
+    this.openWhatsNewModal();
+  }
+
+  openWhatsNewModal() {
+    if (this.modalWhatsNew) {
+      this.modalWhatsNew.classList.add('active');
+      if (typeof sfx !== 'undefined' && sfx.combo) sfx.combo();
+    }
+  }
+
+  closeWhatsNewModal() {
+    if (this.modalWhatsNew) {
+      this.modalWhatsNew.classList.remove('active');
+    }
+  }
+
+  dismissWhatsNewForever() {
+    const hideKey = 'haru_hide_whats_new_v270';
+    try {
+      localStorage.setItem(hideKey, 'true');
+    } catch (e) {}
+    this.closeWhatsNewModal();
+    this.showToastNotice('📢 업데이트 알림을 더 이상 표시하지 않습니다.');
+  }
+
   handleReviveQuiz() {
     this.isReviveQuiz = true;
     this.reviveMode = this.currentMode;
@@ -4030,7 +4092,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.7.0';
+      const clientVersion = this.APP_VERSION || '2.7.1';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

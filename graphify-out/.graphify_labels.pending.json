@@ -31,7 +31,7 @@
   "29": "test_game_items.js",
   "30": "공통 운영 및 개발 지침 (Common Guidelines)",
   "31": "Review Focus",
-  "32": "hanja_questions.js",
+  "32": "test_random_answer_distribution.js",
   "33": "test_hanja_bank.js",
   "34": "test_audit_logs_ui.js",
   "35": "test_mode_toggle.js",
@@ -51,5 +51,7 @@
   "49": "app.js",
   "50": "test_server_compression.js",
   "51": "test_leaderboard_clean.js",
-  "52": "recordAccessLog"
+  "52": "recordAccessLog",
+  "53": "test_v271_whats_new_modal.js",
+  "54": "idiom_questions.js"
 }

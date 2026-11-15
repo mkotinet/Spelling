@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.7.0">
-  <link rel="stylesheet" href="style.css?v=2.7.0">
+  <meta name="app-version" content="2.7.1">
+  <link rel="stylesheet" href="style.css?v=2.7.1">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -174,11 +174,15 @@
       </div>
 
       <!-- App Version & Quick Reload Card -->
-      <div class="quick-reload-bar">
-        <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다">
+      <div class="quick-reload-bar" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span class="version-badge">v2.7.0</span>
+          <span class="version-badge">v2.7.1</span>
+        </button>
+        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.7 업데이트 소식 다시 보기">
+          <span>📢</span>
+          <span>업데이트 소식</span>
         </button>
       </div>
 
@@ -951,11 +955,83 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       MODAL 11: WHAT'S NEW & UPDATE ANNOUNCEMENT
+       ============================================================ -->
+  <div id="modalWhatsNew" class="modal-overlay">
+    <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 class="modal-title">🎉 하루맞춤 v2.7 업데이트 소식</h3>
+        <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="whats-new-body">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">✨📱🏪👗✨</div>
+          <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
+            하루맞춤이 더욱 즐겁고 편리하게 새로워졌어요!
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-sub); margin-top: 4px;">
+            새롭게 추가된 핵심 기능과 개선 사항을 확인해보세요.
+          </p>
+        </div>
+
+        <div class="update-card-list">
+          <!-- Card 1 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">🔊</div>
+            <div class="update-card-content">
+              <div class="update-card-title">모바일 오디오 & 영어 원어민 TTS 음성 지원</div>
+              <div class="update-card-desc">스마트폰(iPhone Safari / Android)에서도 효과음과 원어민 스피커 발음이 끊김 없이 생생하게 재생됩니다.</div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">🏪</div>
+            <div class="update-card-content">
+              <div class="update-card-title">포인트 아이템 상점 & 인게임 즉시 구매 (Quick Buy)</div>
+              <div class="update-card-desc">퀴즈로 모은 포인트로 8종 찬스 아이템을 자유롭게 구매하세요! 문제 풀이 중 아이템이 부족해도 바로 포인트로 즉시 충전하여 사용할 수 있습니다.</div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">👗</div>
+            <div class="update-card-content">
+              <div class="update-card-title">22종 아바타 악세사리 드레스룸 & 선명한 확대 갤러리</div>
+              <div class="update-card-desc">머리핀, 안경, 모자, 볼터치, 배경 오라 등 22종 악세사리로 나만의 아바타를 꾸며보세요. 홈 화면의 아바타를 터치하면 140px 고해상도 벡터 뷰로 감상할 수 있습니다.</div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">🛡️</div>
+            <div class="update-card-content">
+              <div class="update-card-title">문제 문맥 및 랭킹 시스템 정비</div>
+              <div class="update-card-desc">공문서 문맥 조사(#4333)를 자연스럽게 교정하였으며, 회원 랭킹 리더보드의 보유 점수가 100% 온전하게 일치하도록 개선했습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="whats-new-footer">
+        <button id="btnDismissWhatsNewForever" class="sub-action-btn" type="button" style="flex: 1; padding: 11px; font-size: 0.88rem; font-weight: 700; color: #64748b; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px; cursor: pointer;">
+          🚫 더 이상 보지 않기
+        </button>
+        <button id="btnConfirmWhatsNew" class="main-action-btn" type="button" style="flex: 1.2; padding: 11px; font-size: 0.92rem; font-weight: 800; color: white; background: var(--gradient-primary); border-radius: 14px; cursor: pointer;">
+          ✨ 확인하고 둘러보기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="questions.js?v=2.7.0"></script>
-  <script src="idiom_questions.js?v=2.7.0"></script>
-  <script src="hanja_questions.js?v=2.7.0"></script>
-  <script src="english_questions.js?v=2.7.0"></script>
-  <script src="app.js?v=2.7.0"></script>
+  <script src="questions.js?v=2.7.1"></script>
+  <script src="idiom_questions.js?v=2.7.1"></script>
+  <script src="hanja_questions.js?v=2.7.1"></script>
+  <script src="english_questions.js?v=2.7.1"></script>
+  <script src="app.js?v=2.7.1"></script>
 </body>
 </html>
