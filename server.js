@@ -515,6 +515,7 @@ const server = http.createServer(async (req, res) => {
     const db = loadDB();
     const list = Object.values(db.users).map(u => ({
       id: u.id,
+      username: u.username || u.name,
       name: u.name || u.username,
       avatar: u.avatar || "🌸",
       avatarAccessories: (u.avatarAccessories && typeof u.avatarAccessories === 'object') ? u.avatarAccessories : {},
@@ -627,7 +628,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.9", build: "20261115_2030" };
+    let verData = { version: "2.9.10", build: "20261115_2100" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -680,9 +681,15 @@ const server = http.createServer(async (req, res) => {
       }
 
       // Find recipient user in DB (by username, name, or id)
+      const toId = (body.toId || "").trim();
       let recipient = db.users[toTarget];
       if (!recipient) {
-        recipient = Object.values(db.users).find(u => u.name === toTarget || u.username === toTarget || u.id === body.toId || u.id === toTarget);
+        recipient = Object.values(db.users).find(u => 
+          (toId && u.id === toId) ||
+          (u.name && u.name.trim() === toTarget) || 
+          (u.username && u.username.trim() === toTarget) ||
+          (toTarget && (u.name || "").includes(toTarget))
+        );
       }
       if (!recipient) {
         return sendJSON(res, 404, { success: false, message: `'${toTarget}' 님을 찾을 수 없습니다.` });
@@ -699,8 +706,8 @@ const server = http.createServer(async (req, res) => {
         fromName: sender.name || username,
         fromAvatar: sender.avatar || "🌸",
         fromAccessories: sender.avatarAccessories || {},
-        toUsername: recipient.username,
-        toName: recipient.name || recipient.username,
+        toUsername: recipient.username || recipient.name || toTarget,
+        toName: recipient.name || recipient.username || toTarget,
         toAvatar: recipient.avatar || "🌸",
         toAccessories: recipient.avatarAccessories || {},
         content: safeContent,

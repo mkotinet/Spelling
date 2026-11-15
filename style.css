@@ -2809,9 +2809,11 @@ body.theme-english .quiz-sentence .quiz-blank {
 
 .whats-new-body {
   overflow-y: auto;
-  max-height: 60vh;
+  overflow-x: hidden;
+  max-height: 62vh;
   padding-right: 4px;
   margin-bottom: 14px;
+  box-sizing: border-box;
 }
 
 .whats-new-body::-webkit-scrollbar {
@@ -2827,6 +2829,8 @@ body.theme-english .quiz-sentence .quiz-blank {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .update-feature-card {
@@ -2837,6 +2841,8 @@ body.theme-english .quiz-sentence .quiz-blank {
   border: 1.5px solid #fbcfe8;
   border-radius: 16px;
   padding: 12px 14px;
+  width: 100%;
+  box-sizing: border-box;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -2862,6 +2868,8 @@ body.theme-english .quiz-sentence .quiz-blank {
 .update-card-content {
   flex: 1;
   min-width: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .update-card-title {
@@ -2869,12 +2877,15 @@ body.theme-english .quiz-sentence .quiz-blank {
   font-weight: 800;
   color: #831843;
   margin-bottom: 4px;
+  word-break: keep-all;
 }
 
 .update-card-desc {
   font-size: 0.8rem;
   color: #475569;
   line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .whats-new-footer {

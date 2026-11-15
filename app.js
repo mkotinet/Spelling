@@ -306,11 +306,25 @@ class SoundEffects {
     notes.forEach((n, i) => this.playTone(n, 'triangle', 0.22, delays[i], 0.38));
     this.playHtmlAudio('fanfare', 0.85);
   }
+
+  applause() {
+    if (!this.enabled) return;
+    this.unlockAudio();
+    const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+    const delays = [0, 0.08, 0.16, 0.24, 0.34, 0.46];
+    notes.forEach((n, i) => this.playTone(n, 'triangle', 0.20, delays[i], 0.35));
+    this.playHtmlAudio('fanfare', 0.85);
+  }
 }
 
 const sfx = new SoundEffects();
 if (typeof window !== 'undefined') {
   window.sfx = sfx;
+  window.triggerConfetti = function(count = 50) {
+    if (window.app && window.app.confetti && typeof window.app.confetti.explode === 'function') {
+      window.app.confetti.explode();
+    }
+  };
 }
 
 // Global Mobile/Desktop AudioContext & SpeechSynthesis unlocker on user interaction
@@ -1428,7 +1442,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.9';
+    this.APP_VERSION = metaVer || '2.9.10';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -4389,6 +4403,16 @@ class HaruMatchumApp {
       return;
     }
 
+    // Ensure cloud token is available
+    if (!this.cloudToken) {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
+    if (!this.cloudToken) {
+      this.showToastNotice('로그인이 만료되었습니다. 다시 로그인해 주세요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
     const btnSubmit = document.getElementById('btnSubmitSendMessage');
     if (btnSubmit) {
       btnSubmit.disabled = true;
@@ -4411,14 +4435,33 @@ class HaruMatchumApp {
         })
       });
 
-      const data = await res.json();
-      if (data.success) {
-        sfx.applause();
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        console.warn('JSON parse error from /api/messages/send:', jsonErr);
+      }
+
+      if (res.ok && data && data.success) {
+        try {
+          if (typeof sfx !== 'undefined' && typeof sfx.applause === 'function') {
+            sfx.applause();
+          } else if (typeof sfx !== 'undefined' && typeof sfx.fanfare === 'function') {
+            sfx.fanfare();
+          }
+        } catch (sfxErr) {}
+
         this.closeSendMessageModal();
         this.showToastNotice(`💌 ${this.messageTargetUser.name}님에게 응원 메시지를 성공적으로 전달했어요! ✨`);
-        triggerConfetti(60);
+
+        try {
+          if (this.confetti && typeof this.confetti.explode === 'function') {
+            this.confetti.explode();
+          }
+        } catch (cErr) {}
       } else {
-        this.showToastNotice(data.message || '메시지 전송에 실패했습니다.');
+        const errorMsg = (data && data.message) ? data.message : `서버 오류 (HTTP ${res.status})`;
+        this.showToastNotice(errorMsg);
       }
     } catch (e) {
       console.error('Send message error:', e);
@@ -4508,8 +4551,19 @@ class HaruMatchumApp {
     }
 
     this.modalIncomingMessage.classList.add('active');
-    sfx.applause();
-    triggerConfetti(40);
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.applause === 'function') {
+        sfx.applause();
+      } else if (typeof sfx !== 'undefined' && typeof sfx.fanfare === 'function') {
+        sfx.fanfare();
+      }
+    } catch (sErr) {}
+
+    try {
+      if (this.confetti && typeof this.confetti.explode === 'function') {
+        this.confetti.explode();
+      }
+    } catch (cErr) {}
   }
 
   async closeIncomingMessageModal(markRead = true) {
@@ -4674,7 +4728,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.9';
+    let currentVer = this.APP_VERSION || '2.9.10';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4702,7 +4756,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.9';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.10';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4722,7 +4776,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.9';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.10';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -5832,7 +5886,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.9';
+      const clientVersion = this.APP_VERSION || '2.9.10';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
