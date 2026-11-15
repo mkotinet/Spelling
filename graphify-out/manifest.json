@@ -1,19 +1,19 @@
 {
   "app.js": {
-    "mtime": 1794727192.873444,
-    "seen": 1794727343.928842,
-    "ast_hash": "634bb7eed6962206d6e592bafc6e4cb6",
+    "mtime": 1794738133.376743,
+    "seen": 1794738372.948726,
+    "ast_hash": "5d64d093a729fbfa54bf7c188d66a46b",
     "semantic_hash": ""
   },
   "data/access_logs.json": {
-    "mtime": 1794727402.132648,
-    "seen": 1794727473.8174279,
-    "ast_hash": "c5df7c33cdb2cd21b069f3c1f51d610d",
+    "mtime": 1794738314.8098514,
+    "seen": 1794738372.948729,
+    "ast_hash": "25427ad75408940ca6b40f30fe456858",
     "semantic_hash": ""
   },
   "data/users.json": {
-    "mtime": 1794727402.2843428,
-    "seen": 1794727473.817429,
+    "mtime": 1794738314.810218,
+    "seen": 1794738372.9487302,
     "ast_hash": "69c81576e2e9f121c3da1ee9f270e909",
     "semantic_hash": ""
   },
@@ -156,9 +156,9 @@
     "semantic_hash": ""
   },
   "server.js": {
-    "mtime": 1794726693.517944,
-    "seen": 1794727343.9288902,
-    "ast_hash": "ba44f69562a84c8cce7a366dbacbb2f4",
+    "mtime": 1794738172.4779313,
+    "seen": 1794738372.948768,
+    "ast_hash": "447b59969980d0628c0df54a1d779fcb",
     "semantic_hash": ""
   },
   "tests/test_20000_questions_and_permutations.js": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/verify_all.js": {
-    "mtime": 1794727319.108681,
-    "seen": 1794727343.928939,
-    "ast_hash": "c6123b5da9762e98872d11fc22642900",
+    "mtime": 1794738288.396002,
+    "seen": 1794738372.9488199,
+    "ast_hash": "b0cf080cd499df69e36f72bfa7e750a2",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -390,21 +390,21 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794726776.2531326,
-    "seen": 1794727343.928957,
-    "ast_hash": "787d08e7b941720a5b68819f2a59cf9c",
+    "mtime": 1794738223.399317,
+    "seen": 1794738372.948839,
+    "ast_hash": "bf8e26cd3614c1b30cf73342839ce951",
     "semantic_hash": ""
   },
   "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
-    "mtime": 1794727455.3951287,
-    "seen": 1794727473.8175418,
-    "ast_hash": "97ac2af0c715bfa87da0d4981db04c8b",
+    "mtime": 1794738350.1363282,
+    "seen": 1794738372.9488409,
+    "ast_hash": "f8aff90192d444182323bdfffa509439",
     "semantic_hash": ""
   },
   "\uc81c\uc791\ud788\uc2a4\ud1a0\ub9ac.md": {
-    "mtime": 1794727468.977388,
-    "seen": 1794727473.817543,
-    "ast_hash": "2caeb3f39ba109451b47393df0c2a49a",
+    "mtime": 1794738364.8023827,
+    "seen": 1794738372.948842,
+    "ast_hash": "dfa0f1408514b04d0d90d64c4278ab45",
     "semantic_hash": ""
   },
   "scripts/fix_spelling_lvl1_2.py": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "version.json": {
-    "mtime": 1794726700.3518314,
-    "seen": 1794727343.928941,
-    "ast_hash": "d8e81e88731683b0e77692d0d5a73882",
+    "mtime": 1794738153.3180823,
+    "seen": 1794738372.948821,
+    "ast_hash": "3df40a2a72455cec53d30b371c195948",
     "semantic_hash": ""
   },
   "tests/test_v261_ending_collision_fix.js": {
@@ -537,6 +537,12 @@
     "mtime": 1794727238.8000112,
     "seen": 1794727343.928938,
     "ast_hash": "b40776dbadd69a8bb36245507a32d88a",
+    "semantic_hash": ""
+  },
+  "tests/test_v296_avatar_sync_to_leaderboard.js": {
+    "mtime": 1794738240.597112,
+    "seen": 1794738372.948819,
+    "ast_hash": "ddcb3f34d26d0754ac978b0b196eb5fd",
     "semantic_hash": ""
   }
 }

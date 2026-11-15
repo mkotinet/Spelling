@@ -1419,7 +1419,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.5';
+    this.APP_VERSION = metaVer || '2.9.6';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -3667,6 +3667,7 @@ class HaruMatchumApp {
     this.previewAccessories = null;
     this.renderUserProfile();
     this.renderItemBar();
+    this.renderLeaderboard(this.rankType || 'daily');
 
     // Ensure active view section is properly restored (Fix for blank screen bug on shop exit)
     const activeSection = document.querySelector('.view-section.active');
@@ -4112,7 +4113,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.5';
+    let currentVer = this.APP_VERSION || '2.9.6';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -4140,7 +4141,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.5';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.6';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -4160,7 +4161,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.5';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.6';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4454,10 +4455,25 @@ class HaruMatchumApp {
         if (body.success && Array.isArray(body.leaderboard)) {
           const myId = this.data.currentUser.id;
           const myName = this.data.currentUser.name;
-          this.data.allUsers = body.leaderboard.map(u => ({
-            ...u,
-            isMe: u.id === myId || u.name === myName
-          }));
+          this.data.allUsers = body.leaderboard.map(u => {
+            const isMe = (myId && u.id === myId) || (myName && u.name === myName);
+            if (isMe) {
+              return {
+                ...u,
+                avatar: this.data.currentUser.avatar || u.avatar || '🌸',
+                avatarAccessories: { ...(this.data.currentUser.avatarAccessories || u.avatarAccessories || {}) },
+                name: this.data.currentUser.name || u.name,
+                grade: this.data.currentUser.grade || u.grade,
+                totalPoints: (typeof this.data.currentUser.totalPoints === 'number') ? this.data.currentUser.totalPoints : (u.totalPoints || 0),
+                isMe: true
+              };
+            }
+            return {
+              ...u,
+              avatarAccessories: (u.avatarAccessories && typeof u.avatarAccessories === 'object') ? u.avatarAccessories : {},
+              isMe: false
+            };
+          });
 
           // If current user is not yet in leaderboard, add locally
           if (!this.data.allUsers.some(u => u.isMe)) {
@@ -4465,6 +4481,7 @@ class HaruMatchumApp {
               id: myId,
               name: myName,
               avatar: this.data.currentUser.avatar || '🌸',
+              avatarAccessories: { ...(this.data.currentUser.avatarAccessories || {}) },
               grade: this.data.currentUser.grade || '중학교 2학년',
               totalPoints: this.data.currentUser.totalPoints || 0,
               streak: this.data.currentUser.streak || 1,
@@ -4779,10 +4796,11 @@ class HaruMatchumApp {
       me.name = newName;
       me.grade = newGrade;
       me.avatar = newAvatar;
+      me.avatarAccessories = { ...(this.data.currentUser.avatarAccessories || {}) };
     }
 
     DataManager.save(this.data);
-    this.syncToCloud();
+    this.syncUserData('PROFILE_UPDATE');
     this.renderUserProfile();
     this.renderLeaderboard('daily');
     this.closeProfileModal();
@@ -4969,6 +4987,35 @@ class HaruMatchumApp {
       badge.style.color = '#7d6e83';
       badge.style.background = '#f2edf5';
     }
+  }
+
+  syncUserData(action = 'USER_DATA_UPDATE', details = {}) {
+    // 1. Immediately reflect currentUser avatar, accessories & profile into local allUsers cache
+    if (this.data && this.data.currentUser) {
+      if (!this.data.allUsers) this.data.allUsers = [];
+      const myId = this.data.currentUser.id;
+      const myName = this.data.currentUser.name;
+      const me = this.data.allUsers.find(u => (myId && u.id === myId) || (myName && u.name === myName) || u.isMe);
+      if (me) {
+        me.avatar = this.data.currentUser.avatar || me.avatar || '🌸';
+        me.avatarAccessories = { ...(this.data.currentUser.avatarAccessories || {}) };
+        me.name = this.data.currentUser.name || me.name;
+        me.grade = this.data.currentUser.grade || me.grade;
+        if (typeof this.data.currentUser.totalPoints === 'number') {
+          me.totalPoints = this.data.currentUser.totalPoints;
+        }
+        me.isMe = true;
+      }
+      DataManager.save(this.data);
+    }
+
+    // 2. Immediately re-render leaderboard if it is currently visible
+    if (this.currentViewName === 'leaderboard') {
+      this.renderLeaderboard(this.rankType || 'daily');
+    }
+
+    // 3. Persist to server in background
+    return this.syncToCloud(action, details);
   }
 
   async syncToCloud(action = null, details = {}) {
@@ -5174,7 +5221,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.5';
+      const clientVersion = this.APP_VERSION || '2.9.6';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
@@ -5229,7 +5276,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', '2.9.5');
+        url.searchParams.set('_v', '2.9.6');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

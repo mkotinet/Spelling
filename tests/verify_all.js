@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.5">'), 'index.html must include meta app-version 2.9.5');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.6">'), 'index.html must include meta app-version 2.9.6');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.5', 'GET /api/version version must be 2.9.5');
+    assert.strictEqual(verRes.data.version, '2.9.6', 'GET /api/version version must be 2.9.6');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -311,6 +311,11 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('outfit_strawberry_milk_pajama'), 'app.js must include strawberry milk pajama');
     assert(indexHtml.includes('data-avatar="🐼"'), 'index.html must include panda avatar');
     assert(serverCode.includes('avatarAccessories: (u.avatarAccessories && typeof u.avatarAccessories === \'object\') ? u.avatarAccessories : {}'), 'server.js must return avatarAccessories in leaderboard');
+
+    // 26. v2.9.6 Real-Time Avatar Accessories Sync to Leaderboard
+    assert(appCode.includes('syncUserData(action = \'USER_DATA_UPDATE\', details = {})'), 'app.js must define syncUserData method');
+    assert(appCode.includes('avatarAccessories: { ...(this.data.currentUser.avatarAccessories || u.avatarAccessories || {}) }'), 'renderLeaderboard must optimistic merge avatarAccessories');
+    assert(appCode.includes('this.renderLeaderboard(this.rankType || \'daily\');'), 'closeShopModal must re-render leaderboard');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

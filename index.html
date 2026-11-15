@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.9.5">
+  <meta name="app-version" content="2.9.6">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -1027,20 +1027,20 @@
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.5</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.6</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">👑🧸👗✨🔍</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">👗✨🏆☁️🔄</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            랭킹 아바타 갤러리 팝업 & 귀여운 캐릭터·의상 대거 추가!
+            아바타 꾸미기 랭킹 실시간 즉시 반영 & 동기화 고도화!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              랭킹 화면 상대방 아바타 표시 & 탭 시 대형 갤러리 상세 보기, 신규 귀여운 동물/캐릭터 24종 대거 추가, 사랑스러운 의상·신발·악세사리 대거 확장 & 렌더링 최적화 탑재
+              아바타 꾸미기 및 악세사리 변경 시 랭킹 실시간 즉시 반영, 클라우드 양방향 동기화 안정성 강화, 낙관적 UI 렌더링 엔진 탑재
             </p>
           </div>
         </div>
@@ -1048,19 +1048,28 @@
         <div class="update-card-list">
           <!-- Card 1 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">👑</div>
+            <div class="update-card-icon">⚡</div>
             <div class="update-card-content">
-              <div class="update-card-title">랭킹 화면 상대방 아바타 표시 & 터치 확대 갤러리</div>
-              <div class="update-card-desc">명예의 전당 랭킹에서 다른 친구들이 꾸민 아바타를 볼 수 있으며, 아바타나 이름을 터치하면 고화질 대형 갤러리 팝업으로 착장 아이템 목록까지 한눈에 감상할 수 있습니다!</div>
+              <div class="update-card-title">아바타 꾸미기 랭킹 실시간 즉시 반영</div>
+              <div class="update-card-desc">상점에서 모자, 안경, 옷, 신발 등 악세사리를 착용하거나 변경하면 랭킹 화면에 딜레이 없이 0초 만에 즉시 최신 아바타로 반영됩니다!</div>
             </div>
           </div>
 
           <!-- Card 2 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🐼</div>
+            <div class="update-card-icon">☁️</div>
             <div class="update-card-content">
-              <div class="update-card-title">귀여운 동물 & 캐릭터 24종 대거 신규 추가 (총 36종)</div>
-              <div class="update-card-desc">아기 팬더, 햄스터, 아기 호랑이, 곰인형, 코알라, 사자, 아기 여우, 북극곰, 펭귄, 병아리, 뱁새, 수달 등 귀여운 친구들이 대거 입주했습니다!</div>
+              <div class="update-card-title">클라우드 서버 양방향 동기화 무결성 확보</div>
+              <div class="update-card-desc">착용/해제/구매/안경모드 변경 시 서버 동기화 함수를 완벽 연결하여, 새로고침이나 다른 기기 접속 시에도 착장 정보가 100% 영구 보존됩니다.</div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="update-feature-card">
+            <div class="update-card-icon">🏆</div>
+            <div class="update-card-content">
+              <div class="update-card-title">낙관적 UI (Optimistic Merge) 랭킹 렌더러</div>
+              <div class="update-card-desc">서버 네트워크 통신 중에도 내가 방금 꾸민 최신 코디가 이전 랭킹 캐시 데이터에 의해 덮어씌워지지 않도록 지능형 우선순위 병합 엔진을 탑재했습니다.</div>
             </div>
           </div>
 
@@ -1101,6 +1110,6 @@
   <script src="idiom_questions.js?v=2.9.0"></script>
   <script src="hanja_questions.js?v=2.9.0"></script>
   <script src="english_questions.js?v=2.9.0"></script>
-  <script src="app.js?v=2.9.5"></script>
+  <script src="app.js?v=2.9.6"></script>
 </body>
 </html>
