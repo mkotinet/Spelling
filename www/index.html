@@ -87,6 +87,7 @@
     <nav class="nav-tabs" aria-label="메뉴 탐색">
       <button class="nav-tab active" data-view="home">🏠 퀴즈 홈</button>
       <button class="nav-tab" data-view="leaderboard">🏆 회원 랭킹</button>
+      <button id="btnNavInbox" class="nav-tab" type="button" data-action="open-inbox" style="color: #8b5cf6; font-weight: 800;">📬 메시지</button>
       <button class="nav-tab" data-view="badges">🎀 스티커북</button>
       <button id="btnOpenShop" class="nav-tab" type="button" data-action="open-shop" style="color: #e11d48; font-weight: 800;">🏪 상점</button>
     </nav>
@@ -1041,6 +1042,11 @@
 
       <!-- 2. Independent Scrollable Body Container -->
       <div id="messageModalScrollBody" class="message-modal-body">
+        <!-- Guest mode notification banner -->
+        <div id="msgGuestNoticeBanner" class="msg-guest-notice" style="display: none; background: #fdf4ff; border: 1.5px solid #f0abfc; color: #a21caf; padding: 10px 14px; border-radius: 14px; font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; line-height: 1.45; text-align: center;">
+          🌸 <strong>게스트 모드</strong>: 메시지 작성 후 [전송]을 누르시면 3초 간편 닉네임 로그인 후 친구에게 바로 전달됩니다! ✨
+        </div>
+
         <div id="msgSendTargetProfileCard" class="msg-target-profile-card">
           <div id="msgSendTargetAvatar" class="composite-avatar" style="width: 52px; height: 52px;"></div>
           <div class="msg-target-meta">
@@ -1200,6 +1206,13 @@
       <div class="modal-header">
         <h3 class="modal-title">📬 나의 응원 메시지 보관함</h3>
         <button id="btnCloseInbox" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="inbox-quick-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid #f1f5f9; margin-bottom: 4px;">
+        <span style="font-size: 0.82rem; color: var(--text-sub); font-weight: 700;">실시간 응원 & 사진 교환</span>
+        <button id="btnInboxComposeTop" class="inbox-compose-top-btn" type="button" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; border: none; border-radius: 12px; padding: 7px 13px; font-weight: 800; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; cursor: pointer; box-shadow: 0 2px 8px rgba(236,72,153,0.3);">
+          💌 새 메시지 쓰기
+        </button>
       </div>
 
       <div class="inbox-filter-tabs">

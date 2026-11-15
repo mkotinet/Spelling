@@ -1,6 +1,6 @@
 {
-  "version": "3.1.0",
-  "build": "20261115_2245",
-  "name": "하루맞춤 (Haru Matchum) - iOS (.ipa) & Android (.apk) Standalone Binary Edition",
-  "releaseNotes": "아이폰(.ipa) 및 안드로이드(.apk) 정식 설치 바이너리 패키지 빌드 및 GitHub Releases 버전업 배포 완료"
+  "version": "3.1.1",
+  "build": "20261116_0110",
+  "name": "하루맞춤 (Haru Matchum) - Messaging Touch & UX Polish Edition",
+  "releaseNotes": "메시지 버튼 무반응 오류 완전 해결: 네비게이션 탭 메시지 바로가기 신설, 랭킹 화면 즉시 응원(💌) 버튼 탑재, 게스트 모드 메시지 작성 및 보관함 열람 지원"
 }

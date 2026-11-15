@@ -295,9 +295,18 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.1.0', 'GET /api/version version must be 3.1.0');
+    assert.strictEqual(verRes.data.version, '3.1.1', 'GET /api/version version must be 3.1.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
+
+    // 23-B. v3.1.1 Message button resilience & Guest mode experience
+    assert(indexHtml.includes('id="btnNavInbox"'), 'index.html must include btnNavInbox in nav-tabs');
+    assert(indexHtml.includes('id="btnInboxComposeTop"'), 'index.html must include btnInboxComposeTop in modalInbox');
+    assert(indexHtml.includes('id="msgGuestNoticeBanner"'), 'index.html must include msgGuestNoticeBanner in modalSendMessage');
+    assert(appCode.includes('btnNavInbox'), 'app.js must bind btnNavInbox');
+    assert(appCode.includes('btnInboxComposeTop'), 'app.js must bind btnInboxComposeTop');
+    assert(appCode.includes('rank-msg-btn'), 'app.js must render rank-msg-btn');
+    assert(appCode.includes('renderGuestInbox'), 'app.js must implement renderGuestInbox');
 
     // 24. v2.9.4 Shop Close Home Restore, iOS Safari Silent Audio & Idiom Leaderboard
     assert(indexHtml.includes('id="rankSubjectIdiom"'), 'index.html must include rankSubjectIdiom button');

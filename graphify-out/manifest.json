@@ -1,19 +1,19 @@
 {
   "app.js": {
-    "mtime": 1794749263.4341965,
-    "seen": 1794749700.2349,
-    "ast_hash": "ef26deb8c06abf60dbae5027d0e481d5",
+    "mtime": 1794759331.35338,
+    "seen": 1794759412.731372,
+    "ast_hash": "4dfaa3a2184d601330fff67ef84943e7",
     "semantic_hash": ""
   },
   "data/access_logs.json": {
-    "mtime": 1794751710.7316072,
-    "seen": 1794751717.011252,
-    "ast_hash": "c7a10ffeba66048986232e1ac1e6cb9c",
+    "mtime": 1794759377.0392349,
+    "seen": 1794759412.731374,
+    "ast_hash": "f3dff53da95624b67b5bb941a4b33e31",
     "semantic_hash": ""
   },
   "data/users.json": {
-    "mtime": 1794751710.8892875,
-    "seen": 1794751717.011254,
+    "mtime": 1794759377.1903617,
+    "seen": 1794759412.731377,
     "ast_hash": "69c81576e2e9f121c3da1ee9f270e909",
     "semantic_hash": ""
   },
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/verify_all.js": {
-    "mtime": 1794750471.6037436,
-    "seen": 1794750608.77261,
-    "ast_hash": "441a117c42a5c615df405cea83917128",
+    "mtime": 1794759068.7220466,
+    "seen": 1794759412.731489,
+    "ast_hash": "34a24c02c160f56db9e28f3cb5678ffd",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -390,9 +390,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794750441.71879,
-    "seen": 1794750608.772636,
-    "ast_hash": "c60e2d57b53af1e3148a83255b8bc549",
+    "mtime": 1794758808.0969589,
+    "seen": 1794759412.7315168,
+    "ast_hash": "cadd51abdf2a442a2d410b91f9ed0276",
     "semantic_hash": ""
   },
   "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "version.json": {
-    "mtime": 1794750417.6494226,
-    "seen": 1794750608.7726111,
-    "ast_hash": "8df461b67c742d90ef43a9832e6eac86",
+    "mtime": 1794759030.0910232,
+    "seen": 1794759412.731491,
+    "ast_hash": "d804c89de61b4c1957f25e81f9b4c0b1",
     "semantic_hash": ""
   },
   "tests/test_v261_ending_collision_fix.js": {
@@ -606,8 +606,8 @@
     "semantic_hash": ""
   },
   "android/app/capacitor.build.gradle": {
-    "mtime": 1794750475.29764,
-    "seen": 1794750608.772476,
+    "mtime": 1794759397.3437443,
+    "seen": 1794759412.731359,
     "ast_hash": "9e3b466405a321b15f7a336197a733af",
     "semantic_hash": ""
   },
@@ -636,8 +636,8 @@
     "semantic_hash": ""
   },
   "android/capacitor.settings.gradle": {
-    "mtime": 1794750475.2975671,
-    "seen": 1794750608.772484,
+    "mtime": 1794759397.343649,
+    "seen": 1794759412.731366,
     "ast_hash": "439c1e5c5291c7f02fcf499427a73458",
     "semantic_hash": ""
   },
@@ -696,8 +696,8 @@
     "semantic_hash": ""
   },
   "ios/App/CapApp-SPM/Package.swift": {
-    "mtime": 1794750475.3310204,
-    "seen": 1794750608.77251,
+    "mtime": 1794759397.375913,
+    "seen": 1794759412.73139,
     "ast_hash": "740b449a58c5ffe70ae61fea434eb766",
     "semantic_hash": ""
   },
@@ -708,9 +708,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1794750521.7730868,
-    "seen": 1794750608.772514,
-    "ast_hash": "fa0ed6955842f6b9fb1604ef5c7c35fc",
+    "mtime": 1794759046.9191144,
+    "seen": 1794759412.731393,
+    "ast_hash": "13f3e94cab1a027f4f0fc6960035cfa6",
     "semantic_hash": ""
   },
   "scripts/build_signed_apk.sh": {
@@ -732,45 +732,45 @@
     "semantic_hash": ""
   },
   "www/app.js": {
-    "mtime": 1794750474.7941587,
-    "seen": 1794750608.772612,
-    "ast_hash": "ef26deb8c06abf60dbae5027d0e481d5",
+    "mtime": 1794759339.679278,
+    "seen": 1794759412.731492,
+    "ast_hash": "4dfaa3a2184d601330fff67ef84943e7",
     "semantic_hash": ""
   },
   "www/english_questions.js": {
-    "mtime": 1794750474.8036358,
-    "seen": 1794750608.772613,
+    "mtime": 1794759339.689152,
+    "seen": 1794759412.7314932,
     "ast_hash": "0491ae4fb9d572c968bcdc3e556f1e43",
     "semantic_hash": ""
   },
   "www/hanja_questions.js": {
-    "mtime": 1794750474.799381,
-    "seen": 1794750608.772614,
+    "mtime": 1794759339.684675,
+    "seen": 1794759412.731494,
     "ast_hash": "78ddaea3f2e4f3eb43261d130495a0f4",
     "semantic_hash": ""
   },
   "www/idiom_questions.js": {
-    "mtime": 1794750474.8013086,
-    "seen": 1794750608.772615,
+    "mtime": 1794759339.6867268,
+    "seen": 1794759412.731495,
     "ast_hash": "911065a795e814791f763bb7a6f5853b",
     "semantic_hash": ""
   },
   "www/korean_grammar_validator.js": {
-    "mtime": 1794750474.8040717,
-    "seen": 1794750608.772616,
+    "mtime": 1794759339.6906865,
+    "seen": 1794759412.731497,
     "ast_hash": "44f86aa6619935683e38300a35e22f1f",
     "semantic_hash": ""
   },
   "www/questions.js": {
-    "mtime": 1794750474.796288,
-    "seen": 1794750608.7726169,
+    "mtime": 1794759339.6807003,
+    "seen": 1794759412.731498,
     "ast_hash": "9a37122ce4a1422f4db44bb3cf10067c",
     "semantic_hash": ""
   },
   "www/version.json": {
-    "mtime": 1794750474.8042634,
-    "seen": 1794750608.772618,
-    "ast_hash": "8df461b67c742d90ef43a9832e6eac86",
+    "mtime": 1794759339.691242,
+    "seen": 1794759412.731499,
+    "ast_hash": "d804c89de61b4c1957f25e81f9b4c0b1",
     "semantic_hash": ""
   },
   "MOBILE_BUILD_GUIDE.md": {
@@ -786,9 +786,9 @@
     "semantic_hash": ""
   },
   "www/index.html": {
-    "mtime": 1794750474.7936118,
-    "seen": 1794750608.772639,
-    "ast_hash": "c60e2d57b53af1e3148a83255b8bc549",
+    "mtime": 1794759339.678838,
+    "seen": 1794759412.73152,
+    "ast_hash": "cadd51abdf2a442a2d410b91f9ed0276",
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable-land-hdpi/splash.png": {
@@ -975,6 +975,12 @@
     "mtime": 1794750505.5753388,
     "seen": 1794750608.7725482,
     "ast_hash": "18494539696e518dc10cb65a174b92c5",
+    "semantic_hash": ""
+  },
+  "tests/test_v311_message_button_and_guest_experience.js": {
+    "mtime": 1794759082.9847133,
+    "seen": 1794759412.731488,
+    "ast_hash": "aa6c2852520a6d54dd0182fde3a3f6d2",
     "semantic_hash": ""
   },
   "package-lock.json": {

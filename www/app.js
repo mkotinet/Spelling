@@ -356,6 +356,14 @@ class SoundEffects {
     notes.forEach((n, i) => this.playTone(n, 'triangle', 0.20, delays[i], 0.35));
     this.playHtmlAudio('fanfare', 0.85);
   }
+
+  tap() {
+    if (!this.enabled) return;
+    this.unlockAudio();
+    try {
+      this.playTone(880, 'sine', 0.04, 0, 0.15);
+    } catch (e) {}
+  }
 }
 
 const sfx = new SoundEffects();
@@ -1761,8 +1769,33 @@ class HaruMatchumApp {
     // 1:1 Messaging & Inbox Modals (v2.9.8)
     const btnOpenInbox = document.getElementById('btnOpenInbox');
     const btnCloseInbox = document.getElementById('btnCloseInbox');
+    const btnNavInbox = document.getElementById('btnNavInbox');
+    const btnInboxComposeTop = document.getElementById('btnInboxComposeTop');
+    const btnSendUserMsg = document.getElementById('btnSendUserMessage');
+
     if (btnOpenInbox) btnOpenInbox.addEventListener('click', () => this.openInboxModal('all'));
     if (btnCloseInbox) btnCloseInbox.addEventListener('click', () => this.closeInboxModal());
+    if (btnNavInbox) {
+      btnNavInbox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openInboxModal('all');
+      });
+    }
+    if (btnInboxComposeTop) {
+      btnInboxComposeTop.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeInboxModal();
+        this.openSendMessageModal();
+      });
+    }
+    if (btnSendUserMsg) {
+      btnSendUserMsg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = this.currentZoomTargetUser || this.messageTargetUser || null;
+        this.closeAvatarZoomModal();
+        this.openSendMessageModal(target);
+      });
+    }
 
     document.querySelectorAll('.inbox-tab').forEach(tab => {
       tab.addEventListener('click', (e) => {
@@ -4261,15 +4294,23 @@ class HaruMatchumApp {
       };
     }
 
+    this.currentZoomTargetUser = targetUser;
+
     const btnSendMsg = document.getElementById('btnSendUserMessage');
     const btnSendMsgText = document.getElementById('btnSendUserMessageText');
     if (btnSendMsg) {
+      btnSendMsg.style.display = 'flex';
       if (isMe) {
-        btnSendMsg.style.display = 'none';
+        if (btnSendMsgText) btnSendMsgText.textContent = '💌 친구들에게 응원 메시지 보내기';
+        btnSendMsg.onclick = (e) => {
+          e.stopPropagation();
+          this.closeAvatarZoomModal();
+          this.openSendMessageModal(null);
+        };
       } else {
-        btnSendMsg.style.display = 'flex';
         if (btnSendMsgText) btnSendMsgText.textContent = `${u.name}님에게 응원 메시지 보내기`;
-        btnSendMsg.onclick = () => {
+        btnSendMsg.onclick = (e) => {
+          e.stopPropagation();
           this.closeAvatarZoomModal();
           this.openSendMessageModal(u);
         };
@@ -4398,12 +4439,16 @@ class HaruMatchumApp {
           this.emojiPickerContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       }, 60);
-      sfx.tap();
+      try {
+        if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+      } catch (e) {}
     } else {
       this.emojiPickerContainer.style.display = 'none';
       if (this.btnToggleEmojiText) this.btnToggleEmojiText.textContent = '이모지 팩 열기 🔽';
       if (this.btnToggleEmojiPicker) this.btnToggleEmojiPicker.classList.remove('active');
-      sfx.tap();
+      try {
+        if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+      } catch (e) {}
     }
   }
 
@@ -4440,7 +4485,9 @@ class HaruMatchumApp {
       input.selectionStart = input.selectionEnd = start + emojiChar.length;
       input.focus();
       this.updateCharCount();
-      sfx.tap();
+      try {
+        if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+      } catch (e) {}
     } else {
       this.showToastNotice('최대 200자까지 작성할 수 있습니다.');
     }
@@ -4758,14 +4805,7 @@ class HaruMatchumApp {
     }
   }
 
-  async openSendMessageModal(targetUser) {
-    // Check login state: Guests must log in to send message
-    if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
-      this.showToastNotice('응원 메시지를 보내려면 3초 간편 로그인이 필요해요! 🔑');
-      this.openAuthModal('login');
-      return;
-    }
-
+  async openSendMessageModal(targetUser = null) {
     this.messageTargetUser = targetUser;
     this.clearAttachedPhoto();
 
@@ -4773,6 +4813,12 @@ class HaruMatchumApp {
     if (inputEl) {
       inputEl.value = '';
       this.updateCharCount();
+    }
+
+    // Toggle guest notice banner inside send message modal
+    const guestNotice = document.getElementById('msgGuestNoticeBanner');
+    if (guestNotice) {
+      guestNotice.style.display = (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) ? 'block' : 'none';
     }
 
     // Start with emoji picker cleanly closed for maximum screen space & instant send button visibility
@@ -4811,8 +4857,14 @@ class HaruMatchumApp {
     if (!this.cloudToken) {
       this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
     }
-    if (!this.cloudToken) {
-      this.showToastNotice('로그인이 만료되었습니다. 다시 로그인해 주세요! 🔑');
+    if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
+      this.pendingMessageToSend = {
+        recipients: [...this.selectedMessageRecipients],
+        content: content,
+        photoData: this.attachedPhotoData,
+        targetUser: this.messageTargetUser
+      };
+      this.showToastNotice('응원 메시지를 전송하려면 3초 간편 로그인이 필요해요! 🔑');
       this.openAuthModal('login');
       return;
     }
@@ -5081,15 +5133,55 @@ class HaruMatchumApp {
   }
 
   async openInboxModal(tab = 'all') {
+    if (this.modalInbox) this.modalInbox.classList.add('active');
+    sfx.combo();
+
     if (!this.cloudToken) {
-      this.showToastNotice('메시지 보관함을 확인하려면 간편 로그인이 필요해요! 🔑');
-      this.openAuthModal('login');
+      this.renderGuestInbox();
       return;
     }
 
-    if (this.modalInbox) this.modalInbox.classList.add('active');
-    sfx.combo();
     await this.fetchAndRenderInbox(tab);
+  }
+
+  renderGuestInbox() {
+    const container = document.getElementById('inboxListContainer');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="inbox-guest-card" style="text-align: center; padding: 26px 16px; background: linear-gradient(135deg, #fdf4ff, #ede9fe); border-radius: 18px; border: 1.5px solid #e9d5ff; margin: 10px 0;">
+        <div style="font-size: 2.4rem; margin-bottom: 8px;">📬✨</div>
+        <div style="font-weight: 800; font-size: 1.05rem; color: #581c87; margin-bottom: 6px;">나의 응원 메시지 보관함</div>
+        <div style="font-size: 0.84rem; color: #6b21a8; line-height: 1.5; margin-bottom: 16px;">
+          친구들과 따뜻한 응원 메시지와 귀여운 사진을 실시간으로 주고받아 보세요!<br>
+          간편 로그인으로 내 보관함과 친구 목록을 즉시 확인할 수 있습니다.
+        </div>
+        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+          <button id="btnGuestInboxLogin" type="button" class="main-action-btn" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 10px 18px; border-radius: 14px; font-weight: 800; font-size: 0.88rem; cursor: pointer; border: none; box-shadow: 0 4px 12px rgba(139,92,246,0.3);">
+            🔑 3초 간편 로그인하기
+          </button>
+          <button id="btnGuestInboxCompose" type="button" class="sub-action-btn" style="background: white; color: #7c3aed; border: 1.5px solid #c084fc; padding: 10px 18px; border-radius: 14px; font-weight: 800; font-size: 0.88rem; cursor: pointer;">
+            💌 친구에게 메시지 보내기
+          </button>
+        </div>
+      </div>
+    `;
+
+    const btnLogin = document.getElementById('btnGuestInboxLogin');
+    if (btnLogin) {
+      btnLogin.addEventListener('click', () => {
+        this.closeInboxModal();
+        this.openAuthModal('login');
+      });
+    }
+
+    const btnCompose = document.getElementById('btnGuestInboxCompose');
+    if (btnCompose) {
+      btnCompose.addEventListener('click', () => {
+        this.closeInboxModal();
+        this.openSendMessageModal();
+      });
+    }
   }
 
   closeInboxModal() {
@@ -5144,14 +5236,24 @@ class HaruMatchumApp {
 
     if (!filtered || filtered.length === 0) {
       container.innerHTML = `
-        <div class="inbox-empty-banner">
-          <div class="inbox-empty-icon">📬✨</div>
-          <div class="inbox-empty-text">
+        <div class="inbox-empty-banner" style="text-align: center; padding: 28px 16px;">
+          <div class="inbox-empty-icon" style="font-size: 2.2rem; margin-bottom: 8px;">📬✨</div>
+          <div class="inbox-empty-text" style="font-size: 0.88rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">
             ${tab === 'sent' ? '아직 보낸 메시지가 없습니다.' : '도착한 응원 메시지가 아직 없습니다.'}<br>
-            랭킹에서 친구들의 아바타를 누르고 첫 응원 메시지를 보내보세요! 💌
+            친구들에게 따뜻한 첫 응원 메시지를 보내보세요! 💌
           </div>
+          <button id="btnEmptyInboxCompose" class="main-action-btn" type="button" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 10px 18px; border-radius: 14px; font-weight: 800; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: none; box-shadow: 0 4px 12px rgba(236,72,153,0.3);">
+            💌 친구에게 응원 메시지 보내기
+          </button>
         </div>
       `;
+      const btnEmptyCompose = document.getElementById('btnEmptyInboxCompose');
+      if (btnEmptyCompose) {
+        btnEmptyCompose.addEventListener('click', () => {
+          this.closeInboxModal();
+          this.openSendMessageModal();
+        });
+      }
       return;
     }
 
@@ -5170,7 +5272,7 @@ class HaruMatchumApp {
       let photoSnippet = '';
       if (m.photoUrl && !m.photoExpired) {
         photoSnippet = `
-          <div class="inbox-card-photo-box" onclick="window.haruApp.openPhotoLightbox('${m.photoUrl}')">
+          <div class="inbox-card-photo-box" role="button" tabindex="0" title="사진 크게 보기">
             <img src="${m.photoUrl}" class="inbox-card-photo-thumb" alt="사진">
             <span class="inbox-card-photo-badge">📷 사진 보기 (24시간 만료)</span>
           </div>
@@ -5191,6 +5293,15 @@ class HaruMatchumApp {
           ${isReceived ? `<button type="button" class="inbox-card-reply-btn">💌 답신 보내기</button>` : ''}
         </div>
       `;
+
+      if (m.photoUrl && !m.photoExpired) {
+        const photoBox = card.querySelector('.inbox-card-photo-box');
+        if (photoBox) {
+          photoBox.addEventListener('click', () => {
+            this.openPhotoLightbox(m.photoUrl);
+          });
+        }
+      }
 
       if (isReceived) {
         const replyBtn = card.querySelector('.inbox-card-reply-btn');
@@ -5698,10 +5809,21 @@ class HaruMatchumApp {
           </div>
           <div class="rank-sub">${user.grade || '일반'} · 🔥 ${user.streak || 1}일 연속</div>
         </div>
+        ${!user.isMe ? `<button type="button" class="rank-msg-btn" title="${user.name}님에게 응원 메시지 보내기" aria-label="${user.name}님에게 응원 메시지 보내기">💌</button>` : ''}
         <div class="rank-score">
           ${scoreDisplay}
         </div>
       `;
+
+      if (!user.isMe) {
+        const msgBtn = item.querySelector('.rank-msg-btn');
+        if (msgBtn) {
+          msgBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openSendMessageModal(user);
+          });
+        }
+      }
 
       // Tap on rank avatar or user info opens high-res zoom gallery modal
       const avatarEl = item.querySelector('.rank-avatar');
@@ -6295,6 +6417,20 @@ class HaruMatchumApp {
       this.startMessagePolling();
       sfx.combo();
 
+      // Seamlessly deliver pending message if user was prompted to login while composing
+      if (this.pendingMessageToSend) {
+        const pending = this.pendingMessageToSend;
+        this.pendingMessageToSend = null;
+        setTimeout(() => {
+          this.selectedMessageRecipients = pending.recipients || [];
+          this.attachedPhotoData = pending.photoData;
+          this.messageTargetUser = pending.targetUser;
+          const input = document.getElementById('msgSendInput');
+          if (input) input.value = pending.content || '';
+          this.submitSendMessage();
+        }, 500);
+      }
+
       alert(`환영합니다, ${u.name || u.username}님! 🎉\n이제 PC, 스마트폰, 태블릿 어디서든 이 계정으로 접속하시면 내 기록이 유지됩니다.`);
     } catch (e) {
       alert('서버에 연결할 수 없습니다. 시놀로지 서버 상태를 확인해 주세요.');
@@ -6443,6 +6579,7 @@ class HaruMatchumApp {
 if (typeof document !== 'undefined' && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
     window.app = new HaruMatchumApp();
+    window.haruApp = window.app;
   });
 }
 
