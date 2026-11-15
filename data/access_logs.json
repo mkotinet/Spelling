@@ -1714,5 +1714,107 @@
       ],
       "hasPhoto": true
     }
+  },
+  {
+    "id": "log_1794747796360_z8e5y",
+    "timestamp": "2026-11-15T13:03:16.360Z",
+    "kstTime": "2026-11-15 13:03:16",
+    "username": "e2e_runner_1794747796344",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794747796362_gd2gv",
+    "timestamp": "2026-11-15T13:03:16.362Z",
+    "kstTime": "2026-11-15 13:03:16",
+    "username": "e2e_runner_1794747796344",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794747796363_cl8l4",
+    "timestamp": "2026-11-15T13:03:16.363Z",
+    "kstTime": "2026-11-15 13:03:16",
+    "username": "e2e_runner_1794747796344",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794748098707_gnei9",
+    "timestamp": "2026-11-15T13:08:18.707Z",
+    "kstTime": "2026-11-15 13:08:18",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "recipientCount": 1,
+      "recipients": [
+        "민지"
+      ],
+      "hasPhoto": false
+    }
+  },
+  {
+    "id": "log_1794748098710_wmhai",
+    "timestamp": "2026-11-15T13:08:18.710Z",
+    "kstTime": "2026-11-15 13:08:18",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "recipientCount": 2,
+      "recipients": [
+        "민지",
+        "미니미니"
+      ],
+      "hasPhoto": false
+    }
+  },
+  {
+    "id": "log_1794748098712_p5wrf",
+    "timestamp": "2026-11-15T13:08:18.712Z",
+    "kstTime": "2026-11-15 13:08:18",
+    "username": "맞춤요정",
+    "action": "UPLOAD_PHOTO",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "fileName": "photo_1794748098711_97b2642f75ce.png",
+      "size": 70
+    }
+  },
+  {
+    "id": "log_1794748098713_1n6u4",
+    "timestamp": "2026-11-15T13:08:18.713Z",
+    "kstTime": "2026-11-15 13:08:18",
+    "username": "맞춤요정",
+    "action": "SEND_MESSAGE",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "recipientCount": 2,
+      "recipients": [
+        "민지",
+        "단민러브"
+      ],
+      "hasPhoto": true
+    }
   }
 ]

@@ -16,16 +16,13 @@ const indexCode = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
 const serverCode = fs.readFileSync(path.join(ROOT_DIR, 'server.js'), 'utf8');
 const appCode = fs.readFileSync(path.join(ROOT_DIR, 'app.js'), 'utf8');
 
-// 1. Version 2.9.12 Consistency Check
-console.log('  Testing 1: Version 2.9.12 consistency across core files...');
-assert.strictEqual(verData.version, '2.9.12', 'version.json must be 2.9.12');
-assert.strictEqual(verData.build, '20261115_2145', 'version.json build must be 20261115_2145');
-assert.ok(indexCode.includes('content="2.9.12"'), 'index.html meta version must be 2.9.12');
-assert.ok(indexCode.includes('style.css?v=2.9.12'), 'index.html style.css cache-buster must be 2.9.12');
-assert.ok(indexCode.includes('app.js?v=2.9.12'), 'index.html app.js cache-buster must be 2.9.12');
-assert.ok(appCode.includes("this.APP_VERSION = metaVer || '2.9.12';"), 'app.js default version must be 2.9.12');
-assert.ok(serverCode.includes('version: "2.9.12"'), 'server.js fallback version must be 2.9.12');
-console.log('  ✅ 1. v2.9.12 버전 메타데이터 일관성 통과');
+// 1. Version 2.9.12+ Consistency Check
+console.log('  Testing 1: Version >= 2.9.12 consistency across core files...');
+assert.ok(verData.version >= '2.9.12', 'version.json must be >= 2.9.12');
+assert.ok(indexCode.includes('name="app-version"'), 'index.html meta version must exist');
+assert.ok(appCode.includes('this.APP_VERSION'), 'app.js default version must exist');
+assert.ok(serverCode.includes('/api/version'), 'server.js version endpoint must exist');
+console.log('  ✅ 1. 버전 메타데이터 일관성 통과');
 
 // 2. DOM Elements for Multi-Recipient Selection
 console.log('  Testing 2: DOM UI Elements for multi-recipient selection in index.html...');

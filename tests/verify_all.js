@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.12">'), 'index.html must include meta app-version 2.9.12');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.13">'), 'index.html must include meta app-version 2.9.13');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.12', 'GET /api/version version must be 2.9.12');
+    assert.strictEqual(verRes.data.version, '2.9.13', 'GET /api/version version must be 2.9.13');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -379,6 +379,15 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('toggleSelectAllRecipients'), 'app.js must implement toggleSelectAllRecipients');
     assert(appCode.includes('updateRecipientSelectionUI'), 'app.js must implement updateRecipientSelectionUI');
     assert(serverCode.includes('Array.isArray(body.recipients)'), 'server.js must support array of recipients');
+
+    // 33. v2.9.13 Emoji Picker Close/Toggle & Sticky Send Button Engine
+    assert(indexHtml.includes('id="btnToggleEmojiPicker"'), 'index.html must include btnToggleEmojiPicker');
+    assert(indexHtml.includes('id="btnCloseEmojiPicker"'), 'index.html must include btnCloseEmojiPicker');
+    assert(indexHtml.includes('id="messageModalScrollBody"'), 'index.html must include messageModalScrollBody');
+    assert(indexHtml.includes('class="message-modal-footer"'), 'index.html must include message-modal-footer');
+    assert(appCode.includes('toggleEmojiPicker'), 'app.js must implement toggleEmojiPicker');
+    assert(styleCode.includes('.message-modal-footer {'), 'style.css must define .message-modal-footer');
+    assert(styleCode.includes('.btn-close-emoji-picker'), 'style.css must define .btn-close-emoji-picker');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

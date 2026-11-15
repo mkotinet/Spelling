@@ -3513,6 +3513,7 @@ body.theme-english .quiz-sentence .quiz-blank {
   border-radius: 16px;
   padding: 10px;
   margin-bottom: 6px;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .emoji-picker-header {
@@ -3526,6 +3527,25 @@ body.theme-english .quiz-sentence .quiz-blank {
   font-size: 0.8rem;
   font-weight: 800;
   color: #475569;
+}
+
+.btn-close-emoji-picker {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.btn-close-emoji-picker:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
 }
 
 .emoji-status-badge {
@@ -3817,6 +3837,34 @@ body.theme-english .quiz-sentence .quiz-blank {
   background: #fce7f3;
   border-color: #ec4899;
   transform: translateY(-1px);
+}
+
+.btn-toggle-emoji {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #eff6ff;
+  border: 1.5px dashed #60a5fa;
+  color: #2563eb;
+  padding: 6px 11px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-toggle-emoji:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.btn-toggle-emoji.active {
+  background: linear-gradient(135deg, #dbeafe, #fce7f3);
+  border-color: #ec4899;
+  color: #db2777;
 }
 
 .photo-notice-tag {
@@ -4123,5 +4171,70 @@ body.theme-english .quiz-sentence .quiz-blank {
   border-color: #ec4899;
   color: #ffffff;
 }
+
+/* ============================================================
+   Message Modal Sticky Footer & Independent Scroll Body (v2.9.13)
+   ============================================================ */
+.message-modal-box {
+  max-width: 440px !important;
+  width: 100% !important;
+  max-height: 86vh !important;
+  max-height: 86dvh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 18px 20px 14px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.message-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+}
+
+.message-modal-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.message-modal-body::-webkit-scrollbar-thumb {
+  background: #fbcfe8;
+  border-radius: 10px;
+}
+
+.message-modal-footer {
+  display: flex;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1.5px solid #f1f5f9;
+  background: #ffffff;
+  flex-shrink: 0;
+  z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .message-modal-box {
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    padding: 14px 14px 10px !important;
+  }
+  .message-modal-body {
+    gap: 8px;
+  }
+  .emoji-grid {
+    max-height: 105px;
+  }
+}
+
 
 

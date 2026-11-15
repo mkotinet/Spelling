@@ -1442,7 +1442,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.12';
+    this.APP_VERSION = metaVer || '2.9.13';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1490,6 +1490,12 @@ class HaruMatchumApp {
     this.modalIncomingMessage = document.getElementById('modalIncomingMessage');
     this.modalInbox = document.getElementById('modalInbox');
     this.modalPhotoLightbox = document.getElementById('modalPhotoLightbox');
+    this.emojiPickerContainer = document.getElementById('emojiPickerContainer');
+    this.btnToggleEmojiPicker = document.getElementById('btnToggleEmojiPicker');
+    this.btnToggleEmojiText = document.getElementById('btnToggleEmojiText');
+    this.btnCloseEmojiPicker = document.getElementById('btnCloseEmojiPicker');
+    this.messageModalScrollBody = document.getElementById('messageModalScrollBody');
+    this.isEmojiPickerOpen = false;
     this.attachedPhotoData = null;
     this.selectedMessageRecipients = [];
     this.currentAccCategory = 'pin';
@@ -1755,6 +1761,16 @@ class HaruMatchumApp {
         this.renderEmojiPicker(e.currentTarget.dataset.category || 'smileys');
       });
     });
+
+    // Emoji Picker Toggle & Close Actions (v2.9.13)
+    const btnToggleEmoji = document.getElementById('btnToggleEmojiPicker');
+    const btnCloseEmoji = document.getElementById('btnCloseEmojiPicker');
+    if (btnToggleEmoji) {
+      btnToggleEmoji.addEventListener('click', () => this.toggleEmojiPicker());
+    }
+    if (btnCloseEmoji) {
+      btnCloseEmoji.addEventListener('click', () => this.toggleEmojiPicker(false));
+    }
 
     // Realtime incoming message modal actions
     const btnCloseIncoming = document.getElementById('btnCloseIncomingMessage');
@@ -4315,6 +4331,41 @@ class HaruMatchumApp {
     return fallback;
   }
 
+  toggleEmojiPicker(forceState) {
+    if (!this.emojiPickerContainer) {
+      this.emojiPickerContainer = document.getElementById('emojiPickerContainer');
+    }
+    if (!this.btnToggleEmojiPicker) {
+      this.btnToggleEmojiPicker = document.getElementById('btnToggleEmojiPicker');
+    }
+    if (!this.btnToggleEmojiText) {
+      this.btnToggleEmojiText = document.getElementById('btnToggleEmojiText');
+    }
+    if (!this.emojiPickerContainer) return;
+
+    const isCurrentlyClosed = this.emojiPickerContainer.style.display === 'none' || !this.emojiPickerContainer.style.display;
+    const shouldOpen = (forceState !== undefined) ? forceState : isCurrentlyClosed;
+    this.isEmojiPickerOpen = shouldOpen;
+
+    if (shouldOpen) {
+      this.emojiPickerContainer.style.display = 'block';
+      if (this.btnToggleEmojiText) this.btnToggleEmojiText.textContent = '이모지 닫기 🔼';
+      if (this.btnToggleEmojiPicker) this.btnToggleEmojiPicker.classList.add('active');
+      this.renderEmojiPicker(this.currentEmojiCategory || 'smileys');
+      setTimeout(() => {
+        if (this.emojiPickerContainer) {
+          this.emojiPickerContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 60);
+      sfx.tap();
+    } else {
+      this.emojiPickerContainer.style.display = 'none';
+      if (this.btnToggleEmojiText) this.btnToggleEmojiText.textContent = '이모지 팩 열기 🔽';
+      if (this.btnToggleEmojiPicker) this.btnToggleEmojiPicker.classList.remove('active');
+      sfx.tap();
+    }
+  }
+
   async renderEmojiPicker(category = 'smileys') {
     this.currentEmojiCategory = category;
     const grid = document.getElementById('emojiPickerGrid');
@@ -4683,7 +4734,9 @@ class HaruMatchumApp {
       this.updateCharCount();
     }
 
-    this.renderEmojiPicker(this.currentEmojiCategory || 'smileys');
+    // Start with emoji picker cleanly closed for maximum screen space & instant send button visibility
+    this.toggleEmojiPicker(false);
+    if (this.messageModalScrollBody) this.messageModalScrollBody.scrollTop = 0;
 
     // Render multi-recipient selector
     await this.renderRecipientSelector(targetUser);
@@ -4695,6 +4748,7 @@ class HaruMatchumApp {
   closeSendMessageModal() {
     if (this.modalSendMessage) this.modalSendMessage.classList.remove('active');
     this.clearAttachedPhoto();
+    this.toggleEmojiPicker(false);
   }
 
   async submitSendMessage() {
@@ -5121,7 +5175,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.12';
+    let currentVer = this.APP_VERSION || '2.9.13';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -5149,7 +5203,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.12';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.13';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -5169,7 +5223,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.12';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.13';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -6279,7 +6333,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.12';
+      const clientVersion = this.APP_VERSION || '2.9.13';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
