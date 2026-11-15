@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.6.2">
-  <link rel="stylesheet" href="style.css?v=2.6.2">
+  <meta name="app-version" content="2.7.0">
+  <link rel="stylesheet" href="style.css?v=2.7.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -51,7 +51,7 @@
     <!-- User Mini Profile Bar -->
     <div id="userBar" class="user-bar" title="클릭하여 프로필을 변경하세요">
       <div class="user-avatar-tag">
-        <div id="userAvatar" class="avatar-badge">🌸</div>
+        <div id="userAvatar" class="avatar-badge clickable" title="내 아바타 크게 보기 & 드레스룸 열기 ✨" style="cursor: pointer;">🌸</div>
         <div class="user-details">
           <div style="display: flex; align-items: center; gap: 6px;">
             <span id="userName" class="uname">맞춤요정</span>
@@ -81,6 +81,7 @@
       <button class="nav-tab active" data-view="home">🏠 퀴즈 홈</button>
       <button class="nav-tab" data-view="leaderboard">🏆 회원 랭킹</button>
       <button class="nav-tab" data-view="badges">🎀 스티커북</button>
+      <button id="btnOpenShop" class="nav-tab" type="button" style="color: #e11d48; font-weight: 800;">🏪 상점</button>
     </nav>
 
     <!-- ============================================================
@@ -177,7 +178,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span class="version-badge">v2.6.2</span>
+          <span class="version-badge">v2.7.0</span>
         </button>
       </div>
 
@@ -193,6 +194,7 @@
             <span id="quizRoundBadge" class="quiz-round-pill">라운드 1</span>
             <span id="quizShieldBadge" class="quiz-shield-pill" style="display: none; background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; border: 1px solid #bae6fd;">🛡️ 0</span>
             <span id="quizCategory" class="quiz-category-pill">어휘·표기 · 기초</span>
+            <button id="btnQuizShopQuick" type="button" title="아이템 즉시 구매 상점 열기" style="border: none; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 14px; padding: 3px 8px; font-size: 0.76rem; font-weight: 800; color: #e11d48; cursor: pointer;">🏪 상점</button>
           </div>
           <span id="quizCombo" class="quiz-combo-pill" style="display: none;">🔥 2 콤보!</span>
         </div>
@@ -872,11 +874,88 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       MODAL 9: POINT SHOP & DRESSING ROOM
+       ============================================================ -->
+  <div id="modalShop" class="modal-overlay">
+    <div class="modal-box" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🏪 하루맞춤 포인트 상점</h3>
+        <button id="btnCloseShop" class="btn-close-modal" type="button" aria-label="상점 닫기">✕</button>
+      </div>
+
+      <div class="shop-user-points-badge">
+        <span>💰 내 보유 포인트</span>
+        <span id="shopUserPoints">0 P</span>
+      </div>
+
+      <div class="shop-tabs">
+        <button id="tabShopItems" class="shop-tab-btn active" type="button">🛍️ 아이템 상점</button>
+        <button id="tabShopAccessories" class="shop-tab-btn" type="button">👗 아바타 드레스룸</button>
+      </div>
+
+      <!-- Tab Content 1: Items -->
+      <div id="shopItemsArea">
+        <div id="shopItemsGrid" class="shop-grid">
+          <!-- Dynamically populated items -->
+        </div>
+      </div>
+
+      <!-- Tab Content 2: Accessories -->
+      <div id="shopAccessoriesArea" style="display: none;">
+        <!-- Composite Avatar Live Preview in Shop -->
+        <div class="avatar-zoom-preview-box" style="padding: 16px; margin-bottom: 12px;">
+          <div id="shopAvatarPreview" class="composite-avatar avatar-zoom-large" style="width: 100px; height: 100px; font-size: 68px; margin-bottom: 6px;"></div>
+          <div style="font-size: 0.8rem; color: var(--text-sub);">실시간 착용 미리보기</div>
+        </div>
+
+        <div class="acc-category-chips">
+          <button class="acc-chip active" data-category="pin" type="button">🎀 머리핀</button>
+          <button class="acc-chip" data-category="glasses" type="button">👓 안경</button>
+          <button class="acc-chip" data-category="hat" type="button">👑 모자</button>
+          <button class="acc-chip" data-category="blush" type="button">💄 볼터치</button>
+          <button class="acc-chip" data-category="aura" type="button">🪽 배경효과</button>
+        </div>
+
+        <div id="shopAccGrid" class="shop-grid">
+          <!-- Dynamically populated accessories -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 10: AVATAR ZOOM & HIGH-RES VIEWER
+       ============================================================ -->
+  <div id="modalAvatarZoom" class="modal-overlay">
+    <div class="modal-box" style="max-width: 380px; text-align: center;">
+      <div class="modal-header">
+        <h3 class="modal-title">✨ 내 아바타 갤러리</h3>
+        <button id="btnCloseAvatarZoom" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="avatar-zoom-preview-box">
+        <div id="avatarZoomDisplay" class="composite-avatar avatar-zoom-large"></div>
+        <div id="avatarZoomName" style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 2px;">맞춤요정</div>
+        <div id="avatarZoomGrade" style="font-size: 0.82rem; color: var(--text-sub); margin-bottom: 8px;">중학교 2학년</div>
+        <div id="avatarZoomEquippedList" style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; font-size: 0.75rem; color: #4338ca;">
+          <!-- Active equipped items tags -->
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button id="btnZoomToShop" class="main-action-btn" type="button" style="flex: 1; background: var(--gradient-primary); color: white; padding: 12px; border-radius: 16px; font-weight: 800; font-size: 0.92rem;">
+          👗 악세사리 꾸미기 & 상점
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="questions.js?v=2.6.2"></script>
-  <script src="idiom_questions.js?v=2.6.2"></script>
-  <script src="hanja_questions.js?v=2.6.2"></script>
-  <script src="english_questions.js?v=2.6.2"></script>
-  <script src="app.js?v=2.6.2"></script>
+  <script src="questions.js?v=2.7.0"></script>
+  <script src="idiom_questions.js?v=2.7.0"></script>
+  <script src="hanja_questions.js?v=2.7.0"></script>
+  <script src="english_questions.js?v=2.7.0"></script>
+  <script src="app.js?v=2.7.0"></script>
 </body>
 </html>

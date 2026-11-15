@@ -151,21 +151,18 @@ if (typeof window !== 'undefined') {
   window.sfx = sfx;
 }
 
-// Global Mobile/Desktop AudioContext unlocker on first user interaction
+// Global Mobile/Desktop AudioContext & SpeechSynthesis unlocker on user interaction
 if (typeof window !== 'undefined') {
   const unlockAudioListener = () => {
     sfx.unlockAudio();
-    ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
-      window.removeEventListener(evt, unlockAudioListener, true);
-      if (typeof document !== 'undefined') {
-        document.removeEventListener(evt, unlockAudioListener, true);
-      }
-    });
+    if (window.englishVoice) {
+      window.englishVoice.warmup();
+    }
   };
   ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
-    window.addEventListener(evt, unlockAudioListener, { once: true, capture: true });
+    window.addEventListener(evt, unlockAudioListener, { capture: true, passive: true });
     if (typeof document !== 'undefined') {
-      document.addEventListener(evt, unlockAudioListener, { once: true, capture: true });
+      document.addEventListener(evt, unlockAudioListener, { capture: true, passive: true });
     }
   });
 }
@@ -173,6 +170,7 @@ if (typeof window !== 'undefined') {
 // ============================================================
 // English Speech Synthesis Engine (Native Web Speech API)
 // Provides crystal-clear native US/EN pronunciation for English questions & answers
+// Optimized for Mobile Safari (iOS), Android Chrome & Desktop
 // ============================================================
 class EnglishSpeechEngine {
   constructor() {
@@ -181,6 +179,7 @@ class EnglishSpeechEngine {
     this.rate = 0.88; // Optimized clear educational playback speed
     this.pitch = 1.0;
     this.isPlaying = false;
+    this.isWarmedUp = false;
     this.activeBtn = null;
     this.initVoices();
     if (this.synth) {
@@ -190,6 +189,21 @@ class EnglishSpeechEngine {
         this.synth.onvoiceschanged = () => this.initVoices();
       }
     }
+  }
+
+  warmup() {
+    if (!this.synth || this.isWarmedUp) return;
+    try {
+      if (this.synth.paused) {
+        this.synth.resume();
+      }
+      // Micro silent utterance to unlock iOS Webkit Speech Engine
+      const silentUtter = new SpeechSynthesisUtterance(' ');
+      silentUtter.volume = 0.01;
+      silentUtter.rate = 2.0;
+      this.synth.speak(silentUtter);
+      this.isWarmedUp = true;
+    } catch (e) {}
   }
 
   initVoices() {
@@ -215,7 +229,15 @@ class EnglishSpeechEngine {
   speak(text, btnElement = null, onComplete = null) {
     if (!this.synth || !text) return;
     try {
-      this.stop();
+      // Ensure iOS Webkit is awake and not in paused deadlock
+      if (this.synth.paused) {
+        this.synth.resume();
+      }
+
+      // If already speaking, cancel gracefully
+      if (this.synth.speaking || this.isPlaying) {
+        this.synth.cancel();
+      }
 
       // Clean bracket notations: [ (     ) ] or [ ( ? ) ] -> "blank" for audio natural flow
       let clean = String(text)
@@ -232,6 +254,7 @@ class EnglishSpeechEngine {
       utter.lang = 'en-US';
       utter.rate = this.rate;
       utter.pitch = this.pitch;
+      utter.volume = 1.0;
       if (this.voice) utter.voice = this.voice;
 
       this.isPlaying = true;
@@ -252,12 +275,28 @@ class EnglishSpeechEngine {
       utter.onend = finishHandler;
       utter.onerror = finishHandler;
 
-      this.synth.speak(utter);
+      // Slight micro-tick to let cancel event settle on iOS Safari
+      setTimeout(() => {
+        try {
+          if (this.synth.paused) this.synth.resume();
+          this.synth.speak(utter);
+        } catch (err) {
+          finishHandler();
+        }
+      }, 16);
     } catch (e) {
       this.isPlaying = false;
       if (btnElement) btnElement.classList.remove('speaking-animation');
       console.warn('English Speech error:', e);
     }
+  }
+
+  speakAnswer(text, btnElement = null) {
+    this.warmup();
+    // Prompt playback of correct answer pronunciation on mobile & desktop
+    setTimeout(() => {
+      this.speak(text, btnElement);
+    }, 120);
   }
 
   stop() {
@@ -359,7 +398,84 @@ class ConfettiManager {
 }
 
 // ============================================================
-// 3. User & Storage Manager & Date Utilities
+// 3. Game Economy: Item Prices & Avatar Accessories Definitions
+// ============================================================
+const ITEM_PRICES = {
+  hint: { key: 'hint', name: '돋보기 힌트', emoji: '🔍', cost: 30, desc: '정답과 어원 해설 힌트 열람' },
+  eraser5050: { key: 'eraser5050', name: '50:50 요술봉', emoji: '🪄', cost: 50, desc: '오답 2개 즉시 지우기' },
+  timemachine: { key: 'timemachine', name: '타임머신 시계', emoji: '⌛', cost: 60, desc: '방금 고른 오답 취소 및 시간 되돌리기' },
+  magnet: { key: 'magnet', name: '콤보 자석', emoji: '🧲', cost: 70, desc: '연속 정답 시 콤보 점수 4배 흡수' },
+  heart: { key: 'heart', name: '하트 수호', emoji: '💖', cost: 80, desc: '틀려도 1회 오답 무효화 찬스' },
+  booster2x: { key: 'booster2x', name: '2배 로켓 부스터', emoji: '🚀', cost: 100, desc: '라운드 클리어 점수 2배 적립' },
+  clover: { key: 'clover', name: '행운의 클로버', emoji: '🍀', cost: 120, desc: '문제를 즉시 정답으로 통과 (프리패스)' },
+  shield: { key: 'shield', name: '수호 방패', emoji: '🛡️', cost: 150, max: 2, desc: '라운드 실패 시 방어하여 통과 (최대 2개)' }
+};
+
+const ACCESSORY_DEFINITIONS = {
+  pin: [
+    { id: 'pin_ribbon', name: '핑크 리본핀', emoji: '🎀', cost: 50, desc: '사랑스러운 핑크색 헤어 리본' },
+    { id: 'pin_flower', name: '벚꽃 머리핀', emoji: '🌸', cost: 60, desc: '은은한 봄향기 벚꽃 꽃잎 핀' },
+    { id: 'pin_star', name: '반짝이 별핀', emoji: '✨', cost: 70, desc: '밤하늘처럼 빛나는 별빛 헤어핀' },
+    { id: 'pin_clover', name: '행운의 클로버핀', emoji: '🍀', cost: 70, desc: '행운을 가져다주는 네잎클로버 핀' },
+    { id: 'pin_heart', name: '하트 뿅뿅핀', emoji: '💖', cost: 80, desc: '두근두근 하트 머리핀' }
+  ],
+  glasses: [
+    { id: 'glasses_sun', name: '힙스터 선글라스', emoji: '🕶️', cost: 90, desc: '자신감 넘치는 멋쟁이 블랙 선글라스' },
+    { id: 'glasses_nerd', name: '똑똑이 뿔테안경', emoji: '👓', cost: 70, desc: '맞춤법 만점자의 지적인 뿔테안경' },
+    { id: 'glasses_goggle', name: '사이버 고글', emoji: '🥽', cost: 90, desc: '미래지향적 네온 사이버 고글' },
+    { id: 'glasses_monocle', name: '탐정 모노클', emoji: '🧐', cost: 100, desc: '오답을 매의 눈으로 찾는 외안경' }
+  ],
+  hat: [
+    { id: 'hat_crown', name: '황금 왕관', emoji: '👑', cost: 150, desc: '랭킹 1위 마스터를 위한 눈부신 왕관' },
+    { id: 'hat_grad', name: '학사모', emoji: '🎓', cost: 100, desc: '국어 국문학을 마스터한 지혜의 학사모' },
+    { id: 'hat_party', name: '파티 꼬깔모자', emoji: '🎉', cost: 80, desc: '매일매일 즐거운 축제 꼬깔모자' },
+    { id: 'hat_witch', name: '마법사 고깔모자', emoji: '🧙', cost: 120, desc: '신비로운 마법의 마녀/마법사 모자' },
+    { id: 'hat_helmet', name: '안전 헬멧', emoji: '⛑️', cost: 90, desc: '오답으로부터 뇌를 보호하는 방탄 헬멧' }
+  ],
+  blush: [
+    { id: 'blush_pink', name: '수줍은 볼터치', emoji: '😊', cost: 60, desc: '발그레 붉어진 귀여운 분홍 볼터치' },
+    { id: 'blush_band', name: '깜찍이 반창고', emoji: '🩹', cost: 70, desc: '코나 볼에 붙이는 힙한 스티커 반창고' },
+    { id: 'blush_bubble', name: '비눗방울 방울방울', emoji: '🫧', cost: 80, desc: '얼굴 주위를 맴도는 영롱한 거품' },
+    { id: 'blush_lipstick', name: '뽀뽀 립마크', emoji: '💄', cost: 80, desc: '사랑을 담은 레드 립스틱 마크' }
+  ],
+  aura: [
+    { id: 'aura_wings', name: '천사의 날개', emoji: '🪽', cost: 200, desc: '등 뒤에서 활짝 펼쳐지는 순백의 날개' },
+    { id: 'aura_cape', name: '영웅의 슈퍼망토', emoji: '🦸', cost: 180, desc: '정의의 사도를 상징하는 펄럭이는 망토' },
+    { id: 'aura_fire', name: '불꽃 투지 아우라', emoji: '🔥', cost: 220, desc: '온몸을 감싸는 활활 타오르는 열정 불꽃' },
+    { id: 'aura_rainbow', name: '환상의 무지개', emoji: '🌈', cost: 190, desc: '머리 위에 떠오르는 찬란한 일곱빛깔 무지개' }
+  ]
+};
+
+function findAccessoryById(id) {
+  for (const cat of Object.keys(ACCESSORY_DEFINITIONS)) {
+    const found = ACCESSORY_DEFINITIONS[cat].find(item => item.id === id);
+    if (found) return { ...found, category: cat };
+  }
+  return null;
+}
+
+function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48, clickable = false) {
+  const acc = accessories || {};
+  const hatItem = acc.hat ? findAccessoryById(acc.hat) : null;
+  const glassesItem = acc.glasses ? findAccessoryById(acc.glasses) : null;
+  const pinItem = acc.pin ? findAccessoryById(acc.pin) : null;
+  const blushItem = acc.blush ? findAccessoryById(acc.blush) : null;
+  const auraItem = acc.aura ? findAccessoryById(acc.aura) : null;
+
+  return `
+    <div class="composite-avatar ${clickable ? 'clickable' : ''}" style="width: ${size}px; height: ${size}px; font-size: ${Math.round(size * 0.68)}px;">
+      ${auraItem ? `<span class="acc-layer acc-aura">${auraItem.emoji}</span>` : ''}
+      <span class="acc-base-face">${baseAvatar || '🌸'}</span>
+      ${hatItem ? `<span class="acc-layer acc-hat">${hatItem.emoji}</span>` : ''}
+      ${glassesItem ? `<span class="acc-layer acc-glasses">${glassesItem.emoji}</span>` : ''}
+      ${pinItem ? `<span class="acc-layer acc-pin">${pinItem.emoji}</span>` : ''}
+      ${blushItem ? `<span class="acc-layer acc-blush">${blushItem.emoji}</span>` : ''}
+    </div>
+  `;
+}
+
+// ============================================================
+// 4. User & Storage Manager & Date Utilities
 // ============================================================
 const STORAGE_KEY = 'haru_matchum_data_v1';
 
@@ -395,7 +511,9 @@ class DataManager {
         totalCorrect: 9,
         lastActiveDate: today,
         completedDates: [today],
-        solvedQuestionMap: { spelling: [], idiom: [], hanja: [], english: [] }
+        solvedQuestionMap: { spelling: [], idiom: [], hanja: [], english: [] },
+        avatarAccessories: { pin: null, glasses: null, hat: null, blush: null, aura: null },
+        inventoryAccessories: []
       },
       apiKey: 'C0E0448602CD3B859FDDD29BBD84289C',
       soundEnabled: true,
@@ -506,7 +624,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.6.2';
+    this.APP_VERSION = metaVer || '2.7.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -542,6 +660,9 @@ class HaruMatchumApp {
     this.modalAuth = document.getElementById('modalAuth');
     this.modalAdminLogs = document.getElementById('modalAdminLogs');
     this.modalGameGuide = document.getElementById('modalGameGuide');
+    this.modalShop = document.getElementById('modalShop');
+    this.modalAvatarZoom = document.getElementById('modalAvatarZoom');
+    this.currentAccCategory = 'pin';
 
     // Mascot
     this.mascotBubble = document.getElementById('mascotSpeech');
@@ -687,6 +808,47 @@ class HaruMatchumApp {
     const btnCloseGuide = document.getElementById('btnCloseGameGuideModal');
     if (btnOpenGuide) btnOpenGuide.addEventListener('click', () => this.openGameGuideModal());
     if (btnCloseGuide) btnCloseGuide.addEventListener('click', () => this.closeGameGuideModal());
+
+    // Point Shop & Dressing Room modal
+    const btnOpenShop = document.getElementById('btnOpenShop');
+    const btnQuizShopQuick = document.getElementById('btnQuizShopQuick');
+    const btnCloseShop = document.getElementById('btnCloseShop');
+    if (btnOpenShop) btnOpenShop.addEventListener('click', () => this.openShopModal());
+    if (btnQuizShopQuick) btnQuizShopQuick.addEventListener('click', () => this.openShopModal('items'));
+    if (btnCloseShop) btnCloseShop.addEventListener('click', () => this.closeShopModal());
+
+    const tabShopItems = document.getElementById('tabShopItems');
+    const tabShopAccessories = document.getElementById('tabShopAccessories');
+    if (tabShopItems) tabShopItems.addEventListener('click', () => this.switchShopTab('items'));
+    if (tabShopAccessories) tabShopAccessories.addEventListener('click', () => this.switchShopTab('accessories'));
+
+    // Avatar Zoom Modal
+    const btnCloseAvatarZoom = document.getElementById('btnCloseAvatarZoom');
+    const btnZoomToShop = document.getElementById('btnZoomToShop');
+    if (btnCloseAvatarZoom) btnCloseAvatarZoom.addEventListener('click', () => this.closeAvatarZoomModal());
+    if (btnZoomToShop) btnZoomToShop.addEventListener('click', () => {
+      this.closeAvatarZoomModal();
+      this.openShopModal('accessories');
+    });
+
+    // Dressing room category chips
+    document.querySelectorAll('.acc-chip').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        document.querySelectorAll('.acc-chip').forEach(c => c.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.currentAccCategory = e.currentTarget.dataset.category || 'pin';
+        this.renderShopAccessories();
+      });
+    });
+
+    // Main Avatar Click to Zoom
+    const userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl) {
+      userAvatarEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openAvatarZoomModal();
+      });
+    }
 
     // Game Items (7 Items)
     const btn5050 = document.getElementById('btnItem5050');
@@ -1023,7 +1185,10 @@ class HaruMatchumApp {
 
   renderUserProfile() {
     const u = this.data.currentUser;
-    document.getElementById('userAvatar').textContent = u.avatar;
+    const userAvatarEl = document.getElementById('userAvatar');
+    if (userAvatarEl) {
+      userAvatarEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 48, true);
+    }
     document.getElementById('userName').textContent = u.name;
     document.getElementById('userGrade').textContent = u.grade;
     document.getElementById('userStreak').textContent = u.streak + '일';
@@ -1459,6 +1624,12 @@ class HaruMatchumApp {
   handleOptionSelect(selectedIndex, clickedBtn) {
     if (this.selectedOption !== null) return; // already answered
 
+    // Synchronously unlock AudioContext & SpeechSynthesis inside user gesture token (Essential for Mobile/iOS)
+    sfx.unlockAudio();
+    if (typeof englishVoice !== 'undefined') {
+      englishVoice.warmup();
+    }
+
     const q = this.activeQuestions[this.currentIndex];
     const isCorrect = selectedIndex === q.answerIndex;
 
@@ -1657,11 +1828,9 @@ class HaruMatchumApp {
           };
         }
 
-        // Auto-play correct answer pronunciation when answered correctly (gentle 350ms delay after sfx)
+        // Auto-play correct answer pronunciation when answered correctly (gentle delay after sfx)
         if (isCorrect) {
-          setTimeout(() => {
-            englishVoice.speak(q.englishWord || targetWord, btnExpVoiceWord);
-          }, 360);
+          englishVoice.speakAnswer(q.englishWord || targetWord, btnExpVoiceWord);
         }
       } else {
         expEnglishArea.style.display = 'none';
@@ -2261,36 +2430,64 @@ class HaruMatchumApp {
     const isAnsweredWrong = isAnswered && q && this.selectedOption !== q.answerIndex;
 
     if (btn5050) {
-      btn5050.disabled = this.items.eraser5050 <= 0 || isAnswered;
-      if (badge5050) badge5050.textContent = this.items.eraser5050;
+      btn5050.disabled = isAnswered;
+      if (badge5050) {
+        badge5050.textContent = this.items.eraser5050;
+        badge5050.style.background = this.items.eraser5050 <= 0 ? '#ffedd5' : '';
+        badge5050.style.color = this.items.eraser5050 <= 0 ? '#c2410c' : '';
+      }
     }
     if (btnHeart) {
-      btnHeart.disabled = this.items.heart <= 0 || isAnswered;
-      if (badgeHeart) badgeHeart.textContent = this.items.heart;
+      btnHeart.disabled = isAnswered;
+      if (badgeHeart) {
+        badgeHeart.textContent = this.items.heart;
+        badgeHeart.style.background = this.items.heart <= 0 ? '#ffedd5' : '';
+        badgeHeart.style.color = this.items.heart <= 0 ? '#c2410c' : '';
+      }
       if (this.activeItemHeart) btnHeart.classList.add('active');
       else btnHeart.classList.remove('active');
     }
     if (btnDouble) {
-      btnDouble.disabled = this.items.booster2x <= 0 || this.pointMultiplier === 2;
-      if (badgeDouble) badgeDouble.textContent = this.items.booster2x;
+      btnDouble.disabled = this.pointMultiplier === 2;
+      if (badgeDouble) {
+        badgeDouble.textContent = this.items.booster2x;
+        badgeDouble.style.background = this.items.booster2x <= 0 ? '#ffedd5' : '';
+        badgeDouble.style.color = this.items.booster2x <= 0 ? '#c2410c' : '';
+      }
       if (this.pointMultiplier === 2) btnDouble.classList.add('active');
       else btnDouble.classList.remove('active');
     }
     if (btnHint) {
-      btnHint.disabled = this.items.hint <= 0 || isAnswered;
-      if (badgeHint) badgeHint.textContent = this.items.hint;
+      btnHint.disabled = isAnswered;
+      if (badgeHint) {
+        badgeHint.textContent = this.items.hint;
+        badgeHint.style.background = this.items.hint <= 0 ? '#ffedd5' : '';
+        badgeHint.style.color = this.items.hint <= 0 ? '#c2410c' : '';
+      }
     }
     if (btnClover) {
-      btnClover.disabled = this.items.clover <= 0 || isAnswered;
-      if (badgeClover) badgeClover.textContent = this.items.clover;
+      btnClover.disabled = isAnswered;
+      if (badgeClover) {
+        badgeClover.textContent = this.items.clover;
+        badgeClover.style.background = this.items.clover <= 0 ? '#ffedd5' : '';
+        badgeClover.style.color = this.items.clover <= 0 ? '#c2410c' : '';
+      }
     }
     if (btnTimemachine) {
-      btnTimemachine.disabled = this.items.timemachine <= 0 || !isAnsweredWrong;
-      if (badgeTimemachine) badgeTimemachine.textContent = this.items.timemachine;
+      btnTimemachine.disabled = !isAnsweredWrong;
+      if (badgeTimemachine) {
+        badgeTimemachine.textContent = this.items.timemachine;
+        badgeTimemachine.style.background = this.items.timemachine <= 0 ? '#ffedd5' : '';
+        badgeTimemachine.style.color = this.items.timemachine <= 0 ? '#c2410c' : '';
+      }
     }
     if (btnMagnet) {
-      btnMagnet.disabled = this.items.magnet <= 0 || this.activeItemMagnet;
-      if (badgeMagnet) badgeMagnet.textContent = this.items.magnet;
+      btnMagnet.disabled = this.activeItemMagnet;
+      if (badgeMagnet) {
+        badgeMagnet.textContent = this.items.magnet;
+        badgeMagnet.style.background = this.items.magnet <= 0 ? '#ffedd5' : '';
+        badgeMagnet.style.color = this.items.magnet <= 0 ? '#c2410c' : '';
+      }
       if (this.activeItemMagnet) btnMagnet.classList.add('active');
       else btnMagnet.classList.remove('active');
     }
@@ -2316,7 +2513,11 @@ class HaruMatchumApp {
   }
 
   useItem5050() {
-    if (this.items.eraser5050 <= 0 || this.selectedOption !== null) return;
+    if (this.selectedOption !== null) return;
+    if (this.items.eraser5050 <= 0) {
+      this.promptQuickBuyItem('eraser5050', () => this.useItem5050());
+      return;
+    }
     const q = this.activeQuestions[this.currentIndex];
     const buttons = document.querySelectorAll('.option-btn');
     const wrongIndices = [];
@@ -2346,7 +2547,11 @@ class HaruMatchumApp {
   }
 
   useItemHeart() {
-    if (this.items.heart <= 0 || this.selectedOption !== null) return;
+    if (this.selectedOption !== null) return;
+    if (this.items.heart <= 0) {
+      this.promptQuickBuyItem('heart', () => this.useItemHeart());
+      return;
+    }
     this.activeItemHeart = true;
     this.items.heart--;
     localStorage.setItem('haru_item_heart', this.items.heart);
@@ -2357,7 +2562,11 @@ class HaruMatchumApp {
   }
 
   useItemDouble() {
-    if (this.items.booster2x <= 0) return;
+    if (this.pointMultiplier === 2) return;
+    if (this.items.booster2x <= 0) {
+      this.promptQuickBuyItem('booster2x', () => this.useItemDouble());
+      return;
+    }
     this.pointMultiplier = 2;
     this.items.booster2x--;
     localStorage.setItem('haru_item_booster', this.items.booster2x);
@@ -2368,7 +2577,11 @@ class HaruMatchumApp {
   }
 
   useItemHint() {
-    if (this.items.hint <= 0 || this.selectedOption !== null) return;
+    if (this.selectedOption !== null) return;
+    if (this.items.hint <= 0) {
+      this.promptQuickBuyItem('hint', () => this.useItemHint());
+      return;
+    }
     const q = this.activeQuestions[this.currentIndex];
     if (!q) return;
 
@@ -2398,7 +2611,11 @@ class HaruMatchumApp {
   }
 
   useItemClover() {
-    if (this.items.clover <= 0 || this.selectedOption !== null) return;
+    if (this.selectedOption !== null) return;
+    if (this.items.clover <= 0) {
+      this.promptQuickBuyItem('clover', () => this.useItemClover());
+      return;
+    }
     const q = this.activeQuestions[this.currentIndex];
     if (!q) return;
 
@@ -2420,9 +2637,13 @@ class HaruMatchumApp {
   }
 
   useItemTimemachine() {
-    if (this.items.timemachine <= 0) return;
     const q = this.activeQuestions[this.currentIndex];
     if (!q || this.selectedOption === null || this.selectedOption === q.answerIndex) return;
+
+    if (this.items.timemachine <= 0) {
+      this.promptQuickBuyItem('timemachine', () => this.useItemTimemachine());
+      return;
+    }
 
     const wrongIdx = this.selectedOption;
     this.selectedOption = null;
@@ -2476,7 +2697,11 @@ class HaruMatchumApp {
   }
 
   useItemMagnet() {
-    if (this.items.magnet <= 0 || this.activeItemMagnet) return;
+    if (this.activeItemMagnet) return;
+    if (this.items.magnet <= 0) {
+      this.promptQuickBuyItem('magnet', () => this.useItemMagnet());
+      return;
+    }
     this.activeItemMagnet = true;
     this.items.magnet--;
     localStorage.setItem('haru_item_magnet', this.items.magnet);
@@ -2484,6 +2709,349 @@ class HaruMatchumApp {
     this.saveActiveQuizSession();
     sfx.combo();
     this.showToastNotice('🧲 콤보 자석 가동! 연속 정답 시 콤보 점수를 강력 흡수합니다!');
+  }
+
+  // ============================================================
+  // Point Shop & Dressing Room Mechanics
+  // ============================================================
+  promptQuickBuyItem(itemKey, onSuccess = null) {
+    const item = ITEM_PRICES[itemKey];
+    if (!item) return;
+
+    const userPoints = this.data.currentUser.totalPoints || 0;
+    if (userPoints < item.cost) {
+      alert(`[${item.emoji} ${item.name}] 아이템을 구매하기 위한 포인트가 부족합니다.\n\n필요 포인트: ${item.cost} P\n현재 보유: ${userPoints} P\n\n문제를 풀어 포인트를 모아보세요! 💪`);
+      return;
+    }
+
+    const confirmBuy = confirm(`[${item.emoji} ${item.name}] 아이템이 부족합니다!\n보유 포인트 ${item.cost} P로 즉시 구매하여 바로 사용하시겠습니까?\n\n💰 현재 보유: ${userPoints} P ➔ 구매 후: ${userPoints - item.cost} P`);
+    if (!confirmBuy) return;
+
+    // Deduct points
+    this.data.currentUser.totalPoints -= item.cost;
+    this.items[itemKey] = (this.items[itemKey] || 0) + 1;
+
+    const storageKey = {
+      eraser5050: 'haru_item_5050',
+      heart: 'haru_item_heart',
+      booster2x: 'haru_item_booster',
+      hint: 'haru_item_hint',
+      clover: 'haru_item_clover',
+      timemachine: 'haru_item_timemachine',
+      magnet: 'haru_item_magnet'
+    }[itemKey];
+    if (storageKey) {
+      localStorage.setItem(storageKey, this.items[itemKey]);
+    }
+    DataManager.save(this.data);
+
+    this.renderItemBar();
+    this.renderUserProfile();
+    this.syncUserData();
+
+    sfx.combo();
+    this.showToastNotice(`🛍️ [${item.emoji} ${item.name}] 즉시 구매 완료! (${item.cost}P 사용) ✨`);
+
+    if (typeof onSuccess === 'function') {
+      setTimeout(() => onSuccess(), 80);
+    }
+  }
+
+  openShopModal(initialTab = 'items') {
+    if (!this.modalShop) return;
+    this.switchShopTab(initialTab);
+    const ptsEl = document.getElementById('shopUserPoints');
+    if (ptsEl) ptsEl.textContent = `${this.data.currentUser.totalPoints || 0} P`;
+    this.modalShop.classList.add('active');
+    sfx.combo();
+  }
+
+  closeShopModal() {
+    if (this.modalShop) this.modalShop.classList.remove('active');
+    this.renderUserProfile();
+    this.renderItemBar();
+  }
+
+  switchShopTab(tab = 'items') {
+    const tabItems = document.getElementById('tabShopItems');
+    const tabAcc = document.getElementById('tabShopAccessories');
+    const areaItems = document.getElementById('shopItemsArea');
+    const areaAcc = document.getElementById('shopAccessoriesArea');
+
+    if (tab === 'items') {
+      if (tabItems) tabItems.classList.add('active');
+      if (tabAcc) tabAcc.classList.remove('active');
+      if (areaItems) areaItems.style.display = 'block';
+      if (areaAcc) areaAcc.style.display = 'none';
+      this.renderShopItems();
+    } else {
+      if (tabAcc) tabAcc.classList.add('active');
+      if (tabItems) tabItems.classList.remove('active');
+      if (areaAcc) areaAcc.style.display = 'block';
+      if (areaItems) areaItems.style.display = 'none';
+      this.renderShopAccessories();
+    }
+  }
+
+  renderShopItems() {
+    const grid = document.getElementById('shopItemsGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const ptsEl = document.getElementById('shopUserPoints');
+    if (ptsEl) ptsEl.textContent = `${this.data.currentUser.totalPoints || 0} P`;
+
+    const userPoints = this.data.currentUser.totalPoints || 0;
+
+    Object.values(ITEM_PRICES).forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'shop-card';
+
+      let ownedText = '';
+      let isMax = false;
+      if (item.key === 'shield') {
+        ownedText = `보유: ${this.shields || 0}/2개`;
+        isMax = (this.shields || 0) >= 2;
+      } else {
+        ownedText = `보유: ${this.items[item.key] || 0}개`;
+      }
+
+      card.innerHTML = `
+        <div class="shop-card-emoji">${item.emoji}</div>
+        <div class="shop-card-name">${item.name}</div>
+        <div class="shop-card-desc">${item.desc}</div>
+        <div class="shop-card-price">💰 ${item.cost} P</div>
+        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 8px;">${ownedText}</div>
+        <button type="button" class="shop-buy-btn ${isMax ? 'disabled' : ''}">${isMax ? '최대 보유' : '구매하기'}</button>
+      `;
+
+      const buyBtn = card.querySelector('.shop-buy-btn');
+      if (!isMax) {
+        buyBtn.addEventListener('click', () => this.buyShopItem(item.key));
+      }
+
+      grid.appendChild(card);
+    });
+  }
+
+  buyShopItem(itemKey) {
+    const item = ITEM_PRICES[itemKey];
+    if (!item) return;
+
+    if (item.key === 'shield' && (this.shields || 0) >= 2) {
+      alert('🛡️ 수호 방패는 최대 2개까지만 보유할 수 있습니다!');
+      return;
+    }
+
+    const userPoints = this.data.currentUser.totalPoints || 0;
+    if (userPoints < item.cost) {
+      alert(`포인트가 부족합니다!\n필요 포인트: ${item.cost} P\n현재 보유: ${userPoints} P\n\n문제를 풀어 포인트를 모아보세요! 💪`);
+      return;
+    }
+
+    this.data.currentUser.totalPoints -= item.cost;
+    if (item.key === 'shield') {
+      this.shields = Math.min(2, (this.shields || 0) + 1);
+      localStorage.setItem('haru_game_shields', this.shields);
+    } else {
+      this.items[itemKey] = (this.items[itemKey] || 0) + 1;
+      const storageKey = {
+        eraser5050: 'haru_item_5050',
+        heart: 'haru_item_heart',
+        booster2x: 'haru_item_booster',
+        hint: 'haru_item_hint',
+        clover: 'haru_item_clover',
+        timemachine: 'haru_item_timemachine',
+        magnet: 'haru_item_magnet'
+      }[itemKey];
+      if (storageKey) localStorage.setItem(storageKey, this.items[itemKey]);
+    }
+
+    DataManager.save(this.data);
+    this.renderShopItems();
+    this.renderUserProfile();
+    this.renderItemBar();
+    this.renderShieldStatus();
+    this.syncUserData();
+
+    sfx.fanfare();
+    this.showToastNotice(`🎉 [${item.emoji} ${item.name}] 구매 완료! (${item.cost}P 차감) ✨`);
+  }
+
+  renderShopAccessories() {
+    const grid = document.getElementById('shopAccGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const ptsEl = document.getElementById('shopUserPoints');
+    if (ptsEl) ptsEl.textContent = `${this.data.currentUser.totalPoints || 0} P`;
+
+    // Update Live Preview in Shop
+    const previewEl = document.getElementById('shopAvatarPreview');
+    if (previewEl) {
+      previewEl.innerHTML = renderCompositeAvatar(
+        this.data.currentUser.avatar || '🌸',
+        this.data.currentUser.avatarAccessories || {},
+        100
+      );
+    }
+
+    const cat = this.currentAccCategory || 'pin';
+    const list = ACCESSORY_DEFINITIONS[cat] || [];
+    const ownedList = this.data.currentUser.inventoryAccessories || [];
+    const equipped = this.data.currentUser.avatarAccessories || {};
+
+    list.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'shop-card';
+
+      const isOwned = ownedList.includes(item.id);
+      const isEquipped = equipped[cat] === item.id;
+
+      let btnClass = 'shop-buy-btn';
+      let btnText = '구매하기';
+
+      if (isEquipped) {
+        btnClass += ' unequip';
+        btnText = '해제하기';
+      } else if (isOwned) {
+        btnClass += ' equipped';
+        btnText = '착용하기';
+      }
+
+      card.innerHTML = `
+        <div class="shop-card-emoji">${item.emoji}</div>
+        <div class="shop-card-name">${item.name}</div>
+        <div class="shop-card-desc">${item.desc}</div>
+        <div class="shop-card-price">${isOwned ? '✅ 보유 중' : `💰 ${item.cost} P`}</div>
+        <button type="button" class="${btnClass}">${btnText}</button>
+      `;
+
+      const btn = card.querySelector('button');
+      btn.addEventListener('click', () => {
+        if (isEquipped) {
+          this.unequipAccessory(cat);
+        } else if (isOwned) {
+          this.equipAccessory(cat, item.id);
+        } else {
+          this.buyAccessory(cat, item.id);
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  buyAccessory(category, id) {
+    const item = findAccessoryById(id);
+    if (!item) return;
+
+    const userPoints = this.data.currentUser.totalPoints || 0;
+    if (userPoints < item.cost) {
+      alert(`포인트가 부족합니다!\n필요 포인트: ${item.cost} P\n현재 보유: ${userPoints} P\n\n문제를 풀어 포인트를 모아보세요! 💪`);
+      return;
+    }
+
+    const confirmBuy = confirm(`[${item.emoji} ${item.name}] 악세사리를 ${item.cost} P로 구매하시겠습니까?\n\n💰 현재 보유: ${userPoints} P ➔ 구매 후: ${userPoints - item.cost} P`);
+    if (!confirmBuy) return;
+
+    this.data.currentUser.totalPoints -= item.cost;
+    if (!this.data.currentUser.inventoryAccessories) {
+      this.data.currentUser.inventoryAccessories = [];
+    }
+    this.data.currentUser.inventoryAccessories.push(id);
+
+    // Auto-equip upon purchase
+    if (!this.data.currentUser.avatarAccessories) {
+      this.data.currentUser.avatarAccessories = {};
+    }
+    this.data.currentUser.avatarAccessories[category] = id;
+
+    DataManager.save(this.data);
+    this.renderShopAccessories();
+    this.renderUserProfile();
+    this.syncUserData();
+
+    sfx.fanfare();
+    if (this.confetti) this.confetti.explode();
+    this.showToastNotice(`✨ [${item.emoji} ${item.name}] 구매 및 착용 완료! (${item.cost}P 차감)`);
+  }
+
+  equipAccessory(category, id) {
+    const item = findAccessoryById(id);
+    if (!item) return;
+
+    if (!this.data.currentUser.avatarAccessories) {
+      this.data.currentUser.avatarAccessories = {};
+    }
+    this.data.currentUser.avatarAccessories[category] = id;
+
+    DataManager.save(this.data);
+    this.renderShopAccessories();
+    this.renderUserProfile();
+    this.syncUserData();
+
+    sfx.combo();
+    this.showToastNotice(`👗 [${item.emoji} ${item.name}] 착용 완료!`);
+  }
+
+  unequipAccessory(category) {
+    if (this.data.currentUser.avatarAccessories) {
+      this.data.currentUser.avatarAccessories[category] = null;
+    }
+    DataManager.save(this.data);
+    this.renderShopAccessories();
+    this.renderUserProfile();
+    this.syncUserData();
+
+    sfx.correct();
+    this.showToastNotice(`착용을 해제했습니다.`);
+  }
+
+  openAvatarZoomModal() {
+    if (!this.modalAvatarZoom) return;
+    const u = this.data.currentUser;
+
+    const displayEl = document.getElementById('avatarZoomDisplay');
+    if (displayEl) {
+      displayEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 140);
+    }
+    const nameEl = document.getElementById('avatarZoomName');
+    if (nameEl) nameEl.textContent = u.name;
+    const gradeEl = document.getElementById('avatarZoomGrade');
+    if (gradeEl) gradeEl.textContent = `${u.grade} · 🔥 ${u.streak || 1}일 연속`;
+
+    const tagListEl = document.getElementById('avatarZoomEquippedList');
+    if (tagListEl) {
+      tagListEl.innerHTML = '';
+      const acc = u.avatarAccessories || {};
+      let equippedCount = 0;
+      Object.keys(acc).forEach(cat => {
+        if (acc[cat]) {
+          const item = findAccessoryById(acc[cat]);
+          if (item) {
+            equippedCount++;
+            const span = document.createElement('span');
+            span.style.background = '#ede9fe';
+            span.style.padding = '3px 8px';
+            span.style.borderRadius = '12px';
+            span.style.border = '1px solid #ddd6fe';
+            span.textContent = `${item.emoji} ${item.name}`;
+            tagListEl.appendChild(span);
+          }
+        }
+      });
+      if (equippedCount === 0) {
+        tagListEl.innerHTML = '<span style="color: var(--text-sub);">착용 중인 악세사리가 없습니다. 상점에서 꾸며보세요! ✨</span>';
+      }
+    }
+
+    this.modalAvatarZoom.classList.add('active');
+    sfx.combo();
+  }
+
+  closeAvatarZoomModal() {
+    if (this.modalAvatarZoom) this.modalAvatarZoom.classList.remove('active');
   }
 
   handleReviveQuiz() {
@@ -2874,7 +3442,7 @@ class HaruMatchumApp {
       item.className = `rank-item ${rankClass} ${user.isMe ? 'is-me' : ''}`;
       item.innerHTML = `
         <div class="rank-badge">${rankBadgeIcon}</div>
-        <div class="rank-avatar">${user.avatar || '🌸'}</div>
+        <div class="rank-avatar">${renderCompositeAvatar(user.avatar || '🌸', user.avatarAccessories || {}, 36)}</div>
         <div class="rank-info">
           <div class="rank-name-row">
             <span class="rank-name">${user.name}</span>
@@ -3462,7 +4030,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.6.2';
+      const clientVersion = this.APP_VERSION || '2.7.0';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

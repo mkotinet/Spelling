@@ -3,7 +3,7 @@
   "1": "test_20000_questions_and_permutations.js",
   "2": "build_english_bank.py",
   "3": "server.js",
-  "4": "📋 국어 맞춤법 퀴즈 프로그램 '하루맞춤' 기술 리포트 (Technical Report)",
+  "4": "📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)",
   "5": "test_v240_level_rounds_and_items.js",
   "6": "3. 핵심 변경 상세 및 원인 분석 (RCA)",
   "7": "3. 핵심 변경 상세 및 원인 분석 (RCA)",
@@ -38,11 +38,18 @@
   "36": "Proposed Changes",
   "37": "test_permutation_and_lazy_loading.js",
   "38": "test_v260_voice_and_concise_questions.js",
+  "39": "test_v270_sound_shop_and_avatar.js",
+  "40": "test_four_subjects_integration.js",
+  "41": "test_dual_leaderboard.js",
   "42": "MockEngine",
   "43": "QuestionSelectionHarness",
+  "44": "test_server_logs.js",
   "45": "verify_all.js",
   "46": "test_v260_mobile_version_check.js",
   "47": "MockAudioContext",
   "48": "MockLevelGameEngine",
-  "49": "app.js"
+  "49": "app.js",
+  "50": "test_server_compression.js",
+  "51": "test_leaderboard_clean.js",
+  "52": "recordAccessLog"
 }

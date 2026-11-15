@@ -339,9 +339,9 @@ const server = http.createServer(async (req, res) => {
       const target = db.users[username];
       const uData = body.userData || body || {};
 
-      // Merge and update stats
+      // Merge and update stats (allow point deduction for shop purchases)
       if (typeof uData.streak === "number") target.streak = Math.max(target.streak, uData.streak);
-      if (typeof uData.totalPoints === "number") target.totalPoints = Math.max(target.totalPoints, uData.totalPoints);
+      if (typeof uData.totalPoints === "number") target.totalPoints = uData.totalPoints;
       if (typeof uData.totalSolved === "number") target.totalSolved = Math.max(target.totalSolved, uData.totalSolved);
       if (typeof uData.totalCorrect === "number") target.totalCorrect = Math.max(target.totalCorrect, uData.totalCorrect);
       if (typeof uData.todayScore === "number") target.todayScore = uData.todayScore;
@@ -349,6 +349,15 @@ const server = http.createServer(async (req, res) => {
       if (uData.grade) target.grade = uData.grade;
       if (uData.avatar) target.avatar = uData.avatar;
       if (uData.name) target.name = uData.name;
+
+      // Shop Inventory & Layered Avatar Accessories Sync
+      if (uData.items && typeof uData.items === "object") target.items = { ...(target.items || {}), ...uData.items };
+      if (typeof uData.shields === "number") target.shields = Math.min(2, Math.max(0, uData.shields));
+      if (uData.avatarAccessories && typeof uData.avatarAccessories === "object") target.avatarAccessories = uData.avatarAccessories;
+      if (Array.isArray(uData.inventoryAccessories)) {
+        const accSet = new Set([...(target.inventoryAccessories || []), ...uData.inventoryAccessories]);
+        target.inventoryAccessories = Array.from(accSet);
+      }
 
       // Subject-specific sync (Spelling vs Hanja vs English)
       const mode = body.mode || (body.details && body.details.mode) || uData.mode || "spelling";
@@ -444,10 +453,10 @@ const server = http.createServer(async (req, res) => {
       todayScoreIdiom: u.todayScoreIdiom || 0,
       todayScoreHanja: u.todayScoreHanja || 0,
       todayScoreEnglish: u.todayScoreEnglish || 0,
-      pointsSpelling: u.pointsSpelling || Math.round((u.totalPoints || 0) / 4),
-      pointsIdiom: u.pointsIdiom || Math.round((u.totalPoints || 0) / 4),
-      pointsHanja: u.pointsHanja || Math.round((u.totalPoints || 0) / 4),
-      pointsEnglish: u.pointsEnglish || Math.round((u.totalPoints || 0) / 4)
+      pointsSpelling: u.pointsSpelling !== undefined ? u.pointsSpelling : (u.totalPoints || 0),
+      pointsIdiom: u.pointsIdiom !== undefined ? u.pointsIdiom : 0,
+      pointsHanja: u.pointsHanja !== undefined ? u.pointsHanja : 0,
+      pointsEnglish: u.pointsEnglish !== undefined ? u.pointsEnglish : 0
     }));
 
     if (type === "round") {

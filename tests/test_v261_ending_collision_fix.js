@@ -94,18 +94,18 @@ const healed = simulateGuard(legacyDirtySentence, '뼈를 묻다');
 assert.strictEqual(healed, "평생 '[ (     ) ]'라는 당찬 포부를 밝혔다.", 'Self-healing guard must convert legacy string into clean quote citation');
 console.log('  ✅ Runtime guard successfully self-heals legacy dirty sentence string!\n');
 
-// 5. Version 2.6.1 Consistency Verification
-console.log('5️⃣ Verifying version 2.6.1 metadata across files...');
+// 5. Version Consistency Verification
+console.log('5️⃣ Verifying version metadata across files...');
 const versionJson = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'version.json'), 'utf8'));
-assert.strictEqual(versionJson.version, '2.6.1', 'version.json must be 2.6.1');
+assert(versionJson.version, 'version.json must have version');
 
 const indexHtml = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
-assert(indexHtml.includes('<meta name="app-version" content="2.6.1">'), 'index.html must have meta 2.6.1');
-assert(indexHtml.includes('v2.6.1'), 'index.html must display v2.6.1 in badge');
-assert(indexHtml.includes('app.js?v=2.6.1'), 'app.js must have ?v=2.6.1');
-assert(indexHtml.includes('idiom_questions.js?v=2.6.1'), 'idiom_questions.js must have ?v=2.6.1');
+assert(indexHtml.includes(`<meta name="app-version" content="${versionJson.version}">`), 'index.html must have meta version');
+assert(indexHtml.includes(`v${versionJson.version}`), 'index.html must display version in badge');
+assert(indexHtml.includes(`app.js?v=${versionJson.version}`), 'app.js must have version param');
+assert(indexHtml.includes(`idiom_questions.js?v=${versionJson.version}`), 'idiom_questions.js must have version param');
 
-assert(appJsCode.includes("this.APP_VERSION = metaVer || '2.6.1';"), 'app.js must have 2.6.1 fallback');
-console.log('  ✅ Version 2.6.1 consistency confirmed across all files!\n');
+assert(appJsCode.includes(`this.APP_VERSION = metaVer || '${versionJson.version}';`), 'app.js must have current version fallback');
+console.log(`  ✅ Version ${versionJson.version} consistency confirmed across all files!\n`);
 
 console.log('🎉 ALL v2.6.1 Ending Collision Fix Tests Passed with 100% Pristine Integrity!\n');

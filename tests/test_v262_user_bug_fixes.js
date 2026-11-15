@@ -97,14 +97,19 @@ gungbyeokQuestions.forEach(q => {
 });
 console.log('✅ PASS: 궁벽 20개 문항 정답이 모두 "궁벽한"으로 교정되어 문맥 비문 0건 확인 완료.');
 
-// 4. 버전 동기화(v2.6.2) 검증
-console.log('\n--- 4. v2.6.2 버전 동기화 검증 ---');
+// 4. 버전 동기화(v2.6.2 이상) 검증
+console.log('\n--- 4. v2.6.2 이상 버전 동기화 검증 ---');
 const versionJson = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'version.json'), 'utf8'));
-assert.strictEqual(versionJson.version, '2.6.2', 'version.json must be 2.6.2');
-assert(indexHtml.includes('content="2.6.2"'), 'index.html meta version must be 2.6.2');
-assert(indexHtml.includes('v2.6.2'), 'index.html badge must display v2.6.2');
+const semverGe = (v, min) => {
+  const [v1, v2, v3] = v.split('.').map(Number);
+  const [m1, m2, m3] = min.split('.').map(Number);
+  return v1 > m1 || (v1 === m1 && v2 > m2) || (v1 === m1 && v2 === m2 && v3 >= m3);
+};
+assert(semverGe(versionJson.version, '2.6.2'), 'version.json must be >= 2.6.2');
+assert(indexHtml.includes(`content="${versionJson.version}"`), 'index.html meta version must match versionJson');
+assert(indexHtml.includes(`v${versionJson.version}`), 'index.html badge must display current version');
 const appJs = fs.readFileSync(path.join(ROOT_DIR, 'app.js'), 'utf8');
-assert(appJs.includes("'2.6.2'"), "app.js must have 2.6.2 version");
-console.log('✅ PASS: version.json, index.html, app.js 버전 2.6.2 완전 일치.');
+assert(appJs.includes(`'${versionJson.version}'`), 'app.js must have current version');
+console.log(`✅ PASS: version.json, index.html, app.js 버전 ${versionJson.version} 완전 일치.`);
 
 console.log('\n🎉 ALL v2.6.2 BUG FIX VERIFICATION TESTS PASSED SUCCESSFULLY! 🚀\n');

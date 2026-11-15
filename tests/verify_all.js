@@ -207,11 +207,11 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.strictEqual(lbRoundRes.status, 200);
     assert(Array.isArray(lbRoundRes.data.leaderboard));
 
-    // 14. v2.6.2 Mobile Auto-Update & Version Check check
+    // 14. Mobile Auto-Update & Version Check check
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.6.2">'), 'index.html must include meta app-version 2.6.2');
+    assert(indexHtml.includes('<meta name="app-version" content="2.7.0">'), 'index.html must include meta app-version 2.7.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -228,10 +228,21 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(sample2414, 'Question #2414 must exist');
     assert.strictEqual(sample2414.options[sample2414.answerIndex], '희한한', 'Q2414 answer must be 희한한');
 
+    // 17. v2.7.0 Sound, Q4333, Leaderboard match, Shop & Avatar Zoom check
+    const sample4333 = spellingBank.find(q => q.id === 4333);
+    assert(sample4333, 'Question #4333 must exist');
+    assert(sample4333.sentence.includes('조달청을 제정하여'), 'Q4333 sentence must be 조달청을 제정하여');
+    assert(appCode.includes('EnglishSpeechEngine'), 'app.js must include EnglishSpeechEngine');
+    assert(appCode.includes('ITEM_PRICES'), 'app.js must include ITEM_PRICES');
+    assert(appCode.includes('ACCESSORY_DEFINITIONS'), 'app.js must include ACCESSORY_DEFINITIONS');
+    assert(appCode.includes('renderCompositeAvatar'), 'app.js must include renderCompositeAvatar');
+    assert(indexHtml.includes('modalAvatarZoom'), 'index.html must include modalAvatarZoom');
+    assert(indexHtml.includes('modalShop'), 'index.html must include modalShop');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.6.2', 'GET /api/version version must be 2.6.2');
+    assert.strictEqual(verRes.data.version, '2.7.0', 'GET /api/version version must be 2.7.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
