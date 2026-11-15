@@ -1,19 +1,19 @@
 {
   "app.js": {
-    "mtime": 1794704435.5365365,
-    "seen": 1794704500.5865338,
-    "ast_hash": "764fbb1084949f72dad22fb5fa6c6b83",
+    "mtime": 1794704781.8184974,
+    "seen": 1794704831.6834738,
+    "ast_hash": "272d013e0677fa1e74259d5c0c69f169",
     "semantic_hash": ""
   },
   "data/access_logs.json": {
-    "mtime": 1794704494.1747754,
-    "seen": 1794704500.586537,
+    "mtime": 1794704825.7848768,
+    "seen": 1794704831.683479,
     "ast_hash": "1bec9710a9e6adf8a82a4ef81677b325",
     "semantic_hash": ""
   },
   "data/users.json": {
-    "mtime": 1794704477.7444074,
-    "seen": 1794704500.586538,
+    "mtime": 1794704814.7071793,
+    "seen": 1794704831.683481,
     "ast_hash": "69c81576e2e9f121c3da1ee9f270e909",
     "semantic_hash": ""
   },
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/verify_all.js": {
-    "mtime": 1794704473.6678727,
-    "seen": 1794704500.5866141,
-    "ast_hash": "4e49bc18f7e4418642fb056887d96dec",
+    "mtime": 1794704810.731913,
+    "seen": 1794704831.683557,
+    "ast_hash": "d770b79081c75110cf06c557825d50bc",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -390,21 +390,21 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794704392.2621918,
-    "seen": 1794704500.5866308,
-    "ast_hash": "24254d8098f91c7ab264f5531f23e46a",
+    "mtime": 1794704771.0977209,
+    "seen": 1794704831.683576,
+    "ast_hash": "e6de21f0a382f869ffbec8cb12b20436",
     "semantic_hash": ""
   },
   "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
-    "mtime": 1794703919.1989443,
-    "seen": 1794704500.586633,
-    "ast_hash": "c6056197e0e46b298508a9aacf166327",
+    "mtime": 1794704514.1097836,
+    "seen": 1794704831.683577,
+    "ast_hash": "695aef3ddbfb3dc7ab19b15a26e48b72",
     "semantic_hash": ""
   },
   "\uc81c\uc791\ud788\uc2a4\ud1a0\ub9ac.md": {
-    "mtime": 1794703940.4258802,
-    "seen": 1794704500.586634,
-    "ast_hash": "2d135b4820d03950ee614bf17c5674fb",
+    "mtime": 1794704537.0542374,
+    "seen": 1794704831.683579,
+    "ast_hash": "1952d15b19e16a5d97afe099ed4a236f",
     "semantic_hash": ""
   },
   "scripts/fix_spelling_lvl1_2.py": {
@@ -492,9 +492,9 @@
     "semantic_hash": ""
   },
   "tests/test_v271_whats_new_modal.js": {
-    "mtime": 1794704445.876756,
-    "seen": 1794704500.586612,
-    "ast_hash": "cabc9052f4ee45a593d46b7bc1874389",
+    "mtime": 1794704799.7817369,
+    "seen": 1794704831.683556,
+    "ast_hash": "1d4df656c1d0647be403874a5e90831f",
     "semantic_hash": ""
   }
 }

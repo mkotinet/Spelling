@@ -3078,14 +3078,26 @@ class HaruMatchumApp {
   }
 
   // ============================================================
-  // What's New & Update Notice Modal (v2.7.1)
+  // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
-  checkWhatsNewPopup() {
-    const hideKey = 'haru_hide_whats_new_v270';
+  async checkWhatsNewPopup() {
+    let currentVer = this.APP_VERSION || '2.7.1';
     try {
-      if (localStorage.getItem(hideKey)) return;
-    } catch (e) {
-      return;
+      if (!this.versionMeta) {
+        const res = await fetch('/api/version');
+        if (res.ok) {
+          this.versionMeta = await res.json();
+          if (this.versionMeta && this.versionMeta.version) {
+            currentVer = this.versionMeta.version;
+          }
+        }
+      }
+    } catch (e) {}
+
+    // Check if user already dismissed THIS specific version
+    const dismissedVersion = localStorage.getItem('haru_dismissed_update_version');
+    if (dismissedVersion === currentVer) {
+      return; // Already dismissed for this exact version
     }
 
     // Do not pop up if currently in middle of quiz
@@ -3095,10 +3107,19 @@ class HaruMatchumApp {
   }
 
   openWhatsNewModal() {
-    if (this.modalWhatsNew) {
-      this.modalWhatsNew.classList.add('active');
-      if (typeof sfx !== 'undefined' && sfx.combo) sfx.combo();
+    if (!this.modalWhatsNew) return;
+
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.7.1';
+    const badge = document.getElementById('whatsNewVersionBadge');
+    if (badge) badge.textContent = `v${currentVer}`;
+
+    const releaseDesc = document.getElementById('whatsNewReleaseDesc');
+    if (releaseDesc && this.versionMeta && this.versionMeta.releaseNotes) {
+      releaseDesc.textContent = this.versionMeta.releaseNotes;
     }
+
+    this.modalWhatsNew.classList.add('active');
+    if (typeof sfx !== 'undefined' && sfx.combo) sfx.combo();
   }
 
   closeWhatsNewModal() {
@@ -3108,12 +3129,13 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const hideKey = 'haru_hide_whats_new_v270';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.7.1';
     try {
-      localStorage.setItem(hideKey, 'true');
+      // Store the specific version that the user dismissed!
+      localStorage.setItem('haru_dismissed_update_version', currentVer);
     } catch (e) {}
     this.closeWhatsNewModal();
-    this.showToastNotice('📢 업데이트 알림을 더 이상 표시하지 않습니다.');
+    this.showToastNotice(`📢 v${currentVer} 업데이트 알림을 더 이상 표시하지 않습니다.`);
   }
 
   handleReviveQuiz() {

@@ -244,7 +244,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('btnDismissWhatsNewForever'), 'index.html must include btnDismissWhatsNewForever');
     assert(appCode.includes('checkWhatsNewPopup'), 'app.js must include checkWhatsNewPopup');
     assert(appCode.includes('dismissWhatsNewForever'), 'app.js must include dismissWhatsNewForever');
-    assert(appCode.includes('haru_hide_whats_new_v270'), 'app.js must use persistence key');
+    assert(appCode.includes('haru_dismissed_update_version'), 'app.js must use version-aware persistence key');
 
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');

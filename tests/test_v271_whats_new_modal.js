@@ -25,6 +25,8 @@ console.log('  ✅ Version consistency passed: 2.7.1 across all files');
 // 2. What's New Modal Elements in index.html
 console.log('\n[2] What\'s New Modal HTML Markup Check...');
 assert(indexHtml.includes('id="modalWhatsNew"'), 'index.html must include #modalWhatsNew');
+assert(indexHtml.includes('id="whatsNewVersionBadge"'), 'index.html must include #whatsNewVersionBadge for dynamic version display');
+assert(indexHtml.includes('id="whatsNewReleaseDesc"'), 'index.html must include #whatsNewReleaseDesc for dynamic release notes');
 assert(indexHtml.includes('id="btnCloseWhatsNew"'), 'index.html must include #btnCloseWhatsNew');
 assert(indexHtml.includes('id="btnDismissWhatsNewForever"'), 'index.html must include #btnDismissWhatsNewForever');
 assert(indexHtml.includes('더 이상 보지 않기'), 'Button must include "더 이상 보지 않기"');
@@ -36,7 +38,7 @@ assert(indexHtml.includes('모바일 오디오 & 영어 원어민 TTS 음성 지
 assert(indexHtml.includes('포인트 아이템 상점 & 인게임 즉시 구매 (Quick Buy)'), 'Card 2 title must exist');
 assert(indexHtml.includes('22종 아바타 악세사리 드레스룸 & 선명한 확대 갤러리'), 'Card 3 title must exist');
 assert(indexHtml.includes('문제 문맥 및 랭킹 시스템 정비'), 'Card 4 title must exist');
-console.log('  ✅ Modal elements and 4 update cards verified');
+console.log('  ✅ Modal elements, dynamic version badge, release box, and 4 update cards verified');
 
 // 3. CSS Classes in style.css
 console.log('\n[3] What\'s New Modal CSS Styles Check...');
@@ -49,15 +51,17 @@ assert(styleCss.includes('.whats-new-footer'), 'style.css must have .whats-new-f
 console.log('  ✅ CSS styles for What\'s New modal verified');
 
 // 4. app.js Logic & Event Handling
-console.log('\n[4] app.js Modal Logic & Persistence Check...');
+console.log('\n[4] app.js Modal Logic & Version-Aware Persistence Check...');
 assert(appJs.includes('this.modalWhatsNew = document.getElementById(\'modalWhatsNew\');'), 'modalWhatsNew DOM initialized');
 assert(appJs.includes('checkWhatsNewPopup()'), 'checkWhatsNewPopup method must exist');
 assert(appJs.includes('openWhatsNewModal()'), 'openWhatsNewModal method must exist');
 assert(appJs.includes('closeWhatsNewModal()'), 'closeWhatsNewModal method must exist');
 assert(appJs.includes('dismissWhatsNewForever()'), 'dismissWhatsNewForever method must exist');
-assert(appJs.includes('haru_hide_whats_new_v270'), 'Storage key for dismissal must be haru_hide_whats_new_v270');
+assert(appJs.includes('haru_dismissed_update_version'), 'Storage key for version-aware dismissal must be haru_dismissed_update_version');
+assert(appJs.includes('dismissedVersion === currentVer'), 'Must check if current version was already dismissed');
+assert(appJs.includes('whatsNewVersionBadge'), 'Must update version badge dynamically in openWhatsNewModal');
 assert(appJs.includes('btnDismissWhatsNewForever.addEventListener'), 'btnDismissWhatsNewForever listener wired');
 assert(appJs.includes('btnOpenWhatsNew.addEventListener'), 'btnOpenWhatsNew listener wired');
-console.log('  ✅ Methods, persistence key and event wiring verified');
+console.log('  ✅ Methods, version-aware persistence key and dynamic bindings verified');
 
 console.log('\n🎉 [SUCCESS] All v2.7.1 What\'s New Modal & Dismiss tests passed with flying colors!\n');
