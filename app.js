@@ -419,7 +419,7 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'pin_star', name: '반짝이 별핀', emoji: '✨', cost: 70, desc: '밤하늘처럼 빛나는 별빛 헤어핀' },
     { id: 'pin_clover', name: '행운의 클로버핀', emoji: '🍀', cost: 70, desc: '행운을 가져다주는 네잎클로버 핀' },
     { id: 'pin_heart', name: '하트 뿅뿅핀', emoji: '💖', cost: 80, desc: '두근두근 하트 머리핀' },
-    // 일반 확장 +10종
+    // 일반 확장 10종
     { id: 'pin_sun', name: '해바라기 핀', emoji: '🌻', cost: 60, desc: '햇살 가득 화사한 해바라기 핀' },
     { id: 'pin_cherry', name: '달콤 체리 핀', emoji: '🍒', cost: 65, desc: '상큼달콤한 붉은 앵두 머리핀' },
     { id: 'pin_tulip', name: '빨간 튤립 핀', emoji: '🌷', cost: 60, desc: '단아하고 우아한 봄 튤립 핀' },
@@ -430,12 +430,17 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'pin_sprout', name: '새싹 헤어핀', emoji: '🌱', cost: 55, desc: '머리 위에 쏙 돋아난 파릇파릇 새싹' },
     { id: 'pin_candy', name: '롤리팝 사탕 핀', emoji: '🍭', cost: 65, desc: '알록달록 달콤한 막대사탕 핀' },
     { id: 'pin_strawberry', name: '딸기 머리핀', emoji: '🍓', cost: 70, desc: '상큼한 과즙이 톡 터질 듯한 딸기' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'pin_mario_star', name: '마리오 무적 슈퍼스타', emoji: '⭐', cost: 160, desc: '오색 찬란한 무적의 슈퍼스타' },
     { id: 'pin_mario_fire', name: '파이어 플라워 핀', emoji: '🌼', cost: 150, desc: '불꽃을 뿜어내는 마리오 불꽃꽃' },
     { id: 'pin_mario_ice', name: '아이스 플라워 핀', emoji: '❄️', cost: 150, desc: '얼음 탄환을 날리는 아이스꽃' },
     { id: 'pin_mario_coin', name: '슈퍼 골드코인 핀', emoji: '🪙', cost: 140, desc: '띠링! 소리가 날 것 같은 황금 코인' },
-    { id: 'pin_mario_block', name: '슈퍼 물음표 박스', emoji: '❓', cost: 170, desc: '보너스가 퐁퐁 솟는 물음표 블록' }
+    { id: 'pin_mario_block', name: '슈퍼 물음표 박스', emoji: '❓', cost: 170, desc: '보너스가 퐁퐁 솟는 물음표 블록' },
+    // 동물의 숲 테마 4종
+    { id: 'pin_acnl_leaf', name: '동숲 초록 나뭇잎 핀', emoji: '🍃', cost: 160, desc: '동물의 숲 상징 초록 나뭇잎 헤어핀' },
+    { id: 'pin_acnl_peach', name: '특산물 복숭아 핀', emoji: '🍑', cost: 140, desc: '섬에서 수확한 달콤한 과일 핀' },
+    { id: 'pin_acnl_fossil', name: '신비한 화석 머리핀', emoji: '🐚', cost: 150, desc: '땅속에서 발굴한 미감정 화석 핀' },
+    { id: 'pin_acnl_apple', name: '아삭 사과 머리핀', emoji: '🍎', cost: 140, desc: '상큼한 동숲 사과나무 열매 핀' }
   ],
   glasses: [
     // 기존 4종
@@ -443,7 +448,7 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'glasses_nerd', name: '똑똑이 뿔테안경', emoji: '👓', cost: 70, desc: '맞춤법 만점자의 지적인 뿔테안경' },
     { id: 'glasses_goggle', name: '사이버 고글', emoji: '🥽', cost: 90, desc: '미래지향적 네온 사이버 고글' },
     { id: 'glasses_monocle', name: '탐정 모노클', emoji: '🧐', cost: 100, desc: '오답을 매의 눈으로 찾는 외안경' },
-    // 일반 확장 +10종
+    // 일반 확장 10종
     { id: 'glasses_heart', name: '하트 틴트 선글라스', emoji: '🕶️', cost: 85, desc: '로맨틱한 핑크 하트 프레임' },
     { id: 'glasses_round', name: '동글이 골드안경', emoji: '👓', cost: 75, desc: '빈티지 레트로 감성의 동그란 금테' },
     { id: 'glasses_vr', name: '메타버스 VR 고글', emoji: '🥽', cost: 120, desc: '가상세계를 탐험하는 최첨단 헤드셋' },
@@ -454,12 +459,16 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'glasses_star', name: '스타 옐로우 선글라스', emoji: '🕶️', cost: 90, desc: '아이돌 락스타 감성의 별 선글라스' },
     { id: 'glasses_steampunk', name: '스팀펑크 황동고글', emoji: '🥽', cost: 110, desc: '톱니바퀴가 달린 클래식 황동 고글' },
     { id: 'glasses_aviator', name: '에비에이터 보잉안경', emoji: '👓', cost: 90, desc: '파일럿의 카리스마 보잉 프레임' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'glasses_mario_stache', name: '마리오 콧수염 안경', emoji: '🥸', cost: 160, desc: '풍성한 마리오 콧수염과 레드 안경테' },
     { id: 'glasses_luigi_stache', name: '루이지 콧수염 안경', emoji: '🥸', cost: 160, desc: '매력적인 루이지 콧수염과 그린 안경테' },
     { id: 'glasses_wario_shades', name: '와리오 뾰족 선글라스', emoji: '🕶️', cost: 170, desc: '욕심쟁이 와리오의 개성만점 보라 셰이즈' },
     { id: 'glasses_kamek_spectacles', name: '카멕 마법 돋보기', emoji: '👓', cost: 180, desc: '마귀 카멕의 동그란 뿔테 마법 렌즈' },
-    { id: 'glasses_lakitu_goggles', name: '김수한무 구름고글', emoji: '🥽', cost: 165, desc: '구름을 타고 신호등을 든 비행 고글' }
+    { id: 'glasses_lakitu_goggles', name: '김수한무 구름고글', emoji: '🥽', cost: 165, desc: '구름을 타고 신호등을 든 비행 고글' },
+    // 동물의 숲 테마 3종
+    { id: 'glasses_acnl_round', name: '동숲 동글이 뿔테', emoji: '👓', cost: 140, desc: '마을 주민들에게 인기 만점인 클래식 뿔테' },
+    { id: 'glasses_acnl_dragonfly', name: '잠자리 선글라스', emoji: '🕶️', cost: 150, desc: '잠자리 눈을 닮은 복고풍 틴트 선글라스' },
+    { id: 'glasses_acnl_funny', name: '코주부 장난 안경', emoji: '🥸', cost: 150, desc: '주민들과 파티할 때 쓰는 익살스러운 안경' }
   ],
   hat: [
     // 기존 5종
@@ -468,7 +477,7 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'hat_party', name: '파티 꼬깔모자', emoji: '🎉', cost: 80, desc: '매일매일 즐거운 축제 꼬깔모자' },
     { id: 'hat_witch', name: '마법사 고깔모자', emoji: '🧙', cost: 120, desc: '신비로운 마법의 마녀/마법사 모자' },
     { id: 'hat_helmet', name: '안전 헬멧', emoji: '⛑️', cost: 90, desc: '오답으로부터 뇌를 보호하는 방탄 헬멧' },
-    // 일반 확장 +10종
+    // 일반 확장 10종
     { id: 'hat_chef', name: '마스터 셰프 모자', emoji: '👨‍🍳', cost: 85, desc: '달콤한 디저트를 만드는 최고급 요리사 모자' },
     { id: 'hat_detective', name: '셜록 헌팅캡', emoji: '🕵️', cost: 95, desc: '정답의 단서를 추적하는 명탐정 모자' },
     { id: 'hat_beret', name: '예술가 핑크 베레모', emoji: '🎨', cost: 80, desc: '파리지앵 감성의 감각적인 베레모' },
@@ -479,12 +488,17 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'hat_viking', name: '바이킹 뿔투구', emoji: '🪖', cost: 110, desc: '용맹한 북유럽 전사의 뿔 달린 헬멧' },
     { id: 'hat_tiara', name: '반짝이 실버 티아라', emoji: '👑', cost: 130, desc: '우아하고 세련된 크리스탈 미니 왕관' },
     { id: 'hat_tophat', name: '신사 실크햇', emoji: '🎩', cost: 100, desc: '품격 넘치는 클래식 블랙 탑햇' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'hat_mario_cap', name: '슈퍼 마리오 레드캡', emoji: '🧢', cost: 200, desc: '빨간색 M 로고의 전설적인 마리오 모자' },
     { id: 'hat_luigi_cap', name: '슈퍼 루이지 그린캡', emoji: '🧢', cost: 200, desc: '초록색 L 로고의 형제 루이지 모자' },
     { id: 'hat_toad_mushroom', name: '키노피오 버섯 모자', emoji: '🍄', cost: 190, desc: '빨간 도트가 콕콕 박힌 귀여운 버섯 모자' },
     { id: 'hat_peach_crown', name: '피치공주 핑크크라운', emoji: '👑', cost: 220, desc: '버섯 왕국을 다스리는 우아한 보석 왕관' },
-    { id: 'hat_bowser_horns', name: '쿠파 대마왕 가시뿔', emoji: '👹', cost: 230, desc: '불을 뿜는 대마왕의 위엄 넘치는 가시 뿔' }
+    { id: 'hat_bowser_horns', name: '쿠파 대마왕 가시뿔', emoji: '👹', cost: 230, desc: '불을 뿜는 대마왕의 위엄 넘치는 가시 뿔' },
+    // 동물의 숲 테마 4종
+    { id: 'hat_acnl_nook', name: '너굴 둥근 귀 모자', emoji: '🦝', cost: 180, desc: '너굴 상점 주인의 깜찍한 둥근 너굴 귀' },
+    { id: 'hat_acnl_isabelle', name: '여울이 강아지 리본', emoji: '🎀', cost: 190, desc: '여울이 머리 위에 달린 초록 방울 리본' },
+    { id: 'hat_acnl_straw_cone', name: '동숲 전통 삿갓', emoji: '👒', cost: 140, desc: '비바람을 막아주는 정겨운 짚 삿갓' },
+    { id: 'hat_acnl_explorer', name: '사파리 탐험가 모자', emoji: '🤠', cost: 160, desc: '곤충과 물고기를 찾아 떠나는 탐험 모자' }
   ],
   blush: [
     // 기존 4종
@@ -492,7 +506,7 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'blush_band', name: '깜찍이 반창고', emoji: '🩹', cost: 70, desc: '코나 볼에 붙이는 힙한 스티커 반창고' },
     { id: 'blush_bubble', name: '비눗방울 방울방울', emoji: '🫧', cost: 80, desc: '얼굴 주위를 맴도는 영롱한 거품' },
     { id: 'blush_lipstick', name: '뽀뽀 립마크', emoji: '💄', cost: 80, desc: '사랑을 담은 레드 립스틱 마크' },
-    // 일반 확장 +10종
+    // 일반 확장 10종
     { id: 'blush_peach', name: '복숭아빛 코랄 블러셔', emoji: '🍑', cost: 65, desc: '자연스럽고 화사한 코랄빛 생기 볼터치' },
     { id: 'blush_cat_whiskers', name: '아기고양이 수염', emoji: '🐱', cost: 70, desc: '양 볼에 쏙 그려진 깜찍한 야옹이 수염' },
     { id: 'blush_star_freckles', name: '별빛 글리터 주근깨', emoji: '✨', cost: 75, desc: '코와 볼 위에 흩뿌려진 별빛 글리터' },
@@ -503,15 +517,19 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'blush_sparkle_eyes', name: '초롱초롱 만화 눈빛', emoji: '🥺', cost: 80, desc: '순정만화 주인공처럼 빛나는 반짝임' },
     { id: 'blush_cherry_mark', name: '체리 페이스 페인팅', emoji: '🍒', cost: 70, desc: '오른쪽 볼에 그려진 상큼한 앵두 마크' },
     { id: 'blush_sweat', name: '당황 땀방울', emoji: '😅', cost: 55, desc: '아슬아슬 오답 위기일 때 솟아나는 땀방울' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'blush_yoshi_egg', name: '요시 알 페이스 마크', emoji: '🥚', cost: 150, desc: '녹색 점박이 요시 알 귀여운 페인팅' },
     { id: 'blush_boo_blush', name: '부끄부끄 수줍음 볼', emoji: '👻', cost: 160, desc: '마주치면 얼굴을 가리는 텔레사 수줍음' },
     { id: 'blush_super_mushroom', name: '미니 1UP 버섯 페이스', emoji: '🍄', cost: 170, desc: '목숨을 늘려주는 앙증맞은 초록 버섯' },
     { id: 'blush_fireball_spark', name: '파이어볼 불꽃 스파크', emoji: '💥', cost: 160, desc: '마리오가 던지는 지글지글 파이어 스파크' },
-    { id: 'blush_coin_shine', name: '골드 반짝임 이펙트', emoji: '🪙', cost: 150, desc: '코인을 먹었을 때 팡 터지는 금빛 스파클' }
+    { id: 'blush_coin_shine', name: '골드 반짝임 이펙트', emoji: '🪙', cost: 150, desc: '코인을 먹었을 때 팡 터지는 금빛 스파클' },
+    // 동물의 숲 테마 3종
+    { id: 'blush_acnl_cheeks', name: '동숲 시그니처 주황볼', emoji: '🍊', cost: 130, desc: '동숲 캐릭터 특유의 동글동글 주황빛 볼터치' },
+    { id: 'blush_acnl_joy', name: '동숲 기쁨 반짝 리액션', emoji: '✨', cost: 150, desc: '정답을 맞혔을 때 번쩍이는 환호 리액션' },
+    { id: 'blush_acnl_sweat', name: '동숲 충격 땀방울', emoji: '💧', cost: 130, desc: '틀렸을 때 흠칫 놀라며 솟는 큼직한 땀방울' }
   ],
   neck: [
-    // 신규 카테고리 1: 일반 10종
+    // 일반 10종
     { id: 'neck_red_scarf', name: '따뜻한 빨간 목도리', emoji: '🧣', cost: 80, desc: '겨울바람을 막아주는 포근한 털목도리' },
     { id: 'neck_bow_tie', name: '신사 보타이 나비넥타이', emoji: '🎀', cost: 85, desc: '단정하고 기품 있는 클래식 블랙 보타이' },
     { id: 'neck_gold_chain', name: '스웨그 골드 체인', emoji: '🥇', cost: 110, desc: '힙합 비트가 들릴 듯한 묵직한 금목걸이' },
@@ -522,15 +540,52 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'neck_hawaiian_lei', name: '알로하 꽃목걸이', emoji: '🌺', cost: 90, desc: '열대 꽃잎으로 엮은 트로피컬 레이' },
     { id: 'neck_medal', name: '맞춤법 챔피언 금메달', emoji: '🏅', cost: 130, desc: '전국 맞춤법 대회 1위의 영예 메달' },
     { id: 'neck_heart_pendant', name: '루비 하트 펜던트', emoji: '💖', cost: 100, desc: '심장처럼 반짝이는 루비 보석 펜던트' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'neck_mario_overalls', name: '마리오 데님 멜빵', emoji: '👖', cost: 180, desc: '노란 단추가 돋보이는 마리오 트레이드마크 멜빵' },
     { id: 'neck_luigi_overalls', name: '루이지 블루 멜빵', emoji: '👖', cost: 180, desc: '초록 셔츠와 찰떡인 루이지 작업용 멜빵' },
     { id: 'neck_bowser_spiked_collar', name: '쿠파 대마왕 징목걸이', emoji: '⛓️', cost: 200, desc: '쿠파의 목을 장식하는 철제 스파이크 쵸커' },
     { id: 'neck_donkey_tie', name: '동키콩 시그니처 레드타이', emoji: '👔', cost: 190, desc: 'DK 노란 글씨가 새겨진 정글 동키콩 넥타이' },
     { id: 'neck_daisy_brooch', name: '데이지 꽃 브로치', emoji: '🌼', cost: 190, desc: '사라사랜드의 상징 해바라기 넥 브로치' }
   ],
+  outfit: [
+    // 신규 카테고리 1: 전신 의상/원피스/멜빵 16종
+    { id: 'outfit_acnl_leaf', name: '동숲 알로하 나뭇잎 셔츠', emoji: '🍃', cost: 180, desc: '동물의 숲 시그니처 초록 나뭇잎 하와이안 셔츠' },
+    { id: 'outfit_acnl_nook', name: '너굴 상점 청록 에이프런', emoji: '🦝', cost: 200, desc: '콩돌밤돌이와 너굴 사장이 입는 클래식 앞치마' },
+    { id: 'outfit_acnl_isabelle', name: '여울이 니트 가디건', emoji: '🧶', cost: 210, desc: '안내소 수석 비서 여울이의 단정한 그린 체크 조끼' },
+    { id: 'outfit_acnl_kk', name: 'K.K. 라이브 티셔츠', emoji: '🎸', cost: 190, desc: '토요일 밤 클럽 LOL 콘서트 투어 기념 티셔츠' },
+    { id: 'outfit_mario_overalls', name: '슈퍼 마리오 멜빵 작업복', emoji: '👖', cost: 220, desc: '빨간 티셔츠와 파란 데님 멜빵바지의 전설적 조합' },
+    { id: 'outfit_luigi_overalls', name: '루이지 그린 멜빵 작업복', emoji: '👖', cost: 220, desc: '초록 티셔츠와 멜빵바지로 완성하는 형제 코스튬' },
+    { id: 'outfit_peach_dress', name: '피치공주 로열 핑크드레스', emoji: '👗', cost: 240, desc: '버섯 왕국 공주님의 우아하고 화려한 핑크 드레스' },
+    { id: 'outfit_school_uniform', name: '스마트 단정 교복', emoji: '👔', cost: 120, desc: '국어 만점 모범생의 단정하고 깔끔한 교복' },
+    { id: 'outfit_hoodie', name: '파스텔 오버핏 후드티', emoji: '🧥', cost: 110, desc: '포근하고 편안한 감성의 파스텔톤 캐주얼 후드' },
+    { id: 'outfit_sailor', name: '마린 세일러 원피스', emoji: '👗', cost: 130, desc: '시원한 바다바람이 느껴지는 네이비 세일러복' },
+    { id: 'outfit_tuxedo', name: '신사 클래식 턱시도', emoji: '🤵', cost: 160, desc: '특별한 파티와 시상식을 위한 최고급 블랙 정장' },
+    { id: 'outfit_hanbok', name: '색동 고운 전통 한복', emoji: '👘', cost: 170, desc: '고운 색동저고리와 풍성한 전통 명절 한복' },
+    { id: 'outfit_cheerleader', name: '치어리더 응원복', emoji: '📣', cost: 130, desc: '정답을 맞힐 때마다 힘찬 에너지를 주는 응원복' },
+    { id: 'outfit_detective_coat', name: '명탐정 트렌치코트', emoji: '🕵️', cost: 150, desc: '맞춤법의 오류를 쫓는 지적인 베이지 코트' },
+    { id: 'outfit_dinosaur', name: '아기공룡 점프수트', emoji: '🦖', cost: 160, desc: '꼬리가 앙증맞게 달린 귀여운 공룡 파자마' },
+    { id: 'outfit_bear_overall', name: '곰돌이 코듀로이 멜빵', emoji: '🧸', cost: 140, desc: '가슴에 곰돌이 자수가 새겨진 골덴 멜빵바지' }
+  ],
+  shoes: [
+    // 신규 카테고리 2: 신발/풋웨어 15종
+    { id: 'shoes_red_sneakers', name: '빨간 캔버스 스니커즈', emoji: '👟', cost: 80, desc: '경쾌하게 뛰어다닐 수 있는 올스타 스니커즈' },
+    { id: 'shoes_acnl_boots', name: '동숲 탐험가 브라운 워커', emoji: '🥾', cost: 150, desc: '나무 흔들기와 화석 발굴에 딱 맞는 튼튼한 가죽 워커' },
+    { id: 'shoes_acnl_rainboots', name: '노란 삐약이 레인부츠', emoji: '👢', cost: 120, desc: '비 오는 날 물웅덩이를 찰방거리는 귀여운 장화' },
+    { id: 'shoes_mario_leather', name: '마리오 브라운 가죽구두', emoji: '👞', cost: 190, desc: '벽돌을 쾅쾅 밟아도 끄떡없는 마리오의 둥근 구두' },
+    { id: 'shoes_luigi_leather', name: '루이지 클래식 슈즈', emoji: '👞', cost: 190, desc: '높이 점프할 수 있는 루이지의 단단한 갈색 신발' },
+    { id: 'shoes_peach_pumps', name: '피치공주 루비 펌프스', emoji: '👠', cost: 200, desc: '걸을 때마다 또각또각 맑은 소리가 나는 핑크 힐' },
+    { id: 'shoes_rollerskate', name: '네온 롤러스케이트', emoji: '🛼', cost: 130, desc: '빛나는 바퀴로 씽씽 미끄러지는 레트로 롤러' },
+    { id: 'shoes_straw_sandals', name: '자연 볏짚 짚신', emoji: '👡', cost: 70, desc: '가볍고 시원한 옛 선비들의 전통 짚신' },
+    { id: 'shoes_bunny_slippers', name: '토끼 털실내화', emoji: '🐰', cost: 90, desc: '귀가 쫑긋 달린 보들보들 포근한 실내화' },
+    { id: 'shoes_ballet_flats', name: '로맨틱 발레 플랫슈즈', emoji: '🩰', cost: 110, desc: '발레리나의 사뿐사뿐한 스텝을 닮은 슈즈' },
+    { id: 'shoes_soccer_cleats', name: '스트라이커 축구화', emoji: '⚽', cost: 100, desc: '잔디밭을 질주하는 날렵한 스파이크 축구화' },
+    { id: 'shoes_hiking_boots', name: '알프스 고성능 등산화', emoji: '🥾', cost: 110, desc: '험준한 산도 거뜬히 오르는 방수 트레킹화' },
+    { id: 'shoes_rainbow_shoes', name: '무지개 LED 라이트 슈즈', emoji: '👟', cost: 140, desc: '발을 디딜 때마다 일곱빛깔 불빛이 켜지는 운동화' },
+    { id: 'shoes_bear_slippers', name: '곰발바닥 털슬리퍼', emoji: '🐾', cost: 95, desc: '발바닥 젤리가 콕 박힌 따뜻한 겨울 슬리퍼' },
+    { id: 'shoes_gold_boots', name: '황금빛 챔피언 부츠', emoji: '🥾', cost: 180, desc: '만점 랭킹 1위의 위엄을 상징하는 골드 윙 부츠' }
+  ],
   hand: [
-    // 신규 카테고리 2: 일반 10종
+    // 일반 10종
     { id: 'hand_magic_wand', name: '별빛 요술봉', emoji: '🪄', cost: 95, desc: '오답을 뿅 지워줄 듯한 신비로운 요술봉' },
     { id: 'hand_fountain_pen', name: '황금 만년필', emoji: '✒️', cost: 85, desc: '명작을 써내려가는 국어학자의 고급 만년필' },
     { id: 'hand_ice_cream', name: '소프트 바닐라 콘', emoji: '🍦', cost: 60, desc: '달콤하고 시원한 3단 소프트 아이스크림' },
@@ -541,15 +596,21 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'hand_bouquet', name: '향기로운 꽃다발', emoji: '💐', cost: 90, desc: '축하와 감사를 전하는 화사한 플라워 부케' },
     { id: 'hand_book', name: '표준국어대사전', emoji: '📖', cost: 95, desc: '모든 맞춤법 해답이 담긴 가죽 양장본 사전' },
     { id: 'hand_lightstick', name: '아이돌 응원봉', emoji: '🪄', cost: 100, desc: '무지갯빛으로 반짝이는 응원봉' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'hand_mario_wrench', name: '배관공 만능 렌치', emoji: '🔧', cost: 170, desc: '하수관 파이프를 척척 고치는 황동 렌치' },
     { id: 'hand_luigi_vacuum', name: '유령청소기 호스', emoji: '🧹', cost: 210, desc: '유령 맨션을 정화하는 폴터가스트 청소기' },
     { id: 'hand_super_hammer', name: '슈퍼 파괴 해머', emoji: '🔨', cost: 190, desc: '오답 블록을 단숨에 부수는 강력한 해머' },
     { id: 'hand_peach_parasol', name: '피치공주 하트 양산', emoji: '⛱️', cost: 200, desc: '공중에서 사뿐히 활강하는 레이스 양산' },
-    { id: 'hand_koopa_shell', name: '엉금엉금 등껍질', emoji: '🐢', cost: 180, desc: '앞으로 슝 던질 수 있는 초록 등껍질' }
+    { id: 'hand_koopa_shell', name: '엉금엉금 등껍질', emoji: '🐢', cost: 180, desc: '앞으로 슝 던질 수 있는 초록 등껍질' },
+    // 동물의 숲 테마 5종
+    { id: 'hand_acnl_net', name: '동숲 잠자리채', emoji: '🕸️', cost: 170, desc: '희귀 곤충을 휙 낚아채는 동숲 잠자리채' },
+    { id: 'hand_acnl_rod', name: '동숲 은 낚싯대', emoji: '🎣', cost: 170, desc: '물고기가 톡톡 건드릴 때 낚아채는 낚싯대' },
+    { id: 'hand_acnl_axe', name: '동숲 튼튼한 은도끼', emoji: '🪓', cost: 180, desc: '목재를 모으고 바위를 치는 튼튼한 도끼' },
+    { id: 'hand_acnl_can', name: '코끼리 물뿌리개', emoji: '🐘', cost: 160, desc: '꽃밭에 물을 주면 반짝반짝 빛나게 하는 조리개' },
+    { id: 'hand_acnl_slingshot', name: '선물 풍선 새총', emoji: '🎯', cost: 160, desc: '하늘에 떠가는 선물 풍선을 팡 터뜨리는 새총' }
   ],
   back: [
-    // 신규 카테고리 3: 일반 10종
+    // 일반 10종
     { id: 'back_angel_wings', name: '순백의 천사 날개', emoji: '🪽', cost: 150, desc: '등 뒤에서 은은하게 빛나는 성스러운 날개' },
     { id: 'back_devil_wings', name: '장난꾸러기 악마 날개', emoji: '🦇', cost: 140, desc: '박쥐 모양의 날렵한 흑마법 날개' },
     { id: 'back_hero_cape', name: '진홍빛 영웅 망토', emoji: '🦸', cost: 130, desc: '바람에 펄럭이는 정의의 슈퍼히어로 망토' },
@@ -560,15 +621,18 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'back_jetpack', name: '사이버 제트팩', emoji: '🚀', cost: 160, desc: '등 뒤에서 불꽃을 뿜으며 하늘을 나는 추진기' },
     { id: 'back_balloon_bundle', name: '알록달록 풍선 다발', emoji: '🎈', cost: 95, desc: '하늘 위로 둥실 떠오르게 해주는 헬륨풍선' },
     { id: 'back_wings_gold', name: '황금빛 불사조 날개', emoji: '🪽', cost: 200, desc: '만점자에게만 주어지는 불멸의 골드 윙' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'back_mario_cape', name: '마리오 슈퍼 망토', emoji: '🦸', cost: 210, desc: '달리면 하늘을 활공할 수 있는 노란 슈퍼 망토' },
     { id: 'back_bowser_shell', name: '쿠파 가시 등껍질', emoji: '🐢', cost: 240, desc: '무시무시한 철갑 가시가 돋친 대마왕 등딱지' },
     { id: 'back_tanooki_tail', name: '너구리 마리오 꼬리', emoji: '🦝', cost: 200, desc: '빙글빙글 돌려 낙하속도를 늦추는 너구리 꼬리' },
     { id: 'back_fludd_water', name: '선샤인 펌프 물분사기', emoji: '🔫', cost: 220, desc: '돌픽섬을 청소하던 AI 물대포 F.L.U.D.D.' },
-    { id: 'back_propeller_suit', name: '비행 프로펠러 장치', emoji: '🚁', cost: 210, desc: '위로 슝 솟구쳐 오르는 비행 프로펠러 슈트' }
+    { id: 'back_propeller_suit', name: '비행 프로펠러 장치', emoji: '🚁', cost: 210, desc: '위로 슝 솟구쳐 오르는 비행 프로펠러 슈트' },
+    // 동물의 숲 테마 2종
+    { id: 'back_acnl_cage', name: '동숲 곤충채집통 바구니', emoji: '🧺', cost: 170, desc: '잡은 나비와 메뚜기를 안전하게 보관하는 대나무 통' },
+    { id: 'back_acnl_backpack', name: '동숲 나뭇잎 슬링백', emoji: '🎒', cost: 180, desc: '초록 나뭇잎 모양의 앙증맞은 가죽 슬링백' }
   ],
   pet: [
-    // 신규 카테고리 4: 일반 10종
+    // 일반 10종
     { id: 'pet_chick', name: '삐약이 아기병아리', emoji: '🐥', cost: 90, desc: '발밑에서 종종걸음으로 따라다니는 병아리' },
     { id: 'pet_puppy', name: '꼬리치는 시바견', emoji: '🐕', cost: 110, desc: '주인만 바라보며 반기는 충성스러운 댕댕이' },
     { id: 'pet_kitten', name: '골골송 삼색 아기고양이', emoji: '🐈', cost: 110, desc: '무릎 위를 좋아하는 사랑스러운 냥이' },
@@ -579,12 +643,16 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'pet_duck', name: '노란 러버덕', emoji: '🦆', cost: 80, desc: '물 위를 둥둥 떠다니는 장난기 많은 오리' },
     { id: 'pet_turtle', name: '느긋한 바다거북', emoji: '🐢', cost: 90, desc: '천천히 침착하게 100점을 돕는 지혜의 거북' },
     { id: 'pet_owl', name: '지혜의 부엉이', emoji: '🦉', cost: 115, desc: '밤샘 공부를 함께해주는 똑똑한 올빼미' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'pet_yoshi_baby', name: '아기 공룡 요시', emoji: '🦖', cost: 230, desc: '사과를 날름 먹는 귀여운 녹색 아기 요시' },
     { id: 'pet_goomba', name: '순둥이 굼바', emoji: '🍄', cost: 180, desc: '언제나 씩씩하게 걸어오는 버섯 왕국의 굼바' },
     { id: 'pet_koopa_troopa', name: '초록 엉금엉금 꼬마', emoji: '🐢', cost: 190, desc: '등껍질에 숨었다 나오는 꼬마 거북 병사' },
     { id: 'pet_chain_chomp', name: '왕멍멍이', emoji: '⛓️', cost: 220, desc: '철사슬에 묶여 컹컹 짖는 무쇠 멍멍이' },
-    { id: 'pet_shyguy', name: '가면 쓴 헤이호', emoji: '🎭', cost: 200, desc: '하얀 가면을 쓰고 조용히 돕는 신비한 친구' }
+    { id: 'pet_shyguy', name: '가면 쓴 헤이호', emoji: '🎭', cost: 200, desc: '하얀 가면을 쓰고 조용히 돕는 신비한 친구' },
+    // 동물의 숲 테마 3종
+    { id: 'pet_acnl_timmy', name: '콩돌이&밤돌이 형제', emoji: '🦝', cost: 220, desc: '물건을 사면 꼬리를 살랑거리며 인사하는 너굴 형제' },
+    { id: 'pet_acnl_isabelle', name: '미니 마스코트 여울이', emoji: '🐶', cost: 230, desc: '언제나 밝은 미소로 응원해주는 친절한 여울이' },
+    { id: 'pet_acnl_kk', name: '기타맨 K.K. 슬라이더', emoji: '🎸', cost: 240, desc: '어쿠스틱 감성 멜로디를 들려주는 방랑 음악가' }
   ],
   aura: [
     // 기존 4종
@@ -592,7 +660,7 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'aura_cape', name: '영웅의 슈퍼망토', emoji: '🦸', cost: 180, desc: '정의의 사도를 상징하는 펄럭이는 망토' },
     { id: 'aura_fire', name: '불꽃 투지 아우라', emoji: '🔥', cost: 220, desc: '온몸을 감싸는 활활 타오르는 열정 불꽃' },
     { id: 'aura_rainbow', name: '환상의 무지개', emoji: '🌈', cost: 190, desc: '머리 위에 떠오르는 찬란한 일곱빛깔 무지개' },
-    // 일반 확장 +10종
+    // 일반 확장 10종
     { id: 'aura_cherry_blossom', name: '흩날리는 벚꽃비', emoji: '🌸', cost: 140, desc: '화사하게 흩날리는 봄날의 벚꽃잎' },
     { id: 'aura_sparkle_galaxy', name: '우주 은하수 오라', emoji: '🌌', cost: 180, desc: '별과 은하가 소용돌이치는 신비한 우주빛' },
     { id: 'aura_music_notes', name: '신나는 댄싱 음표', emoji: '🎶', cost: 120, desc: '경쾌한 리듬에 맞춰 춤추는 알록달록 음표' },
@@ -603,12 +671,16 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'aura_winter_snow', name: '포근한 함박눈', emoji: '❄️', cost: 140, desc: '하늘에서 사뿐사뿐 내리는 새하얀 눈송이' },
     { id: 'aura_bubbles', name: '영롱한 무지개 방울', emoji: '🫧', cost: 130, desc: '빛을 받아 영롱하게 반짝이는 대형 비눗방울' },
     { id: 'aura_heart_field', name: '두근두근 하트 필드', emoji: '💖', cost: 150, desc: '사랑과 행복이 퐁퐁 솟아나는 핑크빛 장막' },
-    // 마리오 테마 코스튬 +5종
+    // 마리오 테마 코스튬 5종
     { id: 'aura_star_invincible', name: '무적 스타 반짝임', emoji: '⭐', cost: 250, desc: '오색 빛으로 발광하는 무적 상태 BGM 효과' },
     { id: 'aura_coin_shower', name: '골드 코인 샤워', emoji: '🪙', cost: 240, desc: '하늘에서 금화가 쏟아져 내리는 대박 효과' },
     { id: 'aura_castle_firework', name: '스테이지 클리어 폭죽', emoji: '🎆', cost: 230, desc: '깃발을 내릴 때 피어오르는 축하 불꽃놀이' },
     { id: 'aura_warp_pipe', name: '초록 워프 파이프', emoji: '🧪', cost: 220, desc: '지하 세계로 쏙 들어가는 상징적인 토관' },
-    { id: 'aura_ghost_house', name: '유령의 집 몽환 안개', emoji: '🌫️', cost: 210, desc: '테레사가 숨어있는 신비롭고 몽환적인 밤안개' }
+    { id: 'aura_ghost_house', name: '유령의 집 몽환 안개', emoji: '🌫️', cost: 210, desc: '테레사가 숨어있는 신비롭고 몽환적인 밤안개' },
+    // 동물의 숲 테마 3종
+    { id: 'aura_acnl_leaves', name: '살랑살랑 나뭇잎 비', emoji: '🍃', cost: 200, desc: '바람을 타고 빙글빙글 흩날리는 동숲 나뭇잎' },
+    { id: 'aura_acnl_bells', name: '대박 99000벨 샤워', emoji: '💰', cost: 230, desc: '바위를 쳤을 때 쏟아져 나오는 풍요로운 벨 자루' },
+    { id: 'aura_acnl_gyroid', name: '흔들흔들 토용 댄스', emoji: '🗿', cost: 210, desc: '비 온 다음 날 발굴되는 귀여운 토용들의 댄스' }
   ]
 };
 
@@ -620,7 +692,7 @@ function findAccessoryById(id) {
   return null;
 }
 
-function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48, clickable = false) {
+function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48, clickable = false, mode = 'compact') {
   const acc = accessories || {};
   const auraItem = acc.aura ? findAccessoryById(acc.aura) : null;
   const backItem = acc.back ? findAccessoryById(acc.back) : null;
@@ -631,7 +703,71 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
   const hatItem = acc.hat ? findAccessoryById(acc.hat) : null;
   const handItem = acc.hand ? findAccessoryById(acc.hand) : null;
   const petItem = acc.pet ? findAccessoryById(acc.pet) : null;
+  const outfitItem = acc.outfit ? findAccessoryById(acc.outfit) : null;
+  const shoesItem = acc.shoes ? findAccessoryById(acc.shoes) : null;
 
+  const glassesMode = acc.glassesMode || 'eyes';
+  const isMarioStache = glassesItem && (glassesItem.id.includes('stache') || glassesItem.id.includes('mario'));
+  const isMarioHat = hatItem && (hatItem.id.includes('mario') || hatItem.id.includes('luigi'));
+
+  let glassesClass = 'acc-layer acc-glasses';
+  if (isMarioStache) {
+    glassesClass += ' mario-stache';
+  } else if (glassesMode === 'head') {
+    glassesClass += ' wear-head';
+  } else {
+    glassesClass += ' wear-eyes';
+  }
+
+  let hatClass = 'acc-layer acc-hat';
+  if (isMarioHat) {
+    hatClass += ' mario-cap';
+  }
+
+  if (mode === 'fullbody') {
+    const fullHeight = Math.round(size * 1.38);
+    const headFontSize = Math.round(size * 0.52);
+
+    return `
+      <div class="composite-avatar fullbody ${clickable ? 'clickable' : ''}" style="width: ${size}px; height: ${fullHeight}px; font-size: ${headFontSize}px;">
+        ${auraItem ? `<span class="acc-layer acc-aura">${auraItem.emoji}</span>` : ''}
+        ${backItem ? `<span class="acc-layer acc-back">${backItem.emoji}</span>` : ''}
+        <div class="avatar-soft-shadow"></div>
+        <div class="fullbody-frame">
+          <!-- Head Box -->
+          <div class="fullbody-head-box">
+            <span class="acc-base-face">${baseAvatar || '🌸'}</span>
+            ${hatItem ? `<span class="${hatClass}">${hatItem.emoji}</span>` : ''}
+            ${glassesItem ? `<span class="${glassesClass}">${glassesItem.emoji}</span>` : ''}
+            ${pinItem ? `<span class="acc-layer acc-pin">${pinItem.emoji}</span>` : ''}
+            ${blushItem ? `<span class="acc-layer acc-blush">${blushItem.emoji}</span>` : ''}
+            ${neckItem ? `<span class="acc-layer acc-neck">${neckItem.emoji}</span>` : ''}
+          </div>
+
+          <!-- Torso Box -->
+          <div class="fullbody-torso-box">
+            <div class="fullbody-arm left"></div>
+            <div class="fullbody-arm right"></div>
+            <div class="torso-inner-chibi">
+              <div class="acc-outfit-layer">
+                ${outfitItem ? outfitItem.emoji : '👕'}
+              </div>
+            </div>
+            ${handItem ? `<span class="acc-layer acc-hand" title="${handItem.name}">${handItem.emoji}</span>` : ''}
+          </div>
+
+          <!-- Legs & Shoes Box -->
+          <div class="fullbody-legs-box">
+            <div class="chibi-foot left">${shoesItem ? shoesItem.emoji : '👟'}</div>
+            <div class="chibi-foot right">${shoesItem ? shoesItem.emoji : '👟'}</div>
+          </div>
+        </div>
+        ${petItem ? `<span class="acc-layer acc-pet">${petItem.emoji}</span>` : ''}
+      </div>
+    `;
+  }
+
+  // Compact Badge Mode
   return `
     <div class="composite-avatar ${clickable ? 'clickable' : ''}" style="width: ${size}px; height: ${size}px; font-size: ${Math.round(size * 0.68)}px;">
       ${auraItem ? `<span class="acc-layer acc-aura">${auraItem.emoji}</span>` : ''}
@@ -639,9 +775,9 @@ function renderCompositeAvatar(baseAvatar = '🌸', accessories = {}, size = 48,
       <span class="acc-base-face">${baseAvatar || '🌸'}</span>
       ${neckItem ? `<span class="acc-layer acc-neck">${neckItem.emoji}</span>` : ''}
       ${blushItem ? `<span class="acc-layer acc-blush">${blushItem.emoji}</span>` : ''}
-      ${glassesItem ? `<span class="acc-layer acc-glasses">${glassesItem.emoji}</span>` : ''}
+      ${glassesItem ? `<span class="${glassesClass}">${glassesItem.emoji}</span>` : ''}
       ${pinItem ? `<span class="acc-layer acc-pin">${pinItem.emoji}</span>` : ''}
-      ${hatItem ? `<span class="acc-layer acc-hat">${hatItem.emoji}</span>` : ''}
+      ${hatItem ? `<span class="${hatClass}">${hatItem.emoji}</span>` : ''}
       ${handItem ? `<span class="acc-layer acc-hand">${handItem.emoji}</span>` : ''}
       ${petItem ? `<span class="acc-layer acc-pet">${petItem.emoji}</span>` : ''}
     </div>
@@ -686,7 +822,7 @@ class DataManager {
         lastActiveDate: today,
         completedDates: [today],
         solvedQuestionMap: { spelling: [], idiom: [], hanja: [], english: [] },
-        avatarAccessories: { pin: null, glasses: null, hat: null, blush: null, neck: null, hand: null, back: null, pet: null, aura: null },
+        avatarAccessories: { pin: null, glasses: null, hat: null, blush: null, neck: null, outfit: null, shoes: null, hand: null, back: null, pet: null, aura: null, glassesMode: 'eyes' },
         inventoryAccessories: []
       },
       apiKey: 'C0E0448602CD3B859FDDD29BBD84289C',
@@ -798,7 +934,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.8.0';
+    this.APP_VERSION = metaVer || '2.9.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -995,12 +1131,14 @@ class HaruMatchumApp {
     const btnCloseShop = document.getElementById('btnCloseShop');
     const btnBottomCloseShop = document.getElementById('btnBottomCloseShop');
     const btnResetShopPreview = document.getElementById('btnResetShopPreview');
+    const btnToggleGlassesMode = document.getElementById('btnToggleGlassesMode');
 
     if (btnOpenShop) btnOpenShop.addEventListener('click', () => this.openShopModal());
     if (btnQuizShopQuick) btnQuizShopQuick.addEventListener('click', () => this.openShopModal('items'));
     if (btnCloseShop) btnCloseShop.addEventListener('click', () => this.closeShopModal());
     if (btnBottomCloseShop) btnBottomCloseShop.addEventListener('click', () => this.closeShopModal());
     if (btnResetShopPreview) btnResetShopPreview.addEventListener('click', () => this.resetShopPreview());
+    if (btnToggleGlassesMode) btnToggleGlassesMode.addEventListener('click', () => this.toggleGlassesMode());
 
     if (this.modalShop) {
       this.modalShop.addEventListener('click', (e) => {
@@ -1715,9 +1853,59 @@ class HaruMatchumApp {
     return this.selectUnsolvedFirstQuestions(bank, count, this.quizSubject);
   }
 
+  renderQuizCompanionAvatar(reaction = 'idle') {
+    const avatarEl = document.getElementById('quizCompanionAvatar');
+    const speechEl = document.getElementById('quizCompanionSpeech');
+    if (!avatarEl) return;
+
+    const u = this.data.currentUser || { avatar: '🌸', avatarAccessories: {} };
+    avatarEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 52, false, 'fullbody');
+
+    // Remove existing reaction classes
+    avatarEl.classList.remove('acnl-idle', 'acnl-cheer', 'acnl-shock');
+
+    if (reaction === 'cheer') {
+      avatarEl.classList.add('acnl-cheer');
+      if (speechEl) {
+        const cheers = [
+          '정답이야! 정말 대단해! 🎉✨',
+          '완벽해! 이 기세로 만점 가자! 💖',
+          '우와! 맞춤법 실력 최고야! 🌟',
+          '야호! 정답 보너스 팡팡! 🍃'
+        ];
+        speechEl.textContent = cheers[Math.floor(Math.random() * cheers.length)];
+      }
+    } else if (reaction === 'shock') {
+      avatarEl.classList.add('acnl-shock');
+      if (speechEl) {
+        const shocks = [
+          '앗, 아쉽지만 괜찮아! 다시 집중! 💦',
+          '다음 문제에서 꼭 만회해보자! 🥺🍀',
+          '설명을 꼼꼼히 읽고 넘어가자! 📖',
+          '실수는 성공의 어머니! 힘내! 💪'
+        ];
+        speechEl.textContent = shocks[Math.floor(Math.random() * shocks.length)];
+      }
+    } else {
+      avatarEl.classList.add('acnl-idle');
+      if (speechEl) {
+        const idles = [
+          '오늘도 만점을 향해 힘내자! 차근차근 풀면 다 맞힐 수 있어! 🍃✨',
+          '문제를 꼼꼼히 읽고 신중하게 골라봐! 🌸',
+          '동물의 숲 친구가 곁에서 응원하고 있어! 🐾',
+          '맞춤법 마스터를 향해 파이팅! 🍀'
+        ];
+        speechEl.textContent = idles[Math.floor(Math.random() * idles.length)];
+      }
+    }
+  }
+
   renderCurrentQuestion() {
     const q = this.activeQuestions[this.currentIndex];
     const total = this.activeQuestions.length;
+
+    // Animal Crossing fullbody quiz companion avatar
+    this.renderQuizCompanionAvatar('idle');
 
     // Progress bar
     const progressPercent = ((this.currentIndex + 1) / total) * 100;
@@ -1886,6 +2074,7 @@ class HaruMatchumApp {
 
     // Audio & Score & Round correct tracking
     if (isCorrect) {
+      this.renderQuizCompanionAvatar('cheer');
       this.roundCorrectCount++;
       this.combo++;
       if (this.combo > this.maxCombo) this.maxCombo = this.combo;
@@ -1910,6 +2099,7 @@ class HaruMatchumApp {
         setTimeout(() => this.openLuckyBoxModal(), 650);
       }
     } else {
+      this.renderQuizCompanionAvatar('shock');
       this.combo = 0;
       sfx.wrong();
 
@@ -3202,7 +3392,9 @@ class HaruMatchumApp {
     previewEl.innerHTML = renderCompositeAvatar(
       this.data.currentUser.avatar || '🌸',
       this.previewAccessories,
-      110
+      90,
+      false,
+      'fullbody'
     );
 
     const equipped = this.data.currentUser.avatarAccessories || {};
@@ -3211,17 +3403,51 @@ class HaruMatchumApp {
 
     const statusEl = document.getElementById('shopPreviewStatusText');
     const resetBtn = document.getElementById('btnResetShopPreview');
+    const toggleGlassesBtn = document.getElementById('btnToggleGlassesMode');
+
     if (isDifferent) {
       if (statusEl) {
-        statusEl.innerHTML = `<span style="color: #4f46e5; font-weight: 800;">✨ 가상 피팅 미리보기 중!</span>`;
+        statusEl.innerHTML = `<span style="color: #4f46e5; font-weight: 800;">✨ 동물의 숲 2.5등신 가상 피팅 중!</span>`;
       }
       if (resetBtn) resetBtn.style.display = 'inline-flex';
     } else {
       if (statusEl) {
-        statusEl.textContent = '실시간 착용 미리보기';
+        statusEl.textContent = '동물의 숲 2.5등신 실시간 착용 미리보기';
       }
       if (resetBtn) resetBtn.style.display = 'none';
     }
+
+    if (toggleGlassesBtn) {
+      const currentCat = this.currentAccCategory || 'pin';
+      const hasGlasses = (this.previewAccessories && this.previewAccessories.glasses) || (currentCat === 'glasses');
+      if (hasGlasses) {
+        toggleGlassesBtn.style.display = 'inline-flex';
+        const currentMode = (this.previewAccessories && this.previewAccessories.glassesMode) || 'eyes';
+        toggleGlassesBtn.innerHTML = currentMode === 'eyes'
+          ? '🕶️ 머리에 얹기 ⬆️'
+          : '👓 눈에 직접 쓰기 ⬇️';
+      } else {
+        toggleGlassesBtn.style.display = 'none';
+      }
+    }
+  }
+
+  toggleGlassesMode() {
+    if (!this.data.currentUser.avatarAccessories) {
+      this.data.currentUser.avatarAccessories = {};
+    }
+    const currentMode = (this.previewAccessories && this.previewAccessories.glassesMode) || this.data.currentUser.avatarAccessories.glassesMode || 'eyes';
+    const nextMode = currentMode === 'eyes' ? 'head' : 'eyes';
+    this.data.currentUser.avatarAccessories.glassesMode = nextMode;
+    if (this.previewAccessories) {
+      this.previewAccessories.glassesMode = nextMode;
+    }
+    DataManager.save(this.data);
+    this.renderShopAvatarPreview();
+    this.renderUserProfile();
+    this.syncUserData();
+    sfx.item();
+    this.showToastNotice(nextMode === 'head' ? '🕶️ 안경을 머리 위에 얹었습니다!' : '👓 안경을 눈에 직접 착용했습니다!');
   }
 
   previewAccessory(category, id) {
@@ -3339,7 +3565,7 @@ class HaruMatchumApp {
 
     const displayEl = document.getElementById('avatarZoomDisplay');
     if (displayEl) {
-      displayEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 140);
+      displayEl.innerHTML = renderCompositeAvatar(u.avatar || '🌸', u.avatarAccessories || {}, 120, false, 'fullbody');
     }
     const nameEl = document.getElementById('avatarZoomName');
     if (nameEl) nameEl.textContent = u.name;
@@ -3383,7 +3609,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.8.0';
+    let currentVer = this.APP_VERSION || '2.9.0';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -3411,7 +3637,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.8.0';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.0';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -3431,7 +3657,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.8.0';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.0';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4416,7 +4642,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.8.0';
+      const clientVersion = this.APP_VERSION || '2.9.0';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

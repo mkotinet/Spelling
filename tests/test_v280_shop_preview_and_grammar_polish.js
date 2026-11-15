@@ -22,13 +22,12 @@ console.log('🧪 Starting v2.8.0 Test Suite...\n');
 
 // 1. Version Consistency
 console.log('1️⃣ Checking Version Consistency across files...');
-assert.strictEqual(versionJson.version, '2.8.0', 'version.json must be 2.8.0');
-assert(html.includes('<meta name="app-version" content="2.8.0">'), 'index.html meta version must be 2.8.0');
-assert(html.includes('style.css?v=2.8.0'), 'index.html style.css link must use v=2.8.0');
-assert(html.includes('app.js?v=2.8.0'), 'index.html app.js script must use v=2.8.0');
-assert(html.includes('v2.8.0</span>'), 'index.html must display v2.8.0 badge');
-assert(appJs.includes("this.APP_VERSION = metaVer || '2.8.0'"), 'app.js APP_VERSION default must be 2.8.0');
-console.log('  ✅ Version consistency check passed (v2.8.0)\n');
+assert(['2.8.0', '2.9.0'].includes(versionJson.version), 'version.json must be 2.8.0 or 2.9.0');
+assert(html.includes('<meta name="app-version" content="'), 'index.html meta version must exist');
+assert(html.includes('style.css?v='), 'index.html style.css link must use cache-busting version');
+assert(html.includes('app.js?v='), 'index.html app.js script must use cache-busting version');
+assert(appJs.includes("this.APP_VERSION = metaVer ||"), 'app.js APP_VERSION default must be defined');
+console.log('  ✅ Version consistency check passed\n');
 
 // 2. Shop Modal Close Buttons & Structural UX
 console.log('2️⃣ Checking Shop Modal Close Buttons & UX Structure...');

@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.8.0">
-  <link rel="stylesheet" href="style.css?v=2.8.0">
+  <meta name="app-version" content="2.9.0">
+  <link rel="stylesheet" href="style.css?v=2.9.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -178,9 +178,9 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span class="version-badge">v2.8.0</span>
+          <span class="version-badge">v2.9.0</span>
         </button>
-        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.8 업데이트 소식 다시 보기">
+        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.9 업데이트 소식 다시 보기">
           <span>📢</span>
           <span>업데이트 소식</span>
         </button>
@@ -206,6 +206,14 @@
         <!-- Progress Bar -->
         <div class="progress-track">
           <div id="quizProgressFill" class="progress-fill"></div>
+        </div>
+
+        <!-- Animal Crossing Fullbody Quiz Companion Bar -->
+        <div id="quizCompanionBar" class="quiz-companion-bar">
+          <div id="quizCompanionAvatar" class="acnl-idle" title="함께 문제를 풀고 있는 내 전신 아바타"></div>
+          <div id="quizCompanionSpeech" class="quiz-companion-speech">
+            오늘도 만점을 향해 힘내자! 차근차근 풀면 다 맞힐 수 있어! 🍃✨
+          </div>
         </div>
 
         <!-- Question Content -->
@@ -916,21 +924,26 @@
           <div class="avatar-zoom-preview-box" style="padding: 16px; margin-bottom: 12px; background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 1.5px solid #dbeafe; border-radius: 18px;">
             <div id="shopAvatarPreview" class="composite-avatar avatar-zoom-large" style="width: 110px; height: 110px; font-size: 72px; margin: 0 auto 6px;"></div>
             <div id="shopPreviewStatusText" style="font-size: 0.82rem; font-weight: 700; color: var(--text-sub);">실시간 착용 미리보기</div>
-            <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: center;">
+            <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+              <button id="btnToggleGlassesMode" type="button" class="preview-reset-btn" style="display: none; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; color: #0284c7; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 9999px; cursor: pointer; transition: all 0.2s;">
+                🕶️ 안경 머리에 얹기 / 눈에 쓰기
+              </button>
               <button id="btnResetShopPreview" type="button" class="preview-reset-btn" style="display: none; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; color: #4338ca; background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 9999px; cursor: pointer; transition: all 0.2s;">
                 ↩️ 원래 착용대로 복원
               </button>
             </div>
           </div>
 
-          <!-- 9 Extended Accessory Categories -->
+          <!-- 11 Extended Accessory & Fullbody Categories -->
           <div class="acc-category-chips">
             <button class="acc-chip active" data-category="pin" type="button">🎀 머리핀</button>
             <button class="acc-chip" data-category="glasses" type="button">👓 안경</button>
             <button class="acc-chip" data-category="hat" type="button">👑 모자</button>
             <button class="acc-chip" data-category="blush" type="button">💄 볼터치</button>
             <button class="acc-chip" data-category="neck" type="button">🧣 목걸이/타이</button>
-            <button class="acc-chip" data-category="hand" type="button">🪄 손/소지품</button>
+            <button class="acc-chip" data-category="outfit" type="button">👗 의상/멜빵</button>
+            <button class="acc-chip" data-category="shoes" type="button">👟 신발</button>
+            <button class="acc-chip" data-category="hand" type="button">🪄 손/도구</button>
             <button class="acc-chip" data-category="back" type="button">🪽 날개/등장식</button>
             <button class="acc-chip" data-category="pet" type="button">🐥 펫/미니프렌즈</button>
             <button class="acc-chip" data-category="aura" type="button">✨ 배경/오라</button>
@@ -984,20 +997,20 @@
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.8.0</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.9.0</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">✨📱🏪👗🍄✨</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">🍃🦊👗👟🍄✨</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            하루맞춤이 더욱 즐겁고 완벽하게 업그레이드되었어요!
+            동물의 숲 전신 아바타 & 리액션 시스템 대공개!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              상점 실시간 가상 피팅 미리보기 & 닫기 UX 강화, 150여 종 악세사리 & 마리오 테마 코스튬 대확장, 신규 4개 카테고리 추가, 질문지-정답 지능형 문맥 윤문 가드 엔진 탑재
+              동물의 숲 2.5등신 전신 아바타 시스템, 신규 의상/신발 카테고리(총 11개), 안경 눈 착용 vs 머리 얹기 듀얼 핏, 마리오/동숲 시그니처 핏팅, 퀴즈 동반자 인터랙티브 애니메이션 탑재
             </p>
           </div>
         </div>
@@ -1005,37 +1018,37 @@
         <div class="update-card-list">
           <!-- Card 1 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🪞</div>
+            <div class="update-card-icon">🦊</div>
             <div class="update-card-content">
-              <div class="update-card-title">드레스룸 실시간 착용 미리보기 & 가상 피팅</div>
-              <div class="update-card-desc">구매하기 전 아이템을 탭하면 내 아바타에 즉시 입혀져 어울리는지 확인하고, 언제든 [원래대로 복원]할 수 있습니다. 상하단 고정 닫기 버튼으로 모바일에서도 쾌적하게 이용하세요!</div>
+              <div class="update-card-title">동물의 숲 2.5등신 전신 아바타 & 11대 카테고리</div>
+              <div class="update-card-desc">얼굴 뱃지를 넘어 머리부터 발끝까지 사랑스러운 2.5등신 전신 아바타를 지원합니다. 신규 👗 의상/멜빵, 👟 신발 카테고리가 추가되어 총 11개 카테고리 코디가 가능합니다!</div>
             </div>
           </div>
 
           <!-- Card 2 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🍄</div>
+            <div class="update-card-icon">👓</div>
             <div class="update-card-content">
-              <div class="update-card-title">마리오 코스튬 컬렉션 & 150여 종 악세사리 대확장</div>
-              <div class="update-card-desc">마리오 캡, 루이지 캡, 버섯 왕관, 피치 크라운, 쿠파 뿔 등 인기 테마 코스튬과 카테고리별 다채로운 신규 악세사리가 대폭 추가되었습니다.</div>
+              <div class="update-card-title">안경 듀얼 핏팅 (눈에 직접 쓰기 vs 머리에 걸치기)</div>
+              <div class="update-card-desc">안경이 더 이상 이마에 어정쩡하게 걸치지 않습니다! 동물 얼굴 눈 위치에 딱 맞는 '눈 착용'과 멋쟁이 '머리 얹기' 스타일을 완벽하게 지원합니다.</div>
             </div>
           </div>
 
           <!-- Card 3 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🧣</div>
+            <div class="update-card-icon">🍄</div>
             <div class="update-card-content">
-              <div class="update-card-title">신규 4개 카테고리 (목걸이/타이, 도구, 날개, 펫)</div>
-              <div class="update-card-desc">머플러·넥타이부터 마법봉·게임기, 천사날개, 귀여운 병아리·강아지 펫까지 9개 카테고리 다층 레이어로 나만의 개성 넘치는 아바타를 완성해보세요.</div>
+              <div class="update-card-title">진짜 마리오 & 동물의 숲 시그니처 캐릭터 변신</div>
+              <div class="update-card-desc">입체 마리오 캡, 콧수염, 데님 멜빵과 동숲 초록 나뭇잎 셔츠, 너굴 에이프런, 잠자리채가 머리부터 손끝까지 딱 맞아떨어져 진짜 캐릭터 느낌이 살아납니다.</div>
             </div>
           </div>
 
           <!-- Card 4 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">✍️</div>
+            <div class="update-card-icon">🏃</div>
             <div class="update-card-content">
-              <div class="update-card-title">질문지 정답 대입 지능형 윤문 가드 엔진</div>
-              <div class="update-card-desc">정답을 맞혔을 때 지문 빈칸에 들어가는 정답과 뒤따르는 문맥이 매끄럽게 연결되도록 문맥 호응 검증과 지능형 어법 윤문 처리를 전수 정비했습니다.</div>
+              <div class="update-card-title">퀴즈 동반자 실시간 인터랙티브 리액션</div>
+              <div class="update-card-desc">문제를 풀 때 전신 아바타가 통통 살랑살랑 대기하며 함께하고, 정답 시 폴짝 환호 점프, 오답 시 흠칫 당황 땀방울 리액션을 60fps 부드러운 모션으로 선보입니다.</div>
             </div>
           </div>
         </div>
@@ -1054,10 +1067,10 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=2.8.0"></script>
-  <script src="idiom_questions.js?v=2.8.0"></script>
-  <script src="hanja_questions.js?v=2.8.0"></script>
-  <script src="english_questions.js?v=2.8.0"></script>
-  <script src="app.js?v=2.8.0"></script>
+  <script src="questions.js?v=2.9.0"></script>
+  <script src="idiom_questions.js?v=2.9.0"></script>
+  <script src="hanja_questions.js?v=2.9.0"></script>
+  <script src="english_questions.js?v=2.9.0"></script>
+  <script src="app.js?v=2.9.0"></script>
 </body>
 </html>
