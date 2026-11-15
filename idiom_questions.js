@@ -144,7 +144,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #8)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -155,7 +155,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -619,7 +619,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #33)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -630,7 +630,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -1094,7 +1094,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #58)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -1105,7 +1105,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -1569,7 +1569,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #83)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -1580,7 +1580,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -2044,7 +2044,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #108)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -2055,7 +2055,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -2519,7 +2519,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #133)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -2530,7 +2530,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -2994,7 +2994,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #158)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -3005,7 +3005,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -3469,7 +3469,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #183)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -3480,7 +3480,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -3944,7 +3944,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #208)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -3955,7 +3955,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -4419,7 +4419,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #233)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -4430,7 +4430,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -4894,7 +4894,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #258)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -4905,7 +4905,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -5369,7 +5369,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #283)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -5380,7 +5380,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -5844,7 +5844,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #308)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -5855,7 +5855,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -6319,7 +6319,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #333)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -6330,7 +6330,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -6794,7 +6794,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #358)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -6805,7 +6805,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -7269,7 +7269,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #383)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -7280,7 +7280,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -7744,7 +7744,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #408)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -7755,7 +7755,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -8219,7 +8219,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #433)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -8230,7 +8230,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -8694,7 +8694,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #458)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -8705,7 +8705,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -9169,7 +9169,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #483)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -9180,7 +9180,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -9644,7 +9644,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #508)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -9655,7 +9655,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -10119,7 +10119,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #533)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -10130,7 +10130,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -10594,7 +10594,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #558)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -10605,7 +10605,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -11069,7 +11069,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #583)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -11080,7 +11080,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -11544,7 +11544,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #608)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -11555,7 +11555,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -12019,7 +12019,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #633)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -12030,7 +12030,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -12494,7 +12494,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #658)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -12505,7 +12505,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -12969,7 +12969,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #683)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -12980,7 +12980,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -13444,7 +13444,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #708)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -13455,7 +13455,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -13919,7 +13919,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #733)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -13930,7 +13930,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -14394,7 +14394,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #758)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -14405,7 +14405,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -14869,7 +14869,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #783)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -14880,7 +14880,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -15344,7 +15344,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #808)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -15355,7 +15355,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -15819,7 +15819,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #833)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -15830,7 +15830,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -16294,7 +16294,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #858)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -16305,7 +16305,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -16769,7 +16769,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #883)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -16780,7 +16780,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -17244,7 +17244,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #908)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -17255,7 +17255,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -17719,7 +17719,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #933)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -17730,7 +17730,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -18194,7 +18194,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #958)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -18205,7 +18205,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {
@@ -18669,7 +18669,7 @@ const IDIOM_QUESTION_BANK = [
     "category": "신체 관용구",
     "level": "초등/기초",
     "question": "이야기를 읽고 빈칸에 어울리는 알맞은 속담이나 말을 골라보세요. (문항 #983)",
-    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "sentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "options": [
       "발이 넓다",
       "손이 크다",
@@ -18680,7 +18680,7 @@ const IDIOM_QUESTION_BANK = [
     "idiomWord": "발이 넓다",
     "meaning": "사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다",
     "explanation": "'발이 넓다'은(는) \"사귀어 아는 사람이 많아서 활동 범위나 인맥이 매우 넓다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
-    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인하는 [ (     ) ] 사람이다.",
+    "exampleSentence": "어디를 가나 반갑게 인사하는 지인들을 마주치는 동호회 회장님은 자타가 공인할 만큼 인맥이 대단하여 [ (     ) ].",
     "dictLink": "https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=%EB%B0%9C%EC%9D%B4"
   },
   {

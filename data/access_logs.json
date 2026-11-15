@@ -371,5 +371,83 @@
       "score": 100,
       "pointsEarned": 150
     }
+  },
+  {
+    "id": "log_1794705916019_hso92",
+    "timestamp": "2026-11-15T01:25:16.019Z",
+    "kstTime": "2026-11-15 01:25:16",
+    "username": "e2e_runner_1794705916004",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794705916021_v6nxd",
+    "timestamp": "2026-11-15T01:25:16.021Z",
+    "kstTime": "2026-11-15 01:25:16",
+    "username": "e2e_runner_1794705916004",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794705916021_3wf40",
+    "timestamp": "2026-11-15T01:25:16.021Z",
+    "kstTime": "2026-11-15 01:25:16",
+    "username": "e2e_runner_1794705916004",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794705948308_2bfpw",
+    "timestamp": "2026-11-15T01:25:48.308Z",
+    "kstTime": "2026-11-15 01:25:48",
+    "username": "e2e_runner_1794705948294",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794705948309_9uk2r",
+    "timestamp": "2026-11-15T01:25:48.309Z",
+    "kstTime": "2026-11-15 01:25:48",
+    "username": "e2e_runner_1794705948294",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794705948310_y8iqr",
+    "timestamp": "2026-11-15T01:25:48.310Z",
+    "kstTime": "2026-11-15 01:25:48",
+    "username": "e2e_runner_1794705948294",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
   }
 ]

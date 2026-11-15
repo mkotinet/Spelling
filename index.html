@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="2.7.1">
-  <link rel="stylesheet" href="style.css?v=2.7.1">
+  <meta name="app-version" content="2.8.0">
+  <link rel="stylesheet" href="style.css?v=2.8.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -178,9 +178,9 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span class="version-badge">v2.7.1</span>
+          <span class="version-badge">v2.8.0</span>
         </button>
-        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.7 업데이트 소식 다시 보기">
+        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.8 업데이트 소식 다시 보기">
           <span>📢</span>
           <span>업데이트 소식</span>
         </button>
@@ -882,48 +882,71 @@
        MODAL 9: POINT SHOP & DRESSING ROOM
        ============================================================ -->
   <div id="modalShop" class="modal-overlay">
-    <div class="modal-box" style="max-width: 460px;">
-      <div class="modal-header">
-        <h3 class="modal-title">🏪 하루맞춤 포인트 상점</h3>
-        <button id="btnCloseShop" class="btn-close-modal" type="button" aria-label="상점 닫기">✕</button>
+    <div class="modal-box shop-modal-box" style="max-width: 480px;">
+      <!-- Sticky Top Header -->
+      <div class="modal-header shop-modal-header">
+        <h3 class="modal-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+          🏪 하루맞춤 포인트 상점
+        </h3>
+        <button id="btnCloseShop" class="modal-close-btn btn-close-modal" type="button" aria-label="상점 닫기">✕</button>
       </div>
 
-      <div class="shop-user-points-badge">
-        <span>💰 내 보유 포인트</span>
-        <span id="shopUserPoints">0 P</span>
-      </div>
+      <!-- Scrollable Modal Body -->
+      <div class="shop-scrollable-body">
+        <div class="shop-user-points-badge">
+          <span>💰 내 보유 포인트</span>
+          <span id="shopUserPoints">0 P</span>
+        </div>
 
-      <div class="shop-tabs">
-        <button id="tabShopItems" class="shop-tab-btn active" type="button">🛍️ 아이템 상점</button>
-        <button id="tabShopAccessories" class="shop-tab-btn" type="button">👗 아바타 드레스룸</button>
-      </div>
+        <div class="shop-tabs">
+          <button id="tabShopItems" class="shop-tab-btn active" type="button">🛍️ 아이템 상점</button>
+          <button id="tabShopAccessories" class="shop-tab-btn" type="button">👗 아바타 드레스룸</button>
+        </div>
 
-      <!-- Tab Content 1: Items -->
-      <div id="shopItemsArea">
-        <div id="shopItemsGrid" class="shop-grid">
-          <!-- Dynamically populated items -->
+        <!-- Tab Content 1: Items -->
+        <div id="shopItemsArea">
+          <div id="shopItemsGrid" class="shop-grid">
+            <!-- Dynamically populated items -->
+          </div>
+        </div>
+
+        <!-- Tab Content 2: Accessories -->
+        <div id="shopAccessoriesArea" style="display: none;">
+          <!-- Composite Avatar Live Preview in Shop with Virtual Fitting & Reset -->
+          <div class="avatar-zoom-preview-box" style="padding: 16px; margin-bottom: 12px; background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 1.5px solid #dbeafe; border-radius: 18px;">
+            <div id="shopAvatarPreview" class="composite-avatar avatar-zoom-large" style="width: 110px; height: 110px; font-size: 72px; margin: 0 auto 6px;"></div>
+            <div id="shopPreviewStatusText" style="font-size: 0.82rem; font-weight: 700; color: var(--text-sub);">실시간 착용 미리보기</div>
+            <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: center;">
+              <button id="btnResetShopPreview" type="button" class="preview-reset-btn" style="display: none; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; color: #4338ca; background: #e0e7ff; border: 1px solid #c7d2fe; border-radius: 9999px; cursor: pointer; transition: all 0.2s;">
+                ↩️ 원래 착용대로 복원
+              </button>
+            </div>
+          </div>
+
+          <!-- 9 Extended Accessory Categories -->
+          <div class="acc-category-chips">
+            <button class="acc-chip active" data-category="pin" type="button">🎀 머리핀</button>
+            <button class="acc-chip" data-category="glasses" type="button">👓 안경</button>
+            <button class="acc-chip" data-category="hat" type="button">👑 모자</button>
+            <button class="acc-chip" data-category="blush" type="button">💄 볼터치</button>
+            <button class="acc-chip" data-category="neck" type="button">🧣 목걸이/타이</button>
+            <button class="acc-chip" data-category="hand" type="button">🪄 손/소지품</button>
+            <button class="acc-chip" data-category="back" type="button">🪽 날개/등장식</button>
+            <button class="acc-chip" data-category="pet" type="button">🐥 펫/미니프렌즈</button>
+            <button class="acc-chip" data-category="aura" type="button">✨ 배경/오라</button>
+          </div>
+
+          <div id="shopAccGrid" class="shop-grid">
+            <!-- Dynamically populated accessories -->
+          </div>
         </div>
       </div>
 
-      <!-- Tab Content 2: Accessories -->
-      <div id="shopAccessoriesArea" style="display: none;">
-        <!-- Composite Avatar Live Preview in Shop -->
-        <div class="avatar-zoom-preview-box" style="padding: 16px; margin-bottom: 12px;">
-          <div id="shopAvatarPreview" class="composite-avatar avatar-zoom-large" style="width: 100px; height: 100px; font-size: 68px; margin-bottom: 6px;"></div>
-          <div style="font-size: 0.8rem; color: var(--text-sub);">실시간 착용 미리보기</div>
-        </div>
-
-        <div class="acc-category-chips">
-          <button class="acc-chip active" data-category="pin" type="button">🎀 머리핀</button>
-          <button class="acc-chip" data-category="glasses" type="button">👓 안경</button>
-          <button class="acc-chip" data-category="hat" type="button">👑 모자</button>
-          <button class="acc-chip" data-category="blush" type="button">💄 볼터치</button>
-          <button class="acc-chip" data-category="aura" type="button">🪽 배경효과</button>
-        </div>
-
-        <div id="shopAccGrid" class="shop-grid">
-          <!-- Dynamically populated accessories -->
-        </div>
+      <!-- Sticky Bottom Bar with Prominent Close Button -->
+      <div class="shop-modal-bottom-bar">
+        <button id="btnBottomCloseShop" class="main-action-btn" type="button" style="width: 100%; background: var(--gradient-primary); color: white; padding: 12px; border-radius: 16px; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); cursor: pointer;">
+          ✨ 닫고 퀴즈 계속하기
+        </button>
       </div>
     </div>
   </div>
@@ -961,20 +984,20 @@
   <div id="modalWhatsNew" class="modal-overlay">
     <div class="modal-box" style="max-width: 480px; max-height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
-        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.7.1</span> 업데이트 소식</h3>
+        <h3 class="modal-title">🎉 하루맞춤 <span id="whatsNewVersionBadge" class="version-badge" style="font-size: 0.78rem; vertical-align: middle;">v2.8.0</span> 업데이트 소식</h3>
         <button id="btnCloseWhatsNew" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
       </div>
 
       <div class="whats-new-body">
         <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 2.2rem; margin-bottom: 4px;">✨📱🏪👗✨</div>
+          <div style="font-size: 2.2rem; margin-bottom: 4px;">✨📱🏪👗🍄✨</div>
           <div style="font-weight: 800; font-size: 1.08rem; color: var(--text-dark);">
-            하루맞춤이 더욱 즐겁고 편리하게 새로워졌어요!
+            하루맞춤이 더욱 즐겁고 완벽하게 업그레이드되었어요!
           </div>
           <div id="whatsNewReleaseSummaryBox" style="margin-top: 8px; padding: 8px 12px; background: #fff5f8; border-radius: 12px; border: 1px dashed var(--primary-soft-pink);">
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 2px;">📌 이번 버전 릴리스 노트</div>
             <p id="whatsNewReleaseDesc" style="font-size: 0.8rem; color: #475569; line-height: 1.4; margin: 0;">
-              업데이트 안내 팝업(What's New) 및 더 이상 보지 않기 기능 추가, v2.7 주요 개선 사항(모바일 오디오 언락, 상점/Quick Buy, 22종 아바타 악세사리) 안내 지원
+              상점 실시간 가상 피팅 미리보기 & 닫기 UX 강화, 150여 종 악세사리 & 마리오 테마 코스튬 대확장, 신규 4개 카테고리 추가, 질문지-정답 지능형 문맥 윤문 가드 엔진 탑재
             </p>
           </div>
         </div>
@@ -982,37 +1005,37 @@
         <div class="update-card-list">
           <!-- Card 1 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🔊</div>
+            <div class="update-card-icon">🪞</div>
             <div class="update-card-content">
-              <div class="update-card-title">모바일 오디오 & 영어 원어민 TTS 음성 지원</div>
-              <div class="update-card-desc">스마트폰(iPhone Safari / Android)에서도 효과음과 원어민 스피커 발음이 끊김 없이 생생하게 재생됩니다.</div>
+              <div class="update-card-title">드레스룸 실시간 착용 미리보기 & 가상 피팅</div>
+              <div class="update-card-desc">구매하기 전 아이템을 탭하면 내 아바타에 즉시 입혀져 어울리는지 확인하고, 언제든 [원래대로 복원]할 수 있습니다. 상하단 고정 닫기 버튼으로 모바일에서도 쾌적하게 이용하세요!</div>
             </div>
           </div>
 
           <!-- Card 2 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🏪</div>
+            <div class="update-card-icon">🍄</div>
             <div class="update-card-content">
-              <div class="update-card-title">포인트 아이템 상점 & 인게임 즉시 구매 (Quick Buy)</div>
-              <div class="update-card-desc">퀴즈로 모은 포인트로 8종 찬스 아이템을 자유롭게 구매하세요! 문제 풀이 중 아이템이 부족해도 바로 포인트로 즉시 충전하여 사용할 수 있습니다.</div>
+              <div class="update-card-title">마리오 코스튬 컬렉션 & 150여 종 악세사리 대확장</div>
+              <div class="update-card-desc">마리오 캡, 루이지 캡, 버섯 왕관, 피치 크라운, 쿠파 뿔 등 인기 테마 코스튬과 카테고리별 다채로운 신규 악세사리가 대폭 추가되었습니다.</div>
             </div>
           </div>
 
           <!-- Card 3 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">👗</div>
+            <div class="update-card-icon">🧣</div>
             <div class="update-card-content">
-              <div class="update-card-title">22종 아바타 악세사리 드레스룸 & 선명한 확대 갤러리</div>
-              <div class="update-card-desc">머리핀, 안경, 모자, 볼터치, 배경 오라 등 22종 악세사리로 나만의 아바타를 꾸며보세요. 홈 화면의 아바타를 터치하면 140px 고해상도 벡터 뷰로 감상할 수 있습니다.</div>
+              <div class="update-card-title">신규 4개 카테고리 (목걸이/타이, 도구, 날개, 펫)</div>
+              <div class="update-card-desc">머플러·넥타이부터 마법봉·게임기, 천사날개, 귀여운 병아리·강아지 펫까지 9개 카테고리 다층 레이어로 나만의 개성 넘치는 아바타를 완성해보세요.</div>
             </div>
           </div>
 
           <!-- Card 4 -->
           <div class="update-feature-card">
-            <div class="update-card-icon">🛡️</div>
+            <div class="update-card-icon">✍️</div>
             <div class="update-card-content">
-              <div class="update-card-title">문제 문맥 및 랭킹 시스템 정비</div>
-              <div class="update-card-desc">공문서 문맥 조사(#4333)를 자연스럽게 교정하였으며, 회원 랭킹 리더보드의 보유 점수가 100% 온전하게 일치하도록 개선했습니다.</div>
+              <div class="update-card-title">질문지 정답 대입 지능형 윤문 가드 엔진</div>
+              <div class="update-card-desc">정답을 맞혔을 때 지문 빈칸에 들어가는 정답과 뒤따르는 문맥이 매끄럽게 연결되도록 문맥 호응 검증과 지능형 어법 윤문 처리를 전수 정비했습니다.</div>
             </div>
           </div>
         </div>
@@ -1031,10 +1054,10 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=2.7.1"></script>
-  <script src="idiom_questions.js?v=2.7.1"></script>
-  <script src="hanja_questions.js?v=2.7.1"></script>
-  <script src="english_questions.js?v=2.7.1"></script>
-  <script src="app.js?v=2.7.1"></script>
+  <script src="questions.js?v=2.8.0"></script>
+  <script src="idiom_questions.js?v=2.8.0"></script>
+  <script src="hanja_questions.js?v=2.8.0"></script>
+  <script src="english_questions.js?v=2.8.0"></script>
+  <script src="app.js?v=2.8.0"></script>
 </body>
 </html>

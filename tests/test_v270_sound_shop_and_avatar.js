@@ -11,7 +11,7 @@ const BASE_DIR = path.join(__dirname, '..');
 // 1. Check version alignment across version.json, index.html, app.js
 console.log('\n[1] Version Alignment Check (v2.7.0+)...');
 const versionJson = JSON.parse(fs.readFileSync(path.join(BASE_DIR, 'version.json'), 'utf-8'));
-assert(versionJson.version.startsWith('2.7.'), 'version.json version must be 2.7.x');
+assert(parseFloat(versionJson.version) >= 2.7, 'version.json version must be >= 2.7');
 
 const indexHtml = fs.readFileSync(path.join(BASE_DIR, 'index.html'), 'utf-8');
 assert(indexHtml.includes(`content="${versionJson.version}"`), `index.html meta app-version must be ${versionJson.version}`);

@@ -211,7 +211,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.7.1">'), 'index.html must include meta app-version 2.7.1');
+    assert(indexHtml.includes('<meta name="app-version" content="2.8.0">'), 'index.html must include meta app-version 2.8.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -246,10 +246,25 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('dismissWhatsNewForever'), 'app.js must include dismissWhatsNewForever');
     assert(appCode.includes('haru_dismissed_update_version'), 'app.js must use version-aware persistence key');
 
+    // 19. v2.8.0 Shop Dual Close Buttons, Virtual Fitting Preview, Mario Costumes, and Grammar Polish Guard
+    assert(indexHtml.includes('id="btnCloseShop"'), 'index.html must include #btnCloseShop top close button');
+    assert(indexHtml.includes('id="btnBottomCloseShop"'), 'index.html must include #btnBottomCloseShop bottom close button');
+    assert(indexHtml.includes('id="btnResetShopPreview"'), 'index.html must include #btnResetShopPreview reset button');
+    assert(appCode.includes('previewAccessory'), 'app.js must include previewAccessory function');
+    assert(appCode.includes('resetShopPreview'), 'app.js must include resetShopPreview function');
+    assert(appCode.includes('renderShopAvatarPreview'), 'app.js must include renderShopAvatarPreview function');
+    assert(appCode.includes('acc-neck'), 'app.js must render acc-neck layer');
+    assert(appCode.includes('acc-hand'), 'app.js must render acc-hand layer');
+    assert(appCode.includes('acc-back'), 'app.js must render acc-back layer');
+    assert(appCode.includes('acc-pet'), 'app.js must render acc-pet layer');
+    const sample871 = spellingBank.find(q => q.id === 871);
+    assert(sample871, 'Question #871 must exist');
+    assert(!sample871.sentence.includes('결과일지'), 'Q871 must not have awkward noun collision');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.7.1', 'GET /api/version version must be 2.7.1');
+    assert.strictEqual(verRes.data.version, '2.8.0', 'GET /api/version version must be 2.8.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
