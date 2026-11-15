@@ -440,6 +440,7 @@ const server = http.createServer(async (req, res) => {
       id: u.id,
       name: u.name || u.username,
       avatar: u.avatar || "🌸",
+      avatarAccessories: (u.avatarAccessories && typeof u.avatarAccessories === 'object') ? u.avatarAccessories : {},
       grade: u.grade || "중학교 2학년",
       streak: u.streak || 1,
       totalPoints: u.totalPoints || 0,
@@ -549,7 +550,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.4", build: "20261115_1235" };
+    let verData = { version: "2.9.5", build: "20261115_1615" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {

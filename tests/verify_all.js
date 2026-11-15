@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.4">'), 'index.html must include meta app-version 2.9.4');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.5">'), 'index.html must include meta app-version 2.9.5');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.4', 'GET /api/version version must be 2.9.4');
+    assert.strictEqual(verRes.data.version, '2.9.5', 'GET /api/version version must be 2.9.5');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -304,6 +304,13 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('this.modalShop.classList.remove(\'active\')'), 'app.js must close shop modal');
     assert(appCode.includes('rankSubjectIdiom'), 'app.js must bind rankSubjectIdiom');
     assert(appCode.includes('playHtmlAudio'), 'app.js must implement playHtmlAudio');
+
+    // 25. v2.9.5 Rank Avatar Zoom Gallery, 36 Cute Avatars & 260+ Accessories
+    const serverCode = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+    assert(appCode.includes('openAvatarZoomModal(targetUser = null)'), 'app.js must support targetUser in openAvatarZoomModal');
+    assert(appCode.includes('outfit_strawberry_milk_pajama'), 'app.js must include strawberry milk pajama');
+    assert(indexHtml.includes('data-avatar="🐼"'), 'index.html must include panda avatar');
+    assert(serverCode.includes('avatarAccessories: (u.avatarAccessories && typeof u.avatarAccessories === \'object\') ? u.avatarAccessories : {}'), 'server.js must return avatarAccessories in leaderboard');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
