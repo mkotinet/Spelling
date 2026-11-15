@@ -549,7 +549,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "2.9.2", build: "20261115_1200" };
+    let verData = { version: "2.9.3", build: "20261115_1220" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -566,6 +566,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
     return sendJSON(res, 200, {
       success: true,
       ...verData,
@@ -591,14 +592,20 @@ const server = http.createServer(async (req, res) => {
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
-      // Fallback to index.html for SPA routing
+      // Fallback to index.html for SPA routing (Strict No-Store Cache Header)
       const indexFile = path.join(__dirname, "index.html");
       fs.readFile(indexFile, (err2, content) => {
         if (err2) {
           res.writeHead(404);
           return res.end("Not Found");
         }
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.writeHead(200, {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          "Pragma": "no-cache",
+          "Expires": "0",
+          "Surrogate-Control": "no-store"
+        });
         res.end(content);
       });
       return;
@@ -609,17 +616,22 @@ const server = http.createServer(async (req, res) => {
     const acceptEncoding = req.headers["accept-encoding"] || "";
     const shouldGzip = /\bgzip\b/.test(acceptEncoding) && (ext === ".js" || ext === ".css" || ext === ".html" || ext === ".json");
     const isVersioned = (ext === ".js" || ext === ".css") && (req.url && req.url.includes("?v="));
-
-    const isVersionJson = path.basename(filePath) === "version.json";
+    const isHtmlOrVersionMeta = ext === ".html" || path.basename(filePath) === "version.json";
 
     const headers = {
       "Content-Type": contentType,
-      "Cache-Control": isVersionJson
+      "Cache-Control": isHtmlOrVersionMeta
         ? "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
         : (isVersioned
           ? "public, max-age=31536000, immutable"
-          : ((ext === ".html" || ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600"))
+          : ((ext === ".js" || ext === ".css") ? "no-cache, must-revalidate" : "public, max-age=3600")),
+      "Pragma": isHtmlOrVersionMeta ? "no-cache" : undefined,
+      "Expires": isHtmlOrVersionMeta ? "0" : undefined,
+      "Surrogate-Control": isHtmlOrVersionMeta ? "no-store" : undefined
     };
+
+    // Remove undefined headers
+    Object.keys(headers).forEach(k => headers[k] === undefined && delete headers[k]);
 
     if (shouldGzip) {
       headers["Content-Encoding"] = "gzip";

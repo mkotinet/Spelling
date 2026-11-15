@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="2.9.2">'), 'index.html must include meta app-version 2.9.2');
+    assert(indexHtml.includes('<meta name="app-version" content="2.9.3">'), 'index.html must include meta app-version 2.9.3');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -286,10 +286,16 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(styleCss.includes('.torso-overlay-content'), 'style.css must define .torso-overlay-content');
     assert(styleCss.includes('.chibi-svg-clothes-base'), 'style.css must define .chibi-svg-clothes-base');
 
+    // 23. v2.9.3 Anti-Cheat, Minimum 200P Item Economy, Dual-Engine Audio & No-Store Cache
+    assert(appCode.includes('// Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session'), 'app.js must clear mid-quiz session on fresh launch');
+    assert(appCode.includes('playFallbackAudio'), 'app.js must implement playFallbackAudio');
+    assert(appCode.includes('createFallbackAudioUri'), 'app.js must implement createFallbackAudioUri');
+    assert(indexHtml.includes('<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'), 'index.html must include Cache-Control meta');
+
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '2.9.2', 'GET /api/version version must be 2.9.2');
+    assert.strictEqual(verRes.data.version, '2.9.3', 'GET /api/version version must be 2.9.3');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

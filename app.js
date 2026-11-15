@@ -10,17 +10,22 @@ class SoundEffects {
   constructor() {
     this.ctx = null;
     this.enabled = true;
+    this.fallbackAudio = {};
   }
 
   init() {
-    if (!this.ctx) {
+    if (!this.ctx && typeof window !== 'undefined') {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
-        this.ctx = new AudioCtx();
+        try {
+          this.ctx = new AudioCtx();
+        } catch (e) {}
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      try {
+        this.ctx.resume().catch(() => {});
+      } catch (e) {}
     }
   }
 
@@ -28,7 +33,7 @@ class SoundEffects {
     this.init();
     if (this.ctx) {
       if (this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+        try { this.ctx.resume().catch(() => {}); } catch (e) {}
       }
       try {
         const buffer = this.ctx.createBuffer(1, 1, 22050);
@@ -40,6 +45,93 @@ class SoundEffects {
     }
   }
 
+  playFallbackAudio(type) {
+    if (!this.enabled || typeof window === 'undefined' || typeof Audio === 'undefined') return;
+    try {
+      if (!this.fallbackAudio[type]) {
+        this.fallbackAudio[type] = this.createFallbackAudioUri(type);
+      }
+      const uri = this.fallbackAudio[type];
+      if (uri) {
+        const audio = new Audio(uri);
+        audio.volume = 0.65;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
+      }
+    } catch (e) {}
+  }
+
+  createFallbackAudioUri(type) {
+    const sampleRate = 11025;
+    const samples = [];
+    if (type === 'correct') {
+      const dur = 0.32;
+      const total = Math.floor(sampleRate * dur);
+      for (let i = 0; i < total; i++) {
+        const t = i / sampleRate;
+        let freq = 587.33;
+        if (t > 0.08) freq = 739.99;
+        if (t > 0.16) freq = 880.00;
+        if (t > 0.24) freq = 1174.66;
+        const env = Math.max(0, 1 - (t / dur));
+        const val = 128 + 90 * env * Math.sin(2 * Math.PI * freq * t);
+        samples.push(val);
+      }
+    } else if (type === 'wrong') {
+      const dur = 0.26;
+      const total = Math.floor(sampleRate * dur);
+      for (let i = 0; i < total; i++) {
+        const t = i / sampleRate;
+        const freq = 280 - 130 * (t / dur);
+        const env = Math.max(0, 1 - (t / dur));
+        const val = 128 + 80 * env * (Math.sin(2 * Math.PI * freq * t) > 0 ? 1 : -1);
+        samples.push(val);
+      }
+    } else if (type === 'combo') {
+      const dur = 0.32;
+      const total = Math.floor(sampleRate * dur);
+      for (let i = 0; i < total; i++) {
+        const t = i / sampleRate;
+        let freq = 880;
+        if (t > 0.08) freq = 1174.66;
+        if (t > 0.16) freq = 1396.91;
+        if (t > 0.24) freq = 1760.00;
+        const env = Math.max(0, 1 - (t / dur));
+        const val = 128 + 80 * env * Math.sin(2 * Math.PI * freq * t);
+        samples.push(val);
+      }
+    } else {
+      return null;
+    }
+
+    const subChunk2Size = samples.length;
+    const chunkSize = 36 + subChunk2Size;
+    const header = [
+      0x52, 0x49, 0x46, 0x46, // "RIFF"
+      chunkSize & 0xff, (chunkSize >> 8) & 0xff, (chunkSize >> 16) & 0xff, (chunkSize >> 24) & 0xff,
+      0x57, 0x41, 0x56, 0x45, // "WAVE"
+      0x66, 0x6d, 0x74, 0x20, // "fmt "
+      16, 0, 0, 0, // subchunk1size (16)
+      1, 0, // audio format (1: PCM)
+      1, 0, // num channels (1)
+      sampleRate & 0xff, (sampleRate >> 8) & 0xff, (sampleRate >> 16) & 0xff, (sampleRate >> 24) & 0xff,
+      sampleRate & 0xff, (sampleRate >> 8) & 0xff, (sampleRate >> 16) & 0xff, (sampleRate >> 24) & 0xff,
+      1, 0, // block align (1)
+      8, 0, // bits per sample (8)
+      0x64, 0x61, 0x74, 0x61, // "data"
+      subChunk2Size & 0xff, (subChunk2Size >> 8) & 0xff, (subChunk2Size >> 16) & 0xff, (subChunk2Size >> 24) & 0xff
+    ];
+    let binary = '';
+    for (let i = 0; i < header.length; i++) binary += String.fromCharCode(header[i]);
+    for (let i = 0; i < samples.length; i++) {
+      const b = Math.max(0, Math.min(255, Math.floor(samples[i])));
+      binary += String.fromCharCode(b);
+    }
+    return 'data:audio/wav;base64,' + (typeof btoa !== 'undefined' ? btoa(binary) : Buffer.from(binary, 'binary').toString('base64'));
+  }
+
   playTone(freq, type, duration, delay = 0, gainVal = 0.35) {
     if (!this.enabled) return;
     this.init();
@@ -49,7 +141,7 @@ class SoundEffects {
       if (this.ctx.state === 'suspended') {
         this.ctx.resume().catch(() => {});
       }
-      const now = this.ctx.currentTime;
+      const now = this.ctx.currentTime || 0;
       const startTime = now + delay;
       const stopTime = startTime + duration;
 
@@ -61,7 +153,7 @@ class SoundEffects {
 
       gain.gain.setValueAtTime(0.0001, startTime);
       gain.gain.linearRampToValueAtTime(gainVal, startTime + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
+      gain.gain.linearRampToValueAtTime(0.0001, stopTime);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -75,71 +167,75 @@ class SoundEffects {
 
   correct() {
     if (!this.enabled) return;
-    // Bright joyful major ascending arpeggio (D5 -> F#5 -> A5 -> D6)
+    this.unlockAudio();
+    // 1. Play via Web Audio API
     this.playTone(587.33, 'triangle', 0.12, 0, 0.35);
     this.playTone(739.99, 'triangle', 0.12, 0.08, 0.38);
     this.playTone(880.00, 'triangle', 0.14, 0.16, 0.40);
     this.playTone(1174.66, 'sine', 0.28, 0.24, 0.45);
+    // 2. Dual Engine Fallback (guaranteed sound on mobile/safari)
+    if (!this.ctx || this.ctx.state === 'suspended') {
+      this.playFallbackAudio('correct');
+    }
   }
 
   wrong() {
     if (!this.enabled) return;
+    this.unlockAudio();
+    // 1. Play via Web Audio API (safe linear ramps)
     this.init();
-    if (!this.ctx) return;
-    try {
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume().catch(() => {});
+    if (this.ctx && this.ctx.state !== 'suspended') {
+      try {
+        const now = this.ctx.currentTime || 0;
+        const osc1 = this.ctx.createOscillator();
+        const gain1 = this.ctx.createGain();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(320, now);
+        osc1.frequency.linearRampToValueAtTime(200, now + 0.16);
+        gain1.gain.setValueAtTime(0.0001, now);
+        gain1.gain.linearRampToValueAtTime(0.35, now + 0.015);
+        gain1.gain.linearRampToValueAtTime(0.001, now + 0.16);
+        osc1.connect(gain1);
+        gain1.connect(this.ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.16);
+
+        const osc2 = this.ctx.createOscillator();
+        const gain2 = this.ctx.createGain();
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(240, now + 0.14);
+        osc2.frequency.linearRampToValueAtTime(140, now + 0.35);
+        gain2.gain.setValueAtTime(0.0001, now + 0.14);
+        gain2.gain.linearRampToValueAtTime(0.35, now + 0.155);
+        gain2.gain.linearRampToValueAtTime(0.001, now + 0.35);
+        osc2.connect(gain2);
+        gain2.connect(this.ctx.destination);
+        osc2.start(now + 0.14);
+        osc2.stop(now + 0.35);
+      } catch (e) {
+        this.playFallbackAudio('wrong');
       }
-      const now = this.ctx.currentTime;
-
-      // Pulse 1: descending sawtooth pitch bend (320Hz -> 200Hz)
-      const osc1 = this.ctx.createOscillator();
-      const gain1 = this.ctx.createGain();
-      osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(320, now);
-      osc1.frequency.linearRampToValueAtTime(200, now + 0.16);
-
-      gain1.gain.setValueAtTime(0.0001, now);
-      gain1.gain.linearRampToValueAtTime(0.35, now + 0.015);
-      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-
-      osc1.connect(gain1);
-      gain1.connect(this.ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 0.16);
-
-      // Pulse 2: lower descending pitch bend (240Hz -> 140Hz)
-      const osc2 = this.ctx.createOscillator();
-      const gain2 = this.ctx.createGain();
-      osc2.type = 'sawtooth';
-      osc2.frequency.setValueAtTime(240, now + 0.14);
-      osc2.frequency.linearRampToValueAtTime(140, now + 0.35);
-
-      gain2.gain.setValueAtTime(0.0001, now + 0.14);
-      gain2.gain.linearRampToValueAtTime(0.35, now + 0.155);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-      osc2.connect(gain2);
-      gain2.connect(this.ctx.destination);
-      osc2.start(now + 0.14);
-      osc2.stop(now + 0.35);
-    } catch (e) {
-      console.warn('Audio wrong sound error:', e);
+    } else {
+      // 2. Dual Engine Fallback
+      this.playFallbackAudio('wrong');
     }
   }
 
   combo() {
     if (!this.enabled) return;
-    // High sparkle chime
+    this.unlockAudio();
     this.playTone(880, 'sine', 0.12, 0, 0.35);
     this.playTone(1174.66, 'sine', 0.14, 0.08, 0.40);
     this.playTone(1396.91, 'sine', 0.16, 0.16, 0.42);
     this.playTone(1760.00, 'sine', 0.28, 0.24, 0.45);
+    if (!this.ctx || this.ctx.state === 'suspended') {
+      this.playFallbackAudio('combo');
+    }
   }
 
   fanfare() {
     if (!this.enabled) return;
-    // Victory fanfare
+    this.unlockAudio();
     const notes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
     const delays = [0, 0.10, 0.20, 0.30, 0.42, 0.56];
     notes.forEach((n, i) => this.playTone(n, 'triangle', 0.22, delays[i], 0.38));
@@ -401,14 +497,14 @@ class ConfettiManager {
 // 3. Game Economy: Item Prices & Avatar Accessories Definitions
 // ============================================================
 const ITEM_PRICES = {
-  hint: { key: 'hint', name: '돋보기 힌트', emoji: '🔍', cost: 30, desc: '정답과 어원 해설 힌트 열람' },
-  eraser5050: { key: 'eraser5050', name: '50:50 요술봉', emoji: '🪄', cost: 50, desc: '오답 2개 즉시 지우기' },
-  timemachine: { key: 'timemachine', name: '타임머신 시계', emoji: '⌛', cost: 60, desc: '방금 고른 오답 취소 및 시간 되돌리기' },
-  magnet: { key: 'magnet', name: '콤보 자석', emoji: '🧲', cost: 70, desc: '연속 정답 시 콤보 점수 4배 흡수' },
-  heart: { key: 'heart', name: '하트 수호', emoji: '💖', cost: 80, desc: '틀려도 1회 오답 무효화 찬스' },
-  booster2x: { key: 'booster2x', name: '2배 로켓 부스터', emoji: '🚀', cost: 100, desc: '라운드 클리어 점수 2배 적립' },
-  clover: { key: 'clover', name: '행운의 클로버', emoji: '🍀', cost: 120, desc: '문제를 즉시 정답으로 통과 (프리패스)' },
-  shield: { key: 'shield', name: '수호 방패', emoji: '🛡️', cost: 150, max: 2, desc: '라운드 실패 시 방어하여 통과 (최대 2개)' }
+  hint: { key: 'hint', name: '돋보기 힌트', emoji: '🔍', cost: 200, desc: '정답과 어원 해설 힌트 열람' },
+  eraser5050: { key: 'eraser5050', name: '50:50 요술봉', emoji: '🪄', cost: 250, desc: '오답 2개 즉시 지우기' },
+  timemachine: { key: 'timemachine', name: '타임머신 시계', emoji: '⌛', cost: 280, desc: '방금 고른 오답 취소 및 시간 되돌리기' },
+  magnet: { key: 'magnet', name: '콤보 자석', emoji: '🧲', cost: 300, desc: '연속 정답 시 콤보 점수 4배 흡수' },
+  heart: { key: 'heart', name: '하트 수호', emoji: '💖', cost: 350, desc: '틀려도 1회 오답 무효화 찬스' },
+  booster2x: { key: 'booster2x', name: '2배 로켓 부스터', emoji: '🚀', cost: 400, desc: '라운드 클리어 점수 2배 적립' },
+  clover: { key: 'clover', name: '행운의 클로버', emoji: '🍀', cost: 450, desc: '문제를 즉시 정답으로 통과 (프리패스)' },
+  shield: { key: 'shield', name: '수호 방패', emoji: '🛡️', cost: 500, max: 2, desc: '라운드 실패 시 방어하여 통과 (최대 2개)' }
 };
 
 const ACCESSORY_DEFINITIONS = {
@@ -683,6 +779,23 @@ const ACCESSORY_DEFINITIONS = {
     { id: 'aura_acnl_gyroid', name: '흔들흔들 토용 댄스', emoji: '🗿', cost: 210, desc: '비 온 다음 날 발굴되는 귀여운 토용들의 댄스' }
   ]
 };
+
+// Ensure minimum price bar of 200P across all accessories (Economy Balance v2.9.3)
+Object.values(ACCESSORY_DEFINITIONS).forEach(items => {
+  if (Array.isArray(items)) {
+    items.forEach(item => {
+      if (item && typeof item.cost === 'number') {
+        if (item.cost < 200) {
+          // Boost 50~190P items to 200~350P range
+          item.cost = Math.max(200, Math.round(item.cost * 2.2));
+        } else {
+          // Scale premium/rare items proportionately
+          item.cost = Math.round(item.cost * 1.4);
+        }
+      }
+    });
+  }
+});
 
 function findAccessoryById(id) {
   for (const cat of Object.keys(ACCESSORY_DEFINITIONS)) {
@@ -1177,7 +1290,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '2.9.2';
+    this.APP_VERSION = metaVer || '2.9.3';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
 
@@ -1189,8 +1302,8 @@ class HaruMatchumApp {
     this.renderBadges();
     this.checkCloudAuth();
 
-    // Check & restore active quiz session (e.g. returning after KakaoTalk app switch or page reload)
-    this.restoreActiveQuizSession();
+    // Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session so users cannot cheat by closing and reopening
+    this.clearActiveQuizSession();
 
     // Auto-check What's New Popup (v2.7 update announcement)
     if (typeof window !== 'undefined') {
@@ -1556,10 +1669,16 @@ class HaruMatchumApp {
       }
     });
     window.addEventListener('pagehide', () => {
-      this.saveActiveQuizSession();
+      // Anti-Cheat: Clear mid-quiz session on tab/page close or navigation
+      if (this.currentViewName === 'quiz') {
+        this.clearActiveQuizSession();
+      }
     });
     window.addEventListener('beforeunload', () => {
-      this.saveActiveQuizSession();
+      // Anti-Cheat: Clear mid-quiz session on tab/page close or navigation
+      if (this.currentViewName === 'quiz') {
+        this.clearActiveQuizSession();
+      }
     });
     // Re-verify and sync session automatically when mobile device restores network connection
     window.addEventListener('online', () => {
@@ -2301,6 +2420,7 @@ class HaruMatchumApp {
     }
 
     this.selectedOption = selectedIndex;
+    this.clearActiveQuizSession(); // Anti-Cheat: Immediately purge active session once option is clicked
     this.recordQuestionSolved(q.id, this.quizSubject);
 
     const allButtons = document.querySelectorAll('.option-btn');
@@ -3852,7 +3972,7 @@ class HaruMatchumApp {
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '2.9.2';
+    let currentVer = this.APP_VERSION || '2.9.3';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -3880,7 +4000,7 @@ class HaruMatchumApp {
   openWhatsNewModal() {
     if (!this.modalWhatsNew) return;
 
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.2';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.3';
     const badge = document.getElementById('whatsNewVersionBadge');
     if (badge) badge.textContent = `v${currentVer}`;
 
@@ -3900,7 +4020,7 @@ class HaruMatchumApp {
   }
 
   dismissWhatsNewForever() {
-    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.2';
+    const currentVer = (this.versionMeta && this.versionMeta.version) || this.APP_VERSION || '2.9.3';
     try {
       // Store the specific version that the user dismissed!
       localStorage.setItem('haru_dismissed_update_version', currentVer);
@@ -4885,7 +5005,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '2.9.2';
+      const clientVersion = this.APP_VERSION || '2.9.3';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);
@@ -4899,10 +5019,8 @@ class HaruMatchumApp {
         }
         sessionStorage.setItem(guardKey, String(now));
 
-        // Save active quiz session to avoid data loss
-        if (this.currentViewName === 'quiz' || (this.activeQuestions && this.activeQuestions.length > 0)) {
-          this.saveActiveQuizSession();
-        }
+        // Anti-Cheat: Clear mid-quiz session on auto-update to ensure fresh start
+        this.clearActiveQuizSession();
 
         this.showToastNotice(`🚀 새 버전(v${serverVersion})으로 업데이트되었습니다. 최신 화면으로 새로고침합니다...`);
 
@@ -4941,7 +5059,8 @@ class HaruMatchumApp {
 
     setTimeout(() => {
       try {
-        const url = new URL(window.location.href);
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('_v', '2.9.3');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

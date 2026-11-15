@@ -1,17 +1,17 @@
 # Graph Report - Spelling  (2026-11-15)
 
 ## Corpus Check
-- 86 files · ~2,475,094 words
+- 87 files · ~2,477,466 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .css 1)
 
 ## Summary
-- 1018 nodes · 1623 edges · 71 communities (68 shown, 3 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 108 edges (avg confidence: 0.91)
+- 1051 nodes · 1672 edges · 72 communities (68 shown, 4 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 110 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f7a77f26`
+- Built from commit: `7fb43c81`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -40,7 +40,7 @@
 - test_mobile_auth_persistence.js
 - 하루맞춤 4대 과목 각 1,000문항(총 4,000문항) 구축 및 5,000문항(총 20,000문항) 확장 설계서
 - test_gamification_mechanics.js
-- recordAccessLog
+- test_v293_bug_fixes.js
 - test_v262_user_bug_fixes.js
 - Architecture & Components
 - test_v292_svg_chibi_body.js
@@ -74,7 +74,7 @@
 - 12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)
 - 13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)
 - 14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축
-- 15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트
+- ref_assert
 - test_leaderboard_clean.js
 - app.js
 - 📋 국어 맞춤법 퀴즈 프로그램 '하루맞춤' 기술 리포트 (Technical Report)
@@ -86,40 +86,41 @@
 - README.md
 - 17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)
 - 3. 간편 회원가입 및 멀티 디바이스 동기화 메커니즘
-- 18. v2.9.1 SD 캐릭터 전신 일체형 신체 및 의상 텍스처 피팅 엔진, 모자 정수리 밀착 피팅, 양 볼 자연스러운 듀얼 치크 블러쉬 엔진 고도화 기술 보고서 (2026-11-15)
+- 19.2 해결 방안 및 구현 상세 (Implementation Details)
+- .explode
 
 ## God Nodes (most connected - your core abstractions)
 1. `HaruMatchumApp` - 109 edges
-2. `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` - 19 edges
+2. `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` - 20 edges
 3. `renderCompositeAvatar()` - 18 edges
 4. `3. 핵심 변경 상세 및 원인 분석 (RCA)` - 18 edges
-5. `⏱️ 단계별 제작 및 고도화 타임라인` - 17 edges
+5. `⏱️ 단계별 제작 및 고도화 타임라인` - 18 edges
 6. `server` - 14 edges
-7. `EnglishSpeechEngine` - 12 edges
-8. `공통 운영 및 개발 지침 (Common Guidelines)` - 12 edges
+7. `SoundEffects` - 12 edges
+8. `EnglishSpeechEngine` - 12 edges
 9. `공통 운영 및 개발 지침 (Common Guidelines)` - 12 edges
-10. `SoundEffects` - 10 edges
+10. `공통 운영 및 개발 지침 (Common Guidelines)` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Task 1: Server Authentication & Access Logging System (`server.js`)` --references--> `runGit()`  [INFERRED]
   docs/superpowers/plans/2026-11-14-haru-spelling-hanja-enhancement.md → server.js
-- `16.1 요구사항 및 장애 원인 분석 (RCA: Root Cause Analysis)` --references--> `renderCompositeAvatar()`  [INFERRED]
-  기술레포트.md → app.js
-- `10.2 해결 아키텍처 및 구현 명세` --references--> `EnglishSpeechEngine`  [INFERRED]
-  기술레포트.md → app.js
 - `10.3 검증 결과 (Verification Evidence)` --references--> `EnglishSpeechEngine`  [INFERRED]
   기술레포트.md → app.js
 - `14.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation)` --references--> `EnglishSpeechEngine`  [INFERRED]
+  기술레포트.md → app.js
+- `[2026-11-14] v2.3.0 레벨별 맞춤법 5제, 럭키 박스, 영어 어휘 퀴즈` --references--> `EnglishSpeechEngine`  [INFERRED]
+  제작히스토리.md → app.js
+- `14.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation)` --references--> `renderCompositeAvatar()`  [INFERRED]
   기술레포트.md → app.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (71 total, 3 thin omitted)
+## Communities (72 total, 4 thin omitted)
 
 ### Community 0 - "HaruMatchumApp"
 Cohesion: 0.06
-Nodes (11): getKSTDateString(), HaruMatchumApp, SoundEffects, 1. Frontend Engine (`app.js`), Task 3: In-Game Items (50:50 Eraser, Heart Second Chance, 2x Booster), Task 5: 5-Question Round Progression & Endless Mode Mechanism (`app.js`, `index.html`, `style.css`), Task 6: User Profile Access History & Admin Audit Log Viewer Modal (`index.html`, `style.css`, `app.js`), 10.2 해결 아키텍처 및 구현 명세 (+3 more)
+Nodes (7): getKSTDateString(), HaruMatchumApp, 1. Frontend Engine (`app.js`), Task 3: In-Game Items (50:50 Eraser, Heart Second Chance, 2x Booster), Task 5: 5-Question Round Progression & Endless Mode Mechanism (`app.js`, `index.html`, `style.css`), Task 6: User Profile Access History & Admin Audit Log Viewer Modal (`index.html`, `style.css`, `app.js`), 3.17 모바일 타 앱(카카오톡 등) 전환 복귀 시 퀴즈 세션 자동 보존 및 라운드 스킵 결함 해결 (v2.4.3)
 
 ### Community 1 - "test_20000_questions_and_permutations.js"
 Cohesion: 0.24
@@ -130,8 +131,8 @@ Cohesion: 0.07
 Nodes (8): build_english_bank(), get_hanja_level_data(), create_idiom_level_data(), build_level1_questions(), build_level2_questions(), build_level3_questions(), build_level4_questions(), build_level5_questions()
 
 ### Community 3 - "server.js"
-Cohesion: 0.13
-Nodes (20): crypto, DB_FILE, { execSync }, fs, generateToken(), getClientIp(), getKSTDateString(), hashPassword() (+12 more)
+Cohesion: 0.12
+Nodes (26): Task 1: Server Authentication & Access Logging System (`server.js`), crypto, DB_FILE, { execSync }, fs, generateToken(), getClientIp(), getKSTDateString() (+18 more)
 
 ### Community 4 - "📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)"
 Cohesion: 0.14
@@ -143,7 +144,7 @@ Nodes (24): appJs, assert, bindEventsCode, en4, englishQuestionsJs, fs, game, ge
 
 ### Community 6 - "3. 핵심 변경 상세 및 원인 분석 (RCA)"
 Cohesion: 0.05
-Nodes (41): DataManager, Global Constraints, Review Focus, Task 1: Server Authentication & Access Logging System (`server.js`), Task 2: Leaderboard Real User Filtering & Dummy Peer Elimination (`app.js`, `server.js`), Task 3: Hanja Question Bank & Dictionary Deep Linking (`hanja_questions.js`, `index.html`), Task 4: UI Mode Switcher & Dual Theme Support (`index.html`, `style.css`, `app.js`), Task 7: Comprehensive Integration Verification, GitHub Sync & Tech Documentation (+33 more)
+Nodes (40): DataManager, Global Constraints, Review Focus, Task 2: Leaderboard Real User Filtering & Dummy Peer Elimination (`app.js`, `server.js`), Task 3: Hanja Question Bank & Dictionary Deep Linking (`hanja_questions.js`, `index.html`), Task 4: UI Mode Switcher & Dual Theme Support (`index.html`, `style.css`, `app.js`), Task 7: Comprehensive Integration Verification, GitHub Sync & Tech Documentation, 하루맞춤(Haru Matchum) 한자 퀴즈 및 시스템 고도화 Implementation Plan (+32 more)
 
 ### Community 7 - "test_v230_features.js"
 Cohesion: 0.11
@@ -198,8 +199,8 @@ Cohesion: 0.15
 Nodes (12): 10. 게이미피케이션 상태 동기화 및 랭킹 분리 무결성 원칙 (Gamification & Dual-Ranking Integrity), 11. Graphify 지식 그래프 연동 원칙 (Knowledge Graph Architecture), 1. 양방향 GitHub 형상 동기화 원칙 (Bidirectional Git Sync), 2. 기술레포트 및 히스토리 필수 반영 원칙 (Documentation Principle), 3. 네트워크 및 도메인 보안 연동 원칙, 4. 시간대(KST) 및 일일 갱신 기준 표준화 (Timezone & Midnight Rollover), 5. 모바일 웹앱 라이프사이클 및 백그라운드 복귀 보장 (Mobile Lifecycle), 6. 순수 실제 회원 기반 데이터 무결성 원칙 (No Mock Data in Production) (+4 more)
 
 ### Community 20 - "ref_path"
-Cohesion: 0.12
-Nodes (13): assert, fs, indexHtml, path, assert, fs, indexHtml, path (+5 more)
+Cohesion: 0.18
+Nodes (8): assert, fs, indexHtml, path, appJs, assert, fs, path
 
 ### Community 21 - "test_mobile_auth_persistence.js"
 Cohesion: 0.23
@@ -213,9 +214,9 @@ Nodes (10): 1. 개요 및 배경 (Context & Intent), 2. 4대 과목(종류) 정�
 Cohesion: 0.18
 Nodes (7): appCode, assert, engine, fs, MockGameEngine, path, res
 
-### Community 24 - "recordAccessLog"
-Cohesion: 0.60
-Nodes (5): getKSTTime(), recordAccessLog(), saveLogs(), 3.4 접속 감사 로그 및 보안 인가 체계, [2026-11-14] v2.0.0 한자 퀴즈, 연속 라운드, 클린 랭킹, 감사 로깅 대규모 고도화
+### Community 24 - "test_v293_bug_fixes.js"
+Cohesion: 0.09
+Nodes (21): appJs, assert, comboWav, correctWav, fs, http, indexHtml, path (+13 more)
 
 ### Community 25 - "test_v262_user_bug_fixes.js"
 Cohesion: 0.12
@@ -258,8 +259,8 @@ Cohesion: 0.29
 Nodes (6): appJs, assert, fs, indexHtml, path, styleCss
 
 ### Community 35 - "test_mode_toggle.js"
-Cohesion: 0.18
-Nodes (8): assert, duplicateList, appJs, assert, fs, indexHtml, path, styleCss
+Cohesion: 0.29
+Nodes (6): appJs, assert, fs, indexHtml, path, styleCss
 
 ### Community 36 - "Proposed Changes"
 Cohesion: 0.40
@@ -298,8 +299,8 @@ Cohesion: 0.15
 Nodes (11): appJs, assert, fs, http, indexHtml, path, ROOT_DIR, serverProc (+3 more)
 
 ### Community 47 - "📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)"
-Cohesion: 0.22
-Nodes (9): 16.1 요구사항 및 장애 원인 분석 (RCA: Root Cause Analysis), 16.3 검증 결과 (Verification Evidence), 16. v2.8.0 상점 실시간 가상 피팅 미리보기, 150여 종 악세사리 & 마리오 코스튬 대확장, 질문지-정답 지능형 문맥 윤문 가드 엔진 구축 (2026-11-15), 1.1 주요 고도화 요구사항, 1. 개요 및 고도화 배경, 2. 시스템 아키텍처 (v2.0.0), 4. 엔드포인트 및 단위 테스트 검증 결과, 6. 결론 및 운영 제언 (+1 more)
+Cohesion: 0.20
+Nodes (10): 15.1 요구사항 및 배경 (Context & Requirement), 15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트, 15.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation), 15.3 검증 결과 (Verification Evidence), 1.1 주요 고도화 요구사항, 1. 개요 및 고도화 배경, 2. 시스템 아키텍처 (v2.0.0), 4. 엔드포인트 및 단위 테스트 검증 결과 (+2 more)
 
 ### Community 48 - "generate_idiom_5000.js"
 Cohesion: 0.12
@@ -310,8 +311,8 @@ Cohesion: 0.25
 Nodes (6): assert, http, path, server, serverPath, zlib
 
 ### Community 50 - "EnglishSpeechEngine"
-Cohesion: 0.31
-Nodes (4): EnglishSpeechEngine, 10.1 버그 진단 및 원인 분석 (RCA - /diagnosing-superpowers), 10.3 검증 결과 (Verification Evidence), 10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)
+Cohesion: 0.29
+Nodes (5): EnglishSpeechEngine, 10.1 버그 진단 및 원인 분석 (RCA - /diagnosing-superpowers), 10.2 해결 아키텍처 및 구현 명세, 10.3 검증 결과 (Verification Evidence), 10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)
 
 ### Community 51 - "🛠️ 개발 진행 단계 (Development Milestones)"
 Cohesion: 0.33
@@ -341,17 +342,17 @@ Nodes (4): 13.1 장애 및 결함 원인 분석 (RCA: Root Cause Analysis), 13.2
 Cohesion: 0.50
 Nodes (4): 14.1 장애 및 결함 원인 분석 (RCA: Root Cause Analysis), 14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축, 14.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation), 14.3 검증 결과 (Verification Evidence)
 
-### Community 58 - "15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트"
-Cohesion: 0.50
-Nodes (4): 15.1 요구사항 및 배경 (Context & Requirement), 15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트, 15.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation), 15.3 검증 결과 (Verification Evidence)
+### Community 58 - "ref_assert"
+Cohesion: 0.20
+Nodes (7): assert, duplicateList, assert, fs, indexHtml, path, styleCss
 
 ### Community 59 - "test_leaderboard_clean.js"
 Cohesion: 0.29
 Nodes (7): appJsContent, appJsPath, assert, fs, http, path, srv
 
 ### Community 60 - "app.js"
-Cohesion: 0.07
-Nodes (33): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, ConfettiManager, englishVoice, findAccessoryById(), getHatClass(), getOutfitStyleInfo(), getShoesClass() (+25 more)
+Cohesion: 0.06
+Nodes (43): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, englishVoice, findAccessoryById(), getHatClass(), getOutfitStyleInfo(), getShoesClass(), ITEM_PRICES (+35 more)
 
 ### Community 61 - "📋 국어 맞춤법 퀴즈 프로그램 '하루맞춤' 기술 리포트 (Technical Report)"
 Cohesion: 0.14
@@ -385,27 +386,27 @@ Nodes (3): 17.1 개요 및 요구사항 분석 (Overview & Requirements), 17.3 �
 Cohesion: 0.50
 Nodes (4): 3.1 사용자 경험 설계, 3.2 백엔드 RESTful API 엔드포인트 명세, 3.3 데이터 스키마 (`data/users.json`), 3. 간편 회원가입 및 멀티 디바이스 동기화 메커니즘
 
-### Community 70 - "18. v2.9.1 SD 캐릭터 전신 일체형 신체 및 의상 텍스처 피팅 엔진, 모자 정수리 밀착 피팅, 양 볼 자연스러운 듀얼 치크 블러쉬 엔진 고도화 기술 보고서 (2026-11-15)"
-Cohesion: 0.67
-Nodes (3): 18.1 결함 원인 분석 (Root Cause Analysis), 18.3 검증 결과 (Verification Evidence), 18. v2.9.1 SD 캐릭터 전신 일체형 신체 및 의상 텍스처 피팅 엔진, 모자 정수리 밀착 피팅, 양 볼 자연스러운 듀얼 치크 블러쉬 엔진 고도화 기술 보고서 (2026-11-15)
+### Community 70 - "19.2 해결 방안 및 구현 상세 (Implementation Details)"
+Cohesion: 0.29
+Nodes (7): 19.1 배경 및 문제 정의 (Problem Statement), 19.2 해결 방안 및 구현 상세 (Implementation Details), 19.3 검증 결과 (Verification Evidence), 19. SVG 기반 유기적 2.5D 치비(SD) 바디 템플릿 및 3D 피팅 시스템 고도화 (v2.9.2), 2) 몸통 곡선에 착 감기는 의상 클립패스 피팅 레이어 (`chibi-torso-clip`), 3) 유기적 곡선 팔 & 둥근 모찌 손 (Curved Arms & Rounded Mochi Hands), 4) 3D 곡선 조약돌 신발 & 숏다리 (3D Curved Chibi Shoes)
 
 ## Knowledge Gaps
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `HaruMatchumApp` connect `HaruMatchumApp` to `test_v260_voice_and_concise_questions.js`, `app.js`, `test_permutation_and_lazy_loading.js`, `9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)`?**
-  _High betweenness centrality (0.244) - this node is a cross-community bridge._
+  _High betweenness centrality (0.199) - this node is a cross-community bridge._
 - **Should `HaruMatchumApp` be split into smaller, more focused modules?**
-  _Cohesion score 0.0567741935483871 - nodes in this community are weakly interconnected._
-- **Why does `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` connect `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` to `8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)`, `README.md`, `17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)`, `18. v2.9.1 SD 캐릭터 전신 일체형 신체 및 의상 텍스처 피팅 엔진, 모자 정수리 밀착 피팅, 양 볼 자연스러운 듀얼 치크 블러쉬 엔진 고도화 기술 보고서 (2026-11-15)`, `3. 핵심 변경 상세 및 원인 분석 (RCA)`, `EnglishSpeechEngine`, `9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)`, `11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)`, `12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)`, `13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)`, `14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축`, `15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트`, `5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)`, `7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)`?**
-  _High betweenness centrality (0.130) - this node is a cross-community bridge._
+  _Cohesion score 0.06486486486486487 - nodes in this community are weakly interconnected._
+- **Why does `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` connect `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` to `8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)`, `README.md`, `17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)`, `19.2 해결 방안 및 구현 상세 (Implementation Details)`, `3. 핵심 변경 상세 및 원인 분석 (RCA)`, `EnglishSpeechEngine`, `9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)`, `11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)`, `12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)`, `13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)`, `14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축`, `app.js`, `5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)`, `7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)`?**
+  _High betweenness centrality (0.101) - this node is a cross-community bridge._
 - **Should `build_english_bank.py` be split into smaller, more focused modules?**
   _Cohesion score 0.06561085972850679 - nodes in this community are weakly interconnected._
-- **Why does `EnglishSpeechEngine` connect `EnglishSpeechEngine` to `HaruMatchumApp`, `14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축`, `app.js`, `test_v260_voice_and_concise_questions.js`?**
-  _High betweenness centrality (0.073) - this node is a cross-community bridge._
+- **Why does `3. 핵심 변경 상세 및 원인 분석 (RCA)` connect `3. 핵심 변경 상세 및 원인 분석 (RCA)` to `HaruMatchumApp`, `server.js`, `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **Should `server.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.1341991341991342 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1164021164021164 - nodes in this community are weakly interconnected._
 - **Should `📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)` be split into smaller, more focused modules?**
   _Cohesion score 0.14285714285714285 - nodes in this community are weakly interconnected._
