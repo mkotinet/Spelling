@@ -2050,5 +2050,44 @@
       "score": 100,
       "pointsEarned": 150
     }
+  },
+  {
+    "id": "log_1794751710727_gjbql",
+    "timestamp": "2026-11-15T14:08:30.727Z",
+    "kstTime": "2026-11-15 14:08:30",
+    "username": "e2e_runner_1794751710686",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794751710730_oli54",
+    "timestamp": "2026-11-15T14:08:30.730Z",
+    "kstTime": "2026-11-15 14:08:30",
+    "username": "e2e_runner_1794751710686",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794751710731_ts9j2",
+    "timestamp": "2026-11-15T14:08:30.731Z",
+    "kstTime": "2026-11-15 14:08:30",
+    "username": "e2e_runner_1794751710686",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
   }
 ]
