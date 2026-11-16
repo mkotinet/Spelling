@@ -1,6 +1,6 @@
 {
-  "version": "3.2.0",
-  "build": "20261116_0630",
-  "name": "하루맞춤 (Haru Matchum) - PWA Home Shortcut & Web Push Edition",
-  "releaseNotes": "아이폰 & 안드로이드 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재"
+  "version": "3.2.1",
+  "build": "20261116_1715",
+  "name": "하루맞춤 (Haru Matchum) - UI/UX & Grammar Refinement Edition",
+  "releaseNotes": "모바일 메뉴 2x2 그리드화 및 삐져나옴 완벽 차단, 문제 빈칸 활용형 정답 일치, 질문 문장 전면 윤문(비문 0건) 및 40자 내외 간결화"
 }

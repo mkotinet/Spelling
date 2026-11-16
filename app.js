@@ -2838,26 +2838,32 @@ class HaruMatchumApp {
     document.getElementById('expText').textContent = q.explanation;
     document.getElementById('expRule').textContent = `규정/출전: ${q.rule || q.category}`;
 
-    const targetWord = q.standardWord || q.hanjaWord || q.englishWord || q.options[q.answerIndex];
+    // The exact word that fits into the sentence blank is the correct option choice (e.g. 활용형 '가리키고')
+    const sentenceAnswerWord = (q.options && q.answerIndex !== undefined && q.options[q.answerIndex]) 
+      ? q.options[q.answerIndex] 
+      : (q.standardWord || q.hanjaWord || q.englishWord || '');
 
-    // If sentence has a blank, fill it with the correct target word
+    // Dictionary headword / citation form (e.g. 기본형 '가리키다')
+    const dictHeadword = q.standardWord || q.hanjaWord || q.englishWord || sentenceAnswerWord;
+
+    // If sentence has a blank, fill it with the correct sentence answer word
     const blankEl = document.querySelector('.quiz-blank');
     if (blankEl) {
-      blankEl.textContent = ` ${targetWord} `;
+      blankEl.textContent = ` ${sentenceAnswerWord} `;
       blankEl.classList.add('answered');
     }
 
-    document.getElementById('dictWord').textContent = targetWord;
+    document.getElementById('dictWord').textContent = dictHeadword;
     document.getElementById('dictPos').textContent = q.pos || (q.hanjaWord ? '한자어' : (q.englishWord ? '영단어' : '표준어'));
     document.getElementById('dictDefText').textContent = q.dictDefinition || q.meaning || q.explanation;
 
     // Dictionary link (Korean Standard vs English Naver)
     const dictLink = document.getElementById('expDictLink');
     if (this.quizSubject === 'english' || q.englishWord) {
-      dictLink.href = q.dictLink || `https://en.dict.naver.com/#/search?query=${encodeURIComponent(targetWord)}`;
+      dictLink.href = q.dictLink || `https://en.dict.naver.com/#/search?query=${encodeURIComponent(dictHeadword)}`;
       dictLink.textContent = '네이버 영어사전 상세 검색 ↗';
     } else {
-      dictLink.href = q.dictLink || `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(targetWord)}`;
+      dictLink.href = q.dictLink || `https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=${encodeURIComponent(dictHeadword)}`;
       dictLink.textContent = '국립국어원 표준국어대사전 ↗';
     }
     dictLink.onclick = () => {
@@ -5943,10 +5949,12 @@ class HaruMatchumApp {
     const expRule = document.getElementById('expRule');
     if (expRule) expRule.textContent = `규정/출전: ${q.rule || q.category}`;
 
-    const targetWord = q.standardWord || q.hanjaWord || q.englishWord || q.options[q.answerIndex];
+    const sentenceAnswerWord = (q.options && q.answerIndex !== undefined && q.options[q.answerIndex]) 
+      ? q.options[q.answerIndex] 
+      : (q.standardWord || q.hanjaWord || q.englishWord || '');
     const blankEl = document.querySelector('.quiz-blank');
     if (blankEl) {
-      blankEl.textContent = ` ${targetWord} `;
+      blankEl.textContent = ` ${sentenceAnswerWord} `;
       blankEl.classList.add('answered');
     }
 

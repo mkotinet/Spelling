@@ -35,6 +35,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-main);
   color: var(--text-dark);
@@ -42,6 +49,8 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   position: relative;
+  width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
   transition: background 0.4s ease;
 }
@@ -276,9 +285,12 @@ body.theme-hanja .mode-switch-btn.active {
 .app-container {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 580px;
   margin: 0 auto;
   min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
   padding-top: max(16px, env(safe-area-inset-top, 16px));
   padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom, 0px)));
   padding-left: max(16px, env(safe-area-inset-left, 16px));
@@ -295,6 +307,10 @@ body.theme-hanja .mode-switch-btn.active {
   margin-bottom: 16px;
   padding: 8px 4px;
   gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .logo-area {
@@ -1550,30 +1566,90 @@ body.theme-english .quiz-sentence .quiz-blank {
     margin-bottom: 12px;
     padding: 2px 0;
     gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   .logo-area {
-    gap: 6px;
+    gap: 5px;
+    flex-shrink: 0;
   }
   .logo-icon {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
   .logo-text h1 {
     font-size: 1.15rem;
     white-space: nowrap;
   }
   .logo-text p {
-    font-size: 0.65rem;
-    white-space: nowrap;
+    display: none !important;
   }
   .header-actions {
-    gap: 3px;
+    display: flex;
+    align-items: center;
+    gap: 2.5px;
+    flex-shrink: 1;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    max-width: calc(100% - 88px);
+    padding: 2px 0;
+  }
+  .header-actions::-webkit-scrollbar {
+    display: none;
   }
   .icon-btn {
-    width: 29px;
-    height: 29px;
-    font-size: 0.84rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.82rem;
     border-width: 1px;
     flex-shrink: 0;
+  }
+  /* Mode Switcher 2x2 Balanced Grid on Mobile (Fix vertical stretching) */
+  .mode-switch-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+    padding: 6px !important;
+    border-radius: 18px !important;
+    margin: 4px 0 14px 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .mode-switch-btn {
+    flex: unset !important;
+    width: 100% !important;
+    padding: 9px 6px !important;
+    font-size: 0.84rem !important;
+    white-space: nowrap !important;
+    border-radius: 12px !important;
+    min-height: 42px !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    letter-spacing: -0.3px !important;
+  }
+  .mode-switch-btn .switch-icon {
+    font-size: 1rem !important;
+  }
+
+  /* Nav Tabs on Mobile: single-line compact pills */
+  .nav-tabs {
+    gap: 4px !important;
+    padding: 4px !important;
+    border-radius: 16px !important;
+    margin-bottom: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .nav-tab {
+    padding: 8px 2px !important;
+    font-size: 0.78rem !important;
+    white-space: nowrap !important;
+    gap: 2px !important;
+    border-radius: 12px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   .user-bar {
     padding: 8px 12px;
@@ -4243,6 +4319,7 @@ body.theme-english .quiz-sentence .quiz-blank {
   .nav-tab {
     padding: 8px 2px !important;
     font-size: 0.78rem !important;
+    white-space: nowrap !important;
   }
 }
 

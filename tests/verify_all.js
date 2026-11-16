@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.2.0">'), 'index.html must include meta app-version 3.2.0');
+    assert(indexHtml.includes('<meta name="app-version" content="3.2.1">'), 'index.html must include meta app-version 3.2.1');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -232,7 +232,7 @@ const srv = server.listen(TEST_PORT, async () => {
     // 17. v2.7.0 Sound, Q4333, Leaderboard match, Shop & Avatar Zoom check
     const sample4333 = spellingBank.find(q => q.id === 4333);
     assert(sample4333, 'Question #4333 must exist');
-    assert(sample4333.sentence.includes('조달청을 제정하여'), 'Q4333 sentence must be 조달청을 제정하여');
+    assert(sample4333.standardWord === '예규', 'Q4333 standardWord must be 예규');
     assert(appCode.includes('EnglishSpeechEngine'), 'app.js must include EnglishSpeechEngine');
     assert(appCode.includes('ITEM_PRICES'), 'app.js must include ITEM_PRICES');
     assert(appCode.includes('ACCESSORY_DEFINITIONS'), 'app.js must include ACCESSORY_DEFINITIONS');
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.2.0', 'GET /api/version version must be 3.2.0');
+    assert.strictEqual(verRes.data.version, '3.2.1', 'GET /api/version version must be 3.2.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 

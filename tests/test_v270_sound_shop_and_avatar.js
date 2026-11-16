@@ -26,8 +26,8 @@ console.log(`  ✅ Version consistency passed: ${versionJson.version} across all
 console.log('\n[2] Question #4333 Grammar & Particle Fix Check...');
 const rawQuestions = fs.readFileSync(path.join(BASE_DIR, 'questions.js'), 'utf-8');
 assert(!rawQuestions.includes('조달청 를 제정하여'), 'questions.js must not contain "조달청 를 제정하여"');
-assert(rawQuestions.includes('조달청을 제정하여'), 'questions.js must contain "조달청을 제정하여"');
-console.log('  ✅ Question #4333 particle fix verified: "조달청을 제정하여"');
+assert(rawQuestions.includes('행정 [ (     ) ]를 준수했다'), 'questions.js must contain refined Q4333');
+console.log('  ✅ Question #4333 particle fix verified: refined Q4333');
 
 // 3. 리더보드 점수 무결성 (미니미니 640P 100% 보존 검증)
 console.log('\n[3] Leaderboard Score Integrity (미니미니 640P) Check...');
