@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.4.3">'), 'index.html must include meta app-version 3.4.3');
+    assert(indexHtml.includes('<meta name="app-version" content="3.4.4">'), 'index.html must include meta app-version 3.4.4');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.4.3', 'GET /api/version version must be 3.4.3');
+    assert.strictEqual(verRes.data.version, '3.4.4', 'GET /api/version version must be 3.4.4');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -484,6 +484,14 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('class="chat-input-toolbar" style="display: flex !important; flex-direction: column !important;'), 'index.html must enforce column inline style on chat-input-toolbar');
     assert(appCode.includes('window.selectGiftCategory ='), 'app.js must declare global window.selectGiftCategory');
     assert(appCode.includes('FALLBACK_GIFT_CATALOG'), 'app.js must include FALLBACK_GIFT_CATALOG');
+
+    // 42. v3.4.4 Chat Auto-Scroll Bottom Pinning & CLS Defense
+    assert(styleCode.includes('overflow-anchor: auto !important;'), 'style.css must enable web standard scroll anchoring');
+    assert(styleCode.includes('.chat-photo-bubble img'), 'style.css must style chat-photo-bubble img');
+    assert(styleCode.includes('min-height: 140px;'), 'style.css must pre-allocate 140px photo height');
+    assert(indexHtml.includes('id="chatBottomAnchor"'), 'index.html must include chatBottomAnchor element');
+    assert(appCode.includes('this.isChatUserScrolledUp = false;'), 'app.js must track isChatUserScrolledUp');
+    assert(appCode.includes('anchor.scrollIntoView'), 'app.js must use anchor.scrollIntoView for bottom lock');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

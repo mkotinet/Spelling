@@ -5783,6 +5783,27 @@ class HaruMatchumApp {
     this.chatPageSize = 15;
     this.chatVisibleCount = 15;
     this.isChatArchiveCollapsed = true; // v3.4.0 Compress old messages by default
+    this.isChatUserScrolledUp = false; // v3.4.4 Tracks if user manually scrolled up
+    this.chatResizeObserver = null;
+
+    // v3.4.4: Auto-scroll tracking and ResizeObserver for 100% bottom pinning
+    if (this.chatMessagesScrollArea) {
+      this.chatMessagesScrollArea.addEventListener('scroll', () => {
+        const el = this.chatMessagesScrollArea;
+        const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+        // User manually viewing older history if scrolled > 80px above bottom
+        this.isChatUserScrolledUp = (distanceFromBottom > 80);
+      }, { passive: true });
+
+      if (typeof window !== 'undefined' && window.ResizeObserver) {
+        this.chatResizeObserver = new ResizeObserver(() => {
+          if (!this.isChatUserScrolledUp && this.modalChatApp && this.modalChatApp.classList.contains('active')) {
+            this.scrollChatToBottom(false);
+          }
+        });
+        this.chatResizeObserver.observe(this.chatMessagesScrollArea);
+      }
+    }
 
     // Header buttons
     const btnCloseChatApp = document.getElementById('btnCloseChatApp');
@@ -5964,6 +5985,14 @@ class HaruMatchumApp {
     } else {
       this.leaveChatRoom();
     }
+
+    // v3.4.4: Ensure instant bottom pin on modal open transition
+    setTimeout(() => {
+      if (this.currentChatRoomId) this.scrollChatToBottom(false, true);
+    }, 120);
+    setTimeout(() => {
+      if (this.currentChatRoomId) this.scrollChatToBottom(false, true);
+    }, 300);
   }
 
   closeChatAppModal() {
@@ -6050,6 +6079,7 @@ class HaruMatchumApp {
   enterChatRoom(roomId, targetUsername, targetName, avatar, accessories) {
     this.currentChatRoomId = roomId || 'square';
     this.currentChatTargetUser = targetUsername;
+    this.isChatUserScrolledUp = false; // v3.4.4: Force bottom anchor on entering room
 
     const btnBack = document.getElementById('btnChatBackToList');
     const headerTitle = document.getElementById('chatActiveTitle');
@@ -6113,6 +6143,7 @@ class HaruMatchumApp {
 
     // Reset pagination state on opening room (v3.4.0)
     this.chatVisibleCount = this.chatPageSize || 15;
+    this.isChatUserScrolledUp = false; // v3.4.4: Always anchor to bottom on fresh load
 
     try {
       const q = new URLSearchParams();
@@ -6266,8 +6297,8 @@ class HaruMatchumApp {
         }
       } else if (msg.photoUrl && !msg.photoExpired) {
         bodyHtml = `
-          <div class="chat-photo-bubble" style="cursor: pointer; max-width: 220px;" onclick="window.haruApp.openPhotoLightbox('${msg.photoUrl}')">
-            <img src="${msg.photoUrl}" alt="사진" style="width: 100%; border-radius: 14px; border: 1.5px solid #fbcfe8; display: block;">
+          <div class="chat-photo-bubble" onclick="window.haruApp.openPhotoLightbox('${msg.photoUrl}')">
+            <img src="${msg.photoUrl}" alt="사진" class="chat-photo-img" loading="eager">
             ${msg.content ? `<div class="chat-text-bubble" style="margin-top: 6px;">${msg.content}</div>` : ''}
           </div>
         `;
@@ -6300,18 +6331,79 @@ class HaruMatchumApp {
       this.chatMessagesScrollArea.appendChild(row);
     });
 
+    // v3.4.4: Always attach rock-solid bottom anchor element at the very end
+    let anchor = document.getElementById('chatBottomAnchor');
+    if (!anchor) {
+      anchor = document.createElement('div');
+      anchor.id = 'chatBottomAnchor';
+      anchor.className = 'chat-bottom-anchor';
+      anchor.style.height = '1px';
+      anchor.style.minHeight = '1px';
+      anchor.style.width = '100%';
+      anchor.style.pointerEvents = 'none';
+      anchor.style.visibility = 'hidden';
+      anchor.style.flexShrink = '0';
+    }
+    this.chatMessagesScrollArea.appendChild(anchor);
+
+    // v3.4.4: Bind load and decode listeners on all images to guarantee bottom pinning
+    const allImgs = this.chatMessagesScrollArea.querySelectorAll('img');
+    allImgs.forEach(img => {
+      const onImageLoaded = () => {
+        img.classList.add('loaded');
+        if (!this.isChatUserScrolledUp) {
+          this.scrollChatToBottom(false);
+        }
+      };
+      if (img.complete && img.naturalHeight !== 0) {
+        onImageLoaded();
+      } else {
+        img.addEventListener('load', onImageLoaded, { once: true });
+        img.addEventListener('error', onImageLoaded, { once: true });
+      }
+    });
+
     if (shouldScroll) {
-      this.scrollChatToBottom(!isInitialLoad);
+      this.scrollChatToBottom(!isInitialLoad, isInitialLoad);
     }
   }
 
-  scrollChatToBottom(smooth = false) {
-    if (this.chatMessagesScrollArea) {
-      this.chatMessagesScrollArea.style.scrollBehavior = smooth ? 'smooth' : 'auto';
-      setTimeout(() => {
-        this.chatMessagesScrollArea.scrollTop = this.chatMessagesScrollArea.scrollHeight;
-      }, 10);
+  // v3.4.4: Multi-stage resilient bottom scrolling pipeline (eliminates CLS & async load jumps)
+  scrollChatToBottom(smooth = false, force = false) {
+    const container = this.chatMessagesScrollArea;
+    if (!container) return;
+
+    if (force) {
+      this.isChatUserScrolledUp = false;
     }
+
+    const performScroll = () => {
+      if (!container) return;
+      container.scrollTop = container.scrollHeight;
+      const anchor = document.getElementById('chatBottomAnchor');
+      if (anchor) {
+        try {
+          anchor.scrollIntoView({ block: 'end', inline: 'nearest', behavior: smooth ? 'smooth' : 'auto' });
+        } catch (e) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+    };
+
+    container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+    performScroll();
+
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => {
+        performScroll();
+        requestAnimationFrame(performScroll);
+      });
+    }
+
+    const delays = [20, 50, 100, 200, 350, 500, 800];
+    delays.forEach(delay => {
+      setTimeout(performScroll, delay);
+    });
   }
 
   startChatThreadPolling(roomId, targetUsername) {
@@ -6428,6 +6520,7 @@ class HaruMatchumApp {
         this.clearChatAttachedPhoto();
         this.cachedChatThreadMessages.push(data.message);
         this.renderChatMessages(this.cachedChatThreadMessages, true, false);
+        this.scrollChatToBottom(true, true); // v3.4.4: Force pin to bottom on sending
         sfx.tap();
       } else {
         this.showToastNotice(data.message || '전송 실패');

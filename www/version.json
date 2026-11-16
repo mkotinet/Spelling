@@ -1,6 +1,6 @@
 {
-  "version": "3.4.3",
-  "build": "20261116_1955",
-  "name": "하루맞춤 (Haru Matchum) - Chat Toolbar 2-Tier Defense & Gift Categories Fix Edition",
-  "releaseNotes": "대화창 하단 툴바 인라인 스타일 강제 2단 분리(상단 액션 칩, 하단 전체 너비 입력창 수직 정렬 방지), 입력창 기본 1줄 22px 콤팩트 알약 캡슐 및 자연스러운 2~4줄 확장, 선물보내기 5대 카테고리 탭 클릭 무결성 및 브랜드 선물 엠블럼 이미지 100% 노출 보장"
+  "version": "3.4.4",
+  "build": "20261116_2010",
+  "name": "하루맞춤 (Haru Matchum) - Chat Auto-Scroll Bottom Pinning & CLS Defense Edition",
+  "releaseNotes": "대화창 오픈 시 최신 메시지 및 사진 자동 하단 스크롤 100% 보장(다단계 스크롤 파이프라인, 비동기 이미지 로딩 완료 감지 및 ResizeObserver 하단 앵커링, 사진 버블 사전 높이 확보로 CLS 및 스크롤 밀림 원천 차단)"
 }
