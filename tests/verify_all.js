@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.3.0">'), 'index.html must include meta app-version 3.3.0');
+    assert(indexHtml.includes('<meta name="app-version" content="3.4.0">'), 'index.html must include meta app-version 3.4.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -287,7 +287,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(styleCss.includes('.chibi-svg-clothes-base'), 'style.css must define .chibi-svg-clothes-base');
 
     // 23. v2.9.3 Anti-Cheat, Minimum 200P Item Economy, Dual-Engine Audio & No-Store Cache
-    assert(appCode.includes('// Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session'), 'app.js must clear mid-quiz session on fresh launch');
+    assert(appCode.includes('updateResumeQuizBanner'), 'app.js must check and update resume quiz banner on launch');
     assert(appCode.includes('playFallbackAudio'), 'app.js must implement playFallbackAudio');
     assert(appCode.includes('createFallbackAudioUri'), 'app.js must implement createFallbackAudioUri');
     assert(indexHtml.includes('<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'), 'index.html must include Cache-Control meta');
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.3.0', 'GET /api/version version must be 3.3.0');
+    assert.strictEqual(verRes.data.version, '3.4.0', 'GET /api/version version must be 3.4.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -464,6 +464,15 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('initChatApp'), 'app.js must implement initChatApp');
     assert(appCode.includes('openChatAppModal'), 'app.js must implement openChatAppModal');
     assert(appCode.includes('openSendGiftModal'), 'app.js must implement openSendGiftModal');
+
+    // 39. v3.4.0 Smart Resume, Auto-Resize Chat & Brand Parody Gifts
+    assert.ok(catalogRes.data.gifts.gift_twosome_cake, 'gift_twosome_cake must exist in catalog');
+    assert.ok(catalogRes.data.gifts.gift_starbox_americano, 'gift_starbox_americano must exist in catalog');
+    assert.ok(catalogRes.data.gifts.gift_kyochon_combo, 'gift_kyochon_combo must exist in catalog');
+    assert.ok(catalogRes.data.gifts.gift_baemin_voucher, 'gift_baemin_voucher must exist in catalog');
+    assert(appCode.includes('chatInputText.style.height = Math.min'), 'app.js must auto-resize chatInputText');
+    assert(appCode.includes('toggleChatArchive'), 'app.js must implement toggleChatArchive');
+    assert(indexHtml.includes('id="btnChatToggleArchive"'), 'index.html must include btnChatToggleArchive');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

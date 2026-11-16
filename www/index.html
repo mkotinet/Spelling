@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.3.0">
+  <meta name="app-version" content="3.4.0">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1273,6 +1273,7 @@
           </div>
         </div>
         <div class="chat-header-actions">
+          <button id="btnChatToggleArchive" class="btn-chat-archive-quick" type="button" title="이전 대화 압축 보관">📦 압축</button>
           <button id="btnChatHeaderGift" class="btn-chat-gift-quick" type="button" title="선물 보내기">🎁 선물</button>
           <button id="btnCloseChatApp" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
         </div>
@@ -1328,10 +1329,10 @@
         <div id="chatStickerDrawer" class="chat-sticker-drawer" style="display: none;">
           <div class="sticker-drawer-header">
             <div class="sticker-pack-tabs">
-              <button type="button" class="sticker-pack-tab active" data-pack="haru_friends">🌸 하루</button>
-              <button type="button" class="sticker-pack-tab" data-pack="cheer_party">🎉 축하</button>
-              <button type="button" class="sticker-pack-tab" data-pack="tasty_desserts">🍰 디저트</button>
-              <button type="button" class="sticker-pack-tab" data-pack="popular_emojis">😀 이모지</button>
+              <button type="button" class="sticker-pack-tab active" data-pack="pokemon_friends">⚡ 포켓몬</button>
+              <button type="button" class="sticker-pack-tab" data-pack="shinchan_friends">🖍️ 짱구</button>
+              <button type="button" class="sticker-pack-tab" data-pack="healing_friends">🦦 보노보노</button>
+              <button type="button" class="sticker-pack-tab" data-pack="popular_emojis">😀 빅 이모지</button>
             </div>
             <button id="btnCloseStickerDrawer" class="btn-close-drawer" type="button">✕</button>
           </div>
@@ -1369,8 +1370,11 @@
 
         <!-- Gift Categories Tab -->
         <div class="gift-category-tabs">
-          <button id="tabGiftItems" class="gift-cat-tab active" type="button">🎮 퀴즈 필수 아이템</button>
-          <button id="tabGiftSocial" class="gift-cat-tab" type="button">🍰 감성 & 축하 선물</button>
+          <button id="tabGiftAll" class="gift-cat-tab active" type="button" data-cat="all">🌟 전체 선물</button>
+          <button id="tabGiftItems" class="gift-cat-tab" type="button" data-cat="game">🎮 퀴즈 아이템</button>
+          <button id="tabGiftCafe" class="gift-cat-tab" type="button" data-cat="cafe">☕ 카페·디저트</button>
+          <button id="tabGiftFood" class="gift-cat-tab" type="button" data-cat="food">🍗 치킨·버거</button>
+          <button id="tabGiftStore" class="gift-cat-tab" type="button" data-cat="store">🎁 편의점·쇼핑</button>
         </div>
 
         <!-- Gift Cards Grid -->

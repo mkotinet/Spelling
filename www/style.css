@@ -4826,7 +4826,7 @@ body.theme-english .quiz-sentence .quiz-blank {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* v3.4.0: Eliminates dizzying initial scroll animation */
   overscroll-behavior: contain;
 }
 
@@ -5033,13 +5033,92 @@ body.theme-english .quiz-sentence .quiz-blank {
   transform: scale(1.08);
 }
 
+.btn-chat-archive-quick {
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  padding: 5px 11px;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.btn-chat-archive-quick:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: translateY(-1px);
+}
+.btn-chat-archive-quick.active {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #a5b4fc;
+}
+
+/* Chat Archive Banner & Load More Button (v3.4.0) */
+.chat-archive-banner {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.chat-archive-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+}
+.chat-archive-header:hover {
+  color: #1e293b;
+}
+.chat-archive-badge {
+  background: #e2e8f0;
+  color: #334155;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+}
+.btn-load-more-chat {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #fbcfe8;
+  border-radius: 14px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #db2777;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(219, 39, 119, 0.08);
+  transition: all 0.2s;
+}
+.btn-load-more-chat:hover {
+  background: #fdf2f8;
+  transform: translateY(-1px);
+}
+
 .chat-textarea-wrapper {
   flex: 1;
   display: flex;
+  align-items: center;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 6px 12px;
+  border-radius: 22px;
+  padding: 8px 14px;
+  min-height: 46px;
   transition: all 0.2s;
 }
 .chat-textarea-wrapper:focus-within {
@@ -5054,11 +5133,13 @@ body.theme-english .quiz-sentence .quiz-blank {
   background: transparent;
   outline: none;
   font-family: inherit;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   resize: none;
-  max-height: 80px;
-  line-height: 1.4;
+  min-height: 28px;
+  max-height: 140px;
+  line-height: 1.5;
   color: #1e293b;
+  overflow-y: auto;
 }
 
 .btn-chat-send {
@@ -5285,10 +5366,21 @@ body.theme-english .quiz-sentence .quiz-blank {
 .gift-category-tabs {
   display: flex;
   gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.gift-category-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+.gift-category-tabs::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 .gift-cat-tab {
-  flex: 1;
-  padding: 10px;
+  flex: 0 0 auto;
+  padding: 8px 14px;
   font-size: 0.85rem;
   font-weight: 800;
   color: #64748b;

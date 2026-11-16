@@ -1530,8 +1530,8 @@ class HaruMatchumApp {
     this.renderBadges();
     this.checkCloudAuth();
 
-    // Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session so users cannot cheat by closing and reopening
-    this.clearActiveQuizSession();
+    // Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session or restore resume banner (v3.4.0)
+    this.updateResumeQuizBanner();
 
     // Initialize Service Worker & Web Push (v3.2.0)
     if (typeof window !== 'undefined') {
@@ -2033,15 +2033,15 @@ class HaruMatchumApp {
       }
     });
     window.addEventListener('pagehide', () => {
-      // Anti-Cheat: Clear mid-quiz session on tab/page close or navigation
+      // v3.4.0: Auto-save mid-quiz session when user switches app or locks screen
       if (this.currentViewName === 'quiz') {
-        this.clearActiveQuizSession();
+        this.saveActiveQuizSession();
       }
     });
     window.addEventListener('beforeunload', () => {
-      // Anti-Cheat: Clear mid-quiz session on tab/page close or navigation
+      // v3.4.0: Auto-save mid-quiz session on tab/browser exit
       if (this.currentViewName === 'quiz') {
-        this.clearActiveQuizSession();
+        this.saveActiveQuizSession();
       }
     });
     // Re-verify and sync session automatically when mobile device restores network connection
@@ -2117,6 +2117,9 @@ class HaruMatchumApp {
     if (!viewName || typeof viewName !== 'string') return;
     if (typeof englishVoice !== 'undefined') {
       englishVoice.stop();
+    }
+    if (this.currentViewName === 'quiz' && viewName !== 'quiz') {
+      this.saveActiveQuizSession();
     }
     this.currentViewName = viewName;
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -2785,7 +2788,7 @@ class HaruMatchumApp {
     }
 
     this.selectedOption = selectedIndex;
-    this.clearActiveQuizSession(); // Anti-Cheat: Immediately purge active session once option is clicked
+    this.saveActiveQuizSession(); // v3.4.0: Preserve answered state so returning from other apps keeps result
     this.recordQuestionSolved(q.id, this.quizSubject);
 
     const allButtons = document.querySelectorAll('.option-btn');
@@ -5684,9 +5687,12 @@ class HaruMatchumApp {
     this.chatThreadPollingTimer = null;
     this.chatAttachedPhotoData = null;
     this.selectedGiftItem = null;
-    this.activeStickerPack = 'haru_friends';
+    this.activeStickerPack = 'pokemon_friends'; // v3.4.0 Famous Anime Parody Stickers
     this.giftCatalogCache = null;
     this.cachedChatThreadMessages = [];
+    this.chatPageSize = 15;
+    this.chatVisibleCount = 15;
+    this.isChatArchiveCollapsed = true; // v3.4.0 Compress old messages by default
 
     // Header buttons
     const btnCloseChatApp = document.getElementById('btnCloseChatApp');
@@ -5694,6 +5700,11 @@ class HaruMatchumApp {
 
     const btnChatBackToList = document.getElementById('btnChatBackToList');
     if (btnChatBackToList) btnChatBackToList.addEventListener('click', () => this.leaveChatRoom());
+
+    const btnChatToggleArchive = document.getElementById('btnChatToggleArchive');
+    if (btnChatToggleArchive) {
+      btnChatToggleArchive.addEventListener('click', () => this.toggleChatArchive());
+    }
 
     const btnChatHeaderGift = document.getElementById('btnChatHeaderGift');
     if (btnChatHeaderGift) {
@@ -5724,7 +5735,12 @@ class HaruMatchumApp {
     const btnChatSend = document.getElementById('btnChatSend');
     if (btnChatSend) btnChatSend.addEventListener('click', () => this.submitChatMessage());
 
+    // Auto-resizing multi-line textarea with comfortable height (v3.4.0)
     if (this.chatInputText) {
+      this.chatInputText.addEventListener('input', () => {
+        this.chatInputText.style.height = 'auto';
+        this.chatInputText.style.height = Math.min(this.chatInputText.scrollHeight, 140) + 'px';
+      });
       this.chatInputText.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
@@ -5752,7 +5768,7 @@ class HaruMatchumApp {
 
     const btnChatToggleSticker = document.getElementById('btnChatToggleSticker');
     if (btnChatToggleSticker) {
-      btnChatToggleSticker.addEventListener('click', () => this.toggleChatStickerDrawer(null, 'haru_friends'));
+      btnChatToggleSticker.addEventListener('click', () => this.toggleChatStickerDrawer(null, 'pokemon_friends'));
     }
 
     const btnChatToggleEmoji = document.getElementById('btnChatToggleEmoji');
@@ -5770,7 +5786,7 @@ class HaruMatchumApp {
       tab.addEventListener('click', (e) => {
         document.querySelectorAll('.sticker-pack-tab').forEach(t => t.classList.remove('active'));
         e.currentTarget.classList.add('active');
-        this.renderStickerGrid(e.currentTarget.dataset.pack || 'haru_friends');
+        this.renderStickerGrid(e.currentTarget.dataset.pack || 'pokemon_friends');
       });
     });
 
@@ -5780,22 +5796,15 @@ class HaruMatchumApp {
     if (btnCloseSendGift) btnCloseSendGift.addEventListener('click', () => this.closeSendGiftModal());
     if (btnCancelSendGift) btnCancelSendGift.addEventListener('click', () => this.closeSendGiftModal());
 
-    const tabGiftItems = document.getElementById('tabGiftItems');
-    const tabGiftSocial = document.getElementById('tabGiftSocial');
-    if (tabGiftItems) {
-      tabGiftItems.addEventListener('click', () => {
-        tabGiftItems.classList.add('active');
-        if (tabGiftSocial) tabGiftSocial.classList.remove('active');
-        this.renderGiftCatalog('item');
+    // 5-Category Dynamic Tabs (v3.4.0)
+    document.querySelectorAll('.gift-cat-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.gift-cat-tab').forEach(t => t.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const cat = e.currentTarget.dataset.cat || 'all';
+        this.renderGiftCatalog(cat);
       });
-    }
-    if (tabGiftSocial) {
-      tabGiftSocial.addEventListener('click', () => {
-        tabGiftSocial.classList.add('active');
-        if (tabGiftItems) tabGiftItems.classList.remove('active');
-        this.renderGiftCatalog('social');
-      });
-    }
+    });
 
     document.querySelectorAll('.gift-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
@@ -5982,6 +5991,9 @@ class HaruMatchumApp {
     if (!this.chatMessagesScrollArea) return;
     this.chatMessagesScrollArea.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">대화 기록 불러오는 중... ✨</div>';
 
+    // Reset pagination state on opening room (v3.4.0)
+    this.chatVisibleCount = this.chatPageSize || 15;
+
     try {
       const q = new URLSearchParams();
       if (roomId) q.set('roomId', roomId);
@@ -5998,15 +6010,36 @@ class HaruMatchumApp {
       }
 
       this.cachedChatThreadMessages = data.messages || [];
-      this.renderChatMessages(this.cachedChatThreadMessages);
-      this.scrollChatToBottom();
+      // Initial load: instant jump to bottom without dizzying animation (v3.4.0)
+      this.renderChatMessages(this.cachedChatThreadMessages, true, true);
       this.checkUnreadMessages();
     } catch (e) {
       this.chatMessagesScrollArea.innerHTML = '<div style="text-align: center; padding: 20px; color: #f43f5e;">네트워크 오류가 발생했습니다.</div>';
     }
   }
 
-  renderChatMessages(messages) {
+  toggleChatArchive() {
+    this.isChatArchiveCollapsed = !this.isChatArchiveCollapsed;
+    const btnArchive = document.getElementById('btnChatToggleArchive');
+    if (btnArchive) {
+      btnArchive.classList.toggle('active', !this.isChatArchiveCollapsed);
+      btnArchive.textContent = this.isChatArchiveCollapsed ? '📦 압축' : '📖 펼침';
+    }
+    this.renderChatMessages(this.cachedChatThreadMessages, false, false);
+  }
+
+  loadMoreChatMessages() {
+    this.chatVisibleCount += (this.chatPageSize || 15);
+    const prevScrollHeight = this.chatMessagesScrollArea ? this.chatMessagesScrollArea.scrollHeight : 0;
+    const prevScrollTop = this.chatMessagesScrollArea ? this.chatMessagesScrollArea.scrollTop : 0;
+    this.renderChatMessages(this.cachedChatThreadMessages, false, false);
+    if (this.chatMessagesScrollArea) {
+      const newScrollHeight = this.chatMessagesScrollArea.scrollHeight;
+      this.chatMessagesScrollArea.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
+    }
+  }
+
+  renderChatMessages(messages, shouldScroll = true, isInitialLoad = false) {
     if (!this.chatMessagesScrollArea) return;
     this.chatMessagesScrollArea.innerHTML = '';
 
@@ -6021,10 +6054,40 @@ class HaruMatchumApp {
       return;
     }
 
+    const totalCount = messages.length;
+    const visibleLimit = this.chatVisibleCount || 15;
+    let messagesToDisplay = messages;
+
+    // Archive and Pagination Support (v3.4.0)
+    if (totalCount > visibleLimit) {
+      const hiddenCount = totalCount - visibleLimit;
+      const banner = document.createElement('div');
+      banner.className = 'chat-archive-banner';
+      banner.innerHTML = `
+        <div class="chat-archive-header" onclick="window.haruApp.toggleChatArchive()">
+          <span>📦 이전 대화 <strong>${hiddenCount}건</strong>이 압축 보관되었습니다.</span>
+          <span class="chat-archive-badge">${this.isChatArchiveCollapsed ? '터치하여 펼치기 ▼' : '접어두기 ▲'}</span>
+        </div>
+      `;
+      this.chatMessagesScrollArea.appendChild(banner);
+
+      if (!this.isChatArchiveCollapsed) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.className = 'btn-load-more-chat';
+        loadMoreBtn.type = 'button';
+        loadMoreBtn.innerHTML = `🔼 이전 대화 더보기 (남은 ${hiddenCount}개)`;
+        loadMoreBtn.onclick = () => window.haruApp.loadMoreChatMessages();
+        this.chatMessagesScrollArea.appendChild(loadMoreBtn);
+        messagesToDisplay = messages;
+      } else {
+        messagesToDisplay = messages.slice(hiddenCount);
+      }
+    }
+
     const myUsername = (this.data.currentUser && (this.data.currentUser.username || this.data.currentUser.name)) || '';
     let lastDate = '';
 
-    messages.forEach(msg => {
+    messagesToDisplay.forEach(msg => {
       // 1. Date Divider
       const msgDate = msg.kstTime ? msg.kstTime.split(' ')[0] : (msg.timestamp ? msg.timestamp.split('T')[0] : '');
       if (msgDate && msgDate !== lastDate) {
@@ -6116,13 +6179,18 @@ class HaruMatchumApp {
 
       this.chatMessagesScrollArea.appendChild(row);
     });
+
+    if (shouldScroll) {
+      this.scrollChatToBottom(!isInitialLoad);
+    }
   }
 
-  scrollChatToBottom() {
+  scrollChatToBottom(smooth = false) {
     if (this.chatMessagesScrollArea) {
+      this.chatMessagesScrollArea.style.scrollBehavior = smooth ? 'smooth' : 'auto';
       setTimeout(() => {
         this.chatMessagesScrollArea.scrollTop = this.chatMessagesScrollArea.scrollHeight;
-      }, 50);
+      }, 10);
     }
   }
 
@@ -6150,8 +6218,7 @@ class HaruMatchumApp {
           const fresh = data.messages.filter(m => !this.cachedChatThreadMessages.some(c => c.id === m.id));
           if (fresh.length > 0) {
             this.cachedChatThreadMessages.push(...fresh);
-            this.renderChatMessages(this.cachedChatThreadMessages);
-            this.scrollChatToBottom();
+            this.renderChatMessages(this.cachedChatThreadMessages, true, false);
             sfx.pop();
           }
         }
@@ -6233,11 +6300,13 @@ class HaruMatchumApp {
       const data = await res.json();
 
       if (res.ok && data.success && data.message) {
-        if (inputEl) inputEl.value = '';
+        if (inputEl) {
+          inputEl.value = '';
+          inputEl.style.height = 'auto'; // Reset auto-expanded height after send (v3.4.0)
+        }
         this.clearChatAttachedPhoto();
         this.cachedChatThreadMessages.push(data.message);
-        this.renderChatMessages(this.cachedChatThreadMessages);
-        this.scrollChatToBottom();
+        this.renderChatMessages(this.cachedChatThreadMessages, true, false);
         sfx.tap();
       } else {
         this.showToastNotice(data.message || '전송 실패');
@@ -6383,8 +6452,9 @@ class HaruMatchumApp {
       btnSubmit.innerHTML = '선물을 선택해주세요';
     }
 
-    // Fetch and render gift catalog
-    await this.renderGiftCatalog('item');
+    // Fetch and render gift catalog (v3.4.0: all categories by default)
+    document.querySelectorAll('.gift-cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === 'all'));
+    await this.renderGiftCatalog('all');
     this.modalSendGift.classList.add('active');
     sfx.combo();
   }
@@ -6394,7 +6464,7 @@ class HaruMatchumApp {
     this.selectedGiftItem = null;
   }
 
-  async renderGiftCatalog(category = 'item') {
+  async renderGiftCatalog(category = 'all') {
     const grid = document.getElementById('giftCatalogGrid');
     if (!grid) return;
 
@@ -6412,7 +6482,15 @@ class HaruMatchumApp {
     const myPoints = (this.data.currentUser && this.data.currentUser.totalPoints) || 0;
 
     grid.innerHTML = '';
-    const giftEntries = Object.values(catalog).filter(g => g.type === category || (category === 'item' && g.type === 'shield'));
+    const allGifts = Object.values(catalog);
+    const giftEntries = allGifts.filter(g => {
+      if (category === 'all') return true;
+      if (category === 'game') return g.category === 'game' || g.type === 'item' || g.type === 'shield';
+      if (category === 'cafe') return g.category === 'cafe';
+      if (category === 'food') return g.category === 'food';
+      if (category === 'store') return g.category === 'store';
+      return g.category === category || g.type === category;
+    });
 
     giftEntries.forEach(gift => {
       const card = document.createElement('div');

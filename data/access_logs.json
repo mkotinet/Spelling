@@ -2760,5 +2760,108 @@
       "recipient": "민지",
       "remainingPoints": 160
     }
+  },
+  {
+    "id": "log_1794824286607_hvakv",
+    "timestamp": "2026-11-16T10:18:06.607Z",
+    "kstTime": "2026-11-16 10:18:06",
+    "username": "e2e_runner_1794824286590",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794824286608_htwh0",
+    "timestamp": "2026-11-16T10:18:06.608Z",
+    "kstTime": "2026-11-16 10:18:06",
+    "username": "e2e_runner_1794824286590",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794824286610_zixbn",
+    "timestamp": "2026-11-16T10:18:06.610Z",
+    "kstTime": "2026-11-16 10:18:06",
+    "username": "e2e_runner_1794824286590",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794824290883_vdgaz",
+    "timestamp": "2026-11-16T10:18:10.883Z",
+    "kstTime": "2026-11-16 10:18:10",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794824290884_zpr6w",
+    "timestamp": "2026-11-16T10:18:10.884Z",
+    "kstTime": "2026-11-16 10:18:10",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794824290887_mwkpx",
+    "timestamp": "2026-11-16T10:18:10.887Z",
+    "kstTime": "2026-11-16 10:18:10",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794824290901_19eox",
+    "timestamp": "2026-11-16T10:18:10.901Z",
+    "kstTime": "2026-11-16 10:18:10",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
   }
 ]
