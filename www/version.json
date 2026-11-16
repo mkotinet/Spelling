@@ -1,6 +1,6 @@
 {
-  "version": "3.4.2",
-  "build": "20261116_1945",
-  "name": "하루맞춤 (Haru Matchum) - Mobile Layout Optimization & Concise Quiz Refinement Edition",
-  "releaseNotes": "모바일 과목 2x2 반응형 그리드 고도화, 전역 수평 오버플로우 방지 및 화면 이탈 방지, 메시지 모달 하단 전송 버튼 스티키 고정 및 이모지 팩 닫기 최적화, 퀴즈 빈칸 활용형 정답 100% 일치 및 문제 문장 간결 한국어 윤문 적용"
+  "version": "3.4.3",
+  "build": "20261116_1955",
+  "name": "하루맞춤 (Haru Matchum) - Chat Toolbar 2-Tier Defense & Gift Categories Fix Edition",
+  "releaseNotes": "대화창 하단 툴바 인라인 스타일 강제 2단 분리(상단 액션 칩, 하단 전체 너비 입력창 수직 정렬 방지), 입력창 기본 1줄 22px 콤팩트 알약 캡슐 및 자연스러운 2~4줄 확장, 선물보내기 5대 카테고리 탭 클릭 무결성 및 브랜드 선물 엠블럼 이미지 100% 노출 보장"
 }

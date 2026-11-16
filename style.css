@@ -5017,27 +5017,31 @@ body.theme-english .quiz-sentence .quiz-blank {
 
 /* Chat Input Toolbar (v3.4.0 2-Tier Stack: Top Icons, Bottom Full-width Input) */
 .chat-input-toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 14px 12px;
-  background: #ffffff;
-  border-top: 1.5px solid #fce7f3;
-  z-index: 10;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 8px 14px 12px !important;
+  background: #ffffff !important;
+  border-top: 1.5px solid #fce7f3 !important;
+  z-index: 10 !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .chat-toolbar-action-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
 }
 
 .chat-toolbar-icons-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 .chat-tool-btn {
@@ -5152,10 +5156,11 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 .chat-toolbar-input-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  gap: 8px !important;
+  width: 100% !important;
 }
 
 .chat-textarea-wrapper {
@@ -5165,8 +5170,9 @@ body.theme-english .quiz-sentence .quiz-blank {
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 20px;
-  padding: 8px 14px;
-  min-height: 42px;
+  padding: 6px 14px;
+  min-height: 38px;
+  box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .chat-textarea-wrapper:focus-within {
@@ -5181,26 +5187,26 @@ body.theme-english .quiz-sentence .quiz-blank {
   background: transparent;
   outline: none;
   font-family: inherit;
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   resize: none;
-  height: 24px;
-  min-height: 24px;
-  max-height: 96px; /* Exactly 4 lines limit (24px line height * 4) */
-  line-height: 1.5;
+  height: 22px;
+  min-height: 22px;
+  max-height: 88px; /* Exactly 4 lines limit (22px line height * 4) */
+  line-height: 22px;
   color: #1e293b;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: 0;
   box-sizing: border-box;
 }
 
 .btn-chat-send {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
   border: none;
   color: white;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5491,8 +5497,17 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 .gift-icon-display {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 2.2rem;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 .gift-title-display {

@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.4.2">'), 'index.html must include meta app-version 3.4.2');
+    assert(indexHtml.includes('<meta name="app-version" content="3.4.3">'), 'index.html must include meta app-version 3.4.3');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.4.2', 'GET /api/version version must be 3.4.2');
+    assert.strictEqual(verRes.data.version, '3.4.3', 'GET /api/version version must be 3.4.3');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -479,6 +479,11 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(styleCode.includes('grid-template-columns: repeat(2, 1fr)'), 'style.css must support 2x2 grid');
     assert(styleCode.includes('white-space: nowrap !important;'), 'style.css must enforce nowrap on mode-switch-btn');
     assert(indexHtml.includes('id="btnCloseEmojiPicker"'), 'index.html must include btnCloseEmojiPicker');
+
+    // 41. v3.4.3 Chat Toolbar 2-Tier Defense & Gift Tabs Robustness
+    assert(indexHtml.includes('class="chat-input-toolbar" style="display: flex !important; flex-direction: column !important;'), 'index.html must enforce column inline style on chat-input-toolbar');
+    assert(appCode.includes('window.selectGiftCategory ='), 'app.js must declare global window.selectGiftCategory');
+    assert(appCode.includes('FALLBACK_GIFT_CATALOG'), 'app.js must include FALLBACK_GIFT_CATALOG');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

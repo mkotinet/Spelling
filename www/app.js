@@ -1456,6 +1456,52 @@ const BADGE_DEFINITIONS = [
   { id: 'dict_explorer', name: '사전 탐험가', icon: '📖', desc: '표준국어대사전 상세 뜻을 3회 이상 찾아보았어요.' }
 ];
 
+// Fallback Gift Catalog (v3.4.3: Guarantee Instant Display across all 5 Categories)
+const FALLBACK_GIFT_CATALOG = {
+  // 1. 인게임 필수 퀴즈 아이템 선물 (7종)
+  gift_heart: { id: "gift_heart", name: "하트수호", icon: "💖", price: 100, itemKey: "heart", itemQty: 1, type: "item", category: "game", desc: "오답 시 소중한 하트를 지켜주는 수호석" },
+  gift_eraser5050: { id: "gift_eraser5050", name: "50:50 요술봉", icon: "🪄", price: 150, itemKey: "eraser5050", itemQty: 1, type: "item", category: "game", desc: "오답 보기 2개를 뿅! 지워주는 요술봉" },
+  gift_booster2x: { id: "gift_booster2x", name: "2배 로켓", icon: "🚀", price: 200, itemKey: "booster2x", itemQty: 1, type: "item", category: "game", desc: "이번 라운드 획득 포인트를 2배로 쑥쑥!" },
+  gift_shield: { id: "gift_shield", name: "황금 방패", icon: "🛡️", price: 300, itemKey: "shield", itemQty: 1, type: "shield", category: "game", desc: "틀려도 연속 만점 스트릭을 안전하게 보호" },
+  gift_clover: { id: "gift_clover", name: "클로버 패스", icon: "🍀", price: 250, itemKey: "clover", itemQty: 1, type: "item", category: "game", desc: "어려운 문제를 즉시 통과시켜 주는 패스권" },
+  gift_timemachine: { id: "gift_timemachine", name: "타임머신 시계", icon: "⏳", price: 180, itemKey: "timemachine", itemQty: 1, type: "item", category: "game", desc: "고민할 시간을 넉넉하게 연장해주는 시계" },
+  gift_magnet: { id: "gift_magnet", name: "정답 자석", icon: "🧲", price: 120, itemKey: "magnet", itemQty: 1, type: "item", category: "game", desc: "정답 보기를 자석처럼 강력하게 끌어당김" },
+  
+  // 2. 한국 주요 브랜드 패러디 선물: [☕ 카페 & 디저트]
+  gift_twosome_cake: { id: "gift_twosome_cake", name: "투쌈플레이스 스초생", icon: "🍰", price: 90, bonusPoints: 45, type: "social", category: "cafe", desc: "초코볼이 톡톡 터지는 투쌈의 시그니처 케이크" },
+  gift_starbox_americano: { id: "gift_starbox_americano", name: "스타밥스 별다방 아이스 아메리카노", icon: "☕", price: 50, bonusPoints: 25, type: "social", category: "cafe", desc: "출근·등교길 필수! 시원한 벤티 사이즈 아아" },
+  gift_starbox_latte: { id: "gift_starbox_latte", name: "스타밥스 달콤 돌체라떼", icon: "🥛", price: 65, bonusPoints: 32, type: "social", category: "cafe", desc: "달콤하고 부드러운 전설의 돌체라떼" },
+  gift_baskin_half: { id: "gift_baskin_half", name: "배씨네라빈스 하프갤런 6가지맛", icon: "🍨", price: 120, bonusPoints: 60, type: "social", category: "cafe", desc: "민초단도 인정하는 6가지맛 골라담기 대용량 아이스크림" },
+  gift_paris_croissant: { id: "gift_paris_croissant", name: "파리바게뜨 촉촉 버터크루아상", icon: "🥐", price: 45, bonusPoints: 22, type: "social", category: "cafe", desc: "프랑스 파리의 풍미가 가득 바삭촉촉 크루아상" },
+  gift_mega_coffee: { id: "gift_mega_coffee", name: "메가커퓌 1리터 퐁크러쉬", icon: "🥤", price: 40, bonusPoints: 20, type: "social", category: "cafe", desc: "죠리퐁이 가득 올라간 압도적 가성비 대용량 음료" },
+  gift_gongcha_bubble: { id: "gift_gongcha_bubble", name: "공차기 타피오카 펄 밀크티", icon: "🧋", price: 55, bonusPoints: 27, type: "social", category: "cafe", desc: "당도 50% 얼음 보통! 쫀득쫀득 펄 추가 밀크티" },
+  gift_sulbing_bingsu: { id: "gift_sulbing_bingsu", name: "설빙수 인절미 콩고물 눈꽃빙수", icon: "🍧", price: 85, bonusPoints: 42, type: "social", category: "cafe", desc: "고소한 콩가루와 쫄깃한 인절미가 듬뿍 올라간 눈꽃빙수" },
+
+  // 3. 한국 주요 브랜드 패러디 선물: [🍗 치킨 & 버거 & 피자]
+  gift_kyochon_combo: { id: "gift_kyochon_combo", name: "고촌치킨 단짠 허니콤보", icon: "🍗", price: 150, bonusPoints: 75, type: "social", category: "food", desc: "바삭한 튀김옷에 달콤 짭조름한 꿀간장 치킨" },
+  gift_bbq_golden: { id: "gift_bbq_golden", name: "비비큐 황금올리브 닭다리", icon: "🍗", price: 160, bonusPoints: 80, type: "social", category: "food", desc: "황금 올리브유로 바삭하게 튀겨낸 육즙 가득 치킨" },
+  gift_bhc_purinkle: { id: "gift_bhc_purinkle", name: "비에이치씨 뿌링클 치즈볼 세트", icon: "🧀", price: 140, bonusPoints: 70, type: "social", category: "food", desc: "마법의 치즈 가루 듬뿍 뿌린 치킨과 쫀득 치즈볼" },
+  gift_moms_psy: { id: "gift_moms_psy", name: "맘스손길 싸이버거 단품", icon: "🍔", price: 60, bonusPoints: 30, type: "social", category: "food", desc: "두툼한 통다리살 패티가 꽉 찬 가성비 최강 버거" },
+  gift_mc_bigmac: { id: "gift_mc_bigmac", name: "맥날드 빅맥 세트", icon: "🍟", price: 75, bonusPoints: 37, type: "social", category: "food", desc: "참깨빵 위에 순쇠고기 패티 두 장 특별한 소스" },
+  gift_domino_pizza: { id: "gift_domino_pizza", name: "도미노피자 포테이토 마요 치즈피자", icon: "🍕", price: 180, bonusPoints: 90, type: "social", category: "food", desc: "담백한 감자와 마요네즈가 어우러진 국민 피자" },
+
+  // 4. 한국 주요 브랜드 패러디 선물: [🎁 편의점 & 뷰티 & 쇼핑]
+  gift_baemin_voucher: { id: "gift_baemin_voucher", name: "배달의민지 2만원 상품권", icon: "🛵", price: 200, bonusPoints: 100, type: "social", category: "store", desc: "오늘 밤 야식은 내가 쏜다! 배달의민지 상품권" },
+  gift_oliveyoung_card: { id: "gift_oliveyoung_card", name: "올리브형 꿀피부 뷰티 상품권", icon: "💄", price: 150, bonusPoints: 75, type: "social", category: "store", desc: "올영세일 필수템 쟁여두는 꿀피부 전용 상품권" },
+  gift_cu_voucher: { id: "gift_cu_voucher", name: "씨유어게인 편의점 1만원권", icon: "🏪", price: 100, bonusPoints: 50, type: "social", category: "store", desc: "삼각김밥부터 컵라면까지 편의점 털기 전용권" },
+  gift_gs25_voucher: { id: "gift_gs25_voucher", name: "지에스이십오 혜자도시락 교환권", icon: "🍱", price: 70, bonusPoints: 35, type: "social", category: "store", desc: "혜자로운 구성의 인기 편의점 든든한 도시락 교환권" },
+  gift_shinsegae_card: { id: "gift_shinsegae_card", name: "신세계로 백화점 5만원 상품권", icon: "🏬", price: 350, bonusPoints: 175, type: "social", category: "store", desc: "명품 쇼핑의 품격! 신세계로 백화점 플렉스 상품권" },
+  gift_gold_bar: { id: "gift_gold_bar", name: "순금 하루 골드바 1돈", icon: "🪙", price: 500, bonusPoints: 250, type: "social", category: "store", desc: "진정한 맞춤법 최고수에게 바치는 99.9% 순금 골드바" },
+
+  // 5. 클래식 감성 선물 (5종)
+  gift_cake: { id: "gift_cake", name: "딸기 생크림 케이크", icon: "🍰", price: 80, bonusPoints: 40, type: "social", category: "classic", desc: "달콤하고 부드러운 딸기 축하 케이크" },
+  gift_bouquet: { id: "gift_bouquet", name: "향기로운 튤립 꽃다발", icon: "💐", price: 100, bonusPoints: 50, type: "social", category: "classic", desc: "응원과 감사의 마음을 담은 화사한 꽃다발" },
+  gift_chocolate: { id: "gift_chocolate", name: "응원 수제 초콜릿 세트", icon: "🍫", price: 40, bonusPoints: 20, type: "social", category: "classic", desc: "두뇌 회전 팡팡! 당충전 특급 수제 초콜릿" },
+  gift_diamond: { id: "gift_diamond", name: "영롱한 핑크 다이아몬드", icon: "💎", price: 300, bonusPoints: 150, type: "social", category: "classic", desc: "변치 않는 반짝이는 우정의 상징 보석" },
+  gift_clover_lucky: { id: "gift_clover_lucky", name: "행운의 황금 네잎클로버", icon: "✨", price: 150, bonusPoints: 75, type: "social", category: "classic", desc: "오늘 시험과 일상에 대박 행운이 깃들길!" }
+};
+if (typeof window !== 'undefined') window.FALLBACK_GIFT_CATALOG = FALLBACK_GIFT_CATALOG;
+
 // ============================================================
 // 5. Main Application Controller
 // ============================================================
@@ -1463,7 +1509,10 @@ class HaruMatchumApp {
   constructor() {
     this.data = DataManager.load();
     sfx.enabled = this.data.soundEnabled !== false;
-    if (typeof window !== 'undefined') window.haruApp = this;
+    if (typeof window !== 'undefined') {
+      window.haruApp = this;
+      window.selectGiftCategory = (cat) => this.selectGiftCategory(cat);
+    }
 
     this.confetti = new ConfettiManager('confettiCanvas');
     this.quizSubject = 'spelling'; // 'spelling' | 'hanja' | 'english'
@@ -5776,15 +5825,31 @@ class HaruMatchumApp {
     const btnChatSend = document.getElementById('btnChatSend');
     if (btnChatSend) btnChatSend.addEventListener('click', () => this.submitChatMessage());
 
-    // Auto-resizing multi-line textarea with 1~4 lines support (v3.4.0)
+    // Auto-resizing multi-line textarea with 1~4 lines support (v3.4.3: Compact 1-line default, natural 2-line expansion)
     if (this.chatInputText) {
       const resizeChatInput = () => {
         const el = this.chatInputText;
         if (!el) return;
-        el.style.height = 'auto';
-        // 1 line ~24px, 2 lines ~48px, 3 lines ~72px, 4 lines ~96px (max 4 lines)
-        const targetHeight = Math.min(Math.max(el.scrollHeight, 24), 96);
-        el.style.height = targetHeight + 'px';
+        if (!el.value || el.value.trim() === '') {
+          el.style.height = '22px';
+          el.style.overflowY = 'hidden';
+        } else {
+          el.style.height = 'auto';
+          const sh = el.scrollHeight;
+          if (sh <= 28) {
+            el.style.height = '22px';
+            el.style.overflowY = 'hidden';
+          } else if (sh <= 50) {
+            el.style.height = '44px';
+            el.style.overflowY = 'hidden';
+          } else if (sh <= 72) {
+            el.style.height = '66px';
+            el.style.overflowY = 'hidden';
+          } else {
+            el.style.height = '88px';
+            el.style.overflowY = 'auto';
+          }
+        }
         const counter = document.getElementById('chatCharCounter');
         if (counter) counter.textContent = `${el.value.length}/300`;
       };
@@ -5884,7 +5949,7 @@ class HaruMatchumApp {
     if (this.chatInputText) {
       this.chatInputText.value = '';
       if (this.resizeChatInput) this.resizeChatInput();
-      else this.chatInputText.style.height = '24px';
+      else this.chatInputText.style.height = '22px';
     }
 
     if (targetUser) {
@@ -6358,7 +6423,7 @@ class HaruMatchumApp {
         if (inputEl) {
           inputEl.value = '';
           if (this.resizeChatInput) this.resizeChatInput();
-          else inputEl.style.height = '24px';
+          else inputEl.style.height = '22px';
         }
         this.clearChatAttachedPhoto();
         this.cachedChatThreadMessages.push(data.message);
@@ -6508,9 +6573,8 @@ class HaruMatchumApp {
       btnSubmit.innerHTML = '선물을 선택해주세요';
     }
 
-    // Fetch and render gift catalog (v3.4.0: all categories by default)
-    document.querySelectorAll('.gift-cat-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === 'all'));
-    await this.renderGiftCatalog('all');
+    // Fetch and render gift catalog (v3.4.3: reset to all category and ensure tab consistency)
+    this.selectGiftCategory('all');
     this.modalSendGift.classList.add('active');
     sfx.combo();
   }
@@ -6521,11 +6585,22 @@ class HaruMatchumApp {
   }
 
   selectGiftCategory(cat) {
-    document.querySelectorAll('.gift-cat-tab').forEach(t => {
-      const match = (t.dataset.cat || t.getAttribute('data-cat')) === cat;
-      t.classList.toggle('active', match);
+    const tabs = document.querySelectorAll('.gift-cat-tab');
+    tabs.forEach(t => {
+      const tabCat = t.dataset.cat || t.getAttribute('data-cat');
+      if (tabCat === cat) {
+        t.classList.add('active');
+        try {
+          t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } catch (e) {}
+      } else {
+        t.classList.remove('active');
+      }
     });
     this.renderGiftCatalog(cat);
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
   }
 
   async renderGiftCatalog(category = 'all') {
@@ -6542,7 +6617,7 @@ class HaruMatchumApp {
       } catch (e) {}
     }
 
-    const catalog = this.giftCatalogCache || {};
+    const catalog = this.giftCatalogCache || window.FALLBACK_GIFT_CATALOG || {};
     const myPoints = (this.data.currentUser && this.data.currentUser.totalPoints) || 0;
 
     grid.innerHTML = '';
@@ -6556,13 +6631,28 @@ class HaruMatchumApp {
       return g.category === category || g.type === category;
     });
 
+    if (giftEntries.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; padding: 24px; text-align: center; color: #94a3b8; font-size: 0.9rem;">선물이 준비 중입니다. 🎁</div>';
+      return;
+    }
+
     giftEntries.forEach(gift => {
       const card = document.createElement('div');
       const canAfford = myPoints >= gift.price;
       card.className = `gift-item-card ${canAfford ? '' : 'disabled'}`;
       card.dataset.giftId = gift.id;
 
+      const catBadges = {
+        game: '🎮 퀴즈아이템',
+        cafe: '☕ 카페·디저트',
+        food: '🍗 치킨·버거',
+        store: '🎁 편의점·쇼핑',
+        classic: '💖 감동선물'
+      };
+      const catBadge = catBadges[gift.category] || '🎁 선물';
+
       card.innerHTML = `
+        <span class="gift-cat-badge" style="font-size: 0.68rem; font-weight: 700; color: #db2777; background: #fdf2f8; padding: 2px 8px; border-radius: 8px; margin-bottom: 6px;">${catBadge}</span>
         <div class="gift-icon-display">${gift.icon}</div>
         <div class="gift-title-display">${gift.name}</div>
         <div class="gift-desc-display">${gift.desc}</div>
@@ -6580,6 +6670,9 @@ class HaruMatchumApp {
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `🎁 ${gift.name} 선물하기 (${gift.price}P)`;
           }
+          try {
+            if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+          } catch (e) {}
         });
       }
 

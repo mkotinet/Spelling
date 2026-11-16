@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.4.2">
+  <meta name="app-version" content="3.4.3">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.3.0">
+  <link rel="stylesheet" href="style.css?v=3.4.3">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -1308,13 +1308,13 @@
           <button id="btnCancelChatPhoto" class="btn-cancel-preview" type="button">✕</button>
         </div>
 
-        <!-- Chat Input Toolbar (Fixed at bottom, 2-Tier Stack) -->
-        <div class="chat-input-toolbar">
+        <!-- Chat Input Toolbar (Fixed at bottom, 2-Tier Stack: Top Icons, Bottom Input) -->
+        <div class="chat-input-toolbar" style="display: flex !important; flex-direction: column !important; width: 100% !important; box-sizing: border-box !important;">
           <input type="file" id="chatFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
           
           <!-- Tier 1: Action Icons Row (Top) -->
-          <div class="chat-toolbar-action-row">
-            <div class="chat-toolbar-icons-group">
+          <div class="chat-toolbar-action-row" style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; margin-bottom: 6px !important;">
+            <div class="chat-toolbar-icons-group" style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 6px !important;">
               <button id="btnChatAttachPhoto" class="chat-tool-btn" type="button" title="사진 첨부">
                 <span class="tool-icon">📷</span>
                 <span class="tool-btn-label">사진</span>
@@ -1336,8 +1336,8 @@
           </div>
 
           <!-- Tier 2: Full-Width Input & Send Row (Bottom) -->
-          <div class="chat-toolbar-input-row">
-            <div class="chat-textarea-wrapper">
+          <div class="chat-toolbar-input-row" style="display: flex !important; flex-direction: row !important; align-items: flex-end !important; gap: 8px !important; width: 100% !important;">
+            <div class="chat-textarea-wrapper" style="flex: 1 !important; display: flex !important; align-items: center !important;">
               <textarea id="chatInputText" class="chat-textarea" rows="1" maxlength="300" placeholder="따뜻한 메시지를 입력하세요..."></textarea>
             </div>
 
@@ -1391,12 +1391,12 @@
         </div>
 
         <!-- Gift Categories Tab -->
-        <div class="gift-category-tabs">
-          <button id="tabGiftAll" class="gift-cat-tab active" type="button" data-cat="all" onclick="window.haruApp.selectGiftCategory('all')">🌟 전체 선물</button>
-          <button id="tabGiftItems" class="gift-cat-tab" type="button" data-cat="game" onclick="window.haruApp.selectGiftCategory('game')">🎮 퀴즈 아이템</button>
-          <button id="tabGiftCafe" class="gift-cat-tab" type="button" data-cat="cafe" onclick="window.haruApp.selectGiftCategory('cafe')">☕ 카페·디저트</button>
-          <button id="tabGiftFood" class="gift-cat-tab" type="button" data-cat="food" onclick="window.haruApp.selectGiftCategory('food')">🍗 치킨·버거</button>
-          <button id="tabGiftStore" class="gift-cat-tab" type="button" data-cat="store" onclick="window.haruApp.selectGiftCategory('store')">🎁 편의점·쇼핑</button>
+        <div class="gift-category-tabs" id="giftCategoryTabsContainer">
+          <button id="tabGiftAll" class="gift-cat-tab active" type="button" data-cat="all" onclick="window.selectGiftCategory ? window.selectGiftCategory('all') : (window.haruApp && window.haruApp.selectGiftCategory('all'))">🌟 전체 선물</button>
+          <button id="tabGiftItems" class="gift-cat-tab" type="button" data-cat="game" onclick="window.selectGiftCategory ? window.selectGiftCategory('game') : (window.haruApp && window.haruApp.selectGiftCategory('game'))">🎮 퀴즈 아이템</button>
+          <button id="tabGiftCafe" class="gift-cat-tab" type="button" data-cat="cafe" onclick="window.selectGiftCategory ? window.selectGiftCategory('cafe') : (window.haruApp && window.haruApp.selectGiftCategory('cafe'))">☕ 카페·디저트</button>
+          <button id="tabGiftFood" class="gift-cat-tab" type="button" data-cat="food" onclick="window.selectGiftCategory ? window.selectGiftCategory('food') : (window.haruApp && window.haruApp.selectGiftCategory('food'))">🍗 치킨·버거</button>
+          <button id="tabGiftStore" class="gift-cat-tab" type="button" data-cat="store" onclick="window.selectGiftCategory ? window.selectGiftCategory('store') : (window.haruApp && window.haruApp.selectGiftCategory('store'))">🎁 편의점·쇼핑</button>
         </div>
 
         <!-- Gift Cards Grid -->
@@ -1615,11 +1615,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.3.0"></script>
-  <script src="idiom_questions.js?v=3.3.0"></script>
-  <script src="hanja_questions.js?v=3.3.0"></script>
-  <script src="english_questions.js?v=3.3.0"></script>
-  <script src="stickers.js?v=3.3.0"></script>
-  <script src="app.js?v=3.3.0"></script>
+  <script src="questions.js?v=3.4.3"></script>
+  <script src="idiom_questions.js?v=3.4.3"></script>
+  <script src="hanja_questions.js?v=3.4.3"></script>
+  <script src="english_questions.js?v=3.4.3"></script>
+  <script src="stickers.js?v=3.4.3"></script>
+  <script src="app.js?v=3.4.3"></script>
 </body>
 </html>
