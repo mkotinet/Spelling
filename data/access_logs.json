@@ -2284,5 +2284,481 @@
       "score": 100,
       "pointsEarned": 150
     }
+  },
+  {
+    "id": "log_1794822158947_1nu4k",
+    "timestamp": "2026-11-16T09:42:38.947Z",
+    "kstTime": "2026-11-16 09:42:38",
+    "username": "e2e_runner_1794822158931",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822158949_eg1qe",
+    "timestamp": "2026-11-16T09:42:38.949Z",
+    "kstTime": "2026-11-16 09:42:38",
+    "username": "e2e_runner_1794822158931",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822158950_rvwrc",
+    "timestamp": "2026-11-16T09:42:38.950Z",
+    "kstTime": "2026-11-16 09:42:38",
+    "username": "e2e_runner_1794822158931",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794822342616_5pnb8",
+    "timestamp": "2026-11-16T09:45:42.616Z",
+    "kstTime": "2026-11-16 09:45:42",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822342617_165cy",
+    "timestamp": "2026-11-16T09:45:42.617Z",
+    "kstTime": "2026-11-16 09:45:42",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822342620_ija3y",
+    "timestamp": "2026-11-16T09:45:42.620Z",
+    "kstTime": "2026-11-16 09:45:42",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794822342636_f02g1",
+    "timestamp": "2026-11-16T09:45:42.636Z",
+    "kstTime": "2026-11-16 09:45:42",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
+  },
+  {
+    "id": "log_1794822351758_a2sd0",
+    "timestamp": "2026-11-16T09:45:51.758Z",
+    "kstTime": "2026-11-16 09:45:51",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822351759_qgbdd",
+    "timestamp": "2026-11-16T09:45:51.759Z",
+    "kstTime": "2026-11-16 09:45:51",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822351762_mjz26",
+    "timestamp": "2026-11-16T09:45:51.762Z",
+    "kstTime": "2026-11-16 09:45:51",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794822351776_kk1ka",
+    "timestamp": "2026-11-16T09:45:51.776Z",
+    "kstTime": "2026-11-16 09:45:51",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
+  },
+  {
+    "id": "log_1794822696316_02zv0",
+    "timestamp": "2026-11-16T09:51:36.316Z",
+    "kstTime": "2026-11-16 09:51:36",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822696318_661xe",
+    "timestamp": "2026-11-16T09:51:36.318Z",
+    "kstTime": "2026-11-16 09:51:36",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822696321_qun2z",
+    "timestamp": "2026-11-16T09:51:36.321Z",
+    "kstTime": "2026-11-16 09:51:36",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794822696336_42zgo",
+    "timestamp": "2026-11-16T09:51:36.336Z",
+    "kstTime": "2026-11-16 09:51:36",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
+  },
+  {
+    "id": "log_1794822720579_4o35d",
+    "timestamp": "2026-11-16T09:52:00.579Z",
+    "kstTime": "2026-11-16 09:52:00",
+    "username": "e2e_runner_1794822720563",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822720580_6v84u",
+    "timestamp": "2026-11-16T09:52:00.580Z",
+    "kstTime": "2026-11-16 09:52:00",
+    "username": "e2e_runner_1794822720563",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822720581_4ecn2",
+    "timestamp": "2026-11-16T09:52:00.581Z",
+    "kstTime": "2026-11-16 09:52:00",
+    "username": "e2e_runner_1794822720563",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794822741565_spo7b",
+    "timestamp": "2026-11-16T09:52:21.565Z",
+    "kstTime": "2026-11-16 09:52:21",
+    "username": "e2e_runner_1794822741549",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822741566_9yt44",
+    "timestamp": "2026-11-16T09:52:21.566Z",
+    "kstTime": "2026-11-16 09:52:21",
+    "username": "e2e_runner_1794822741549",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822741567_41x39",
+    "timestamp": "2026-11-16T09:52:21.567Z",
+    "kstTime": "2026-11-16 09:52:21",
+    "username": "e2e_runner_1794822741549",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794822760171_30ahh",
+    "timestamp": "2026-11-16T09:52:40.171Z",
+    "kstTime": "2026-11-16 09:52:40",
+    "username": "e2e_runner_1794822760155",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822760174_qb2q8",
+    "timestamp": "2026-11-16T09:52:40.174Z",
+    "kstTime": "2026-11-16 09:52:40",
+    "username": "e2e_runner_1794822760155",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794822760175_r1pn7",
+    "timestamp": "2026-11-16T09:52:40.175Z",
+    "kstTime": "2026-11-16 09:52:40",
+    "username": "e2e_runner_1794822760155",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794822767280_9kg5o",
+    "timestamp": "2026-11-16T09:52:47.280Z",
+    "kstTime": "2026-11-16 09:52:47",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822767282_mg8v9",
+    "timestamp": "2026-11-16T09:52:47.282Z",
+    "kstTime": "2026-11-16 09:52:47",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822767285_w4wd0",
+    "timestamp": "2026-11-16T09:52:47.285Z",
+    "kstTime": "2026-11-16 09:52:47",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794822767300_wb5o0",
+    "timestamp": "2026-11-16T09:52:47.300Z",
+    "kstTime": "2026-11-16 09:52:47",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
+  },
+  {
+    "id": "log_1794822777376_qi851",
+    "timestamp": "2026-11-16T09:52:57.376Z",
+    "kstTime": "2026-11-16 09:52:57",
+    "username": "맞춤요정",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822777378_juu75",
+    "timestamp": "2026-11-16T09:52:57.378Z",
+    "kstTime": "2026-11-16 09:52:57",
+    "username": "민지",
+    "action": "CHAT_SEND",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "square",
+      "type": "sticker",
+      "hasPhoto": false,
+      "hasSticker": true,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794822777380_fbi2y",
+    "timestamp": "2026-11-16T09:52:57.380Z",
+    "kstTime": "2026-11-16 09:52:57",
+    "username": "민지",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "맞춤요정",
+      "remainingPoints": 250
+    }
+  },
+  {
+    "id": "log_1794822777394_hz6wv",
+    "timestamp": "2026-11-16T09:52:57.394Z",
+    "kstTime": "2026-11-16 09:52:57",
+    "username": "맞춤요정",
+    "action": "SEND_GIFT",
+    "ip": "1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_cake",
+      "giftName": "딸기 생크림 케이크",
+      "price": 80,
+      "recipient": "민지",
+      "remainingPoints": 160
+    }
   }
 ]

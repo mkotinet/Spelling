@@ -208,6 +208,34 @@ function saveMessages(messages) {
   }
 }
 
+// 🎁 v3.3.0 Interactive Gift Catalog (Items & Social Gifts)
+const GIFT_CATALOG = {
+  // 1. 인게임 필수 아이템 선물 (7종)
+  gift_heart: { id: "gift_heart", name: "하트수호", icon: "💖", price: 100, itemKey: "heart", itemQty: 1, type: "item", desc: "오답 시 소중한 하트를 지켜주는 수호석" },
+  gift_eraser5050: { id: "gift_eraser5050", name: "50:50 요술봉", icon: "🪄", price: 150, itemKey: "eraser5050", itemQty: 1, type: "item", desc: "오답 보기 2개를 뿅! 지워주는 요술봉" },
+  gift_booster2x: { id: "gift_booster2x", name: "2배 로켓", icon: "🚀", price: 200, itemKey: "booster2x", itemQty: 1, type: "item", desc: "이번 라운드 획득 포인트를 2배로 쑥쑥!" },
+  gift_shield: { id: "gift_shield", name: "황금 방패", icon: "🛡️", price: 300, itemKey: "shield", itemQty: 1, type: "shield", desc: "틀려도 연속 만점 스트릭을 안전하게 보호" },
+  gift_clover: { id: "gift_clover", name: "클로버 패스", icon: "🍀", price: 250, itemKey: "clover", itemQty: 1, type: "item", desc: "어려운 문제를 즉시 통과시켜 주는 패스권" },
+  gift_timemachine: { id: "gift_timemachine", name: "타임머신 시계", icon: "⏳", price: 180, itemKey: "timemachine", itemQty: 1, type: "item", desc: "고민할 시간을 넉넉하게 연장해주는 시계" },
+  gift_magnet: { id: "gift_magnet", name: "정답 자석", icon: "🧲", price: 120, itemKey: "magnet", itemQty: 1, type: "item", desc: "정답 보기를 자석처럼 강력하게 끌어당김" },
+  
+  // 2. 소셜 감성 & 축하 선물 (8종)
+  gift_cake: { id: "gift_cake", name: "딸기 생크림 케이크", icon: "🍰", price: 80, bonusPoints: 40, type: "social", desc: "달콤하고 부드러운 딸기 축하 케이크" },
+  gift_bouquet: { id: "gift_bouquet", name: "향기로운 튤립 꽃다발", icon: "💐", price: 100, bonusPoints: 50, type: "social", desc: "응원과 감사의 마음을 담은 화사한 꽃다발" },
+  gift_latte: { id: "gift_latte", name: "별빛 마카롱 카페라떼", icon: "☕", price: 50, bonusPoints: 25, type: "social", desc: "공부할 때 힘이 나는 따뜻하고 달콤한 라떼" },
+  gift_chocolate: { id: "gift_chocolate", name: "응원 수제 초콜릿 세트", icon: "🍫", price: 40, bonusPoints: 20, type: "social", desc: "두뇌 회전 팡팡! 당충전 특급 수제 초콜릿" },
+  gift_macaron: { id: "gift_macaron", name: "무지개 마카롱 박스", icon: "🧁", price: 60, bonusPoints: 30, type: "social", desc: "알록달록 기분 전환에 최고인 마카롱 선물" },
+  gift_diamond: { id: "gift_diamond", name: "영롱한 핑크 다이아몬드", icon: "💎", price: 300, bonusPoints: 150, type: "social", desc: "변치 않는 반짝이는 우정의 상징 보석" },
+  gift_crown: { id: "gift_crown", name: "황금빛 하루 왕관", icon: "👑", price: 500, bonusPoints: 250, type: "social", desc: "최고 실력자를 위한 영광의 황금 왕관" },
+  gift_clover_lucky: { id: "gift_clover_lucky", name: "행운의 황금 네잎클로버", icon: "✨", price: 150, bonusPoints: 75, type: "social", desc: "오늘 시험과 일상에 대박 행운이 깃들길!" }
+};
+
+function getChatRoomId(userA, userB) {
+  if (!userA || !userB) return "square";
+  if (userA === "square" || userB === "square" || userA === "ALL" || userB === "ALL") return "square";
+  return [userA, userB].sort().join("_");
+}
+
 // 24-Hour (1-Day) Photo Expiry & Automatic Deletion Engine
 function cleanupExpiredPhotos() {
   try {
@@ -790,7 +818,7 @@ const server = http.createServer(async (req, res) => {
 
   // 9. 앱 버전 확인 및 모바일 자동 업데이트 엔드포인트 (Mobile Auto-Update & Version Check)
   if (pathname === "/api/version" && req.method === "GET") {
-    let verData = { version: "3.2.0", build: "20261116_0630" };
+    let verData = { version: "3.3.0", build: "20261116_1850" };
     try {
       const vFile = path.join(__dirname, "version.json");
       if (fs.existsSync(vFile)) {
@@ -1004,24 +1032,30 @@ const server = http.createServer(async (req, res) => {
       const nowKst = getKSTTime();
 
       for (const recipient of resolvedRecipients) {
+        const toUserKey = recipient.username || recipient.name;
         const msgEntry = {
           id: "msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+          roomId: body.roomId || getChatRoomId(username, toUserKey),
           fromUsername: username,
           fromName: sender.name || username,
           fromAvatar: sender.avatar || "🌸",
           fromAccessories: sender.avatarAccessories || {},
-          toUsername: recipient.username || recipient.name,
+          toUsername: toUserKey,
           toName: recipient.name || recipient.username,
           toAvatar: recipient.avatar || "🌸",
           toAccessories: recipient.avatarAccessories || {},
+          type: body.type || (body.gift ? "gift" : (body.sticker ? "sticker" : (photoUrl ? "photo" : "text"))),
           content: safeContent,
           emojiTag: body.emojiTag || null,
           photoUrl: photoUrl || null,
           photoExpiresAt: photoExpiresAt || null,
           photoExpired: false,
+          sticker: body.sticker || null,
+          gift: body.gift || null,
           timestamp: nowIso,
           kstTime: nowKst,
-          read: false
+          read: false,
+          readBy: [username]
         };
         messages.push(msgEntry);
         createdEntries.push(msgEntry);
@@ -1153,6 +1187,498 @@ const server = http.createServer(async (req, res) => {
       }
 
       return sendJSON(res, 200, { success: true, updatedCount });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 14. [v3.3.0] 대화방 선물 카탈로그 조회 (GET /api/chat/catalog)
+  if (req.method === "GET" && pathname === "/api/chat/catalog") {
+    return sendJSON(res, 200, {
+      success: true,
+      gifts: GIFT_CATALOG
+    });
+  }
+
+  // 15. [v3.3.0] 대화방 목록 조회 (GET /api/chat/rooms)
+  if (req.method === "GET" && pathname === "/api/chat/rooms") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || !db.users[username]) {
+      return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+    }
+
+    cleanupExpiredPhotos();
+    const messages = loadMessages();
+
+    // 1) 하루 광장 대화방 (전체 다자간 동시 대화방)
+    const squareMessages = messages.filter(m => m.roomId === "square" || m.toUsername === "ALL" || m.toUsername === "square");
+    const lastSquareMsg = squareMessages.length > 0 ? squareMessages[squareMessages.length - 1] : null;
+    const unreadSquare = squareMessages.filter(m => m.fromUsername !== username && (!m.readBy || !m.readBy.includes(username))).length;
+
+    const squareRoom = {
+      roomId: "square",
+      name: "하루 광장 대화방 (전체)",
+      isGroup: true,
+      avatar: "💬",
+      memberCount: Object.keys(db.users).length,
+      lastMessage: lastSquareMsg ? {
+        content: lastSquareMsg.content || (lastSquareMsg.sticker ? `[스티커 ${lastSquareMsg.sticker.name || ''}]` : (lastSquareMsg.gift ? `[선물 ${lastSquareMsg.gift.name || ''}]` : (lastSquareMsg.photoUrl ? '[사진]' : ''))),
+        fromName: lastSquareMsg.fromName || lastSquareMsg.fromUsername,
+        timestamp: lastSquareMsg.timestamp,
+        kstTime: lastSquareMsg.kstTime
+      } : null,
+      unreadCount: unreadSquare
+    };
+
+    // 2) 1:1 대화방 목록 (실제 활동 중인 다른 회원들과의 대화방)
+    const dmRooms = [];
+    for (const [uName, uData] of Object.entries(db.users)) {
+      if (uName === username) continue;
+      const rId = getChatRoomId(username, uName);
+      const userMsgs = messages.filter(m => 
+        (m.roomId === rId) || 
+        (!m.roomId && ((m.fromUsername === username && m.toUsername === uName) || (m.fromUsername === uName && m.toUsername === username)))
+      );
+      const lastMsg = userMsgs.length > 0 ? userMsgs[userMsgs.length - 1] : null;
+      const unreadCount = userMsgs.filter(m => m.toUsername === username && !m.read).length;
+
+      dmRooms.push({
+        roomId: rId,
+        name: uData.name || uName,
+        username: uName,
+        isGroup: false,
+        avatar: uData.avatar || "🌸",
+        avatarAccessories: uData.avatarAccessories || {},
+        grade: uData.grade || "친구",
+        totalPoints: uData.totalPoints || 0,
+        lastMessage: lastMsg ? {
+          content: lastMsg.content || (lastMsg.sticker ? `[스티커 ${lastMsg.sticker.name || ''}]` : (lastMsg.gift ? `[선물 ${lastMsg.gift.name || ''}]` : (lastMsg.photoUrl ? '[사진]' : ''))),
+          fromName: lastMsg.fromName || lastMsg.fromUsername,
+          timestamp: lastMsg.timestamp,
+          kstTime: lastMsg.kstTime
+        } : null,
+        unreadCount: unreadCount
+      });
+    }
+
+    // 최근 메시지가 있는 방을 상단에 정렬
+    dmRooms.sort((a, b) => {
+      const timeA = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
+      const timeB = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
+      return timeB - timeA;
+    });
+
+    return sendJSON(res, 200, {
+      success: true,
+      currentUser: {
+        username: username,
+        name: db.users[username].name || username,
+        avatar: db.users[username].avatar || "🌸",
+        avatarAccessories: db.users[username].avatarAccessories || {},
+        totalPoints: db.users[username].totalPoints || 0,
+        items: db.users[username].items || {},
+        shields: db.users[username].shields || 0
+      },
+      rooms: [squareRoom, ...dmRooms]
+    });
+  }
+
+  // 16. [v3.3.0] 대화방 메시지 스레드 연속 조회 (GET /api/chat/thread)
+  if (req.method === "GET" && pathname === "/api/chat/thread") {
+    const authHeader = req.headers["authorization"] || "";
+    const token = authHeader.replace(/^Bearer\s+/, "") || parsedUrl.searchParams.get("token");
+    const db = loadDB();
+    const username = db.tokens[token];
+
+    if (!username || !db.users[username]) {
+      return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+    }
+
+    cleanupExpiredPhotos();
+    const reqRoomId = parsedUrl.searchParams.get("roomId") || "square";
+    const withUser = parsedUrl.searchParams.get("withUser");
+    const sinceId = parsedUrl.searchParams.get("sinceId");
+    const limit = Math.min(200, Math.max(10, parseInt(parsedUrl.searchParams.get("limit") || "100", 10)));
+
+    const effectiveRoomId = withUser ? getChatRoomId(username, withUser) : reqRoomId;
+    const messages = loadMessages();
+    let thread = [];
+
+    if (effectiveRoomId === "square") {
+      thread = messages.filter(m => m.roomId === "square" || m.toUsername === "ALL" || m.toUsername === "square");
+    } else {
+      // 1:1 대화방
+      thread = messages.filter(m => 
+        (m.roomId === effectiveRoomId) || 
+        (!m.roomId && withUser && ((m.fromUsername === username && m.toUsername === withUser) || (m.fromUsername === withUser && m.toUsername === username))) ||
+        (!m.roomId && !withUser && effectiveRoomId.includes(m.fromUsername) && effectiveRoomId.includes(m.toUsername))
+      );
+    }
+
+    if (sinceId) {
+      const idx = thread.findIndex(m => m.id === sinceId);
+      if (idx !== -1) {
+        thread = thread.slice(idx + 1);
+      }
+    } else {
+      thread = thread.slice(-limit);
+    }
+
+    // 읽음 상태 갱신
+    let updated = false;
+    for (const msg of thread) {
+      if (effectiveRoomId === "square") {
+        msg.readBy = msg.readBy || [];
+        if (!msg.readBy.includes(username)) {
+          msg.readBy.push(username);
+          updated = true;
+        }
+      } else {
+        if (msg.toUsername === username && !msg.read) {
+          msg.read = true;
+          updated = true;
+        }
+      }
+    }
+    if (updated) {
+      saveMessages(messages);
+    }
+
+    return sendJSON(res, 200, {
+      success: true,
+      roomId: effectiveRoomId,
+      count: thread.length,
+      messages: thread
+    });
+  }
+
+  // 17. [v3.3.0] 대화방 실시간 메시지 전송 (POST /api/chat/send)
+  if (req.method === "POST" && pathname === "/api/chat/send") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const clientIp = getClientIp(req);
+      const userAgent = req.headers["user-agent"] || "unknown";
+
+      const targetRoomId = body.roomId || (body.toUsername ? getChatRoomId(username, body.toUsername) : "square");
+      const rawContent = (body.content || "").trim();
+      const photoUrl = body.photoUrl || null;
+      const photoExpiresAt = body.photoExpiresAt || null;
+      const sticker = body.sticker || null;
+      const gift = body.gift || null;
+
+      if (!rawContent && !photoUrl && !sticker && !gift) {
+        return sendJSON(res, 400, { success: false, message: "메시지 내용, 사진, 스티커 또는 선물을 입력해 주세요." });
+      }
+
+      const safeContent = rawContent
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      const msgType = body.type || (gift ? "gift" : (sticker ? "sticker" : (photoUrl ? "photo" : "text")));
+      const nowIso = new Date().toISOString();
+      const nowKst = getKSTTime();
+
+      let toUsername = targetRoomId === "square" ? "square" : (body.toUsername || "friend");
+      let toName = targetRoomId === "square" ? "하루 광장" : (body.toName || toUsername);
+      let toAvatar = "🌸";
+      let toAccessories = {};
+
+      if (targetRoomId !== "square" && db.users[toUsername]) {
+        toName = db.users[toUsername].name || toUsername;
+        toAvatar = db.users[toUsername].avatar || "🌸";
+        toAccessories = db.users[toUsername].avatarAccessories || {};
+      }
+
+      const msgEntry = {
+        id: "msg_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+        roomId: targetRoomId,
+        fromUsername: username,
+        fromName: sender.name || username,
+        fromAvatar: sender.avatar || "🌸",
+        fromAccessories: sender.avatarAccessories || {},
+        toUsername: toUsername,
+        toName: toName,
+        toAvatar: toAvatar,
+        toAccessories: toAccessories,
+        type: msgType,
+        content: safeContent,
+        photoUrl: photoUrl,
+        photoExpiresAt: photoExpiresAt,
+        photoExpired: false,
+        sticker: sticker,
+        gift: gift,
+        timestamp: nowIso,
+        kstTime: nowKst,
+        read: false,
+        readBy: [username]
+      };
+
+      const messages = loadMessages();
+      messages.push(msgEntry);
+      saveMessages(messages);
+
+      recordAccessLog(username, "CHAT_SEND", clientIp, userAgent, {
+        roomId: targetRoomId,
+        type: msgType,
+        hasPhoto: !!photoUrl,
+        hasSticker: !!sticker,
+        hasGift: !!gift
+      });
+
+      // Web Push 발송 트리거
+      try {
+        let pushTargets = [];
+        if (targetRoomId === "square") {
+          pushTargets = Object.keys(db.users).filter(u => u !== username);
+        } else if (toUsername && toUsername !== "square") {
+          pushTargets = [toUsername];
+        }
+
+        if (pushTargets.length > 0) {
+          const pushTitle = targetRoomId === "square" 
+            ? `💬 [하루 광장] ${sender.name || username}님의 새 메시지` 
+            : `💌 ${sender.name || username}님의 새 메시지`;
+          
+          let pushBodyText = safeContent;
+          if (sticker) pushBodyText = `🎀 [스티커] ${sticker.name || '귀여운 스티커'}`;
+          else if (gift) pushBodyText = `🎁 [선물] ${gift.name || '특별한 선물'}`;
+          else if (photoUrl) pushBodyText = `📷 [사진] ${safeContent || '새로운 사진 도착'}`;
+
+          sendWebPushToUsers(pushTargets, {
+            title: pushTitle,
+            body: pushBodyText || "새로운 대화가 도착했습니다!",
+            icon: "/public/icons/icon-192.png",
+            badge: "/public/icons/badge-72.png",
+            url: `/?open=chat&roomId=${encodeURIComponent(targetRoomId)}`,
+            tag: "haru-chat-" + Date.now(),
+            data: {
+              roomId: targetRoomId,
+              fromUsername: username,
+              fromName: sender.name || username,
+              type: msgType,
+              timestamp: nowIso
+            }
+          }).catch(err => console.warn("[Web Push] Chat push error:", err.message));
+        }
+      } catch (pushErr) {
+        console.warn("[Web Push] Chat push trigger error:", pushErr.message);
+      }
+
+      return sendJSON(res, 201, {
+        success: true,
+        message: msgEntry
+      });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 18. [v3.3.0] 아이템 및 소셜 선물 보내기 (POST /api/chat/send-gift)
+  if (req.method === "POST" && pathname === "/api/chat/send-gift") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const clientIp = getClientIp(req);
+      const userAgent = req.headers["user-agent"] || "unknown";
+
+      const giftId = body.giftId;
+      const toUsername = body.toUsername;
+      const customMessage = (body.message || "").trim();
+
+      if (!giftId || !GIFT_CATALOG[giftId]) {
+        return sendJSON(res, 400, { success: false, message: "올바른 선물을 선택해 주세요." });
+      }
+
+      if (!toUsername || !db.users[toUsername]) {
+        return sendJSON(res, 404, { success: false, message: "선물 받을 친구를 찾을 수 없습니다." });
+      }
+
+      if (toUsername === username) {
+        return sendJSON(res, 400, { success: false, message: "나 자신에게는 선물할 수 없어요! 친구에게 선물해 보세요 😊" });
+      }
+
+      const gift = GIFT_CATALOG[giftId];
+      const senderPoints = sender.totalPoints || 0;
+
+      if (senderPoints < gift.price) {
+        return sendJSON(res, 400, { 
+          success: false, 
+          message: `보유 포인트가 부족합니다. (필요: ${gift.price}P, 보유: ${senderPoints}P)` 
+        });
+      }
+
+      const recipient = db.users[toUsername];
+
+      // 1) 발신자 포인트 차감
+      sender.totalPoints -= gift.price;
+
+      // 2) 수신자 선물/아이템 즉시 지급 트랜잭션
+      if (gift.type === "item") {
+        recipient.items = recipient.items || {};
+        recipient.items[gift.itemKey] = (recipient.items[gift.itemKey] || 0) + (gift.itemQty || 1);
+      } else if (gift.type === "shield") {
+        recipient.shields = Math.min(2, Math.max(0, (recipient.shields || 0) + (gift.itemQty || 1)));
+      } else if (gift.type === "social") {
+        recipient.gifts = recipient.gifts || [];
+        recipient.gifts.push({
+          giftId: gift.id,
+          name: gift.name,
+          icon: gift.icon,
+          fromUsername: username,
+          fromName: sender.name || username,
+          kstDate: getKSTDateString(),
+          bonusPoints: gift.bonusPoints || 0
+        });
+        if (gift.bonusPoints) {
+          recipient.totalPoints = (recipient.totalPoints || 0) + gift.bonusPoints;
+        }
+      }
+
+      sender.updatedAt = new Date().toISOString();
+      recipient.updatedAt = new Date().toISOString();
+      saveDB(db);
+
+      // 3) 채팅 메시지 스레드에 선물 카드 생성
+      const roomId = getChatRoomId(username, toUsername);
+      const nowIso = new Date().toISOString();
+      const nowKst = getKSTTime();
+
+      const safeContent = (customMessage || `${gift.name} 선물이 도착했습니다! ${gift.icon}`)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      const msgEntry = {
+        id: "msg_gift_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+        roomId: roomId,
+        fromUsername: username,
+        fromName: sender.name || username,
+        fromAvatar: sender.avatar || "🌸",
+        fromAccessories: sender.avatarAccessories || {},
+        toUsername: toUsername,
+        toName: recipient.name || toUsername,
+        toAvatar: recipient.avatar || "🌸",
+        toAccessories: recipient.avatarAccessories || {},
+        type: "gift",
+        content: safeContent,
+        photoUrl: null,
+        photoExpiresAt: null,
+        photoExpired: false,
+        sticker: null,
+        gift: {
+          giftId: gift.id,
+          name: gift.name,
+          icon: gift.icon,
+          price: gift.price,
+          type: gift.type,
+          desc: gift.desc,
+          bonusPoints: gift.bonusPoints || 0,
+          claimed: true
+        },
+        timestamp: nowIso,
+        kstTime: nowKst,
+        read: false,
+        readBy: [username]
+      };
+
+      const messages = loadMessages();
+      messages.push(msgEntry);
+      saveMessages(messages);
+
+      recordAccessLog(username, "SEND_GIFT", clientIp, userAgent, {
+        giftId: gift.id,
+        giftName: gift.name,
+        price: gift.price,
+        recipient: toUsername,
+        remainingPoints: sender.totalPoints
+      });
+
+      // Web Push 실시간 알림
+      try {
+        sendWebPushToUsers([toUsername], {
+          title: `🎁 ${sender.name || username}님의 특별한 선물 도착!`,
+          body: `[${gift.name}] ${safeContent}`,
+          icon: "/public/icons/icon-192.png",
+          badge: "/public/icons/badge-72.png",
+          url: `/?open=chat&roomId=${encodeURIComponent(roomId)}`,
+          tag: "haru-gift-" + Date.now(),
+          data: {
+            roomId: roomId,
+            fromUsername: username,
+            giftId: gift.id,
+            timestamp: nowIso
+          }
+        }).catch(err => console.warn("[Web Push] Gift push error:", err.message));
+      } catch (pushErr) {
+        console.warn("[Web Push] Gift push trigger error:", pushErr.message);
+      }
+
+      return sendJSON(res, 201, {
+        success: true,
+        message: msgEntry,
+        gift: gift,
+        remainingPoints: sender.totalPoints,
+        recipientStats: {
+          items: recipient.items,
+          shields: recipient.shields,
+          totalPoints: recipient.totalPoints
+        }
+      });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 19. [v3.3.0] 선물 수령 확인 (POST /api/chat/claim-gift)
+  if (req.method === "POST" && pathname === "/api/chat/claim-gift") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const messageId = body.messageId;
+      const messages = loadMessages();
+      const msg = messages.find(m => m.id === messageId);
+
+      if (!msg || !msg.gift) {
+        return sendJSON(res, 404, { success: false, message: "해당 선물 메시지를 찾을 수 없습니다." });
+      }
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: "선물이 이미 수령되어 인벤토리에 안전하게 반영되었습니다! 🎁",
+        gift: msg.gift
+      });
     } catch (e) {
       return sendJSON(res, 500, { success: false, message: e.message });
     }

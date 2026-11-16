@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.2.1">'), 'index.html must include meta app-version 3.2.1');
+    assert(indexHtml.includes('<meta name="app-version" content="3.3.0">'), 'index.html must include meta app-version 3.3.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.2.1', 'GET /api/version version must be 3.2.1');
+    assert.strictEqual(verRes.data.version, '3.3.0', 'GET /api/version version must be 3.3.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -445,6 +445,25 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(serverCode.includes('sendWebPushToUsers'), 'server.js must implement sendWebPushToUsers');
     assert(appCode.includes('initServiceWorkerAndPush'), 'app.js must implement initServiceWorkerAndPush');
     assert(appCode.includes('notification() {'), 'SoundEffects must implement notification()');
+
+    // 38. v3.3.0 Chat Threads, Multi-user Square, Gift Sending, and Sticker Packs
+    const catalogRes = await request('GET', '/api/chat/catalog');
+    assert.strictEqual(catalogRes.status, 200, '/api/chat/catalog should return 200');
+    assert.ok(catalogRes.data.gifts && catalogRes.data.gifts.gift_heart, 'gift_heart must exist in catalog');
+    assert.ok(catalogRes.data.gifts.gift_cake, 'gift_cake must exist in catalog');
+
+    assert(indexHtml.includes('id="modalChatApp"'), 'index.html must include modalChatApp');
+    assert(indexHtml.includes('id="modalSendGift"'), 'index.html must include modalSendGift');
+    assert(indexHtml.includes('stickers.js'), 'index.html must load stickers.js');
+    assert(fs.existsSync(path.join(__dirname, '../stickers.js')), 'stickers.js must exist on disk');
+
+    assert(serverCode.includes('/api/chat/rooms'), 'server.js must implement /api/chat/rooms');
+    assert(serverCode.includes('/api/chat/thread'), 'server.js must implement /api/chat/thread');
+    assert(serverCode.includes('/api/chat/send'), 'server.js must implement /api/chat/send');
+    assert(serverCode.includes('/api/chat/send-gift'), 'server.js must implement /api/chat/send-gift');
+    assert(appCode.includes('initChatApp'), 'app.js must implement initChatApp');
+    assert(appCode.includes('openChatAppModal'), 'app.js must implement openChatAppModal');
+    assert(appCode.includes('openSendGiftModal'), 'app.js must implement openSendGiftModal');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

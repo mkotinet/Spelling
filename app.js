@@ -1463,6 +1463,7 @@ class HaruMatchumApp {
   constructor() {
     this.data = DataManager.load();
     sfx.enabled = this.data.soundEnabled !== false;
+    if (typeof window !== 'undefined') window.haruApp = this;
 
     this.confetti = new ConfettiManager('confettiCanvas');
     this.quizSubject = 'spelling'; // 'spelling' | 'hanja' | 'english'
@@ -1515,7 +1516,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.2.0';
+    this.APP_VERSION = metaVer || '3.3.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -1814,19 +1815,19 @@ class HaruMatchumApp {
     const btnInboxComposeTop = document.getElementById('btnInboxComposeTop');
     const btnSendUserMsg = document.getElementById('btnSendUserMessage');
 
-    if (btnOpenInbox) btnOpenInbox.addEventListener('click', () => this.openInboxModal('all'));
+    if (btnOpenInbox) btnOpenInbox.addEventListener('click', () => this.openChatAppModal());
     if (btnCloseInbox) btnCloseInbox.addEventListener('click', () => this.closeInboxModal());
     if (btnNavInbox) {
       btnNavInbox.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.openInboxModal('all');
+        this.openChatAppModal();
       });
     }
     if (btnInboxComposeTop) {
       btnInboxComposeTop.addEventListener('click', (e) => {
         e.stopPropagation();
         this.closeInboxModal();
-        this.openSendMessageModal();
+        this.openChatAppModal();
       });
     }
     if (btnSendUserMsg) {
@@ -1834,7 +1835,7 @@ class HaruMatchumApp {
         e.stopPropagation();
         const target = this.currentZoomTargetUser || this.messageTargetUser || null;
         this.closeAvatarZoomModal();
-        this.openSendMessageModal(target);
+        this.openChatAppModal(null, target);
       });
     }
 
@@ -1907,8 +1908,11 @@ class HaruMatchumApp {
     if (this.btnTestPush) this.btnTestPush.addEventListener('click', () => this.sendTestPushNotification());
     if (this.btnPwaDirectInstall) this.btnPwaDirectInstall.addEventListener('click', () => this.triggerDirectPwaInstall());
 
+    // v3.3.0 Chat App & Gifts Initialization
+    this.initChatApp();
+
     // Modal background click dismiss
-    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox, this.modalPhotoLightbox, this.modalPwaGuide].forEach(modal => {
+    [this.modalSendMessage, this.modalIncomingMessage, this.modalInbox, this.modalPhotoLightbox, this.modalPwaGuide, this.modalChatApp, this.modalSendGift].forEach(modal => {
       if (modal) {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) {
@@ -1917,6 +1921,8 @@ class HaruMatchumApp {
             else if (modal === this.modalInbox) this.closeInboxModal();
             else if (modal === this.modalPhotoLightbox) this.closePhotoLightbox();
             else if (modal === this.modalPwaGuide) this.closePwaGuideModal();
+            else if (modal === this.modalChatApp) this.closeChatAppModal();
+            else if (modal === this.modalSendGift) this.closeSendGiftModal();
           }
         });
       }
@@ -4358,18 +4364,18 @@ class HaruMatchumApp {
     if (btnSendMsg) {
       btnSendMsg.style.display = 'flex';
       if (isMe) {
-        if (btnSendMsgText) btnSendMsgText.textContent = '💌 친구들에게 응원 메시지 보내기';
+        if (btnSendMsgText) btnSendMsgText.textContent = '💬 하루 광장 대화방 바로가기';
         btnSendMsg.onclick = (e) => {
           e.stopPropagation();
           this.closeAvatarZoomModal();
-          this.openSendMessageModal(null);
+          this.openChatAppModal('square');
         };
       } else {
-        if (btnSendMsgText) btnSendMsgText.textContent = `${u.name}님에게 응원 메시지 보내기`;
+        if (btnSendMsgText) btnSendMsgText.textContent = `💬 ${u.name}님과 실시간 대화 & 선물하기`;
         btnSendMsg.onclick = (e) => {
           e.stopPropagation();
           this.closeAvatarZoomModal();
-          this.openSendMessageModal(u);
+          this.openChatAppModal(null, u);
         };
       }
     }
@@ -5662,10 +5668,873 @@ class HaruMatchumApp {
   }
 
   // ============================================================
+  // v3.3.0 REAL-TIME THREAD CHAT CENTER & GIFT CONTROLLER
+  // ============================================================
+  initChatApp() {
+    this.modalChatApp = document.getElementById('modalChatApp');
+    this.modalSendGift = document.getElementById('modalSendGift');
+    this.chatRoomsView = document.getElementById('chatRoomsView');
+    this.chatThreadView = document.getElementById('chatThreadView');
+    this.chatMessagesScrollArea = document.getElementById('chatMessagesScrollArea');
+    this.chatInputText = document.getElementById('chatInputText');
+    this.chatStickerDrawer = document.getElementById('chatStickerDrawer');
+
+    this.currentChatRoomId = null;
+    this.currentChatTargetUser = null;
+    this.chatThreadPollingTimer = null;
+    this.chatAttachedPhotoData = null;
+    this.selectedGiftItem = null;
+    this.activeStickerPack = 'haru_friends';
+    this.giftCatalogCache = null;
+    this.cachedChatThreadMessages = [];
+
+    // Header buttons
+    const btnCloseChatApp = document.getElementById('btnCloseChatApp');
+    if (btnCloseChatApp) btnCloseChatApp.addEventListener('click', () => this.closeChatAppModal());
+
+    const btnChatBackToList = document.getElementById('btnChatBackToList');
+    if (btnChatBackToList) btnChatBackToList.addEventListener('click', () => this.leaveChatRoom());
+
+    const btnChatHeaderGift = document.getElementById('btnChatHeaderGift');
+    if (btnChatHeaderGift) {
+      btnChatHeaderGift.addEventListener('click', () => {
+        this.openSendGiftModal(this.currentChatTargetUser);
+      });
+    }
+
+    // Room Tabs (Square vs Direct)
+    const tabRoomSquare = document.getElementById('tabRoomSquare');
+    const tabRoomDirect = document.getElementById('tabRoomDirect');
+    if (tabRoomSquare) {
+      tabRoomSquare.addEventListener('click', () => {
+        tabRoomSquare.classList.add('active');
+        if (tabRoomDirect) tabRoomDirect.classList.remove('active');
+        this.enterChatRoom('square', null, '하루 광장 대화방 (전체)', '💬');
+      });
+    }
+    if (tabRoomDirect) {
+      tabRoomDirect.addEventListener('click', () => {
+        tabRoomDirect.classList.add('active');
+        if (tabRoomSquare) tabRoomSquare.classList.remove('active');
+        this.renderChatRooms('direct');
+      });
+    }
+
+    // Chat Toolbar buttons
+    const btnChatSend = document.getElementById('btnChatSend');
+    if (btnChatSend) btnChatSend.addEventListener('click', () => this.submitChatMessage());
+
+    if (this.chatInputText) {
+      this.chatInputText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.submitChatMessage();
+        }
+      });
+    }
+
+    const btnChatAttachPhoto = document.getElementById('btnChatAttachPhoto');
+    const chatFileInput = document.getElementById('chatFileInput');
+    if (btnChatAttachPhoto && chatFileInput) {
+      btnChatAttachPhoto.addEventListener('click', () => chatFileInput.click());
+      chatFileInput.addEventListener('change', (e) => this.handleChatPhotoSelect(e));
+    }
+
+    const btnCancelChatPhoto = document.getElementById('btnCancelChatPhoto');
+    if (btnCancelChatPhoto) btnCancelChatPhoto.addEventListener('click', () => this.clearChatAttachedPhoto());
+
+    const btnChatOpenGift = document.getElementById('btnChatOpenGift');
+    if (btnChatOpenGift) {
+      btnChatOpenGift.addEventListener('click', () => {
+        this.openSendGiftModal(this.currentChatTargetUser);
+      });
+    }
+
+    const btnChatToggleSticker = document.getElementById('btnChatToggleSticker');
+    if (btnChatToggleSticker) {
+      btnChatToggleSticker.addEventListener('click', () => this.toggleChatStickerDrawer(null, 'haru_friends'));
+    }
+
+    const btnChatToggleEmoji = document.getElementById('btnChatToggleEmoji');
+    if (btnChatToggleEmoji) {
+      btnChatToggleEmoji.addEventListener('click', () => this.toggleChatStickerDrawer(null, 'popular_emojis'));
+    }
+
+    const btnCloseStickerDrawer = document.getElementById('btnCloseStickerDrawer');
+    if (btnCloseStickerDrawer) {
+      btnCloseStickerDrawer.addEventListener('click', () => this.toggleChatStickerDrawer(false));
+    }
+
+    // Sticker Pack Tabs
+    document.querySelectorAll('.sticker-pack-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        document.querySelectorAll('.sticker-pack-tab').forEach(t => t.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.renderStickerGrid(e.currentTarget.dataset.pack || 'haru_friends');
+      });
+    });
+
+    // Gift Modal Handlers
+    const btnCloseSendGift = document.getElementById('btnCloseSendGift');
+    const btnCancelSendGift = document.getElementById('btnCancelSendGift');
+    if (btnCloseSendGift) btnCloseSendGift.addEventListener('click', () => this.closeSendGiftModal());
+    if (btnCancelSendGift) btnCancelSendGift.addEventListener('click', () => this.closeSendGiftModal());
+
+    const tabGiftItems = document.getElementById('tabGiftItems');
+    const tabGiftSocial = document.getElementById('tabGiftSocial');
+    if (tabGiftItems) {
+      tabGiftItems.addEventListener('click', () => {
+        tabGiftItems.classList.add('active');
+        if (tabGiftSocial) tabGiftSocial.classList.remove('active');
+        this.renderGiftCatalog('item');
+      });
+    }
+    if (tabGiftSocial) {
+      tabGiftSocial.addEventListener('click', () => {
+        tabGiftSocial.classList.add('active');
+        if (tabGiftItems) tabGiftItems.classList.remove('active');
+        this.renderGiftCatalog('social');
+      });
+    }
+
+    document.querySelectorAll('.gift-chip').forEach(chip => {
+      chip.addEventListener('click', (e) => {
+        const input = document.getElementById('giftCustomMessage');
+        if (input) input.value = e.currentTarget.dataset.text || '';
+      });
+    });
+
+    const btnSubmitSendGift = document.getElementById('btnSubmitSendGift');
+    if (btnSubmitSendGift) {
+      btnSubmitSendGift.addEventListener('click', () => this.submitSendGift());
+    }
+  }
+
+  async openChatAppModal(targetRoomId = null, targetUser = null) {
+    if (!this.modalChatApp) return;
+
+    // Check Cloud Login Status
+    if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
+      this.showToastNotice('실시간 대화와 선물 주고받기는 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
+    this.modalChatApp.classList.add('active');
+    sfx.combo();
+
+    if (targetUser) {
+      const uName = targetUser.username || targetUser.name;
+      const dName = targetUser.name || targetUser.username;
+      const rId = (this.data.currentUser && this.data.currentUser.username) 
+        ? [this.data.currentUser.username, uName].sort().join('_') 
+        : null;
+      this.enterChatRoom(rId, uName, dName, targetUser.avatar, targetUser.avatarAccessories);
+    } else if (targetRoomId === 'square') {
+      this.enterChatRoom('square', null, '하루 광장 대화방 (전체)', '💬');
+    } else {
+      this.leaveChatRoom();
+    }
+  }
+
+  closeChatAppModal() {
+    if (this.modalChatApp) this.modalChatApp.classList.remove('active');
+    this.stopChatThreadPolling();
+    this.clearChatAttachedPhoto();
+    this.toggleChatStickerDrawer(false);
+  }
+
+  async renderChatRooms(tab = 'all') {
+    const listContainer = document.getElementById('chatRoomsListContainer');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = '<div style="text-align: center; padding: 24px; color: #94a3b8;">대화방 목록 불러오는 중... 💬</div>';
+
+    try {
+      const res = await fetch(`/api/chat/rooms?token=${encodeURIComponent(this.cloudToken)}`, {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        listContainer.innerHTML = `<div style="text-align:center; padding: 20px; color: #f43f5e;">${data.message || '대화방을 불러올 수 없습니다.'}</div>`;
+        return;
+      }
+
+      listContainer.innerHTML = '';
+      const rooms = data.rooms || [];
+
+      rooms.forEach(room => {
+        if (tab === 'direct' && room.isGroup) return;
+
+        const card = document.createElement('div');
+        card.className = `chat-room-card ${room.isGroup ? 'is-square' : ''}`;
+        
+        let avatarHtml = '';
+        if (room.isGroup) {
+          avatarHtml = `<div class="chat-header-avatar" style="width: 48px; height: 48px; font-size: 1.4rem;">💬</div>`;
+        } else {
+          avatarHtml = typeof renderCompositeAvatar === 'function'
+            ? renderCompositeAvatar(room.avatar || '🌸', room.avatarAccessories || {}, 48, false, 'compact')
+            : `<div style="font-size: 1.5rem;">${room.avatar || '🌸'}</div>`;
+        }
+
+        const lastMsgText = room.lastMessage 
+          ? `${room.isGroup ? `<strong>${room.lastMessage.fromName}:</strong> ` : ''}${room.lastMessage.content}` 
+          : (room.isGroup ? '모든 친구들과 자유롭게 실시간으로 대화해보세요!' : '첫 메시지를 보내보세요!');
+
+        const timeText = room.lastMessage && room.lastMessage.kstTime
+          ? room.lastMessage.kstTime.split(' ')[1] || room.lastMessage.kstTime
+          : '';
+
+        card.innerHTML = `
+          <div class="chat-room-avatar-wrap">
+            ${avatarHtml}
+            ${room.unreadCount > 0 ? `<span class="chat-room-badge">${room.unreadCount > 9 ? '9+' : room.unreadCount}</span>` : ''}
+          </div>
+          <div class="chat-room-meta">
+            <div class="chat-room-name-row">
+              <span class="chat-room-name">${room.name}</span>
+              <span class="chat-room-time">${timeText}</span>
+            </div>
+            <p class="chat-room-last-msg">${lastMsgText}</p>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          this.enterChatRoom(
+            room.roomId,
+            room.isGroup ? null : room.username,
+            room.name,
+            room.avatar,
+            room.avatarAccessories
+          );
+        });
+
+        listContainer.appendChild(card);
+      });
+    } catch (e) {
+      listContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #f43f5e;">네트워크 오류가 발생했습니다.</div>';
+    }
+  }
+
+  enterChatRoom(roomId, targetUsername, targetName, avatar, accessories) {
+    this.currentChatRoomId = roomId || 'square';
+    this.currentChatTargetUser = targetUsername;
+
+    const btnBack = document.getElementById('btnChatBackToList');
+    const headerTitle = document.getElementById('chatActiveTitle');
+    const headerSub = document.getElementById('chatActiveSub');
+    const headerAvatar = document.getElementById('chatActiveAvatar');
+    const btnGift = document.getElementById('btnChatHeaderGift');
+
+    if (btnBack) btnBack.style.display = 'flex';
+    if (headerTitle) headerTitle.textContent = targetName || (this.currentChatRoomId === 'square' ? '하루 광장 대화방 (전체)' : '대화방');
+    if (headerSub) {
+      headerSub.textContent = (this.currentChatRoomId === 'square' || !targetUsername)
+        ? '다자간 실시간 동시 대화 (전체 참여)'
+        : '1:1 친근한 대화방 ✨';
+    }
+    if (headerAvatar) {
+      if (this.currentChatRoomId === 'square' || !targetUsername) {
+        headerAvatar.innerHTML = '💬';
+      } else {
+        headerAvatar.innerHTML = typeof renderCompositeAvatar === 'function'
+          ? renderCompositeAvatar(avatar || '🌸', accessories || {}, 44, false, 'compact')
+          : (avatar || '🌸');
+      }
+    }
+    if (btnGift) {
+      btnGift.style.display = (this.currentChatRoomId === 'square' && !targetUsername) ? 'none' : 'block';
+    }
+
+    if (this.chatRoomsView) this.chatRoomsView.style.display = 'none';
+    if (this.chatThreadView) this.chatThreadView.style.display = 'flex';
+
+    this.loadChatThread(this.currentChatRoomId, targetUsername);
+    this.startChatThreadPolling(this.currentChatRoomId, targetUsername);
+  }
+
+  leaveChatRoom() {
+    this.stopChatThreadPolling();
+    this.currentChatRoomId = null;
+    this.currentChatTargetUser = null;
+
+    const btnBack = document.getElementById('btnChatBackToList');
+    const headerTitle = document.getElementById('chatActiveTitle');
+    const headerSub = document.getElementById('chatActiveSub');
+    const headerAvatar = document.getElementById('chatActiveAvatar');
+    const btnGift = document.getElementById('btnChatHeaderGift');
+
+    if (btnBack) btnBack.style.display = 'none';
+    if (headerTitle) headerTitle.textContent = '하루 대화 광장';
+    if (headerSub) headerSub.textContent = '다자간 실시간 동시 대화 및 1:1 대화';
+    if (headerAvatar) headerAvatar.innerHTML = '💬';
+    if (btnGift) btnGift.style.display = 'none';
+
+    if (this.chatThreadView) this.chatThreadView.style.display = 'none';
+    if (this.chatRoomsView) this.chatRoomsView.style.display = 'flex';
+
+    this.renderChatRooms('all');
+  }
+
+  async loadChatThread(roomId, targetUsername) {
+    if (!this.chatMessagesScrollArea) return;
+    this.chatMessagesScrollArea.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">대화 기록 불러오는 중... ✨</div>';
+
+    try {
+      const q = new URLSearchParams();
+      if (roomId) q.set('roomId', roomId);
+      if (targetUsername) q.set('withUser', targetUsername);
+
+      const res = await fetch(`/api/chat/thread?${q.toString()}`, {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        this.chatMessagesScrollArea.innerHTML = `<div style="text-align: center; padding: 20px; color: #f43f5e;">${data.message || '대화를 불러올 수 없습니다.'}</div>`;
+        return;
+      }
+
+      this.cachedChatThreadMessages = data.messages || [];
+      this.renderChatMessages(this.cachedChatThreadMessages);
+      this.scrollChatToBottom();
+      this.checkUnreadMessages();
+    } catch (e) {
+      this.chatMessagesScrollArea.innerHTML = '<div style="text-align: center; padding: 20px; color: #f43f5e;">네트워크 오류가 발생했습니다.</div>';
+    }
+  }
+
+  renderChatMessages(messages) {
+    if (!this.chatMessagesScrollArea) return;
+    this.chatMessagesScrollArea.innerHTML = '';
+
+    if (!messages || messages.length === 0) {
+      this.chatMessagesScrollArea.innerHTML = `
+        <div style="text-align: center; padding: 40px 16px; color: #94a3b8;">
+          <div style="font-size: 2.2rem; margin-bottom: 8px;">🌸💬✨</div>
+          <div style="font-weight: 700; font-size: 0.92rem; color: #64748b; margin-bottom: 4px;">아직 대화가 없습니다.</div>
+          <div style="font-size: 0.8rem;">따뜻한 첫 마디나 귀여운 스티커를 보내보세요!</div>
+        </div>
+      `;
+      return;
+    }
+
+    const myUsername = (this.data.currentUser && (this.data.currentUser.username || this.data.currentUser.name)) || '';
+    let lastDate = '';
+
+    messages.forEach(msg => {
+      // 1. Date Divider
+      const msgDate = msg.kstTime ? msg.kstTime.split(' ')[0] : (msg.timestamp ? msg.timestamp.split('T')[0] : '');
+      if (msgDate && msgDate !== lastDate) {
+        lastDate = msgDate;
+        const dateDivider = document.createElement('div');
+        dateDivider.className = 'chat-date-divider';
+        dateDivider.innerHTML = `<span class="chat-date-chip">📅 ${msgDate}</span>`;
+        this.chatMessagesScrollArea.appendChild(dateDivider);
+      }
+
+      // 2. Message Bubble
+      const isMe = (msg.fromUsername === myUsername);
+      const row = document.createElement('div');
+      row.className = `chat-msg-row ${isMe ? 'outgoing' : 'incoming'}`;
+      row.dataset.msgId = msg.id;
+
+      // Avatar (Incoming only)
+      let avatarCol = '';
+      if (!isMe) {
+        const avHtml = typeof renderCompositeAvatar === 'function'
+          ? renderCompositeAvatar(msg.fromAvatar || '🌸', msg.fromAccessories || {}, 36, false, 'compact')
+          : `<div style="font-size: 1.3rem;">${msg.fromAvatar || '🌸'}</div>`;
+        avatarCol = `<div class="chat-bubble-avatar">${avHtml}</div>`;
+      }
+
+      // Bubble Body (Text, Photo, Sticker, Gift)
+      let bodyHtml = '';
+      if (msg.type === 'gift' && msg.gift) {
+        bodyHtml = `
+          <div class="chat-gift-bubble">
+            <div class="chat-gift-card-header">
+              <span class="chat-gift-card-icon">${msg.gift.icon || '🎁'}</span>
+              <div class="chat-gift-card-meta">
+                <span class="chat-gift-card-title">${msg.gift.name || '특별한 선물'}</span>
+                <span class="chat-gift-card-tag">${msg.gift.type === 'item' ? '🎮 퀴즈 필수 아이템' : '🍰 달콤 감성 선물'}</span>
+              </div>
+            </div>
+            <p class="chat-gift-card-msg">${msg.content || '마음을 담은 선물이 도착했습니다!'}</p>
+            <button type="button" class="btn-claim-gift-action" onclick="window.haruApp.claimGift('${msg.id}')">
+              🎁 선물 수령 완료 (인벤토리 확인)
+            </button>
+          </div>
+        `;
+      } else if (msg.type === 'sticker' && msg.sticker) {
+        let stickerSvg = msg.sticker.svgData || '';
+        if (!stickerSvg && typeof STICKER_PACKS !== 'undefined' && STICKER_PACKS[msg.sticker.packId]) {
+          const found = STICKER_PACKS[msg.sticker.packId].stickers.find(s => s.id === msg.sticker.stickerId);
+          if (found) stickerSvg = found.svg;
+        }
+        if (stickerSvg) {
+          bodyHtml = `<div class="chat-sticker-bubble">${stickerSvg}</div>`;
+        } else if (msg.sticker.char) {
+          bodyHtml = `<div class="chat-sticker-bubble" style="font-size: 4rem;">${msg.sticker.char}</div>`;
+        } else {
+          bodyHtml = `<div class="chat-text-bubble">🎀 ${msg.sticker.name || '스티커'}</div>`;
+        }
+      } else if (msg.photoUrl && !msg.photoExpired) {
+        bodyHtml = `
+          <div class="chat-photo-bubble" style="cursor: pointer; max-width: 220px;" onclick="window.haruApp.openPhotoLightbox('${msg.photoUrl}')">
+            <img src="${msg.photoUrl}" alt="사진" style="width: 100%; border-radius: 14px; border: 1.5px solid #fbcfe8; display: block;">
+            ${msg.content ? `<div class="chat-text-bubble" style="margin-top: 6px;">${msg.content}</div>` : ''}
+          </div>
+        `;
+      } else if (msg.photoExpired) {
+        bodyHtml = `
+          <div class="chat-text-bubble" style="background: #f1f5f9; color: #94a3b8; font-style: italic;">
+            ⏰ 사진이 24시간 지나 안전하게 자동 삭제되었습니다.
+          </div>
+        `;
+      } else {
+        bodyHtml = `<div class="chat-text-bubble">${msg.content || ''}</div>`;
+      }
+
+      // Time tag
+      const timeStr = msg.kstTime
+        ? msg.kstTime.split(' ')[1] || msg.kstTime
+        : (msg.timestamp ? msg.timestamp.split('T')[1].substring(0, 5) : '');
+
+      row.innerHTML = `
+        ${avatarCol}
+        <div class="chat-bubble-content-col">
+          ${(!isMe && this.currentChatRoomId === 'square') ? `<span class="chat-sender-name">${msg.fromName || msg.fromUsername}</span>` : ''}
+          <div class="chat-bubble-body-row">
+            ${bodyHtml}
+            <span class="chat-time-tag">${timeStr}</span>
+          </div>
+        </div>
+      `;
+
+      this.chatMessagesScrollArea.appendChild(row);
+    });
+  }
+
+  scrollChatToBottom() {
+    if (this.chatMessagesScrollArea) {
+      setTimeout(() => {
+        this.chatMessagesScrollArea.scrollTop = this.chatMessagesScrollArea.scrollHeight;
+      }, 50);
+    }
+  }
+
+  startChatThreadPolling(roomId, targetUsername) {
+    this.stopChatThreadPolling();
+
+    this.chatThreadPollingTimer = setInterval(async () => {
+      if (!this.modalChatApp || !this.modalChatApp.classList.contains('active')) return;
+      if (!this.currentChatRoomId) return;
+
+      try {
+        const q = new URLSearchParams();
+        if (roomId) q.set('roomId', roomId);
+        if (targetUsername) q.set('withUser', targetUsername);
+        
+        const lastMsg = this.cachedChatThreadMessages[this.cachedChatThreadMessages.length - 1];
+        if (lastMsg) q.set('sinceId', lastMsg.id);
+
+        const res = await fetch(`/api/chat/thread?${q.toString()}`, {
+          headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.messages && data.messages.length > 0) {
+          const fresh = data.messages.filter(m => !this.cachedChatThreadMessages.some(c => c.id === m.id));
+          if (fresh.length > 0) {
+            this.cachedChatThreadMessages.push(...fresh);
+            this.renderChatMessages(this.cachedChatThreadMessages);
+            this.scrollChatToBottom();
+            sfx.pop();
+          }
+        }
+      } catch (e) {
+        // Quiet poll error
+      }
+    }, 2500);
+  }
+
+  stopChatThreadPolling() {
+    if (this.chatThreadPollingTimer) {
+      clearInterval(this.chatThreadPollingTimer);
+      this.chatThreadPollingTimer = null;
+    }
+  }
+
+  // Submit Text/Photo/Sticker Message in Thread
+  async submitChatMessage(extra = {}) {
+    const inputEl = this.chatInputText;
+    const text = inputEl ? inputEl.value.trim() : '';
+
+    if (!text && !this.chatAttachedPhotoData && !extra.sticker && !extra.gift) {
+      if (inputEl) inputEl.focus();
+      return;
+    }
+
+    const btnSend = document.getElementById('btnChatSend');
+    if (btnSend) btnSend.disabled = true;
+
+    let photoUrl = null;
+    let photoExpiresAt = null;
+
+    // Upload photo if present
+    if (this.chatAttachedPhotoData) {
+      try {
+        const uploadRes = await fetch('/api/messages/upload-photo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({
+            token: this.cloudToken,
+            imageBase64: this.chatAttachedPhotoData.base64,
+            fileName: this.chatAttachedPhotoData.fileName
+          })
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok && uploadData.success) {
+          photoUrl = uploadData.photoUrl;
+          photoExpiresAt = uploadData.expiresAt;
+        }
+      } catch (uploadErr) {
+        this.showToastNotice('사진 업로드 실패: ' + uploadErr.message);
+      }
+    }
+
+    try {
+      const payload = {
+        token: this.cloudToken,
+        roomId: this.currentChatRoomId || 'square',
+        toUsername: this.currentChatTargetUser || 'square',
+        content: text,
+        photoUrl: photoUrl,
+        photoExpiresAt: photoExpiresAt,
+        type: extra.type || (extra.sticker ? 'sticker' : (photoUrl ? 'photo' : 'text')),
+        sticker: extra.sticker || null,
+        gift: extra.gift || null
+      };
+
+      const res = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.cloudToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success && data.message) {
+        if (inputEl) inputEl.value = '';
+        this.clearChatAttachedPhoto();
+        this.cachedChatThreadMessages.push(data.message);
+        this.renderChatMessages(this.cachedChatThreadMessages);
+        this.scrollChatToBottom();
+        sfx.tap();
+      } else {
+        this.showToastNotice(data.message || '전송 실패');
+      }
+    } catch (e) {
+      this.showToastNotice('통신 오류로 메시지를 전송하지 못했습니다.');
+    } finally {
+      if (btnSend) btnSend.disabled = false;
+    }
+  }
+
+  // Photo Attachment in Chat Center
+  handleChatPhotoSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.showToastNotice('이미지 파일만 첨부할 수 있습니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target.result;
+      this.chatAttachedPhotoData = {
+        base64: base64,
+        fileName: file.name
+      };
+
+      const banner = document.getElementById('chatPhotoPreviewBanner');
+      const thumb = document.getElementById('chatPhotoPreviewThumb');
+      const name = document.getElementById('chatPhotoPreviewName');
+      if (banner && thumb && name) {
+        thumb.src = base64;
+        name.textContent = file.name;
+        banner.style.display = 'flex';
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+
+  clearChatAttachedPhoto() {
+    this.chatAttachedPhotoData = null;
+    const banner = document.getElementById('chatPhotoPreviewBanner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  // Sticker & Big Emoji Drawer
+  toggleChatStickerDrawer(forcedOpen = null, initialPack = null) {
+    if (!this.chatStickerDrawer) return;
+
+    const isOpen = this.chatStickerDrawer.style.display !== 'none';
+    const nextOpen = (forcedOpen !== null) ? forcedOpen : !isOpen;
+
+    if (nextOpen) {
+      this.chatStickerDrawer.style.display = 'flex';
+      const targetPack = initialPack || this.activeStickerPack || 'haru_friends';
+      document.querySelectorAll('.sticker-pack-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.pack === targetPack);
+      });
+      this.renderStickerGrid(targetPack);
+    } else {
+      this.chatStickerDrawer.style.display = 'none';
+    }
+  }
+
+  renderStickerGrid(packId = 'haru_friends') {
+    this.activeStickerPack = packId;
+    const grid = document.getElementById('chatStickerGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    if (typeof STICKER_PACKS === 'undefined' || !STICKER_PACKS[packId]) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">스티커를 불러올 수 없습니다.</div>';
+      return;
+    }
+
+    const pack = STICKER_PACKS[packId];
+    pack.stickers.forEach(s => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sticker-item-btn';
+      btn.title = s.name;
+
+      if (s.svg) {
+        btn.innerHTML = `${s.svg}<span class="sticker-item-name">${s.name}</span>`;
+      } else if (s.char) {
+        btn.innerHTML = `<span style="font-size: 2.2rem;">${s.char}</span><span class="sticker-item-name">${s.name}</span>`;
+      }
+
+      btn.addEventListener('click', () => {
+        this.submitChatMessage({
+          type: 'sticker',
+          sticker: {
+            packId: pack.id,
+            stickerId: s.id,
+            name: s.name,
+            svgData: s.svg || null,
+            char: s.char || null
+          }
+        });
+        this.toggleChatStickerDrawer(false);
+      });
+
+      grid.appendChild(btn);
+    });
+  }
+
+  // ============================================================
+  // v3.3.0 SEND GIFT MODAL CONTROLLER
+  // ============================================================
+  async openSendGiftModal(targetUsername = null) {
+    if (!this.modalSendGift) return;
+
+    if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
+      this.showToastNotice('선물 보내기는 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
+    const effectiveTarget = targetUsername || this.currentChatTargetUser;
+    if (!effectiveTarget || effectiveTarget === 'square') {
+      this.showToastNotice('선물을 받을 친구를 먼저 선택해 주세요! 👥');
+      return;
+    }
+
+    this.selectedGiftItem = null;
+    const targetTitle = document.getElementById('giftModalTargetTitle');
+    const targetNameEl = document.getElementById('giftTargetName');
+    const targetAvatarEl = document.getElementById('giftTargetAvatar');
+    const myPointsEl = document.getElementById('giftMyPointsDisplay');
+    const btnSubmit = document.getElementById('btnSubmitSendGift');
+    const customMsgInput = document.getElementById('giftCustomMessage');
+
+    if (targetTitle) targetTitle.textContent = `${effectiveTarget}님에게 선물 보내기`;
+    if (targetNameEl) targetNameEl.textContent = effectiveTarget;
+    if (targetAvatarEl) targetAvatarEl.innerHTML = '🌸';
+    if (myPointsEl) myPointsEl.textContent = `${this.data.currentUser.totalPoints || 0}P`;
+    if (customMsgInput) customMsgInput.value = '';
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '선물을 선택해주세요';
+    }
+
+    // Fetch and render gift catalog
+    await this.renderGiftCatalog('item');
+    this.modalSendGift.classList.add('active');
+    sfx.combo();
+  }
+
+  closeSendGiftModal() {
+    if (this.modalSendGift) this.modalSendGift.classList.remove('active');
+    this.selectedGiftItem = null;
+  }
+
+  async renderGiftCatalog(category = 'item') {
+    const grid = document.getElementById('giftCatalogGrid');
+    if (!grid) return;
+
+    if (!this.giftCatalogCache) {
+      try {
+        const res = await fetch('/api/chat/catalog');
+        const data = await res.json();
+        if (data.success && data.gifts) {
+          this.giftCatalogCache = data.gifts;
+        }
+      } catch (e) {}
+    }
+
+    const catalog = this.giftCatalogCache || {};
+    const myPoints = (this.data.currentUser && this.data.currentUser.totalPoints) || 0;
+
+    grid.innerHTML = '';
+    const giftEntries = Object.values(catalog).filter(g => g.type === category || (category === 'item' && g.type === 'shield'));
+
+    giftEntries.forEach(gift => {
+      const card = document.createElement('div');
+      const canAfford = myPoints >= gift.price;
+      card.className = `gift-item-card ${canAfford ? '' : 'disabled'}`;
+      card.dataset.giftId = gift.id;
+
+      card.innerHTML = `
+        <div class="gift-icon-display">${gift.icon}</div>
+        <div class="gift-title-display">${gift.name}</div>
+        <div class="gift-desc-display">${gift.desc}</div>
+        <div class="gift-price-badge">${gift.price} P</div>
+      `;
+
+      if (canAfford) {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.gift-item-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          this.selectedGiftItem = gift;
+
+          const btnSubmit = document.getElementById('btnSubmitSendGift');
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `🎁 ${gift.name} 선물하기 (${gift.price}P)`;
+          }
+        });
+      }
+
+      grid.appendChild(card);
+    });
+  }
+
+  async submitSendGift() {
+    if (!this.selectedGiftItem) {
+      this.showToastNotice('선물을 먼저 선택해 주세요! 🎁');
+      return;
+    }
+
+    const targetUser = this.currentChatTargetUser;
+    if (!targetUser || targetUser === 'square') {
+      this.showToastNotice('선물 받을 친구가 올바르지 않습니다.');
+      return;
+    }
+
+    const customMsg = (document.getElementById('giftCustomMessage')?.value || '').trim();
+    const btnSubmit = document.getElementById('btnSubmitSendGift');
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '선물 포장 및 전송 중... 🚀';
+    }
+
+    try {
+      const res = await fetch('/api/chat/send-gift', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.cloudToken}`
+        },
+        body: JSON.stringify({
+          token: this.cloudToken,
+          giftId: this.selectedGiftItem.id,
+          toUsername: targetUser,
+          message: customMsg
+        })
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Update local points
+        if (typeof data.remainingPoints === 'number' && this.data.currentUser) {
+          this.data.currentUser.totalPoints = data.remainingPoints;
+          this.updateUserStatsDisplay();
+        }
+
+        try {
+          if (this.confetti && typeof this.confetti.explode === 'function') {
+            this.confetti.explode();
+          }
+          if (typeof sfx !== 'undefined' && typeof sfx.applause === 'function') {
+            sfx.applause();
+          }
+        } catch (sErr) {}
+
+        this.closeSendGiftModal();
+        this.showToastNotice(`🎁 ${targetUser}님에게 [${this.selectedGiftItem.name}] 선물을 보냈어요! ✨`);
+
+        // If thread is active, append message
+        if (data.message && this.currentChatRoomId) {
+          this.cachedChatThreadMessages.push(data.message);
+          this.renderChatMessages(this.cachedChatThreadMessages);
+          this.scrollChatToBottom();
+        }
+      } else {
+        this.showToastNotice(data.message || '선물 전송 실패');
+      }
+    } catch (e) {
+      this.showToastNotice('통신 오류로 선물을 보내지 못했습니다.');
+    } finally {
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '선물 보내기 🎁';
+      }
+    }
+  }
+
+  claimGift(messageId) {
+    try {
+      if (this.confetti && typeof this.confetti.explode === 'function') {
+        this.confetti.explode();
+      }
+      if (typeof sfx !== 'undefined' && typeof sfx.fanfare === 'function') {
+        sfx.fanfare();
+      }
+    } catch (e) {}
+    this.showToastNotice('🎁 선물이 인벤토리에 안전하게 반영되었습니다! 소중하게 사용해보세요.');
+  }
+
+  // ============================================================
   // What's New & Update Notice Modal (Version-Aware Dynamic Engine)
   // ============================================================
   async checkWhatsNewPopup() {
-    let currentVer = this.APP_VERSION || '3.2.0';
+    let currentVer = this.APP_VERSION || '3.3.0';
     try {
       if (!this.versionMeta) {
         const res = await fetch('/api/version');
@@ -6850,7 +7719,7 @@ class HaruMatchumApp {
       if (!data || !data.version) return;
 
       const serverVersion = data.version;
-      const clientVersion = this.APP_VERSION || '3.2.0';
+      const clientVersion = this.APP_VERSION || '3.3.0';
 
       if (this.isServerVersionNewer(serverVersion, clientVersion)) {
         console.log(`[Haru Matchum] New version detected! Server: v${serverVersion}, Client: v${clientVersion}`);

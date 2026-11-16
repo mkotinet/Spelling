@@ -1,6 +1,6 @@
 {
-  "version": "3.2.1",
-  "build": "20261116_1715",
-  "name": "하루맞춤 (Haru Matchum) - UI/UX & Grammar Refinement Edition",
-  "releaseNotes": "모바일 메뉴 2x2 그리드화 및 삐져나옴 완벽 차단, 문제 빈칸 활용형 정답 일치, 질문 문장 전면 윤문(비문 0건) 및 40자 내외 간결화"
+  "version": "3.3.0",
+  "build": "20261116_1850",
+  "name": "하루맞춤 (Haru Matchum) - Thread Chat, Square & Gift System Edition",
+  "releaseNotes": "카카오톡 스타일 연속 스레드형 대화방, 다자간 동시 광장 대화, 15종 게임 아이템/감성 선물 보내기 시스템 및 4대 귀여운 대형 스티커 팩 탑재"
 }

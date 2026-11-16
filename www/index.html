@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.2.1">
+  <meta name="app-version" content="3.3.0">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.2.0">
+  <link rel="stylesheet" href="style.css?v=3.3.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -1256,6 +1256,151 @@
   </div>
 
   <!-- ============================================================
+       MODAL 15: v3.3.0 REAL-TIME THREAD CHAT CENTER & SQUARE
+       ============================================================ -->
+  <div id="modalChatApp" class="modal-overlay chat-app-modal-overlay">
+    <div class="modal-box chat-modal-box">
+      <!-- 1. Chat Header -->
+      <div class="chat-header">
+        <button id="btnChatBackToList" class="btn-chat-header-action" type="button" aria-label="대화방 목록" style="display: none;">
+          ←
+        </button>
+        <div class="chat-header-info">
+          <div id="chatActiveAvatar" class="chat-header-avatar">💬</div>
+          <div class="chat-header-titles">
+            <h3 id="chatActiveTitle" class="chat-title">하루 대화 광장</h3>
+            <span id="chatActiveSub" class="chat-sub">다자간 실시간 동시 대화 (전체 참여)</span>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button id="btnChatHeaderGift" class="btn-chat-gift-quick" type="button" title="선물 보내기">🎁 선물</button>
+          <button id="btnCloseChatApp" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+        </div>
+      </div>
+
+      <!-- 2. Rooms List View (Tab & Room Cards) -->
+      <div id="chatRoomsView" class="chat-rooms-view">
+        <div class="chat-nav-tabs">
+          <button id="tabRoomSquare" class="chat-nav-tab active" type="button">💬 하루 광장 대화</button>
+          <button id="tabRoomDirect" class="chat-nav-tab" type="button">👥 친구 1:1 대화</button>
+        </div>
+
+        <div id="chatRoomsListContainer" class="chat-rooms-list">
+          <!-- Dynamically Populated Rooms -->
+        </div>
+      </div>
+
+      <!-- 3. Active Chat Thread View -->
+      <div id="chatThreadView" class="chat-thread-view" style="display: none;">
+        <!-- Messages Scroll Area -->
+        <div id="chatMessagesScrollArea" class="chat-messages-container">
+          <!-- Dynamically Loaded Message Bubbles (Date dividers, incoming, outgoing, gift cards, stickers) -->
+        </div>
+
+        <!-- Attached Photo Preview Banner (Above toolbar) -->
+        <div id="chatPhotoPreviewBanner" class="chat-photo-preview-bar" style="display: none;">
+          <img id="chatPhotoPreviewThumb" src="" alt="첨부 미리보기">
+          <div class="chat-photo-preview-meta">
+            <span id="chatPhotoPreviewName">photo.jpg</span>
+            <span class="chat-photo-preview-expiry">⏰ 24시간 후 자동 파기</span>
+          </div>
+          <button id="btnCancelChatPhoto" class="btn-cancel-preview" type="button">✕</button>
+        </div>
+
+        <!-- Chat Input Toolbar (Fixed at bottom) -->
+        <div class="chat-input-toolbar">
+          <input type="file" id="chatFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
+          <button id="btnChatAttachPhoto" class="chat-tool-btn" type="button" title="사진 첨부">📷</button>
+          <button id="btnChatOpenGift" class="chat-tool-btn" type="button" title="선물 보내기">🎁</button>
+          <button id="btnChatToggleSticker" class="chat-tool-btn" type="button" title="귀여운 스티커 팩">🎀</button>
+          <button id="btnChatToggleEmoji" class="chat-tool-btn" type="button" title="이모티콘">😀</button>
+
+          <div class="chat-textarea-wrapper">
+            <textarea id="chatInputText" class="chat-textarea" rows="1" maxlength="300" placeholder="메시지를 입력하세요..."></textarea>
+          </div>
+
+          <button id="btnChatSend" class="btn-chat-send" type="button" aria-label="메시지 전송">
+            <span class="send-icon">🚀</span>
+          </button>
+        </div>
+
+        <!-- Slide-up Sticker & Emoji Drawer (Inside modal bottom) -->
+        <div id="chatStickerDrawer" class="chat-sticker-drawer" style="display: none;">
+          <div class="sticker-drawer-header">
+            <div class="sticker-pack-tabs">
+              <button type="button" class="sticker-pack-tab active" data-pack="haru_friends">🌸 하루</button>
+              <button type="button" class="sticker-pack-tab" data-pack="cheer_party">🎉 축하</button>
+              <button type="button" class="sticker-pack-tab" data-pack="tasty_desserts">🍰 디저트</button>
+              <button type="button" class="sticker-pack-tab" data-pack="popular_emojis">😀 이모지</button>
+            </div>
+            <button id="btnCloseStickerDrawer" class="btn-close-drawer" type="button">✕</button>
+          </div>
+          <div id="chatStickerGrid" class="sticker-grid-content">
+            <!-- Stickers rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 16: v3.3.0 SEND GIFT MODAL (Game Items & Social Gifts)
+       ============================================================ -->
+  <div id="modalSendGift" class="modal-overlay">
+    <div class="modal-box gift-modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">🎁 <span id="giftModalTargetTitle">친구에게 선물 보내기</span></h3>
+        <button id="btnCloseSendGift" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="gift-modal-body">
+        <!-- Target User & Sender Points Card -->
+        <div class="gift-user-summary-card">
+          <div id="giftTargetAvatar" class="composite-avatar" style="width: 48px; height: 48px;"></div>
+          <div class="gift-target-info">
+            <div id="giftTargetName" class="gift-name-text">친구</div>
+            <div id="giftTargetGrade" class="gift-grade-text">중학교 2학년</div>
+          </div>
+          <div class="gift-my-points-box">
+            <span class="points-label">내 보유 포인트</span>
+            <span id="giftMyPointsDisplay" class="points-value">500P</span>
+          </div>
+        </div>
+
+        <!-- Gift Categories Tab -->
+        <div class="gift-category-tabs">
+          <button id="tabGiftItems" class="gift-cat-tab active" type="button">🎮 퀴즈 필수 아이템</button>
+          <button id="tabGiftSocial" class="gift-cat-tab" type="button">🍰 감성 & 축하 선물</button>
+        </div>
+
+        <!-- Gift Cards Grid -->
+        <div id="giftCatalogGrid" class="gift-catalog-grid">
+          <!-- Dynamically populated gift cards -->
+        </div>
+
+        <!-- Custom Message & Quick Chips -->
+        <div class="gift-message-section">
+          <label for="giftCustomMessage" class="gift-msg-label">💌 함께 전할 응원 카드 한마디</label>
+          <div class="gift-chips-scroll">
+            <button type="button" class="gift-chip" data-text="오늘도 힘차게 파이팅! 🍀">오늘도 파이팅! 🍀</button>
+            <button type="button" class="gift-chip" data-text="항상 응원해요! 힘내세요 💖">응원해요! 💖</button>
+            <button type="button" class="gift-chip" data-text="선물 받고 만점 가자! 🚀">만점 가자! 🚀</button>
+            <button type="button" class="gift-chip" data-text="고마운 마음을 담았어요! ✨">고마워요! ✨</button>
+          </div>
+          <input type="text" id="giftCustomMessage" class="gift-msg-input" maxlength="60" placeholder="선물과 함께 전할 따뜻한 한마디를 적어보세요...">
+        </div>
+      </div>
+
+      <div class="modal-footer gift-modal-footer">
+        <button id="btnCancelSendGift" class="sub-action-btn" type="button">취소</button>
+        <button id="btnSubmitSendGift" class="main-action-btn" type="button" disabled>
+          <span id="btnSubmitGiftText">선물을 선택해주세요</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
        MODAL 15: PHOTO LIGHTBOX & FULLSCREEN VIEWER (24h Expiry)
        ============================================================ -->
   <div id="modalPhotoLightbox" class="modal-overlay">
@@ -1444,10 +1589,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.2.0"></script>
-  <script src="idiom_questions.js?v=3.2.0"></script>
-  <script src="hanja_questions.js?v=3.2.0"></script>
-  <script src="english_questions.js?v=3.2.0"></script>
-  <script src="app.js?v=3.2.0"></script>
+  <script src="questions.js?v=3.3.0"></script>
+  <script src="idiom_questions.js?v=3.3.0"></script>
+  <script src="hanja_questions.js?v=3.3.0"></script>
+  <script src="english_questions.js?v=3.3.0"></script>
+  <script src="stickers.js?v=3.3.0"></script>
+  <script src="app.js?v=3.3.0"></script>
 </body>
 </html>
