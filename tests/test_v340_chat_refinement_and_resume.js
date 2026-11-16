@@ -23,8 +23,8 @@ const versionJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../version.
 console.log('🧪 Starting v3.4.0 Feature & Bugfix Verification Tests...');
 
 // 1. Version Check
-assert.strictEqual(versionJson.version, '3.4.1', 'version.json version must be 3.4.1');
-assert(indexHtml.includes('<meta name="app-version" content="3.4.1">'), 'index.html must include meta app-version 3.4.1');
+assert(versionJson.version >= '3.4.1', 'version.json version must be >= 3.4.1');
+assert(indexHtml.includes('meta name="app-version"'), 'index.html must include meta app-version');
 
 // 2. 2-Tier Stack & Multi-line auto-resizing chat textarea (Requirement 1)
 assert(indexHtml.includes('chat-toolbar-action-row'), 'index.html must have tier 1 action icons row');

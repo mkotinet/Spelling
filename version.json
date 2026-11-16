@@ -1,6 +1,6 @@
 {
-  "version": "3.4.1",
-  "build": "20261116_1935",
-  "name": "하루맞춤 (Haru Matchum) - 2-Tier Chat Toolbar & Expanded Anime Stickers Edition",
-  "releaseNotes": "메시지 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 폭 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장, 유명 애니메이션(포켓몬, 짱구, 보노보노) 캐릭터 감정/행동 스티커 각 16종(총 64종) 대폭 탑재"
+  "version": "3.4.2",
+  "build": "20261116_1945",
+  "name": "하루맞춤 (Haru Matchum) - Mobile Layout Optimization & Concise Quiz Refinement Edition",
+  "releaseNotes": "모바일 과목 2x2 반응형 그리드 고도화, 전역 수평 오버플로우 방지 및 화면 이탈 방지, 메시지 모달 하단 전송 버튼 스티키 고정 및 이모지 팩 닫기 최적화, 퀴즈 빈칸 활용형 정답 100% 일치 및 문제 문장 간결 한국어 윤문 적용"
 }

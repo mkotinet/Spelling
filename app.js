@@ -2630,6 +2630,46 @@ class HaruMatchumApp {
     }
   }
 
+  formatConciseQuizPrompt(rawPrompt, q) {
+    if (!rawPrompt) return '빈칸에 알맞은 말을 골라보세요.';
+    // 1. Remove debugging question index like "(문항 #119)"
+    let cleaned = rawPrompt.replace(/\s*\([문항\s]*#\d+\)/g, '').trim();
+
+    // 2. Humanize / Concise Korean phrasing based on subject / question type
+    if (this.quizSubject === 'spelling' || (q && q.standardWord)) {
+      if (cleaned.includes('표준어 표기') || cleaned.includes('표준어 어휘')) {
+        return '빈칸에 올바른 표준어를 골라보세요.';
+      }
+      if (cleaned.includes('맞춤법') || cleaned.includes('규정')) {
+        return '빈칸에 알맞은 맞춤법을 골라보세요.';
+      }
+      return '빈칸에 들어갈 알맞은 낱말을 고르세요.';
+    } else if (this.quizSubject === 'idiom' || (q && q.meaning && !q.hanjaWord && !q.englishWord)) {
+      if (cleaned.includes('속담')) {
+        return '빈칸에 어울리는 속담을 골라보세요.';
+      }
+      if (cleaned.includes('관용')) {
+        return '빈칸에 알맞은 관용 표현을 고르세요.';
+      }
+      return '빈칸에 어울리는 속담·관용구를 고르세요.';
+    } else if (this.quizSubject === 'hanja' || (q && q.hanjaWord)) {
+      if (cleaned.includes('사자성어') || cleaned.includes('한자성어')) {
+        return '빈칸에 알맞은 사자성어를 골라보세요.';
+      }
+      return '빈칸에 들어갈 한자 표기를 고르세요.';
+    } else if (this.quizSubject === 'english' || (q && q.englishWord)) {
+      return '빈칸에 들어갈 알맞은 영단어를 고르세요.';
+    }
+
+    // Default fallback: remove leading noisy qualifiers to keep it concise and clean
+    cleaned = cleaned.replace(/^(다음\s*(문장의|글의|제시문의|영어\s*문장의)?\s*)/, '');
+    cleaned = cleaned.replace(/^문맥(의\s*어법과|\s*흐름에\s*비추어|\s*상)?\s*/, '');
+    if (!cleaned.startsWith('빈칸')) {
+      cleaned = '빈칸에 ' + cleaned;
+    }
+    return cleaned;
+  }
+
   renderCurrentQuestion() {
     const q = this.activeQuestions[this.currentIndex];
     const total = this.activeQuestions.length;
@@ -2642,7 +2682,7 @@ class HaruMatchumApp {
     document.getElementById('quizProgressFill').style.width = `${progressPercent}%`;
 
     // Category and combo
-    document.getElementById('quizCategory').textContent = `${q.category} · ${q.level}`;
+    document.getElementById('quizCategory').textContent = `${q.category} · ${q.level}${q.id ? ` (#${q.id})` : ''}`;
     const comboEl = document.getElementById('quizCombo');
     if (this.combo > 1) {
       comboEl.style.display = 'inline-block';
@@ -2652,7 +2692,8 @@ class HaruMatchumApp {
     }
 
     // Sentence & Blank highlighting
-    document.getElementById('quizPrompt').textContent = `Q${this.currentIndex + 1}. ${q.question}`;
+    const concisePrompt = this.formatConciseQuizPrompt(q.question, q);
+    document.getElementById('quizPrompt').textContent = `Q${this.currentIndex + 1}. ${concisePrompt}`;
     let sentenceHtml = q.sentence || '';
 
     // English Voice Bar visibility & binding
