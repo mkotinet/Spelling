@@ -1595,6 +1595,8 @@ class HaruMatchumApp {
     // Auto-check version on app launch (with slight delay for network stabilization)
     if (typeof window !== 'undefined') {
       setTimeout(() => this.checkAppVersionUpdate(), 1200);
+      setTimeout(() => this.handleUrlNavigation(), 200);
+      window.addEventListener('popstate', () => this.handleUrlNavigation());
     }
   }
 
@@ -5233,6 +5235,16 @@ class HaruMatchumApp {
       }
     }
 
+    const cardEl = this.modalIncomingMessage.querySelector('.incoming-msg-card');
+    if (cardEl) {
+      cardEl.style.cursor = 'pointer';
+      cardEl.title = '탭하여 대화창으로 이동 💬';
+      cardEl.onclick = (e) => {
+        if (e.target && e.target.id === 'incomingPhotoImg') return;
+        this.replyToIncomingMessage();
+      };
+    }
+
     this.modalIncomingMessage.classList.add('active');
     try {
       if (typeof sfx !== 'undefined' && typeof sfx.applause === 'function') {
@@ -5276,15 +5288,17 @@ class HaruMatchumApp {
 
     if (msg) {
       const senderUser = {
-        name: msg.fromName,
+        name: msg.fromName || msg.fromUsername,
         username: msg.fromUsername,
         avatar: msg.fromAvatar,
         avatarAccessories: msg.fromAccessories || {},
         grade: '친구'
       };
       setTimeout(() => {
-        this.openSendMessageModal(senderUser);
-      }, 200);
+        // v3.5.2: 알림 팝업에서 이동 시 쪽지창이 아닌 실시간 대화창(채팅창)으로 직행!
+        this.openChatAppModal();
+        this.enterChatRoom(null, senderUser);
+      }, 150);
     }
   }
 
@@ -5465,8 +5479,9 @@ class HaruMatchumApp {
         if (replyBtn) {
           replyBtn.onclick = () => {
             this.closeInboxModal();
-            this.openSendMessageModal({
-              name: m.fromName,
+            this.openChatAppModal();
+            this.enterChatRoom(null, {
+              name: m.fromName || m.fromUsername,
               username: m.fromUsername,
               avatar: m.fromAvatar,
               avatarAccessories: m.fromAccessories || {},
@@ -5501,9 +5516,19 @@ class HaruMatchumApp {
         this.swRegistration = reg;
         console.log('[PWA] Service Worker registered with scope:', reg.scope);
 
-        // Listen for foreground push messages
+        // Listen for foreground push messages & notification clicks (v3.5.2)
         navigator.serviceWorker.addEventListener('message', (event) => {
-          if (event.data && event.data.type === 'HARU_PUSH_RECEIVED') {
+          if (!event.data) return;
+
+          if (event.data.type === 'OPEN_CHAT' || event.data.type === 'OPEN_INBOX') {
+            console.log('[PWA] Notification Click -> Direct Open Chat:', event.data);
+            const roomId = event.data.roomId;
+            const withUser = event.data.withUser;
+            this.openChatAppModal();
+            if (roomId || withUser) {
+              setTimeout(() => this.enterChatRoom(roomId, withUser), 120);
+            }
+          } else if (event.data.type === 'HARU_PUSH_RECEIVED') {
             console.log('[PWA] Foreground Push Received:', event.data.payload);
             if (sfx && typeof sfx.notification === 'function') {
               sfx.notification();
@@ -5518,6 +5543,40 @@ class HaruMatchumApp {
 
     // 3. Update initial push status in UI
     this.updatePushNotificationUI();
+  }
+
+  // ============================================================
+  // v3.5.2 URL & NOTIFICATION ROUTER: Direct to Chat Window
+  // ============================================================
+  handleUrlNavigation() {
+    try {
+      if (typeof window === 'undefined' || !window.location || !window.location.search) return;
+      const params = new URLSearchParams(window.location.search);
+      const open = params.get('open');
+      const openChat = params.get('openChat');
+      const openInbox = params.get('openInbox');
+      const roomId = params.get('roomId');
+      const withUser = params.get('withUser');
+
+      const isChatTarget = open === 'chat' || openChat === '1' || open === 'inbox' || openInbox === '1' || Boolean(roomId) || Boolean(withUser);
+
+      if (isChatTarget) {
+        console.log('[Nav] Opening real-time chat directly from notification/URL:', { open, roomId, withUser });
+        setTimeout(() => {
+          this.openChatAppModal();
+          if (roomId || withUser) {
+            setTimeout(() => this.enterChatRoom(roomId, withUser), 150);
+          }
+        }, 200);
+
+        try {
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        } catch (e) {}
+      }
+    } catch (err) {
+      console.warn('[URL Nav] Parameter check error:', err);
+    }
   }
 
   openPwaGuideModal() {
@@ -7683,7 +7742,8 @@ class HaruMatchumApp {
         if (msgBtn) {
           msgBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.openSendMessageModal(user);
+            this.openChatAppModal();
+            this.enterChatRoom(null, user);
           });
         }
       }

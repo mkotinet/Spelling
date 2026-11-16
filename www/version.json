@@ -1,6 +1,6 @@
 {
-  "version": "3.5.1",
-  "build": "20261116_2115",
-  "name": "하루맞춤 (Haru Matchum) - Minchae Jjanggu Cartoon Sticker Pack Edition",
-  "releaseNotes": "사용자 맞춤형 실사 기반 카툰 일러스트 '민채짱구(👧 민채짱구)' 신규 스티커 카테고리(총 20종) 신설, 상황별 재치 있는 대사 및 말풍선 자막 탑재, 메시지 대화창 1순위 노출 및 고화질 이미지 스티커 렌더러 지원"
+  "version": "3.5.2",
+  "build": "20261116_2155",
+  "name": "하루맞춤 (Haru Matchum) - Direct Chat on Notification Click Edition",
+  "releaseNotes": "메시지 알림(웹 푸시 알림, 인앱 팝업, 랭킹 메시지 버튼) 클릭 시 기존 메시지창(쪽지함) 대신 해당 상대방과의 실시간 대화창(채팅창)으로 즉시 직행하도록 라우팅 및 서비스워커 전면 개편"
 }

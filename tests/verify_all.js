@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.1">'), 'index.html must include meta app-version 3.5.1');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.2">'), 'index.html must include meta app-version 3.5.2');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.1', 'GET /api/version version must be 3.5.1');
+    assert.strictEqual(verRes.data.version, '3.5.2', 'GET /api/version version must be 3.5.2');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -519,6 +519,15 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('data-pack="minchae_jjanggu"'), 'index.html must include minchae_jjanggu tab');
     assert(appCode.includes('minchae_jjanggu'), 'app.js must reference minchae_jjanggu');
     assert(appCode.includes('chat-sticker-img-bubble'), 'app.js must render chat-sticker-img-bubble for image stickers');
+
+    // 30. v3.5.2 Direct Chat Window on Notification Click Verification
+    const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.2';"), 'sw.js must bump cache name');
+    assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
+    assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
+    assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
+    assert(appCode.includes('this.enterChatRoom(null, senderUser);'), 'app.js reply must open chat directly');
+    assert(indexHtml.includes('💬 대화창으로 이동'), 'index.html must label reply button as direct chat');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

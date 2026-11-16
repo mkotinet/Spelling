@@ -1113,24 +1113,27 @@ const server = http.createServer(async (req, res) => {
         hasPhoto: !!photoUrl
       });
 
-      // Web Push Background Notification Trigger (v2.9.14)
+      // Web Push Background Notification Trigger (v2.9.14 & v3.5.2)
       try {
         const targetUsernames = resolvedRecipients.map(r => r.username || r.name);
-        const pushTitle = `💌 ${sender.name || username}님의 새 메시지 도착!`;
+        const pushTitle = `💬 ${sender.name || username}님의 새 메시지 도착!`;
         const pushBody = photoUrl 
-          ? (rawContent ? `📷 [사진] ${rawContent}` : "📷 새로운 사진이 도착했습니다! (24시간 내 확인)")
-          : (rawContent || "새로운 응원 메시지가 도착했습니다!");
+          ? (rawContent ? `📷 [사진] ${rawContent}` : "📷 새로운 사진이 도착했습니다! (탭하여 대화창 열기)")
+          : (rawContent || "새로운 대화 메시지가 도착했습니다! (탭하여 대화창 열기)");
         
+        const targetChatUrl = `/?open=chat&withUser=${encodeURIComponent(username)}`;
         sendWebPushToUsers(targetUsernames, {
           title: pushTitle,
           body: pushBody,
           icon: "/public/icons/icon-192.png",
           badge: "/public/icons/badge-72.png",
-          url: "/?open=inbox",
-          tag: "haru-message-" + Date.now(),
+          url: targetChatUrl,
+          tag: "haru-chat-" + Date.now(),
           data: {
             fromUsername: username,
             fromName: sender.name || username,
+            withUser: username,
+            roomId: null,
             hasPhoto: !!photoUrl,
             timestamp: nowIso
           }
@@ -1580,6 +1583,7 @@ const server = http.createServer(async (req, res) => {
               roomId: targetRoomId,
               fromUsername: username,
               fromName: sender.name || username,
+              withUser: username,
               type: msgType,
               timestamp: nowIso
             }
@@ -1669,7 +1673,11 @@ const server = http.createServer(async (req, res) => {
           icon: "/public/icons/icon-192.png",
           badge: "/public/icons/badge-72.png",
           url: `/?open=chat&roomId=${encodeURIComponent(newRoomId)}`,
-          tag: "haru-group-invite-" + Date.now()
+          tag: "haru-group-invite-" + Date.now(),
+          data: {
+            roomId: newRoomId,
+            fromUsername: username
+          }
         }).catch(err => console.warn("[Web Push] Group invite push error:", err.message));
       }
 
@@ -1791,7 +1799,11 @@ const server = http.createServer(async (req, res) => {
         icon: "/public/icons/icon-192.png",
         badge: "/public/icons/badge-72.png",
         url: `/?open=chat&roomId=${encodeURIComponent(effectiveRoomId)}`,
-        tag: "haru-invite-" + Date.now()
+        tag: "haru-invite-" + Date.now(),
+        data: {
+          roomId: effectiveRoomId,
+          fromUsername: username
+        }
       }).catch(err => console.warn("[Web Push] Invite push error:", err.message));
 
       return sendJSON(res, 201, {
@@ -1956,6 +1968,7 @@ const server = http.createServer(async (req, res) => {
           data: {
             roomId: roomId,
             fromUsername: username,
+            withUser: username,
             giftId: gift.id,
             timestamp: nowIso
           }
@@ -2106,10 +2119,10 @@ const server = http.createServer(async (req, res) => {
 
       const testPayload = {
         title: "🔔 [하루맞춤] 푸시 알림 테스트 성공!",
-        body: "웹 푸시 알림과 알림 사운드가 정상 작동합니다! 💌✨",
+        body: "웹 푸시 알림과 알림 사운드가 정상 작동합니다! 탭하면 대화창이 열립니다 💬✨",
         icon: "/public/icons/icon-192.png",
         badge: "/public/icons/badge-72.png",
-        url: "/?open=inbox",
+        url: "/?open=chat",
         tag: "haru-test-" + Date.now(),
         data: {
           test: true,
