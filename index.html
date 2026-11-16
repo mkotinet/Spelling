@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.4.0">
+  <meta name="app-version" content="3.4.1">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1308,21 +1308,43 @@
           <button id="btnCancelChatPhoto" class="btn-cancel-preview" type="button">✕</button>
         </div>
 
-        <!-- Chat Input Toolbar (Fixed at bottom) -->
+        <!-- Chat Input Toolbar (Fixed at bottom, 2-Tier Stack) -->
         <div class="chat-input-toolbar">
           <input type="file" id="chatFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display: none;">
-          <button id="btnChatAttachPhoto" class="chat-tool-btn" type="button" title="사진 첨부">📷</button>
-          <button id="btnChatOpenGift" class="chat-tool-btn" type="button" title="선물 보내기">🎁</button>
-          <button id="btnChatToggleSticker" class="chat-tool-btn" type="button" title="귀여운 스티커 팩">🎀</button>
-          <button id="btnChatToggleEmoji" class="chat-tool-btn" type="button" title="이모티콘">😀</button>
-
-          <div class="chat-textarea-wrapper">
-            <textarea id="chatInputText" class="chat-textarea" rows="1" maxlength="300" placeholder="메시지를 입력하세요..."></textarea>
+          
+          <!-- Tier 1: Action Icons Row (Top) -->
+          <div class="chat-toolbar-action-row">
+            <div class="chat-toolbar-icons-group">
+              <button id="btnChatAttachPhoto" class="chat-tool-btn" type="button" title="사진 첨부">
+                <span class="tool-icon">📷</span>
+                <span class="tool-btn-label">사진</span>
+              </button>
+              <button id="btnChatOpenGift" class="chat-tool-btn" type="button" title="선물 보내기">
+                <span class="tool-icon">🎁</span>
+                <span class="tool-btn-label">선물</span>
+              </button>
+              <button id="btnChatToggleSticker" class="chat-tool-btn" type="button" title="귀여운 스티커 팩">
+                <span class="tool-icon">🎀</span>
+                <span class="tool-btn-label">스티커</span>
+              </button>
+              <button id="btnChatToggleEmoji" class="chat-tool-btn" type="button" title="이모티콘">
+                <span class="tool-icon">😀</span>
+                <span class="tool-btn-label">이모지</span>
+              </button>
+            </div>
+            <div class="chat-input-counter" id="chatCharCounter">0/300</div>
           </div>
 
-          <button id="btnChatSend" class="btn-chat-send" type="button" aria-label="메시지 전송">
-            <span class="send-icon">🚀</span>
-          </button>
+          <!-- Tier 2: Full-Width Input & Send Row (Bottom) -->
+          <div class="chat-toolbar-input-row">
+            <div class="chat-textarea-wrapper">
+              <textarea id="chatInputText" class="chat-textarea" rows="1" maxlength="300" placeholder="따뜻한 메시지를 입력하세요..."></textarea>
+            </div>
+
+            <button id="btnChatSend" class="btn-chat-send" type="button" aria-label="메시지 전송">
+              <span class="send-icon">🚀</span>
+            </button>
+          </div>
         </div>
 
         <!-- Slide-up Sticker & Emoji Drawer (Inside modal bottom) -->
@@ -1370,11 +1392,11 @@
 
         <!-- Gift Categories Tab -->
         <div class="gift-category-tabs">
-          <button id="tabGiftAll" class="gift-cat-tab active" type="button" data-cat="all">🌟 전체 선물</button>
-          <button id="tabGiftItems" class="gift-cat-tab" type="button" data-cat="game">🎮 퀴즈 아이템</button>
-          <button id="tabGiftCafe" class="gift-cat-tab" type="button" data-cat="cafe">☕ 카페·디저트</button>
-          <button id="tabGiftFood" class="gift-cat-tab" type="button" data-cat="food">🍗 치킨·버거</button>
-          <button id="tabGiftStore" class="gift-cat-tab" type="button" data-cat="store">🎁 편의점·쇼핑</button>
+          <button id="tabGiftAll" class="gift-cat-tab active" type="button" data-cat="all" onclick="window.haruApp.selectGiftCategory('all')">🌟 전체 선물</button>
+          <button id="tabGiftItems" class="gift-cat-tab" type="button" data-cat="game" onclick="window.haruApp.selectGiftCategory('game')">🎮 퀴즈 아이템</button>
+          <button id="tabGiftCafe" class="gift-cat-tab" type="button" data-cat="cafe" onclick="window.haruApp.selectGiftCategory('cafe')">☕ 카페·디저트</button>
+          <button id="tabGiftFood" class="gift-cat-tab" type="button" data-cat="food" onclick="window.haruApp.selectGiftCategory('food')">🍗 치킨·버거</button>
+          <button id="tabGiftStore" class="gift-cat-tab" type="button" data-cat="store" onclick="window.haruApp.selectGiftCategory('store')">🎁 편의점·쇼핑</button>
         </div>
 
         <!-- Gift Cards Grid -->

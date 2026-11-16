@@ -5735,18 +5735,26 @@ class HaruMatchumApp {
     const btnChatSend = document.getElementById('btnChatSend');
     if (btnChatSend) btnChatSend.addEventListener('click', () => this.submitChatMessage());
 
-    // Auto-resizing multi-line textarea with comfortable height (v3.4.0)
+    // Auto-resizing multi-line textarea with 1~4 lines support (v3.4.0)
     if (this.chatInputText) {
-      this.chatInputText.addEventListener('input', () => {
-        this.chatInputText.style.height = 'auto';
-        this.chatInputText.style.height = Math.min(this.chatInputText.scrollHeight, 140) + 'px';
-      });
+      const resizeChatInput = () => {
+        const el = this.chatInputText;
+        if (!el) return;
+        el.style.height = 'auto';
+        // 1 line ~24px, 2 lines ~48px, 3 lines ~72px, 4 lines ~96px (max 4 lines)
+        const targetHeight = Math.min(Math.max(el.scrollHeight, 24), 96);
+        el.style.height = targetHeight + 'px';
+        const counter = document.getElementById('chatCharCounter');
+        if (counter) counter.textContent = `${el.value.length}/300`;
+      };
+      this.chatInputText.addEventListener('input', resizeChatInput);
       this.chatInputText.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           this.submitChatMessage();
         }
       });
+      this.resizeChatInput = resizeChatInput;
     }
 
     const btnChatAttachPhoto = document.getElementById('btnChatAttachPhoto');
@@ -5831,6 +5839,12 @@ class HaruMatchumApp {
 
     this.modalChatApp.classList.add('active');
     sfx.combo();
+
+    if (this.chatInputText) {
+      this.chatInputText.value = '';
+      if (this.resizeChatInput) this.resizeChatInput();
+      else this.chatInputText.style.height = '24px';
+    }
 
     if (targetUser) {
       const uName = targetUser.username || targetUser.name;
@@ -6302,7 +6316,8 @@ class HaruMatchumApp {
       if (res.ok && data.success && data.message) {
         if (inputEl) {
           inputEl.value = '';
-          inputEl.style.height = 'auto'; // Reset auto-expanded height after send (v3.4.0)
+          if (this.resizeChatInput) this.resizeChatInput();
+          else inputEl.style.height = '24px';
         }
         this.clearChatAttachedPhoto();
         this.cachedChatThreadMessages.push(data.message);
@@ -6364,7 +6379,7 @@ class HaruMatchumApp {
 
     if (nextOpen) {
       this.chatStickerDrawer.style.display = 'flex';
-      const targetPack = initialPack || this.activeStickerPack || 'haru_friends';
+      const targetPack = initialPack || this.activeStickerPack || 'pokemon_friends';
       document.querySelectorAll('.sticker-pack-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.pack === targetPack);
       });
@@ -6374,7 +6389,7 @@ class HaruMatchumApp {
     }
   }
 
-  renderStickerGrid(packId = 'haru_friends') {
+  renderStickerGrid(packId = 'pokemon_friends') {
     this.activeStickerPack = packId;
     const grid = document.getElementById('chatStickerGrid');
     if (!grid) return;
@@ -6462,6 +6477,14 @@ class HaruMatchumApp {
   closeSendGiftModal() {
     if (this.modalSendGift) this.modalSendGift.classList.remove('active');
     this.selectedGiftItem = null;
+  }
+
+  selectGiftCategory(cat) {
+    document.querySelectorAll('.gift-cat-tab').forEach(t => {
+      const match = (t.dataset.cat || t.getAttribute('data-cat')) === cat;
+      t.classList.toggle('active', match);
+    });
+    this.renderGiftCatalog(cat);
   }
 
   async renderGiftCatalog(category = 'all') {

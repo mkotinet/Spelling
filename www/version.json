@@ -1,6 +1,6 @@
 {
-  "version": "3.4.0",
-  "build": "20261116_1915",
-  "name": "하루맞춤 (Haru Matchum) - Smart Resume, Auto-Resize Chat & Brand Parody Gifts Edition",
-  "releaseNotes": "메시지 입력창 멀티라인 자동 확장, 퀴즈 직전 라운드 스마트 이어하기, 대화창 초기 스크롤 모션 제거 & 대화 압축 보관 아코디언, 포켓몬/짱구/보노보노 유명 애니메이션 패러디 감정 스티커, 투쌈플레이스/스타밥스 등 27종 한국 주요 브랜드 패러디 선물 시스템 탑재"
+  "version": "3.4.1",
+  "build": "20261116_1935",
+  "name": "하루맞춤 (Haru Matchum) - 2-Tier Chat Toolbar & Expanded Anime Stickers Edition",
+  "releaseNotes": "메시지 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 폭 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장, 유명 애니메이션(포켓몬, 짱구, 보노보노) 캐릭터 감정/행동 스티커 각 16종(총 64종) 대폭 탑재"
 }

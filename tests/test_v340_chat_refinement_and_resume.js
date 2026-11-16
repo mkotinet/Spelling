@@ -23,14 +23,18 @@ const versionJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../version.
 console.log('🧪 Starting v3.4.0 Feature & Bugfix Verification Tests...');
 
 // 1. Version Check
-assert.strictEqual(versionJson.version, '3.4.0', 'version.json version must be 3.4.0');
-assert(indexHtml.includes('<meta name="app-version" content="3.4.0">'), 'index.html must include meta app-version 3.4.0');
+assert.strictEqual(versionJson.version, '3.4.1', 'version.json version must be 3.4.1');
+assert(indexHtml.includes('<meta name="app-version" content="3.4.1">'), 'index.html must include meta app-version 3.4.1');
 
-// 2. Multi-line auto-resizing chat textarea (Requirement 1)
-assert(appJs.includes('chatInputText.style.height = Math.min'), 'app.js must implement auto-resizing textarea on input');
-assert(styleCss.includes('.chat-textarea-wrapper'), 'style.css must style .chat-textarea-wrapper');
-assert(styleCss.includes('min-height: 28px'), 'style.css must have comfortable min-height for chat-textarea');
-assert(styleCss.includes('max-height: 140px'), 'style.css must allow multi-line height up to 140px for chat-textarea');
+// 2. 2-Tier Stack & Multi-line auto-resizing chat textarea (Requirement 1)
+assert(indexHtml.includes('chat-toolbar-action-row'), 'index.html must have tier 1 action icons row');
+assert(indexHtml.includes('chat-toolbar-input-row'), 'index.html must have tier 2 full-width input row');
+assert(indexHtml.includes('id="chatCharCounter"'), 'index.html must have chatCharCounter');
+assert(appJs.includes('chatInputText'), 'app.js must bind chatInputText');
+assert(appJs.includes('resizeChatInput'), 'app.js must implement resizeChatInput for 1~4 lines');
+assert(styleCss.includes('.chat-toolbar-action-row'), 'style.css must style .chat-toolbar-action-row');
+assert(styleCss.includes('.chat-toolbar-input-row'), 'style.css must style .chat-toolbar-input-row');
+assert(styleCss.includes('max-height: 96px'), 'style.css must limit height to 4 lines (96px)');
 
 // 3. Smart resume previous quiz round (Requirement 2)
 assert(indexHtml.includes('id="resumeQuizBanner"'), 'index.html must have resumeQuizBanner');
@@ -47,18 +51,14 @@ assert(appJs.includes('btn-load-more-chat'), 'app.js must support loading more o
 assert(appJs.includes('toggleChatArchive'), 'app.js must implement toggleChatArchive');
 assert(indexHtml.includes('id="btnChatToggleArchive"'), 'index.html must provide btnChatToggleArchive button');
 
-// 5. Famous Anime Parody Stickers (Requirement 4)
-assert(stickersJs.includes('pokemon_friends'), 'stickers.js must include pokemon_friends sticker pack');
-assert(stickersJs.includes('shinchan_friends'), 'stickers.js must include shinchan_friends sticker pack');
-assert(stickersJs.includes('healing_friends'), 'stickers.js must include healing_friends sticker pack');
-assert(stickersJs.includes('pika_happy'), 'stickers.js must include pika_happy sticker');
-assert(stickersJs.includes('shin_dance'), 'stickers.js must include shin_dance sticker');
-assert(stickersJs.includes('bono_sweat'), 'stickers.js must include bono_sweat sticker');
-assert(indexHtml.includes('data-pack="pokemon_friends"'), 'index.html must include pokemon_friends tab');
-assert(indexHtml.includes('data-pack="shinchan_friends"'), 'index.html must include shinchan_friends tab');
-assert(indexHtml.includes('data-pack="healing_friends"'), 'index.html must include healing_friends tab');
+// 5. Famous Anime Parody Stickers (16 stickers each, Requirement 4)
+const { STICKER_PACKS } = require('../stickers.js');
+assert.ok(STICKER_PACKS.pokemon_friends.stickers.length >= 15, 'pokemon_friends must have >= 15 stickers');
+assert.ok(STICKER_PACKS.shinchan_friends.stickers.length >= 15, 'shinchan_friends must have >= 15 stickers');
+assert.ok(STICKER_PACKS.healing_friends.stickers.length >= 15, 'healing_friends must have >= 15 stickers');
+assert.ok(STICKER_PACKS.popular_emojis.stickers.length >= 15, 'popular_emojis must have >= 15 stickers');
 
-// 6. Korean Brand Parody Gifts (Requirement 5)
+// 6. Korean Brand Parody Gifts & Tab Click Resilience (Requirement 5)
 assert(serverJs.includes('gift_twosome_cake'), 'server.js must include gift_twosome_cake (투쌈플레이스)');
 assert(serverJs.includes('gift_starbox_americano'), 'server.js must include gift_starbox_americano (스타밥스)');
 assert(serverJs.includes('gift_baskin_half'), 'server.js must include gift_baskin_half (배씨네라빈스)');
@@ -66,8 +66,9 @@ assert(serverJs.includes('gift_kyochon_combo'), 'server.js must include gift_kyo
 assert(serverJs.includes('gift_bbq_golden'), 'server.js must include gift_bbq_golden (비비큐)');
 assert(serverJs.includes('gift_baemin_voucher'), 'server.js must include gift_baemin_voucher (배달의민지)');
 assert(serverJs.includes('gift_oliveyoung_card'), 'server.js must include gift_oliveyoung_card (올리브형)');
-assert(indexHtml.includes('data-cat="cafe"'), 'index.html must include cafe category tab');
-assert(indexHtml.includes('data-cat="food"'), 'index.html must include food category tab');
+assert(indexHtml.includes('selectGiftCategory(\'cafe\')'), 'index.html must have inline onclick handler for cafe tab');
+assert(appJs.includes('selectGiftCategory(cat)'), 'app.js must implement selectGiftCategory');
+assert(styleCss.includes('#modalSendGift'), 'style.css must set z-index for modalSendGift');
 assert(indexHtml.includes('data-cat="store"'), 'index.html must include store category tab');
 
 console.log('✅ Static and Behavioral Unit Asserts Passed 100%!');

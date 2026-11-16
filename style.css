@@ -5003,34 +5003,63 @@ body.theme-english .quiz-sentence .quiz-blank {
   transform: translateY(-1px) scale(1.02);
 }
 
-/* Chat Input Toolbar */
+/* Chat Input Toolbar (v3.4.0 2-Tier Stack: Top Icons, Bottom Full-width Input) */
 .chat-input-toolbar {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 14px 12px;
   background: #ffffff;
   border-top: 1.5px solid #fce7f3;
   z-index: 10;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.chat-toolbar-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.chat-toolbar-icons-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .chat-tool-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 16px;
   background: #fdf2f8;
-  border: 1.5px solid #fbcfe8;
-  font-size: 1.15rem;
-  display: flex;
+  border: 1px solid #fbcfe8;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #db2777;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
   cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
 }
+.chat-tool-btn .tool-icon {
+  font-size: 0.95rem;
+}
+.chat-tool-btn .tool-btn-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 .chat-tool-btn:hover {
   background: #fce7f3;
-  transform: scale(1.08);
+  transform: translateY(-1px);
+}
+
+.chat-input-counter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
 .btn-chat-archive-quick {
@@ -5110,16 +5139,23 @@ body.theme-english .quiz-sentence .quiz-blank {
   transform: translateY(-1px);
 }
 
+.chat-toolbar-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
 .chat-textarea-wrapper {
   flex: 1;
   display: flex;
   align-items: center;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
-  border-radius: 22px;
+  border-radius: 20px;
   padding: 8px 14px;
-  min-height: 46px;
-  transition: all 0.2s;
+  min-height: 42px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .chat-textarea-wrapper:focus-within {
   border-color: #ec4899;
@@ -5133,13 +5169,16 @@ body.theme-english .quiz-sentence .quiz-blank {
   background: transparent;
   outline: none;
   font-family: inherit;
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   resize: none;
-  min-height: 28px;
-  max-height: 140px;
+  height: 24px;
+  min-height: 24px;
+  max-height: 96px; /* Exactly 4 lines limit (24px line height * 4) */
   line-height: 1.5;
   color: #1e293b;
   overflow-y: auto;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .btn-chat-send {
@@ -5207,7 +5246,7 @@ body.theme-english .quiz-sentence .quiz-blank {
 .chat-sticker-drawer {
   background: #ffffff;
   border-top: 2px solid #fbcfe8;
-  height: 240px;
+  height: 265px;
   display: flex;
   flex-direction: column;
   animation: slideUpDrawer 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -5301,8 +5340,12 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 /* ============================================================
-   SEND GIFT MODAL STYLES (v3.3.0)
+   SEND GIFT MODAL STYLES (v3.3.0 & v3.4.0)
    ============================================================ */
+#modalSendGift {
+  z-index: 250; /* Ensure gift modal appears strictly above chat app modal (z-index 100) */
+}
+
 .gift-modal-box {
   width: 95%;
   max-width: 480px;
@@ -5388,6 +5431,10 @@ body.theme-english .quiz-sentence .quiz-blank {
   border: 1.5px solid #e2e8f0;
   border-radius: 14px;
   cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   transition: all 0.2s;
 }
 .gift-cat-tab.active {

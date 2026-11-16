@@ -1,23 +1,23 @@
 # Graph Report - Spelling  (2026-11-16)
 
 ## Corpus Check
-- 144 files · ~4,765,133 words
+- 144 files · ~4,775,307 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 33 file(s) not represented in the graph (top: .xml 11, (none) 6, .properties 2)
 
 ## Summary
-- 1884 nodes · 3284 edges · 146 communities (108 shown, 38 thin omitted)
+- 1891 nodes · 3295 edges · 145 communities (114 shown, 31 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 149 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `05c4fd46`
+- Built from commit: `34be0070`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- .constructor
-- test_20000_questions_and_permutations.js
+- .save
+- ref_assert
 - build_english_bank.py
 - server.js
 - 📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)
@@ -48,15 +48,15 @@
 - test_game_items.js
 - 공통 운영 및 개발 지침 (Common Guidelines)
 - Review Focus
-- test_random_answer_distribution.js
-- ref_assert
+- hanja_questions.js
+- test_hanja_bank.js
 - test_v2910_whatsnew_and_messaging_fixes.js
 - test_v2913_emoji_picker_toggle_and_sticky_send_button.js
 - test_permutation_and_lazy_loading.js
 - test_v260_voice_and_concise_questions.js
 - test_server_compression.js
 - test_four_subjects_integration.js
-- ref_http
+- test_v2914_pwa_and_web_push.js
 - test_v299_korean_sentence_grammar_validator.js
 - QuestionSelectionHarness
 - test_server_logs.js
@@ -70,16 +70,17 @@
 - 17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)
 - test_v271_whats_new_modal.js
 - 11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)
+- test_leaderboard_clean.js
 - 13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)
 - test_v270_sound_shop_and_avatar.js
 - AppDelegate
 - test_v291_sd_body_and_blush_hat_fitting.js
 - test_v298_realtime_emoji_messaging.js
 - 📋 국어 맞춤법 퀴즈 프로그램 '하루맞춤' 기술 리포트 (Technical Report)
-- .constructor
+- .save
 - 7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)
 - www/app.js
-- .save
+- .explode
 - 8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)
 - 📱 하루맞춤(Haru Matchum) 모바일 앱(iOS & Android) 바이너리 릴리즈 & 설치 완벽 가이드
 - test_v295_rank_zoom_and_cute_accessories.js
@@ -91,7 +92,7 @@
 - .bindEvents
 - 23. v2.9.5 랭킹 상대방 착장 아바타 갤러리 팝업, 귀여운 아바타 24종 & 신규 코스튬 54종 대거 추가 및 안정성 최적화
 - test_v297_other_users_avatar_sync.js
-- .save
+- .explode
 - SoundEffects
 - SoundEffects
 - test_v330_chat_threads_and_gifts.js
@@ -129,30 +130,30 @@
 - www/hanja_questions.js
 - www/idiom_questions.js
 - www/questions.js
-- 5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)
+- recordAccessLog
 - test_v311_message_button_and_guest_experience.js
+- test_mode_toggle.js
 - test_dual_leaderboard.js
 - 26. v2.9.8 EmojiHub 무료 API 연동, 랭킹 아바타 1:1 실시간 응원 메시지 및 즉석 답신 시스템 탑재
 - manifest.json
 - www/manifest.json
-- .handleOptionSelect
-- .handleOptionSelect
+- 36. v3.2.0 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재
+- 40. v3.4.1 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 너비 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장 & 4대 캐릭터 팩 64종(각 16종) 대폭 확장
 - 39. v3.4.0 대화창 입력 편의성 개선, 퀴즈 스마트 이어하기, 대화 압축 보관 아코디언, 애니메이션 패러디 스티커 & 한국 브랜드 패러디 선물 대폭 탑재
 - test_v321_ui_and_grammar_refinement.js
 - 38. v3.3.0 카카오톡 스타일 연속 스레드형 대화방, 다자간 동시 광장 대화, 15종 아이템/선물 시스템 및 귀여운 대형 스티커 팩 탑재 기술레포트 (2026-11-16)
 - 35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)
 - 35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)
 - 35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)
-- stickers.js
 - 9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)
 - www/stickers.js
 - 12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)
 - 37. v3.2.1 모바일 UI/UX 최적화, 정답 빈칸 활용형 일치 및 질문 문장 전면 윤문·간결화 기술레포트 (2026-11-16)
 
 ## God Nodes (most connected - your core abstractions)
-1. `HaruMatchumApp` - 173 edges
-2. `HaruMatchumApp` - 171 edges
-3. `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v3.0)` - 41 edges
+1. `HaruMatchumApp` - 174 edges
+2. `HaruMatchumApp` - 172 edges
+3. `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v3.0)` - 42 edges
 4. `⏱️ 단계별 제작 및 고도화 타임라인` - 33 edges
 5. `server` - 25 edges
 6. `renderCompositeAvatar()` - 19 edges
@@ -176,11 +177,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (146 total, 38 thin omitted)
+## Communities (145 total, 31 thin omitted)
 
-### Community 1 - "test_20000_questions_and_permutations.js"
-Cohesion: 0.24
-Nodes (7): ENGLISH_QUESTION_BANK, assert, banks, targetLevels, assert, ids, levels
+### Community 0 - ".save"
+Cohesion: 0.12
+Nodes (3): DataManager, findAccessoryById(), getKSTDateString()
+
+### Community 1 - "ref_assert"
+Cohesion: 0.18
+Nodes (8): appJs, assert, fs, indexHtml, path, styleCss, assert, duplicateList
 
 ### Community 2 - "build_english_bank.py"
 Cohesion: 0.05
@@ -188,7 +193,7 @@ Nodes (8): build_english_bank(), get_hanja_level_data(), create_idiom_level_data
 
 ### Community 3 - "server.js"
 Cohesion: 0.10
-Nodes (32): crypto, DB_FILE, { execSync }, fs, generateToken(), getChatRoomId(), getClientIp(), getKSTDateString() (+24 more)
+Nodes (29): Task 1: Server Authentication & Access Logging System (`server.js`), crypto, DB_FILE, ensureUserIntegrity(), { execSync }, fs, generateToken(), getChatRoomId() (+21 more)
 
 ### Community 4 - "📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)"
 Cohesion: 0.10
@@ -255,8 +260,8 @@ Cohesion: 0.15
 Nodes (12): 10. 게이미피케이션 상태 동기화 및 랭킹 분리 무결성 원칙 (Gamification & Dual-Ranking Integrity), 11. Graphify 지식 그래프 연동 원칙 (Knowledge Graph Architecture), 1. 양방향 GitHub 형상 동기화 원칙 (Bidirectional Git Sync), 2. 기술레포트 및 히스토리 필수 반영 원칙 (Documentation Principle), 3. 네트워크 및 도메인 보안 연동 원칙, 4. 시간대(KST) 및 일일 갱신 기준 표준화 (Timezone & Midnight Rollover), 5. 모바일 웹앱 라이프사이클 및 백그라운드 복귀 보장 (Mobile Lifecycle), 6. 순수 실제 회원 기반 데이터 무결성 원칙 (No Mock Data in Production) (+4 more)
 
 ### Community 20 - "ref_path"
-Cohesion: 0.07
-Nodes (26): ASSET_FILES, EXTRA_DIRS, fs, path, ROOT_DIR, WWW_DIR, appJs, assert (+18 more)
+Cohesion: 0.09
+Nodes (19): ASSET_FILES, EXTRA_DIRS, fs, path, ROOT_DIR, WWW_DIR, assert, fs (+11 more)
 
 ### Community 21 - "test_mobile_auth_persistence.js"
 Cohesion: 0.23
@@ -302,13 +307,13 @@ Nodes (12): 10. 게이미피케이션 상태 동기화 및 랭킹 분리 무결�
 Cohesion: 0.22
 Nodes (8): Global Constraints, Haru Matchum v2.2.0 Gamification & Dual-Subject Leaderboard Implementation Plan, Review Focus, Task 1: Backend Data Model & Dual-Subject Leaderboard API, Task 2: Gamification Core Logic (Shields, 300P Streak Bonus, Checkpoint & Revive), Task 3: In-Game Items (50:50 Eraser, Heart Second Chance, 2x Booster), Task 4: Game Guide Modal & Dual Leaderboard UI, Task 5: End-to-End Integration, Docs, Docker Deployment & Live Verification
 
-### Community 32 - "test_random_answer_distribution.js"
-Cohesion: 0.33
-Nodes (4): assert, distribution, originalIndices, sampleQ
+### Community 32 - "hanja_questions.js"
+Cohesion: 0.14
+Nodes (11): HANJA_QUESTION_BANK, assert, banks, targetLevels, assert, ids, levels, assert (+3 more)
 
-### Community 33 - "ref_assert"
-Cohesion: 0.11
-Nodes (14): assert, bank, fs, hanjaFilePath, indexHtml, indexHtmlPath, path, assert (+6 more)
+### Community 33 - "test_hanja_bank.js"
+Cohesion: 0.25
+Nodes (7): assert, bank, fs, hanjaFilePath, indexHtml, indexHtmlPath, path
 
 ### Community 35 - "test_v2910_whatsnew_and_messaging_fixes.js"
 Cohesion: 0.09
@@ -320,11 +325,11 @@ Nodes (12): appCode, assert, footerIndex, fs, indexCode, path, ROOT_DIR, scrollB
 
 ### Community 37 - "test_permutation_and_lazy_loading.js"
 Cohesion: 0.16
-Nodes (11): IDIOM_QUESTION_BANK, assert, ids, levels, app, assert, levelRound201, mockEl (+3 more)
+Nodes (11): ENGLISH_QUESTION_BANK, assert, ids, levels, app, assert, levelRound201, mockEl (+3 more)
 
 ### Community 38 - "test_v260_voice_and_concise_questions.js"
 Cohesion: 0.16
-Nodes (11): HANJA_QUESTION_BANK, assert, ids, levels, assert, engine, fs, indexHtml (+3 more)
+Nodes (11): IDIOM_QUESTION_BANK, assert, ids, levels, assert, engine, fs, indexHtml (+3 more)
 
 ### Community 39 - "test_server_compression.js"
 Cohesion: 0.25
@@ -334,16 +339,16 @@ Nodes (6): assert, http, path, server, serverPath, zlib
 Cohesion: 0.20
 Nodes (8): assert, css, fs, html, http, path, server, serverPath
 
-### Community 41 - "ref_http"
-Cohesion: 0.13
-Nodes (15): appJsContent, appJsPath, assert, fs, http, path, srv, assert (+7 more)
+### Community 41 - "test_v2914_pwa_and_web_push.js"
+Cohesion: 0.28
+Nodes (8): assert, fs, http, httpRequest(), path, ROOT_DIR, runTests(), server
 
 ### Community 42 - "test_v299_korean_sentence_grammar_validator.js"
 Cohesion: 0.06
 Nodes (31): appCode, appPath, assert, fakeQ_aux, fakeQ_conj, fakeQ_idiom, fakeQ_noun, fs (+23 more)
 
 ### Community 44 - "test_server_logs.js"
-Cohesion: 0.28
+Cohesion: 0.24
 Nodes (8): assert, fs, http, path, request(), runTests(), server, serverPath
 
 ### Community 45 - "test_v260_mobile_version_check.js"
@@ -352,7 +357,7 @@ Nodes (11): appJs, assert, fs, http, indexHtml, path, ROOT_DIR, serverProc (+3 m
 
 ### Community 47 - "📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)"
 Cohesion: 0.15
-Nodes (13): 1.1 주요 고도화 요구사항, 1. 개요 및 고도화 배경, 28.1 결함 원인 분석 (RCA - Root Cause Analysis), 28.2 단위 테스트 및 종합 시스템 검증, 28. v2.9.10 What's New 모달 레이아웃 정상화 및 1:1 메시징 런타임 오류 완전 해결 보고, 2. 시스템 아키텍처 (v2.0.0), 36.1 요구사항 정의 및 플랫폼 제약 극복 (iOS/Android PWA Architecture), 36.2 아키텍처 및 구현 명세 (+5 more)
+Nodes (13): 1.1 주요 고도화 요구사항, 1. 개요 및 고도화 배경, 28.1 결함 원인 분석 (RCA - Root Cause Analysis), 28.2 단위 테스트 및 종합 시스템 검증, 28. v2.9.10 What's New 모달 레이아웃 정상화 및 1:1 메시징 런타임 오류 완전 해결 보고, 2. 시스템 아키텍처 (v2.0.0), 4. 엔드포인트 및 단위 테스트 검증 결과, 5.1 4대 과목 각 5,000문항 (총 20,000문항) 구축 (+5 more)
 
 ### Community 48 - "generate_idiom_5000.js"
 Cohesion: 0.12
@@ -382,6 +387,10 @@ Nodes (8): appJs, assert, BASE_DIR, fs, indexHtml, path, styleCss, versionJson
 Cohesion: 0.50
 Nodes (4): 11.1 문제 진단 및 필요성 (Problem & Needs), 11.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation), 11.3 검증 결과 (Verification Evidence), 11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)
 
+### Community 55 - "test_leaderboard_clean.js"
+Cohesion: 0.29
+Nodes (7): appJsContent, appJsPath, assert, fs, http, path, srv
+
 ### Community 56 - "13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)"
 Cohesion: 0.50
 Nodes (4): 13.1 장애 및 결함 원인 분석 (RCA: Root Cause Analysis), 13.2 해결 아키텍처 및 구현 명세 (Architecture & Implementation), 13.3 검증 결과 (Verification Evidence), 13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)
@@ -406,21 +415,25 @@ Nodes (14): appCode, appPath, assert, fs, http, indexCode, indexPath, path (+6 m
 Cohesion: 0.11
 Nodes (18): 1.1 배경, 1.2 핵심 개발 목표, 1. 프로젝트 개요 및 배경, 2. 시스템 아키텍처 (System Architecture v1.3.0), 3.1 사용자 경험 설계, 3.2 백엔드 RESTful API 엔드포인트 명세, 3.3 데이터 스키마 (`data/users.json`), 3. 간편 회원가입 및 멀티 디바이스 동기화 메커니즘 (+10 more)
 
+### Community 62 - ".save"
+Cohesion: 0.12
+Nodes (3): DataManager, findAccessoryById(), getKSTDateString()
+
 ### Community 63 - "7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)"
 Cohesion: 0.50
 Nodes (4): 7.1 문제점 진단 (RCA: Root Cause Analysis), 7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1), 7.2 해결 아키텍처 및 고도화 명세, 7.3 검증 결과 (Verification Evidence)
 
 ### Community 64 - "www/app.js"
-Cohesion: 0.14
-Nodes (12): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, englishVoice, findAccessoryById(), getHatClass(), getOutfitStyleInfo(), getShoesClass(), ITEM_PRICES (+4 more)
+Cohesion: 0.10
+Nodes (11): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, englishVoice, getHatClass(), getOutfitStyleInfo(), getShoesClass(), ITEM_PRICES, renderBlushLayer() (+3 more)
 
 ### Community 66 - "8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)"
 Cohesion: 0.50
 Nodes (4): 8.1 문제점 진단 (RCA: Root Cause Analysis), 8.2 해결 아키텍처 및 구현 명세, 8.3 검증 결과 (Verification Evidence), 8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)
 
 ### Community 67 - "📱 하루맞춤(Haru Matchum) 모바일 앱(iOS & Android) 바이너리 릴리즈 & 설치 완벽 가이드"
-Cohesion: 0.08
-Nodes (24): 🎯 1. 릴리즈 바이너리 직접 다운로드 (GitHub Releases v3.1.0), 🤖 2. 안드로이드(.apk) 스마트폰 설치 방법 ('패키지 파싱 오류' 완벽 해결), 🍎 3. 아이폰(.ipa) 및 iOS 즉시 설치 방법 (추천 순위별 3대 솔루션), 🛠️ 4. 로컬에서 바이너리 직접 빌드 및 재생성, 📄 기술 문서, 🌟 [방법 1] PC 없이 10초 만에 홈 화면 네이티브 앱 추가 (가장 추천! 0초 설치), 💻 [방법 2] Sideloadly 이용 (PC/Mac 연결 1분 설치 - IPA 직접 설치), 📲 [방법 3] Scarlet / TrollStore 이용 (PC 없이 아이폰 단독 IPA 설치) (+16 more)
+Cohesion: 0.07
+Nodes (25): 🎯 1. 릴리즈 바이너리 직접 다운로드 (GitHub Releases v3.1.0), 🤖 2. 안드로이드(.apk) 스마트폰 설치 방법 ('패키지 파싱 오류' 완벽 해결), 🍎 3. 아이폰(.ipa) 및 iOS 즉시 설치 방법 (추천 순위별 3대 솔루션), 🛠️ 4. 로컬에서 바이너리 직접 빌드 및 재생성, 📄 기술 문서, 🌟 [방법 1] PC 없이 10초 만에 홈 화면 네이티브 앱 추가 (가장 추천! 0초 설치), 💻 [방법 2] Sideloadly 이용 (PC/Mac 연결 1분 설치 - IPA 직접 설치), 📲 [방법 3] Scarlet / TrollStore 이용 (PC 없이 아이폰 단독 IPA 설치) (+17 more)
 
 ### Community 68 - "test_v295_rank_zoom_and_cute_accessories.js"
 Cohesion: 0.20
@@ -431,16 +444,16 @@ Cohesion: 0.17
 Nodes (11): appJs, appPath, assert, fs, html, htmlPath, http, path (+3 more)
 
 ### Community 71 - "⏱️ 단계별 제작 및 고도화 타임라인"
-Cohesion: 0.06
-Nodes (32): ensureUserIntegrity(), [2026-11-11] v1.3.0 클라우드 인증 및 시놀로지 NAS Portainer 이전, [2026-11-14] v2.1.0 ~ v2.2.3 게이미피케이션 및 모바일 UX 최적화, [2026-11-14] v2.1.0 사자성어 문장 괄호 빈칸 고도화 및 모바일 백그라운드 자정 자동 갱신, [2026-11-14] v2.1.1 정답 위치 동적 무작위화(Fisher-Yates 셔플) 및 8대 공통 지침 제정, [2026-11-14] v2.1.2 모바일 영구 로그인 세션 및 탄력적 인증 유지(Persistent Auth Session), [2026-11-14] v2.2.0 게이미피케이션(방패/보너스/부활/아이템) 및 맞춤법·한자 분리형 최고 라운드 랭킹 대규모 고도화, [2026-11-14] v2.2.1 2문제 기회/3문제 탈락 규칙 적용 및 귀여운 직관적 아이템 UI 고도화 (+24 more)
+Cohesion: 0.07
+Nodes (30): [2026-11-11] v1.3.0 클라우드 인증 및 시놀로지 NAS Portainer 이전, [2026-11-14] v2.1.0 ~ v2.2.3 게이미피케이션 및 모바일 UX 최적화, [2026-11-14] v2.1.0 사자성어 문장 괄호 빈칸 고도화 및 모바일 백그라운드 자정 자동 갱신, [2026-11-14] v2.1.1 정답 위치 동적 무작위화(Fisher-Yates 셔플) 및 8대 공통 지침 제정, [2026-11-14] v2.1.2 모바일 영구 로그인 세션 및 탄력적 인증 유지(Persistent Auth Session), [2026-11-14] v2.2.0 게이미피케이션(방패/보너스/부활/아이템) 및 맞춤법·한자 분리형 최고 라운드 랭킹 대규모 고도화, [2026-11-14] v2.2.1 2문제 기회/3문제 탈락 규칙 적용 및 귀여운 직관적 아이템 UI 고도화, [2026-11-14] v2.2.2 모바일 화면 맞춤(제목 수직 늘어짐 방지) 및 아이템 바 1열 고정 반응형 최적화 (+22 more)
 
 ### Community 72 - "22. v2.9.4 상점 홈 화면 복원, 아이폰(iOS Safari) 무음 모드 사운드 하이브리드 엔진 & 속담·관용구 랭킹 신설 기술 보고서"
 Cohesion: 0.20
 Nodes (10): 1) 네비게이션 탭 방어 및 상점 홈 뷰 안전 복원 파이프라인, 21.1 실서버 인프라 아키텍처 및 배포 메커니즘 점검, 21.2 배포 수행 및 RCA(Root Cause Analysis), 21.3 라이브 검증 결과 (Live Verification Evidence), 22.1 문제 정의 및 근본 원인 분석 (RCA: Root Cause Analysis), 22.2 해결 아키텍처 및 구현 내역, 22.4 시놀로지 NAS Portainer 실서버 배포 및 라이브 엔드포인트 검증, 22. v2.9.4 상점 홈 화면 복원, 아이폰(iOS Safari) 무음 모드 사운드 하이브리드 엔진 & 속담·관용구 랭킹 신설 기술 보고서 (+2 more)
 
 ### Community 73 - "app.js"
-Cohesion: 0.14
-Nodes (12): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, englishVoice, findAccessoryById(), getHatClass(), getOutfitStyleInfo(), getShoesClass(), ITEM_PRICES (+4 more)
+Cohesion: 0.10
+Nodes (11): ACCESSORY_DEFINITIONS, BADGE_DEFINITIONS, englishVoice, getHatClass(), getOutfitStyleInfo(), getShoesClass(), ITEM_PRICES, renderBlushLayer() (+3 more)
 
 ### Community 75 - "23. v2.9.5 랭킹 상대방 착장 아바타 갤러리 팝업, 귀여운 아바타 24종 & 신규 코스튬 54종 대거 추가 및 안정성 최적화"
 Cohesion: 0.33
@@ -479,8 +492,8 @@ Cohesion: 0.29
 Nodes (8): cleanupExpiredPhotos(), loadMessages(), saveMessages(), 29.1 요구사항 정의 및 엔지니어링 목표, 29.2 아키텍처 및 구현 명세, 29.3 단위 테스트 및 종합 E2E 검증 결과, 29. v2.9.11 1:1 메시지 실시간 사진 첨부 및 24시간(1일) 만료 자동 완전 삭제 기술 보고, [2026-11-15] v2.9.11 1:1 메시지 실시간 사진 첨부 및 24시간 자동 완전 삭제 개인정보 보호 엔진 탑재
 
 ### Community 89 - "test_v340_chat_refinement_and_resume.js"
-Cohesion: 0.18
-Nodes (10): appJs, assert, fs, http, indexHtml, path, serverJs, stickersJs (+2 more)
+Cohesion: 0.17
+Nodes (11): STICKER_PACKS, appJs, assert, fs, http, indexHtml, path, serverJs (+3 more)
 
 ### Community 90 - "15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트"
 Cohesion: 0.50
@@ -507,8 +520,8 @@ Cohesion: 0.13
 Nodes (14): androidManifest, appJs, assert, buildGradle, capConfig, fs, indexHtml, iosPlist (+6 more)
 
 ### Community 97 - "Review Focus"
-Cohesion: 0.17
-Nodes (11): Global Constraints, Review Focus, Task 1: Server Authentication & Access Logging System (`server.js`), Task 2: Leaderboard Real User Filtering & Dummy Peer Elimination (`app.js`, `server.js`), Task 3: Hanja Question Bank & Dictionary Deep Linking (`hanja_questions.js`, `index.html`), Task 4: UI Mode Switcher & Dual Theme Support (`index.html`, `style.css`, `app.js`), Task 5: 5-Question Round Progression & Endless Mode Mechanism (`app.js`, `index.html`, `style.css`), Task 6: User Profile Access History & Admin Audit Log Viewer Modal (`index.html`, `style.css`, `app.js`) (+3 more)
+Cohesion: 0.20
+Nodes (9): Global Constraints, Review Focus, Task 2: Leaderboard Real User Filtering & Dummy Peer Elimination (`app.js`, `server.js`), Task 3: Hanja Question Bank & Dictionary Deep Linking (`hanja_questions.js`, `index.html`), Task 4: UI Mode Switcher & Dual Theme Support (`index.html`, `style.css`, `app.js`), Task 5: 5-Question Round Progression & Endless Mode Mechanism (`app.js`, `index.html`, `style.css`), Task 6: User Profile Access History & Admin Audit Log Viewer Modal (`index.html`, `style.css`, `app.js`), Task 7: Comprehensive Integration Verification, GitHub Sync & Tech Documentation (+1 more)
 
 ### Community 98 - "19.2 해결 방안 및 구현 상세 (Implementation Details)"
 Cohesion: 0.25
@@ -550,13 +563,17 @@ Nodes (4): 30.1 요구사항 정의 및 엔지니어링 목표, 30.2 아키텍�
 Cohesion: 0.50
 Nodes (4): 32.1 고도화 배경 및 요구사항 정의, 32.2 아키텍처 및 해결 명세, 32.3 단위 테스트 및 종합 E2E 검증 결과, 32. v3.0.0 아이폰(iOS) & 안드로이드(Android) 하이브리드 모바일 앱 구축 및 설치 보안 사전 검증 기술 보고
 
-### Community 124 - "5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)"
-Cohesion: 0.50
-Nodes (4): 5.1 4대 과목 각 5,000문항 (총 20,000문항) 구축, 5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0), 5.2 1,000라운드 완전 무중복 순열 블록 슬라이싱 (Permutation Block Slicing), 5.3 성능 최적화 및 경량화 보장
+### Community 124 - "recordAccessLog"
+Cohesion: 0.38
+Nodes (7): getClientIp(), getKSTTime(), loadLogs(), recordAccessLog(), saveLogs(), 3.4 접속 감사 로그 및 보안 인가 체계, [2026-11-14] v2.0.0 한자 퀴즈, 연속 라운드, 클린 랭킹, 감사 로깅 대규모 고도화
 
 ### Community 125 - "test_v311_message_button_and_guest_experience.js"
 Cohesion: 0.14
 Nodes (13): appJs, appJsPath, assert, fs, http, indexHtml, indexHtmlPath, path (+5 more)
+
+### Community 126 - "test_mode_toggle.js"
+Cohesion: 0.29
+Nodes (6): appJs, assert, fs, indexHtml, path, styleCss
 
 ### Community 127 - "test_dual_leaderboard.js"
 Cohesion: 0.28
@@ -573,6 +590,14 @@ Nodes (13): background_color, categories, description, display, display_override
 ### Community 130 - "www/manifest.json"
 Cohesion: 0.14
 Nodes (13): background_color, categories, description, display, display_override, icons, id, name (+5 more)
+
+### Community 131 - "36. v3.2.0 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재"
+Cohesion: 0.50
+Nodes (4): 36.1 요구사항 정의 및 플랫폼 제약 극복 (iOS/Android PWA Architecture), 36.2 아키텍처 및 구현 명세, 36.3 단위 테스트 및 종합 E2E 검증 결과, 36. v3.2.0 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재
+
+### Community 132 - "40. v3.4.1 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 너비 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장 & 4대 캐릭터 팩 64종(각 16종) 대폭 확장"
+Cohesion: 0.50
+Nodes (4): 40.1 개발 배경 및 문제 정의 (사용자 3대 버그리포트/고도화), 40.2 주요 아키텍처 및 구현 내역, 40.3 단위 테스트 및 종합 E2E 검증 결과, 40. v3.4.1 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 너비 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장 & 4대 캐릭터 팩 64종(각 16종) 대폭 확장
 
 ### Community 133 - "39. v3.4.0 대화창 입력 편의성 개선, 퀴즈 스마트 이어하기, 대화 압축 보관 아코디언, 애니메이션 패러디 스티커 & 한국 브랜드 패러디 선물 대폭 탑재"
 Cohesion: 0.50
@@ -612,23 +637,23 @@ Nodes (4): 37.1 장애 및 개선 배경 (RCA), 37.2 아키텍처 및 해결 조
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `PackageDescription`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1127 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1129 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `HaruMatchumApp` connect `.bindEvents` to `.constructor`, `.startLevelDailyQuiz`, `.handleOptionSelect`, `test_permutation_and_lazy_loading.js`, `test_v260_voice_and_concise_questions.js`, `app.js`, `.save`, `SoundEffects`, `.showToastNotice`, `.initChatApp`?**
-  _High betweenness centrality (0.164) - this node is a cross-community bridge._
+- **Why does `HaruMatchumApp` connect `.bindEvents` to `.save`, `.startLevelDailyQuiz`, `test_permutation_and_lazy_loading.js`, `test_v260_voice_and_concise_questions.js`, `app.js`, `.explode`, `SoundEffects`, `.showToastNotice`?**
+  _High betweenness centrality (0.165) - this node is a cross-community bridge._
 - **What connects `PackageDescription` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `.save` be split into smaller, more focused modules?**
+  _Cohesion score 0.11875843454790823 - nodes in this community are weakly interconnected._
+- **Why does `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v3.0)` connect `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` to `26. v2.9.8 EmojiHub 무료 API 연동, 랭킹 아바타 1:1 실시간 응원 메시지 및 즉석 답신 시스템 탑재`, `36. v3.2.0 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재`, `40. v3.4.1 대화창 2단 툴바 분리(상단 액션 아이콘, 하단 전체 너비 입력창), 1~4줄 멀티라인 자동 리사이징, 선물 카테고리 탭 터치 무결성 보장 & 4대 캐릭터 팩 64종(각 16종) 대폭 확장`, `39. v3.4.0 대화창 입력 편의성 개선, 퀴즈 스마트 이어하기, 대화 압축 보관 아코디언, 애니메이션 패러디 스티커 & 한국 브랜드 패러디 선물 대폭 탑재`, `38. v3.3.0 카카오톡 스타일 연속 스레드형 대화방, 다자간 동시 광장 대화, 15종 아이템/선물 시스템 및 귀여운 대형 스티커 팩 탑재 기술레포트 (2026-11-16)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)`, `12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)`, `37. v3.2.1 모바일 UI/UX 최적화, 정답 빈칸 활용형 일치 및 질문 문장 전면 윤문·간결화 기술레포트 (2026-11-16)`, `27. v2.9.9 한국어 문장 검사 엔진(Grammar Validator) 구축 및 20,000제 정답 결합 비문 0건 전수 정밀 교정`, `17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)`, `11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)`, `13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)`, `7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)`, `8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)`, `📱 하루맞춤(Haru Matchum) 모바일 앱(iOS & Android) 바이너리 릴리즈 & 설치 완벽 가이드`, `22. v2.9.4 상점 홈 화면 복원, 아이폰(iOS Safari) 무음 모드 사운드 하이브리드 엔진 & 속담·관용구 랭킹 신설 기술 보고서`, `23. v2.9.5 랭킹 상대방 착장 아바타 갤러리 팝업, 귀여운 아바타 24종 & 신규 코스튬 54종 대거 추가 및 안정성 최적화`, `25. v2.9.7 다른 유저 아바타 실시간 양방향 동기화 완벽 복구, 랭킹 리스트 의상 미니 뱃지 표시, 서버 측 악세사리 유실 방지 가드 탑재`, `14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축`, `cleanupExpiredPhotos`, `15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트`, `31. v2.9.13 메시지 창 이모지 팩 닫기/토글 버튼 및 전송 버튼 하단 고정(Sticky Footer) 최적화 기술 보고`, `16. v2.8.0 상점 실시간 가상 피팅 미리보기, 150여 종 악세사리 & 마리오 코스튬 대확장, 질문지-정답 지능형 문맥 윤문 가드 엔진 구축 (2026-11-15)`, `3. 핵심 변경 상세 및 원인 분석 (RCA)`, `19.2 해결 방안 및 구현 상세 (Implementation Details)`, `20.2 해결 방안 및 구현 상세 (Implementation Details)`, `24. v2.9.6 아바타 꾸미기 랭킹 실시간 즉시 반영 및 동기화 무결성 고도화`, `18.2 해결 방안 및 구현 상세 (Implementation Details)`, `10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)`, `34. APK '패키지를 파싱하는 데 문제' 근본 원인 분석(RCA), 정식 Android SDK 컴파일·v2/v3 전자서명 적용 및 iOS 실체적 원터치 설치 솔루션 보고`, `33. v3.1.0 아이폰(.ipa) & 안드로이드(.apk) 정식 설치 바이너리 직접 빌드 및 GitHub Releases 버전업 배포 기술 보고`, `30. v2.9.12 메시지 및 사진 한 사람 이상 다중 수신자(다수 친구) 동시 발송 고도화 기술 보고`, `32. v3.0.0 아이폰(iOS) & 안드로이드(Android) 하이브리드 모바일 앱 구축 및 설치 보안 사전 검증 기술 보고`?**
+  _High betweenness centrality (0.112) - this node is a cross-community bridge._
 - **Should `build_english_bank.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05423728813559322 - nodes in this community are weakly interconnected._
-- **Why does `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v3.0)` connect `📋 국어 맞춤법 및 한자 퀴즈 프로그램 '하루맞춤' 기술레포트 (Technical Report v2.0)` to `26. v2.9.8 EmojiHub 무료 API 연동, 랭킹 아바타 1:1 실시간 응원 메시지 및 즉석 답신 시스템 탑재`, `39. v3.4.0 대화창 입력 편의성 개선, 퀴즈 스마트 이어하기, 대화 압축 보관 아코디언, 애니메이션 패러디 스티커 & 한국 브랜드 패러디 선물 대폭 탑재`, `38. v3.3.0 카카오톡 스타일 연속 스레드형 대화방, 다자간 동시 광장 대화, 15종 아이템/선물 시스템 및 귀여운 대형 스티커 팩 탑재 기술레포트 (2026-11-16)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `35. 메시지 버튼 무반응 런타임 오류 근본 원인 분석(RCA) 및 접근성·게스트 경험 고도화 (v3.1.1)`, `9. 매번 랜덤한 출제 순서 보장 및 미풀이 문제 최우선 선별 엔진 고도화 (v2.5.3)`, `12. 속담 및 관용구 종결어미 중복 충돌 전면 해소 및 런타임 자가 치유 가드 탑재 (v2.6.1)`, `37. v3.2.1 모바일 UI/UX 최적화, 정답 빈칸 활용형 일치 및 질문 문장 전면 윤문·간결화 기술레포트 (2026-11-16)`, `27. v2.9.9 한국어 문장 검사 엔진(Grammar Validator) 구축 및 20,000제 정답 결합 비문 0건 전수 정밀 교정`, `17. v2.9.0 동물의 숲 2.5등신 전신(Full-body) 아바타 시스템, 11개 확장 카테고리(의상/신발), 안경 듀얼핏 및 시그니처 착장감, 퀴즈 동반자 인터랙티브 애니메이션 고도화 기술 보고서 (2026-11-15)`, `11. 모바일 구버전 자동 감지 및 스마트 백그라운드 자동 새로고침 엔진 탑재 (v2.6.0)`, `13. v2.6.2 사용자 제보 3대 버그 완전 해결 (방패 설명 오기, 선택지 중복 0건 전수 정규화, 관형사형 정답 정합성 교정)`, `7. 20,000문항 문맥 연관성 및 의미적 추론성 전면 고도화 (v2.5.1)`, `8. 종결어미 충돌 해소, 레벨별 발문 차등화 및 방패 의사결정 시스템 고도화 (v2.5.2)`, `📱 하루맞춤(Haru Matchum) 모바일 앱(iOS & Android) 바이너리 릴리즈 & 설치 완벽 가이드`, `22. v2.9.4 상점 홈 화면 복원, 아이폰(iOS Safari) 무음 모드 사운드 하이브리드 엔진 & 속담·관용구 랭킹 신설 기술 보고서`, `23. v2.9.5 랭킹 상대방 착장 아바타 갤러리 팝업, 귀여운 아바타 24종 & 신규 코스튬 54종 대거 추가 및 안정성 최적화`, `25. v2.9.7 다른 유저 아바타 실시간 양방향 동기화 완벽 복구, 랭킹 리스트 의상 미니 뱃지 표시, 서버 측 악세사리 유실 방지 가드 탑재`, `14. [2026-11-15] v2.7.0 모바일 음성/TTS 언락, 문항 #4333 조사 정비, 랭킹 점수 정합성, 포인트 상점 & 22종 아바타 악세사리 꾸미기 및 고해상도 확대 갤러리 구축`, `cleanupExpiredPhotos`, `15. [2026-11-15] v2.7.1 업데이트 안내 팝업(What's New) 모달 및 '더 이상 보지 않기' 영구 저장 마이너 업데이트`, `31. v2.9.13 메시지 창 이모지 팩 닫기/토글 버튼 및 전송 버튼 하단 고정(Sticky Footer) 최적화 기술 보고`, `16. v2.8.0 상점 실시간 가상 피팅 미리보기, 150여 종 악세사리 & 마리오 코스튬 대확장, 질문지-정답 지능형 문맥 윤문 가드 엔진 구축 (2026-11-15)`, `3. 핵심 변경 상세 및 원인 분석 (RCA)`, `19.2 해결 방안 및 구현 상세 (Implementation Details)`, `20.2 해결 방안 및 구현 상세 (Implementation Details)`, `24. v2.9.6 아바타 꾸미기 랭킹 실시간 즉시 반영 및 동기화 무결성 고도화`, `18.2 해결 방안 및 구현 상세 (Implementation Details)`, `10. 퀴즈 질문 맥락 불일치 완전 해소(간결화) 및 영어 퀴즈 네이티브 음성(TTS) 엔진 탑재 (v2.6.0)`, `34. APK '패키지를 파싱하는 데 문제' 근본 원인 분석(RCA), 정식 Android SDK 컴파일·v2/v3 전자서명 적용 및 iOS 실체적 원터치 설치 솔루션 보고`, `33. v3.1.0 아이폰(.ipa) & 안드로이드(.apk) 정식 설치 바이너리 직접 빌드 및 GitHub Releases 버전업 배포 기술 보고`, `30. v2.9.12 메시지 및 사진 한 사람 이상 다중 수신자(다수 친구) 동시 발송 고도화 기술 보고`, `32. v3.0.0 아이폰(iOS) & 안드로이드(Android) 하이브리드 모바일 앱 구축 및 설치 보안 사전 검증 기술 보고`, `5. 20,000문항 대규모 확장 및 경량화 최적화 아키텍처 (v2.5.0)`?**
-  _High betweenness centrality (0.107) - this node is a cross-community bridge._
-- **Should `server.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.10160427807486631 - nodes in this community are weakly interconnected._
 - **Why does `cleanupExpiredPhotos()` connect `cleanupExpiredPhotos` to `test_v2911_message_photo_and_24h_expiry.js`, `server.js`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Should `📜 하루맞춤 (Haru Matchum) 개발 히스토리 및 변경 로그 (Changelog)` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Should `server.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.0989247311827957 - nodes in this community are weakly interconnected._
