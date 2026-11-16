@@ -5947,7 +5947,7 @@ class HaruMatchumApp {
       tab.addEventListener('click', (e) => {
         document.querySelectorAll('.sticker-pack-tab').forEach(t => t.classList.remove('active'));
         e.currentTarget.classList.add('active');
-        this.renderStickerGrid(e.currentTarget.dataset.pack || 'pokemon_friends');
+        this.renderStickerGrid(e.currentTarget.dataset.pack || 'minchae_jjanggu');
       });
     });
 
@@ -6351,11 +6351,21 @@ class HaruMatchumApp {
         `;
       } else if (msg.type === 'sticker' && msg.sticker) {
         let stickerSvg = msg.sticker.svgData || '';
-        if (!stickerSvg && typeof STICKER_PACKS !== 'undefined' && STICKER_PACKS[msg.sticker.packId]) {
+        let stickerImg = msg.sticker.imageUrl || '';
+        if (!stickerSvg && !stickerImg && typeof STICKER_PACKS !== 'undefined' && STICKER_PACKS[msg.sticker.packId]) {
           const found = STICKER_PACKS[msg.sticker.packId].stickers.find(s => s.id === msg.sticker.stickerId);
-          if (found) stickerSvg = found.svg;
+          if (found) {
+            stickerSvg = found.svg || '';
+            stickerImg = found.imageUrl || '';
+          }
         }
-        if (stickerSvg) {
+        if (stickerImg) {
+          bodyHtml = `
+            <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')">
+              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy" style="max-width:200px;max-height:200px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,0.3);display:block;cursor:pointer;">
+            </div>
+          `;
+        } else if (stickerSvg) {
           bodyHtml = `<div class="chat-sticker-bubble">${stickerSvg}</div>`;
         } else if (msg.sticker.char) {
           bodyHtml = `<div class="chat-sticker-bubble" style="font-size: 4rem;">${msg.sticker.char}</div>`;
@@ -6648,7 +6658,7 @@ class HaruMatchumApp {
 
     if (nextOpen) {
       this.chatStickerDrawer.style.display = 'flex';
-      const targetPack = initialPack || this.activeStickerPack || 'pokemon_friends';
+      const targetPack = initialPack || this.activeStickerPack || 'minchae_jjanggu';
       document.querySelectorAll('.sticker-pack-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.pack === targetPack);
       });
@@ -6658,7 +6668,7 @@ class HaruMatchumApp {
     }
   }
 
-  renderStickerGrid(packId = 'pokemon_friends') {
+  renderStickerGrid(packId = 'minchae_jjanggu') {
     this.activeStickerPack = packId;
     const grid = document.getElementById('chatStickerGrid');
     if (!grid) return;
@@ -6676,7 +6686,9 @@ class HaruMatchumApp {
       btn.className = 'sticker-item-btn';
       btn.title = s.name;
 
-      if (s.svg) {
+      if (s.imageUrl) {
+        btn.innerHTML = `<img src="${s.imageUrl}" alt="${s.name}" class="sticker-item-img" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"><span class="sticker-item-name">${s.name}</span>`;
+      } else if (s.svg) {
         btn.innerHTML = `${s.svg}<span class="sticker-item-name">${s.name}</span>`;
       } else if (s.char) {
         btn.innerHTML = `<span style="font-size: 2.2rem;">${s.char}</span><span class="sticker-item-name">${s.name}</span>`;
@@ -6689,6 +6701,7 @@ class HaruMatchumApp {
             packId: pack.id,
             stickerId: s.id,
             name: s.name,
+            imageUrl: s.imageUrl || null,
             svgData: s.svg || null,
             char: s.char || null
           }

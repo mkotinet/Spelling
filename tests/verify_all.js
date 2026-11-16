@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.0">'), 'index.html must include meta app-version 3.5.0');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.1">'), 'index.html must include meta app-version 3.5.1');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.0', 'GET /api/version version must be 3.5.0');
+    assert.strictEqual(verRes.data.version, '3.5.1', 'GET /api/version version must be 3.5.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -506,6 +506,19 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(serverCode.includes('/api/chat/create-group'), 'server.js must implement /api/chat/create-group');
     assert(serverCode.includes('/api/chat/invite'), 'server.js must implement /api/chat/invite');
     assert(serverCode.includes('toUsername.toLowerCase()'), 'server.js must provide case-insensitive user fallback in send-gift');
+
+    // 29. v3.5.1 Minchae Jjanggu Sticker Pack & Image Renderer Verification
+    const { STICKER_PACKS } = require('../stickers.js');
+    assert(STICKER_PACKS.minchae_jjanggu, 'stickers.js must define minchae_jjanggu pack');
+    assert.strictEqual(STICKER_PACKS.minchae_jjanggu.stickers.length, 20, 'minchae_jjanggu pack must contain exactly 20 stickers');
+    for (let i = 1; i <= 20; i++) {
+      const pad = String(i).padStart(2, '0');
+      const stickerFilePath = path.join(__dirname, `../public/stickers/minchae/minchae_${pad}.png`);
+      assert(fs.existsSync(stickerFilePath), `Sticker image minchae_${pad}.png must exist`);
+    }
+    assert(indexHtml.includes('data-pack="minchae_jjanggu"'), 'index.html must include minchae_jjanggu tab');
+    assert(appCode.includes('minchae_jjanggu'), 'app.js must reference minchae_jjanggu');
+    assert(appCode.includes('chat-sticker-img-bubble'), 'app.js must render chat-sticker-img-bubble for image stickers');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
