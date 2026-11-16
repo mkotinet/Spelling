@@ -1,6 +1,6 @@
 {
-  "version": "3.4.4",
-  "build": "20261116_2010",
-  "name": "하루맞춤 (Haru Matchum) - Chat Auto-Scroll Bottom Pinning & CLS Defense Edition",
-  "releaseNotes": "대화창 오픈 시 최신 메시지 및 사진 자동 하단 스크롤 100% 보장(다단계 스크롤 파이프라인, 비동기 이미지 로딩 완료 감지 및 ResizeObserver 하단 앵커링, 사진 버블 사전 높이 확보로 CLS 및 스크롤 밀림 원천 차단)"
+  "version": "3.5.0",
+  "build": "20261116_2030",
+  "name": "하루맞춤 (Haru Matchum) - Gift Integrity & Multi-User Group Chat Edition",
+  "releaseNotes": "선물 보내기 통신오류 원천 해결(수신자 정규화, 대상자 인스턴스 상태 보존, 네트워크 및 서버 응답 세분화 안내) 및 대화창 친구 초대 멀티 그룹 대화방(그룹 생성, 실시간 초대, 그룹 전용 Web Push 및 시스템 알림) 완벽 탑재"
 }

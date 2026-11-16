@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.4.4">
+  <meta name="app-version" content="3.5.0">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.4.4">
+  <link rel="stylesheet" href="style.css?v=3.5.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -1274,6 +1274,7 @@
         </div>
         <div class="chat-header-actions">
           <button id="btnChatToggleArchive" class="btn-chat-archive-quick" type="button" title="이전 대화 압축 보관">📦 압축</button>
+          <button id="btnChatHeaderInvite" class="btn-chat-invite-quick" type="button" title="친구 초대하여 멀티 대화하기" style="display: none;">👥 초대</button>
           <button id="btnChatHeaderGift" class="btn-chat-gift-quick" type="button" title="선물 보내기">🎁 선물</button>
           <button id="btnCloseChatApp" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
         </div>
@@ -1282,8 +1283,9 @@
       <!-- 2. Rooms List View (Tab & Room Cards) -->
       <div id="chatRoomsView" class="chat-rooms-view">
         <div class="chat-nav-tabs">
-          <button id="tabRoomSquare" class="chat-nav-tab active" type="button">💬 하루 광장 대화</button>
-          <button id="tabRoomDirect" class="chat-nav-tab" type="button">👥 친구 1:1 대화</button>
+          <button id="tabRoomSquare" class="chat-nav-tab active" type="button">💬 광장 대화</button>
+          <button id="tabRoomDirect" class="chat-nav-tab" type="button">👥 친구·그룹</button>
+          <button id="btnOpenCreateGroup" class="btn-create-group-pill" type="button" title="새 그룹 대화방 만들기">➕ 새 그룹방</button>
         </div>
 
         <div id="chatRoomsListContainer" class="chat-rooms-list">
@@ -1422,6 +1424,37 @@
         <button id="btnCancelSendGift" class="sub-action-btn" type="button">취소</button>
         <button id="btnSubmitSendGift" class="main-action-btn" type="button" disabled>
           <span id="btnSubmitGiftText">선물을 선택해주세요</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 17: v3.5.0 MULTI-USER CHAT & INVITE FRIENDS MODAL
+       ============================================================ -->
+  <div id="modalChatInviteFriends" class="modal-overlay">
+    <div class="modal-box chat-invite-modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">👥 <span id="inviteModalTitle">대화방에 친구 초대하기</span></h3>
+        <button id="btnCloseInviteFriends" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <div class="chat-invite-modal-body">
+        <div id="groupNameInputWrap" class="group-name-input-wrap" style="display: none; margin-bottom: 12px;">
+          <label for="inputCustomGroupName" style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">대화방 이름 (선택)</label>
+          <input type="text" id="inputCustomGroupName" class="group-name-input" maxlength="25" placeholder="예: 우리말 스터디방, 절친 모임">
+        </div>
+
+        <p class="invite-guide-text" style="font-size: 0.84rem; color: #64748b; margin-bottom: 10px; font-weight: 600;">함께 대화하고 선물을 나눌 친구들을 선택하세요:</p>
+        <div id="inviteFriendsListContainer" class="invite-friends-list">
+          <div style="text-align: center; padding: 20px; color: #94a3b8;">친구 목록 불러오는 중... 👥</div>
+        </div>
+      </div>
+
+      <div class="modal-footer chat-invite-modal-footer">
+        <button id="btnCancelInviteFriends" class="sub-action-btn" type="button">취소</button>
+        <button id="btnSubmitInviteFriends" class="main-action-btn" type="button" disabled>
+          <span id="btnSubmitInviteText">친구 초대하기 (0명)</span>
         </button>
       </div>
     </div>
@@ -1616,11 +1649,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.4.4"></script>
-  <script src="idiom_questions.js?v=3.4.4"></script>
-  <script src="hanja_questions.js?v=3.4.4"></script>
-  <script src="english_questions.js?v=3.4.4"></script>
-  <script src="stickers.js?v=3.4.4"></script>
-  <script src="app.js?v=3.4.4"></script>
+  <script src="questions.js?v=3.5.0"></script>
+  <script src="idiom_questions.js?v=3.5.0"></script>
+  <script src="hanja_questions.js?v=3.5.0"></script>
+  <script src="english_questions.js?v=3.5.0"></script>
+  <script src="stickers.js?v=3.5.0"></script>
+  <script src="app.js?v=3.5.0"></script>
 </body>
 </html>

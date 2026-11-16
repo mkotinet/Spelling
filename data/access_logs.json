@@ -3253,5 +3253,298 @@
       "score": 100,
       "pointsEarned": 150
     }
+  },
+  {
+    "id": "log_1794827890742_zlwq8",
+    "timestamp": "2026-11-16T11:18:10.742Z",
+    "kstTime": "2026-11-16 11:18:10",
+    "username": "미니미니",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_starbox_americano",
+      "giftName": "스타밥스 별다방 아이스 아메리카노",
+      "price": 50,
+      "recipient": "민지",
+      "remainingPoints": 590
+    }
+  },
+  {
+    "id": "log_1794828571907_58sv1",
+    "timestamp": "2026-11-16T11:29:31.907Z",
+    "kstTime": "2026-11-16 11:29:31",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_starbox_americano",
+      "giftName": "스타밥스 별다방 아이스 아메리카노",
+      "price": 50,
+      "recipient": "Ljh",
+      "remainingPoints": 950
+    }
+  },
+  {
+    "id": "log_1794828587412_g6qx6",
+    "timestamp": "2026-11-16T11:29:47.412Z",
+    "kstTime": "2026-11-16 11:29:47",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_starbox_americano",
+      "giftName": "스타밥스 별다방 아이스 아메리카노",
+      "price": 50,
+      "recipient": "Ljh",
+      "remainingPoints": 950
+    }
+  },
+  {
+    "id": "log_1794828587417_5ut4o",
+    "timestamp": "2026-11-16T11:29:47.417Z",
+    "kstTime": "2026-11-16 11:29:47",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "Ljh",
+      "remainingPoints": 850
+    }
+  },
+  {
+    "id": "log_1794828587421_1wu2e",
+    "timestamp": "2026-11-16T11:29:47.421Z",
+    "kstTime": "2026-11-16 11:29:47",
+    "username": "TestSender",
+    "action": "CHAT_SEND",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "group_1794828587419_y12ec",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794828598386_pjr8s",
+    "timestamp": "2026-11-16T11:29:58.386Z",
+    "kstTime": "2026-11-16 11:29:58",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_starbox_americano",
+      "giftName": "스타밥스 별다방 아이스 아메리카노",
+      "price": 50,
+      "recipient": "Ljh",
+      "remainingPoints": 950
+    }
+  },
+  {
+    "id": "log_1794828598391_0wosn",
+    "timestamp": "2026-11-16T11:29:58.391Z",
+    "kstTime": "2026-11-16 11:29:58",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "Ljh",
+      "remainingPoints": 850
+    }
+  },
+  {
+    "id": "log_1794828598397_hhbzn",
+    "timestamp": "2026-11-16T11:29:58.397Z",
+    "kstTime": "2026-11-16 11:29:58",
+    "username": "TestSender",
+    "action": "CHAT_SEND",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "group_1794828598394_a16ri",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794828622208_77vgz",
+    "timestamp": "2026-11-16T11:30:22.208Z",
+    "kstTime": "2026-11-16 11:30:22",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_starbox_americano",
+      "giftName": "스타밥스 별다방 아이스 아메리카노",
+      "price": 50,
+      "recipient": "Ljh",
+      "remainingPoints": 950
+    }
+  },
+  {
+    "id": "log_1794828622211_y4708",
+    "timestamp": "2026-11-16T11:30:22.211Z",
+    "kstTime": "2026-11-16 11:30:22",
+    "username": "TestSender",
+    "action": "SEND_GIFT",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "giftId": "gift_heart",
+      "giftName": "하트수호",
+      "price": 100,
+      "recipient": "Ljh",
+      "remainingPoints": 850
+    }
+  },
+  {
+    "id": "log_1794828622214_licxh",
+    "timestamp": "2026-11-16T11:30:22.214Z",
+    "kstTime": "2026-11-16 11:30:22",
+    "username": "TestSender",
+    "action": "CHAT_SEND",
+    "ip": "127.0.0.1",
+    "userAgent": "unknown",
+    "details": {
+      "roomId": "group_1794828622213_1ersf",
+      "type": "text",
+      "hasPhoto": false,
+      "hasSticker": false,
+      "hasGift": false
+    }
+  },
+  {
+    "id": "log_1794828640330_cq0ti",
+    "timestamp": "2026-11-16T11:30:40.330Z",
+    "kstTime": "2026-11-16 11:30:40",
+    "username": "e2e_runner_1794828640312",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828640332_i8b34",
+    "timestamp": "2026-11-16T11:30:40.332Z",
+    "kstTime": "2026-11-16 11:30:40",
+    "username": "e2e_runner_1794828640312",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828640334_rbw0g",
+    "timestamp": "2026-11-16T11:30:40.334Z",
+    "kstTime": "2026-11-16 11:30:40",
+    "username": "e2e_runner_1794828640312",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794828654989_zt9yl",
+    "timestamp": "2026-11-16T11:30:54.989Z",
+    "kstTime": "2026-11-16 11:30:54",
+    "username": "e2e_runner_1794828654973",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828654992_ckm9n",
+    "timestamp": "2026-11-16T11:30:54.992Z",
+    "kstTime": "2026-11-16 11:30:54",
+    "username": "e2e_runner_1794828654973",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828654993_ybkiz",
+    "timestamp": "2026-11-16T11:30:54.993Z",
+    "kstTime": "2026-11-16 11:30:54",
+    "username": "e2e_runner_1794828654973",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1794828670811_a58t4",
+    "timestamp": "2026-11-16T11:31:10.811Z",
+    "kstTime": "2026-11-16 11:31:10",
+    "username": "e2e_runner_1794828670794",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828670812_jnllb",
+    "timestamp": "2026-11-16T11:31:10.812Z",
+    "kstTime": "2026-11-16 11:31:10",
+    "username": "e2e_runner_1794828670794",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1794828670814_kykgj",
+    "timestamp": "2026-11-16T11:31:10.814Z",
+    "kstTime": "2026-11-16 11:31:10",
+    "username": "e2e_runner_1794828670794",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
   }
 ]

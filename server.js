@@ -19,6 +19,7 @@ const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 const PHOTOS_DIR = path.join(DATA_DIR, "uploads", "photos");
 const VAPID_FILE = path.join(DATA_DIR, "vapid_keys.json");
 const PUSH_SUBS_FILE = path.join(DATA_DIR, "push_subscriptions.json");
+const GROUPS_FILE = path.join(DATA_DIR, "groups.json");
 const PHOTO_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (1 day) automatic deletion
 
 // Web Push Module & VAPID Setup (v2.9.14)
@@ -205,6 +206,26 @@ function saveMessages(messages) {
     fs.writeFileSync(MESSAGES_FILE, JSON.stringify(trimmed, null, 2), "utf8");
   } catch (e) {
     console.error("Messages Save Error:", e);
+  }
+}
+
+// Group Chat Rooms Helper (v3.5.0 Multi-User Group Chats)
+function loadGroups() {
+  try {
+    if (fs.existsSync(GROUPS_FILE)) {
+      return JSON.parse(fs.readFileSync(GROUPS_FILE, "utf8")) || [];
+    }
+  } catch (e) {
+    console.error("Groups Load Error:", e);
+  }
+  return [];
+}
+
+function saveGroups(groups) {
+  try {
+    fs.writeFileSync(GROUPS_FILE, JSON.stringify(groups || [], null, 2), "utf8");
+  } catch (e) {
+    console.error("Groups Save Error:", e);
   }
 }
 
@@ -1257,7 +1278,44 @@ const server = http.createServer(async (req, res) => {
       unreadCount: unreadSquare
     };
 
-    // 2) 1:1 대화방 목록 (실제 활동 중인 다른 회원들과의 대화방)
+    // 2) 멀티 그룹 대화방 목록 (v3.5.0 Multi-User Group Chats)
+    const groups = loadGroups();
+    const myGroups = groups.filter(g => g.members && g.members.includes(username));
+    const groupRooms = [];
+
+    for (const g of myGroups) {
+      const gMsgs = messages.filter(m => m.roomId === g.roomId);
+      const lastGMsg = gMsgs.length > 0 ? gMsgs[gMsgs.length - 1] : null;
+      const unreadGCount = gMsgs.filter(m => m.fromUsername !== username && (!m.readBy || !m.readBy.includes(username))).length;
+
+      const memberDisplayNames = g.members.map(m => (db.users[m] && db.users[m].name) || m);
+      const defaultGroupName = memberDisplayNames.join(', ');
+
+      groupRooms.push({
+        roomId: g.roomId,
+        name: g.name || defaultGroupName,
+        isGroup: true,
+        isCustomGroup: true,
+        members: g.members,
+        memberCount: g.members.length,
+        avatar: "👥",
+        lastMessage: lastGMsg ? {
+          content: lastGMsg.content || (lastGMsg.sticker ? `[스티커 ${lastGMsg.sticker.name || ''}]` : (lastGMsg.gift ? `[선물 ${lastGMsg.gift.name || ''}]` : (lastGMsg.photoUrl ? '[사진]' : ''))),
+          fromName: lastGMsg.fromName || lastGMsg.fromUsername,
+          timestamp: lastGMsg.timestamp,
+          kstTime: lastGMsg.kstTime
+        } : null,
+        unreadCount: unreadGCount
+      });
+    }
+
+    groupRooms.sort((a, b) => {
+      const timeA = a.lastMessage ? new Date(a.lastMessage.timestamp).getTime() : 0;
+      const timeB = b.lastMessage ? new Date(b.lastMessage.timestamp).getTime() : 0;
+      return timeB - timeA;
+    });
+
+    // 3) 1:1 대화방 목록 (실제 활동 중인 다른 회원들과의 대화방)
     const dmRooms = [];
     for (const [uName, uData] of Object.entries(db.users)) {
       if (uName === username) continue;
@@ -1306,7 +1364,7 @@ const server = http.createServer(async (req, res) => {
         items: db.users[username].items || {},
         shields: db.users[username].shields || 0
       },
-      rooms: [squareRoom, ...dmRooms]
+      rooms: [squareRoom, ...groupRooms, ...dmRooms]
     });
   }
 
@@ -1331,8 +1389,31 @@ const server = http.createServer(async (req, res) => {
     const messages = loadMessages();
     let thread = [];
 
+    let groupMeta = null;
     if (effectiveRoomId === "square") {
       thread = messages.filter(m => m.roomId === "square" || m.toUsername === "ALL" || m.toUsername === "square");
+    } else if (effectiveRoomId.startsWith("group_")) {
+      // 멀티 그룹 대화방 (v3.5.0)
+      const groups = loadGroups();
+      const grp = groups.find(g => g.roomId === effectiveRoomId);
+      if (!grp || !grp.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "대화방에 참여한 멤버만 볼 수 있습니다." });
+      }
+      groupMeta = {
+        roomId: grp.roomId,
+        name: grp.name || grp.members.map(m => (db.users[m] && db.users[m].name) || m).join(', '),
+        members: grp.members,
+        memberDetails: grp.members.map(m => ({
+          username: m,
+          name: (db.users[m] && db.users[m].name) || m,
+          avatar: (db.users[m] && db.users[m].avatar) || "🌸",
+          avatarAccessories: (db.users[m] && db.users[m].avatarAccessories) || {}
+        })),
+        memberCount: grp.members.length,
+        createdBy: grp.createdBy,
+        createdAt: grp.createdAt
+      };
+      thread = messages.filter(m => m.roomId === effectiveRoomId);
     } else {
       // 1:1 대화방
       thread = messages.filter(m => 
@@ -1354,7 +1435,7 @@ const server = http.createServer(async (req, res) => {
     // 읽음 상태 갱신
     let updated = false;
     for (const msg of thread) {
-      if (effectiveRoomId === "square") {
+      if (effectiveRoomId === "square" || effectiveRoomId.startsWith("group_")) {
         msg.readBy = msg.readBy || [];
         if (!msg.readBy.includes(username)) {
           msg.readBy.push(username);
@@ -1375,6 +1456,7 @@ const server = http.createServer(async (req, res) => {
       success: true,
       roomId: effectiveRoomId,
       count: thread.length,
+      groupMeta: groupMeta,
       messages: thread
     });
   }
@@ -1466,17 +1548,22 @@ const server = http.createServer(async (req, res) => {
       // Web Push 발송 트리거
       try {
         let pushTargets = [];
+        let pushTitle = `💌 ${sender.name || username}님의 새 메시지`;
         if (targetRoomId === "square") {
           pushTargets = Object.keys(db.users).filter(u => u !== username);
+          pushTitle = `💬 [하루 광장] ${sender.name || username}님의 새 메시지`;
+        } else if (targetRoomId.startsWith("group_")) {
+          const groups = loadGroups();
+          const grp = groups.find(g => g.roomId === targetRoomId);
+          if (grp && grp.members) {
+            pushTargets = grp.members.filter(u => u !== username);
+            pushTitle = `👥 [${grp.name || '그룹 대화방'}] ${sender.name || username}님의 새 메시지`;
+          }
         } else if (toUsername && toUsername !== "square") {
           pushTargets = [toUsername];
         }
 
         if (pushTargets.length > 0) {
-          const pushTitle = targetRoomId === "square" 
-            ? `💬 [하루 광장] ${sender.name || username}님의 새 메시지` 
-            : `💌 ${sender.name || username}님의 새 메시지`;
-          
           let pushBodyText = safeContent;
           if (sticker) pushBodyText = `🎀 [스티커] ${sticker.name || '귀여운 스티커'}`;
           else if (gift) pushBodyText = `🎁 [선물] ${gift.name || '특별한 선물'}`;
@@ -1511,6 +1598,213 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // 17-A. [v3.5.0] 신규 멀티 그룹 대화방 생성 (POST /api/chat/create-group)
+  if (req.method === "POST" && pathname === "/api/chat/create-group") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const rawMembers = Array.isArray(body.members) ? body.members : [];
+      const memberSet = new Set([username]);
+      rawMembers.forEach(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        if (mName && db.users[mName]) memberSet.add(mName);
+      });
+
+      const members = Array.from(memberSet);
+      if (members.length < 2) {
+        return sendJSON(res, 400, { success: false, message: "대화방에는 최소 1명 이상의 친구를 초대해야 합니다." });
+      }
+
+      const groups = loadGroups();
+      const newRoomId = "group_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+      const memberNames = members.map(m => (db.users[m] && db.users[m].name) || m);
+      const customName = (body.name || "").trim() || memberNames.join(', ');
+
+      const newGroup = {
+        roomId: newRoomId,
+        name: customName,
+        members: members,
+        createdBy: username,
+        createdAt: new Date().toISOString()
+      };
+
+      groups.push(newGroup);
+      saveGroups(groups);
+
+      // 시스템 환영 메시지 생성
+      const nowIso = new Date().toISOString();
+      const nowKst = getKSTTime();
+      const sysMsg = {
+        id: "msg_sys_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
+        roomId: newRoomId,
+        fromUsername: "SYSTEM",
+        fromName: "하루맞춤 알림",
+        fromAvatar: "📢",
+        type: "system",
+        content: `🎉 ${sender.name || username}님이 그룹 대화방을 만들었습니다! (참여: ${memberNames.join(', ')})`,
+        timestamp: nowIso,
+        kstTime: nowKst,
+        readBy: [username]
+      };
+
+      const messages = loadMessages();
+      messages.push(sysMsg);
+      saveMessages(messages);
+
+      // 멤버들에게 Web Push 발송
+      const pushTargets = members.filter(m => m !== username);
+      if (pushTargets.length > 0) {
+        sendWebPushToUsers(pushTargets, {
+          title: `👥 [새 그룹 대화방 초대] ${sender.name || username}님`,
+          body: `[${customName}] 대화방에 초대되었습니다!`,
+          icon: "/public/icons/icon-192.png",
+          badge: "/public/icons/badge-72.png",
+          url: `/?open=chat&roomId=${encodeURIComponent(newRoomId)}`,
+          tag: "haru-group-invite-" + Date.now()
+        }).catch(err => console.warn("[Web Push] Group invite push error:", err.message));
+      }
+
+      return sendJSON(res, 201, {
+        success: true,
+        roomId: newRoomId,
+        group: newGroup,
+        message: sysMsg
+      });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 17-B. [v3.5.0] 대화방 친구 추가 초대 (POST /api/chat/invite)
+  if (req.method === "POST" && pathname === "/api/chat/invite") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const roomId = body.roomId;
+      const rawNewMembers = Array.isArray(body.newMembers) ? body.newMembers : (Array.isArray(body.members) ? body.members : []);
+      const newMemberUsernames = rawNewMembers.map(m => typeof m === 'object' && m ? (m.username || m.name) : m).filter(m => m && db.users[m]);
+
+      if (newMemberUsernames.length === 0) {
+        return sendJSON(res, 400, { success: false, message: "초대할 친구를 선택해 주세요." });
+      }
+
+      const groups = loadGroups();
+      let targetGroup = null;
+      let effectiveRoomId = roomId;
+
+      if (roomId && roomId.startsWith("group_")) {
+        // 기존 그룹방 초대
+        targetGroup = groups.find(g => g.roomId === roomId);
+        if (!targetGroup) {
+          return sendJSON(res, 404, { success: false, message: "대화방을 찾을 수 없습니다." });
+        }
+        if (!targetGroup.members.includes(username)) {
+          return sendJSON(res, 403, { success: false, message: "초대 권한이 없습니다." });
+        }
+
+        const actuallyAdded = [];
+        newMemberUsernames.forEach(m => {
+          if (!targetGroup.members.includes(m)) {
+            targetGroup.members.push(m);
+            actuallyAdded.push(m);
+          }
+        });
+
+        if (actuallyAdded.length === 0) {
+          return sendJSON(res, 400, { success: false, message: "이미 대화방에 참여 중인 친구들입니다." });
+        }
+
+        saveGroups(groups);
+      } else {
+        // 1:1 대화방에서 추가 초대 시 -> 새로운 멀티 그룹방으로 자동 승격 생성
+        const baseMembers = [username];
+        if (body.otherUser && db.users[body.otherUser]) {
+          baseMembers.push(body.otherUser);
+        } else if (roomId && roomId.includes('_') && !roomId.startsWith('group_')) {
+          roomId.split('_').forEach(part => {
+            if (db.users[part]) baseMembers.push(part);
+          });
+        }
+
+        const allMemberSet = new Set([...baseMembers, ...newMemberUsernames]);
+        const finalMembers = Array.from(allMemberSet);
+
+        effectiveRoomId = "group_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+        const memberNames = finalMembers.map(m => (db.users[m] && db.users[m].name) || m);
+        const autoName = memberNames.join(', ');
+
+        targetGroup = {
+          roomId: effectiveRoomId,
+          name: autoName,
+          members: finalMembers,
+          createdBy: username,
+          createdAt: new Date().toISOString()
+        };
+
+        groups.push(targetGroup);
+        saveGroups(groups);
+      }
+
+      const addedNames = newMemberUsernames.map(m => (db.users[m] && db.users[m].name) || m);
+      const nowIso = new Date().toISOString();
+      const nowKst = getKSTTime();
+
+      const sysMsg = {
+        id: "msg_sys_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
+        roomId: effectiveRoomId,
+        fromUsername: "SYSTEM",
+        fromName: "하루맞춤 알림",
+        fromAvatar: "📢",
+        type: "system",
+        content: `👋 ${sender.name || username}님이 ${addedNames.join(', ')}님을 대화방에 초대했습니다! 환영합니다 ✨`,
+        timestamp: nowIso,
+        kstTime: nowKst,
+        readBy: [username]
+      };
+
+      const messages = loadMessages();
+      messages.push(sysMsg);
+      saveMessages(messages);
+
+      // 새 멤버들에게 Web Push 발송
+      sendWebPushToUsers(newMemberUsernames, {
+        title: `👥 [대화방 초대] ${sender.name || username}님`,
+        body: `대화방 [${targetGroup.name}]에 초대되었습니다!`,
+        icon: "/public/icons/icon-192.png",
+        badge: "/public/icons/badge-72.png",
+        url: `/?open=chat&roomId=${encodeURIComponent(effectiveRoomId)}`,
+        tag: "haru-invite-" + Date.now()
+      }).catch(err => console.warn("[Web Push] Invite push error:", err.message));
+
+      return sendJSON(res, 201, {
+        success: true,
+        roomId: effectiveRoomId,
+        group: targetGroup,
+        message: sysMsg
+      });
+    } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
   // 18. [v3.3.0] 아이템 및 소셜 선물 보내기 (POST /api/chat/send-gift)
   if (req.method === "POST" && pathname === "/api/chat/send-gift") {
     try {
@@ -1529,15 +1823,25 @@ const server = http.createServer(async (req, res) => {
       const userAgent = req.headers["user-agent"] || "unknown";
 
       const giftId = body.giftId;
-      const toUsername = body.toUsername;
+      let rawTo = body.toUsername;
+      if (typeof rawTo === 'object' && rawTo) {
+        rawTo = rawTo.username || rawTo.name;
+      }
+      let toUsername = (rawTo || "").trim();
       const customMessage = (body.message || "").trim();
 
       if (!giftId || !GIFT_CATALOG[giftId]) {
         return sendJSON(res, 400, { success: false, message: "올바른 선물을 선택해 주세요." });
       }
 
+      // Case-insensitive user lookup fallback (Rule 6 authentic users defense)
+      if (!db.users[toUsername]) {
+        const foundKey = Object.keys(db.users).find(k => k.toLowerCase() === toUsername.toLowerCase());
+        if (foundKey) toUsername = foundKey;
+      }
+
       if (!toUsername || !db.users[toUsername]) {
-        return sendJSON(res, 404, { success: false, message: "선물 받을 친구를 찾을 수 없습니다." });
+        return sendJSON(res, 404, { success: false, message: `선물 받을 친구 [${toUsername || '미지정'}]를 찾을 수 없습니다.` });
       }
 
       if (toUsername === username) {
@@ -1585,8 +1889,8 @@ const server = http.createServer(async (req, res) => {
       recipient.updatedAt = new Date().toISOString();
       saveDB(db);
 
-      // 3) 채팅 메시지 스레드에 선물 카드 생성
-      const roomId = getChatRoomId(username, toUsername);
+      // 3) 채팅 메시지 스레드에 선물 카드 생성 (그룹방 전달 지원)
+      const roomId = body.roomId || getChatRoomId(username, toUsername);
       const nowIso = new Date().toISOString();
       const nowKst = getKSTTime();
 

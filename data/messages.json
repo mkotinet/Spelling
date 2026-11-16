@@ -302,5 +302,39 @@
     "timestamp": "2026-11-15T13:08:18.712Z",
     "kstTime": "2026-11-15 13:08:18",
     "read": false
+  },
+  {
+    "id": "msg_gift_1794827890741_ttews",
+    "roomId": "미니미니_민지",
+    "fromUsername": "미니미니",
+    "fromName": "미니미니",
+    "fromAvatar": "🐶",
+    "fromAccessories": {},
+    "toUsername": "민지",
+    "toName": "민지",
+    "toAvatar": "🎀",
+    "toAccessories": {},
+    "type": "gift",
+    "content": "선물이야!",
+    "photoUrl": null,
+    "photoExpiresAt": null,
+    "photoExpired": false,
+    "sticker": null,
+    "gift": {
+      "giftId": "gift_starbox_americano",
+      "name": "스타밥스 별다방 아이스 아메리카노",
+      "icon": "☕",
+      "price": 50,
+      "type": "social",
+      "desc": "출근·등교길 필수! 시원한 벤티 사이즈 아아",
+      "bonusPoints": 25,
+      "claimed": true
+    },
+    "timestamp": "2026-11-16T11:18:10.740Z",
+    "kstTime": "2026-11-16 11:18:10",
+    "read": false,
+    "readBy": [
+      "미니미니"
+    ]
   }
 ]

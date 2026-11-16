@@ -5824,7 +5824,33 @@ class HaruMatchumApp {
       });
     }
 
-    // Room Tabs (Square vs Direct)
+    // v3.5.0: Quick Invite & Multi-User Group Chat Controls
+    const btnChatHeaderInvite = document.getElementById('btnChatHeaderInvite');
+    if (btnChatHeaderInvite) {
+      btnChatHeaderInvite.addEventListener('click', () => {
+        this.openInviteFriendsModal('invite');
+      });
+    }
+
+    const btnOpenCreateGroup = document.getElementById('btnOpenCreateGroup');
+    if (btnOpenCreateGroup) {
+      btnOpenCreateGroup.addEventListener('click', () => {
+        this.openInviteFriendsModal('create');
+      });
+    }
+
+    const btnCloseInviteFriends = document.getElementById('btnCloseInviteFriends');
+    if (btnCloseInviteFriends) btnCloseInviteFriends.addEventListener('click', () => this.closeInviteFriendsModal());
+
+    const btnCancelInviteFriends = document.getElementById('btnCancelInviteFriends');
+    if (btnCancelInviteFriends) btnCancelInviteFriends.addEventListener('click', () => this.closeInviteFriendsModal());
+
+    const btnSubmitInviteFriends = document.getElementById('btnSubmitInviteFriends');
+    if (btnSubmitInviteFriends) {
+      btnSubmitInviteFriends.addEventListener('click', () => this.submitInviteFriends());
+    }
+
+    // Room Tabs (Square vs Direct / Groups)
     const tabRoomSquare = document.getElementById('tabRoomSquare');
     const tabRoomDirect = document.getElementById('tabRoomDirect');
     if (tabRoomSquare) {
@@ -6023,14 +6049,19 @@ class HaruMatchumApp {
       const rooms = data.rooms || [];
 
       rooms.forEach(room => {
-        if (tab === 'direct' && room.isGroup) return;
+        if (tab === 'direct' && room.roomId === 'square') return;
+        if (tab === 'square' && room.roomId !== 'square') return;
 
         const card = document.createElement('div');
-        card.className = `chat-room-card ${room.isGroup ? 'is-square' : ''}`;
+        const isSquare = (room.roomId === 'square');
+        const isCustomGroup = !!room.isCustomGroup;
+        card.className = `chat-room-card ${isSquare ? 'is-square' : (isCustomGroup ? 'is-custom-group' : '')}`;
         
         let avatarHtml = '';
-        if (room.isGroup) {
+        if (isSquare) {
           avatarHtml = `<div class="chat-header-avatar" style="width: 48px; height: 48px; font-size: 1.4rem;">💬</div>`;
+        } else if (isCustomGroup) {
+          avatarHtml = `<div class="chat-header-avatar" style="width: 48px; height: 48px; font-size: 1.4rem; background: #eef2ff;">👥</div>`;
         } else {
           avatarHtml = typeof renderCompositeAvatar === 'function'
             ? renderCompositeAvatar(room.avatar || '🌸', room.avatarAccessories || {}, 48, false, 'compact')
@@ -6038,11 +6069,15 @@ class HaruMatchumApp {
         }
 
         const lastMsgText = room.lastMessage 
-          ? `${room.isGroup ? `<strong>${room.lastMessage.fromName}:</strong> ` : ''}${room.lastMessage.content}` 
-          : (room.isGroup ? '모든 친구들과 자유롭게 실시간으로 대화해보세요!' : '첫 메시지를 보내보세요!');
+          ? `${(isSquare || isCustomGroup) ? `<strong>${room.lastMessage.fromName}:</strong> ` : ''}${room.lastMessage.content}` 
+          : (isSquare ? '모든 친구들과 자유롭게 실시간으로 대화해보세요!' : (isCustomGroup ? '그룹 친구들과 함께 실시간으로 대화해보세요!' : '첫 메시지를 보내보세요!'));
 
         const timeText = room.lastMessage && room.lastMessage.kstTime
           ? room.lastMessage.kstTime.split(' ')[1] || room.lastMessage.kstTime
+          : '';
+
+        const memberBadge = isCustomGroup
+          ? `<span class="chat-group-member-count">👥 ${room.memberCount || (room.members && room.members.length) || 2}명</span>`
           : '';
 
         card.innerHTML = `
@@ -6052,7 +6087,7 @@ class HaruMatchumApp {
           </div>
           <div class="chat-room-meta">
             <div class="chat-room-name-row">
-              <span class="chat-room-name">${room.name}</span>
+              <span class="chat-room-name">${room.name} ${memberBadge}</span>
               <span class="chat-room-time">${timeText}</span>
             </div>
             <p class="chat-room-last-msg">${lastMsgText}</p>
@@ -6062,7 +6097,7 @@ class HaruMatchumApp {
         card.addEventListener('click', () => {
           this.enterChatRoom(
             room.roomId,
-            room.isGroup ? null : room.username,
+            (isSquare || isCustomGroup) ? null : room.username,
             room.name,
             room.avatar,
             room.avatarAccessories
@@ -6079,6 +6114,7 @@ class HaruMatchumApp {
   enterChatRoom(roomId, targetUsername, targetName, avatar, accessories) {
     this.currentChatRoomId = roomId || 'square';
     this.currentChatTargetUser = targetUsername;
+    this.currentGroupMeta = null;
     this.isChatUserScrolledUp = false; // v3.4.4: Force bottom anchor on entering room
 
     const btnBack = document.getElementById('btnChatBackToList');
@@ -6086,25 +6122,32 @@ class HaruMatchumApp {
     const headerSub = document.getElementById('chatActiveSub');
     const headerAvatar = document.getElementById('chatActiveAvatar');
     const btnGift = document.getElementById('btnChatHeaderGift');
+    const btnInvite = document.getElementById('btnChatHeaderInvite');
 
     if (btnBack) btnBack.style.display = 'flex';
-    if (headerTitle) headerTitle.textContent = targetName || (this.currentChatRoomId === 'square' ? '하루 광장 대화방 (전체)' : '대화방');
-    if (headerSub) {
-      headerSub.textContent = (this.currentChatRoomId === 'square' || !targetUsername)
-        ? '다자간 실시간 동시 대화 (전체 참여)'
-        : '1:1 친근한 대화방 ✨';
-    }
-    if (headerAvatar) {
-      if (this.currentChatRoomId === 'square' || !targetUsername) {
-        headerAvatar.innerHTML = '💬';
-      } else {
+
+    if (this.currentChatRoomId === 'square') {
+      if (headerTitle) headerTitle.textContent = '하루 광장 대화방 (전체)';
+      if (headerSub) headerSub.textContent = '다자간 실시간 동시 대화 (전체 참여)';
+      if (headerAvatar) headerAvatar.innerHTML = '💬';
+      if (btnGift) btnGift.style.display = 'none';
+      if (btnInvite) btnInvite.style.display = 'none';
+    } else if (this.currentChatRoomId.startsWith('group_')) {
+      if (headerTitle) headerTitle.textContent = targetName || '그룹 대화방';
+      if (headerSub) headerSub.textContent = '👥 멀티 그룹 대화방 (실시간)';
+      if (headerAvatar) headerAvatar.innerHTML = '👥';
+      if (btnGift) btnGift.style.display = 'inline-flex';
+      if (btnInvite) btnInvite.style.display = 'inline-flex';
+    } else {
+      if (headerTitle) headerTitle.textContent = targetName || targetUsername || '대화방';
+      if (headerSub) headerSub.textContent = '1:1 친근한 대화방 ✨';
+      if (headerAvatar) {
         headerAvatar.innerHTML = typeof renderCompositeAvatar === 'function'
           ? renderCompositeAvatar(avatar || '🌸', accessories || {}, 44, false, 'compact')
           : (avatar || '🌸');
       }
-    }
-    if (btnGift) {
-      btnGift.style.display = (this.currentChatRoomId === 'square' && !targetUsername) ? 'none' : 'block';
+      if (btnGift) btnGift.style.display = 'inline-flex';
+      if (btnInvite) btnInvite.style.display = 'inline-flex';
     }
 
     if (this.chatRoomsView) this.chatRoomsView.style.display = 'none';
@@ -6118,18 +6161,21 @@ class HaruMatchumApp {
     this.stopChatThreadPolling();
     this.currentChatRoomId = null;
     this.currentChatTargetUser = null;
+    this.currentGroupMeta = null;
 
     const btnBack = document.getElementById('btnChatBackToList');
     const headerTitle = document.getElementById('chatActiveTitle');
     const headerSub = document.getElementById('chatActiveSub');
     const headerAvatar = document.getElementById('chatActiveAvatar');
     const btnGift = document.getElementById('btnChatHeaderGift');
+    const btnInvite = document.getElementById('btnChatHeaderInvite');
 
     if (btnBack) btnBack.style.display = 'none';
     if (headerTitle) headerTitle.textContent = '하루 대화 광장';
     if (headerSub) headerSub.textContent = '다자간 실시간 동시 대화 및 1:1 대화';
     if (headerAvatar) headerAvatar.innerHTML = '💬';
     if (btnGift) btnGift.style.display = 'none';
+    if (btnInvite) btnInvite.style.display = 'none';
 
     if (this.chatThreadView) this.chatThreadView.style.display = 'none';
     if (this.chatRoomsView) this.chatRoomsView.style.display = 'flex';
@@ -6161,6 +6207,19 @@ class HaruMatchumApp {
       }
 
       this.cachedChatThreadMessages = data.messages || [];
+      this.currentGroupMeta = data.groupMeta || null;
+
+      if (this.currentGroupMeta) {
+        const headerTitle = document.getElementById('chatActiveTitle');
+        const headerSub = document.getElementById('chatActiveSub');
+        if (headerTitle && this.currentGroupMeta.name) {
+          headerTitle.textContent = this.currentGroupMeta.name;
+        }
+        if (headerSub) {
+          headerSub.textContent = `👥 ${this.currentGroupMeta.memberCount || this.currentGroupMeta.members.length}명 참여 중 (실시간)`;
+        }
+      }
+
       // Initial load: instant jump to bottom without dizzying animation (v3.4.0)
       this.renderChatMessages(this.cachedChatThreadMessages, true, true);
       this.checkUnreadMessages();
@@ -6250,6 +6309,14 @@ class HaruMatchumApp {
       }
 
       // 2. Message Bubble
+      if (msg.type === 'system') {
+        const sysRow = document.createElement('div');
+        sysRow.className = 'chat-system-msg-row';
+        sysRow.innerHTML = `<span class="chat-system-chip">${msg.content}</span>`;
+        this.chatMessagesScrollArea.appendChild(sysRow);
+        return;
+      }
+
       const isMe = (msg.fromUsername === myUsername);
       const row = document.createElement('div');
       row.className = `chat-msg-row ${isMe ? 'outgoing' : 'incoming'}`;
@@ -6317,10 +6384,12 @@ class HaruMatchumApp {
         ? msg.kstTime.split(' ')[1] || msg.kstTime
         : (msg.timestamp ? msg.timestamp.split('T')[1].substring(0, 5) : '');
 
+      const isMultiRoom = (this.currentChatRoomId === 'square' || (this.currentChatRoomId && this.currentChatRoomId.startsWith('group_')));
+
       row.innerHTML = `
         ${avatarCol}
         <div class="chat-bubble-content-col">
-          ${(!isMe && this.currentChatRoomId === 'square') ? `<span class="chat-sender-name">${msg.fromName || msg.fromUsername}</span>` : ''}
+          ${(!isMe && isMultiRoom) ? `<span class="chat-sender-name">${msg.fromName || msg.fromUsername}</span>` : ''}
           <div class="chat-bubble-body-row">
             ${bodyHtml}
             <span class="chat-time-tag">${timeStr}</span>
@@ -6489,10 +6558,11 @@ class HaruMatchumApp {
     }
 
     try {
+      const isGroupRoom = this.currentChatRoomId && this.currentChatRoomId.startsWith('group_');
       const payload = {
         token: this.cloudToken,
         roomId: this.currentChatRoomId || 'square',
-        toUsername: this.currentChatTargetUser || 'square',
+        toUsername: this.currentChatTargetUser || (isGroupRoom ? 'group' : 'square'),
         content: text,
         photoUrl: photoUrl,
         photoExpiresAt: photoExpiresAt,
@@ -6631,7 +6701,7 @@ class HaruMatchumApp {
   }
 
   // ============================================================
-  // v3.3.0 SEND GIFT MODAL CONTROLLER
+  // v3.3.0 & v3.5.0 SEND GIFT MODAL CONTROLLER
   // ============================================================
   async openSendGiftModal(targetUsername = null) {
     if (!this.modalSendGift) return;
@@ -6642,13 +6712,32 @@ class HaruMatchumApp {
       return;
     }
 
-    const effectiveTarget = targetUsername || this.currentChatTargetUser;
-    if (!effectiveTarget || effectiveTarget === 'square') {
+    const myUsername = (this.data.currentUser && (this.data.currentUser.username || this.data.currentUser.name)) || '';
+
+    let effTarget = targetUsername || this.currentSendGiftTargetUser || this.currentChatTargetUser;
+    if (typeof effTarget === 'object' && effTarget) {
+      effTarget = effTarget.username || effTarget.name;
+    }
+    effTarget = (effTarget || '').trim();
+
+    // If in group room and no target user selected, pick first other member
+    if (!effTarget || effTarget === 'square') {
+      if (this.currentGroupMeta && Array.isArray(this.currentGroupMeta.members)) {
+        const others = this.currentGroupMeta.members.filter(m => m !== myUsername);
+        if (others.length > 0) {
+          effTarget = others[0];
+        }
+      }
+    }
+
+    if (!effTarget || effTarget === 'square') {
       this.showToastNotice('선물을 받을 친구를 먼저 선택해 주세요! 👥');
       return;
     }
 
+    this.currentSendGiftTargetUser = effTarget;
     this.selectedGiftItem = null;
+
     const targetTitle = document.getElementById('giftModalTargetTitle');
     const targetNameEl = document.getElementById('giftTargetName');
     const targetAvatarEl = document.getElementById('giftTargetAvatar');
@@ -6656,8 +6745,8 @@ class HaruMatchumApp {
     const btnSubmit = document.getElementById('btnSubmitSendGift');
     const customMsgInput = document.getElementById('giftCustomMessage');
 
-    if (targetTitle) targetTitle.textContent = `${effectiveTarget}님에게 선물 보내기`;
-    if (targetNameEl) targetNameEl.textContent = effectiveTarget;
+    if (targetTitle) targetTitle.textContent = `${effTarget}님에게 선물 보내기`;
+    if (targetNameEl) targetNameEl.textContent = effTarget;
     if (targetAvatarEl) targetAvatarEl.innerHTML = '🌸';
     if (myPointsEl) myPointsEl.textContent = `${this.data.currentUser.totalPoints || 0}P`;
     if (customMsgInput) customMsgInput.value = '';
@@ -6779,7 +6868,12 @@ class HaruMatchumApp {
       return;
     }
 
-    const targetUser = this.currentChatTargetUser;
+    let targetUser = this.currentSendGiftTargetUser || this.currentChatTargetUser;
+    if (typeof targetUser === 'object' && targetUser) {
+      targetUser = targetUser.username || targetUser.name;
+    }
+    targetUser = (targetUser || '').trim();
+
     if (!targetUser || targetUser === 'square') {
       this.showToastNotice('선물 받을 친구가 올바르지 않습니다.');
       return;
@@ -6803,12 +6897,19 @@ class HaruMatchumApp {
           token: this.cloudToken,
           giftId: this.selectedGiftItem.id,
           toUsername: targetUser,
+          roomId: this.currentChatRoomId,
           message: customMsg
         })
       });
-      const data = await res.json();
 
-      if (res.ok && data.success) {
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        console.error('[Send Gift] JSON Parse Error:', parseErr);
+      }
+
+      if (res.ok && data && data.success) {
         // Update local points
         if (typeof data.remainingPoints === 'number' && this.data.currentUser) {
           this.data.currentUser.totalPoints = data.remainingPoints;
@@ -6827,17 +6928,22 @@ class HaruMatchumApp {
         this.closeSendGiftModal();
         this.showToastNotice(`🎁 ${targetUser}님에게 [${this.selectedGiftItem.name}] 선물을 보냈어요! ✨`);
 
-        // If thread is active, append message
+        // If thread is active, safely append message
         if (data.message && this.currentChatRoomId) {
+          if (!Array.isArray(this.cachedChatThreadMessages)) {
+            this.cachedChatThreadMessages = [];
+          }
           this.cachedChatThreadMessages.push(data.message);
-          this.renderChatMessages(this.cachedChatThreadMessages);
-          this.scrollChatToBottom();
+          this.renderChatMessages(this.cachedChatThreadMessages, true, false);
+          this.scrollChatToBottom(true, true);
         }
       } else {
-        this.showToastNotice(data.message || '선물 전송 실패');
+        const errorMsg = (data && data.message) ? data.message : `선물 전송 실패 (${res.status})`;
+        this.showToastNotice(errorMsg);
       }
     } catch (e) {
-      this.showToastNotice('통신 오류로 선물을 보내지 못했습니다.');
+      console.error('[Send Gift Error]', e);
+      this.showToastNotice(`선물 전송 실패: ${e.message || '통신 상태를 확인해주세요.'}`);
     } finally {
       if (btnSubmit) {
         btnSubmit.disabled = false;
@@ -6856,6 +6962,213 @@ class HaruMatchumApp {
       }
     } catch (e) {}
     this.showToastNotice('🎁 선물이 인벤토리에 안전하게 반영되었습니다! 소중하게 사용해보세요.');
+  }
+
+  // ============================================================
+  // v3.5.0 MULTI-USER CHAT & FRIEND INVITATION CONTROLLER
+  // ============================================================
+  async openInviteFriendsModal(mode = 'invite') {
+    const modal = document.getElementById('modalChatInviteFriends');
+    if (!modal) return;
+
+    if (!this.cloudToken || !this.data.currentUser || this.data.currentUser.isGuest) {
+      this.showToastNotice('친구 초대 및 그룹 대화는 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
+    this.inviteFriendsMode = mode;
+    this.selectedInviteUsernames = new Set();
+
+    const titleEl = document.getElementById('inviteModalTitle');
+    const groupNameWrap = document.getElementById('groupNameInputWrap');
+    const groupNameInput = document.getElementById('inputCustomGroupName');
+    const container = document.getElementById('inviteFriendsListContainer');
+    const btnSubmit = document.getElementById('btnSubmitInviteFriends');
+    const submitText = document.getElementById('btnSubmitInviteText');
+
+    if (groupNameInput) groupNameInput.value = '';
+
+    const is1on1 = this.currentChatRoomId && !this.currentChatRoomId.startsWith('group_') && this.currentChatRoomId !== 'square' && this.currentChatTargetUser;
+
+    if (mode === 'create') {
+      if (titleEl) titleEl.textContent = '새 그룹 대화방 만들기';
+      if (groupNameWrap) groupNameWrap.style.display = 'block';
+      if (submitText) submitText.textContent = '그룹방 만들기 (0명)';
+    } else {
+      if (titleEl) titleEl.textContent = '대화방에 친구 초대하기';
+      if (groupNameWrap) groupNameWrap.style.display = is1on1 ? 'block' : 'none';
+      if (submitText) submitText.textContent = '친구 초대하기 (0명)';
+    }
+
+    if (btnSubmit) btnSubmit.disabled = true;
+    modal.classList.add('active');
+    sfx.combo();
+
+    if (container) {
+      container.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">친구 목록 불러오는 중... 👥</div>';
+    }
+
+    try {
+      const res = await fetch('/api/leaderboard?mode=all&type=daily');
+      const data = await res.json();
+      const myUsername = (this.data.currentUser && (this.data.currentUser.username || this.data.currentUser.name)) || '';
+
+      if (!res.ok || !data.success || !data.leaderboard) {
+        if (container) container.innerHTML = '<div style="text-align: center; padding: 20px; color: #f43f5e;">친구 목록을 불러오지 못했습니다.</div>';
+        return;
+      }
+
+      // Filter out self
+      const allUsers = data.leaderboard.filter(u => u.username !== myUsername && u.name !== myUsername);
+      if (allUsers.length === 0) {
+        if (container) container.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8;">초대 가능한 친구가 없습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      // Determine existing members
+      const existingMembers = new Set();
+      if (mode === 'invite') {
+        if (this.currentChatRoomId && this.currentChatRoomId.startsWith('group_') && this.currentGroupMeta && this.currentGroupMeta.members) {
+          this.currentGroupMeta.members.forEach(m => existingMembers.add(m));
+        } else if (this.currentChatTargetUser) {
+          existingMembers.add(this.currentChatTargetUser);
+        }
+      }
+
+      allUsers.forEach(user => {
+        const item = document.createElement('div');
+        const isAlreadyMember = existingMembers.has(user.username);
+        item.className = `invite-friend-item ${isAlreadyMember ? 'disabled' : ''}`;
+        
+        const avatarHtml = typeof renderCompositeAvatar === 'function'
+          ? renderCompositeAvatar(user.avatar || '🌸', user.avatarAccessories || {}, 38, false, 'compact')
+          : `<div style="font-size: 1.4rem;">${user.avatar || '🌸'}</div>`;
+
+        item.innerHTML = `
+          <div class="invite-friend-left">
+            <div class="invite-friend-avatar">${avatarHtml}</div>
+            <div class="invite-friend-info">
+              <span class="invite-friend-name">${user.name || user.username} ${isAlreadyMember ? '<span style="font-size: 0.72rem; color: #64748b; font-weight: 600;">(참여 중)</span>' : ''}</span>
+              <span class="invite-friend-meta">${user.grade || '일반'} · ${user.totalPoints || 0}P</span>
+            </div>
+          </div>
+          <input type="checkbox" class="invite-checkbox" data-username="${user.username}" ${isAlreadyMember ? 'checked disabled' : ''}>
+        `;
+
+        if (!isAlreadyMember) {
+          item.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() === 'input') return;
+            const cb = item.querySelector('.invite-checkbox');
+            if (cb) {
+              cb.checked = !cb.checked;
+              cb.dispatchEvent(new Event('change'));
+            }
+          });
+
+          const checkbox = item.querySelector('.invite-checkbox');
+          if (checkbox) {
+            checkbox.addEventListener('change', () => {
+              if (checkbox.checked) {
+                this.selectedInviteUsernames.add(user.username);
+                item.classList.add('selected');
+              } else {
+                this.selectedInviteUsernames.delete(user.username);
+                item.classList.remove('selected');
+              }
+              const count = this.selectedInviteUsernames.size;
+              if (btnSubmit) btnSubmit.disabled = (count === 0);
+              if (submitText) {
+                submitText.textContent = (mode === 'create')
+                  ? `그룹방 만들기 (${count}명)`
+                  : `친구 초대하기 (${count}명)`;
+              }
+            });
+          }
+        }
+
+        container.appendChild(item);
+      });
+    } catch (e) {
+      if (container) container.innerHTML = '<div style="text-align: center; padding: 20px; color: #f43f5e;">네트워크 오류가 발생했습니다.</div>';
+    }
+  }
+
+  closeInviteFriendsModal() {
+    const modal = document.getElementById('modalChatInviteFriends');
+    if (modal) modal.classList.remove('active');
+    this.selectedInviteUsernames = new Set();
+  }
+
+  async submitInviteFriends() {
+    const selected = Array.from(this.selectedInviteUsernames || []);
+    if (selected.length === 0) {
+      this.showToastNotice('초대할 친구를 1명 이상 선택해 주세요! 👥');
+      return;
+    }
+
+    const btnSubmit = document.getElementById('btnSubmitInviteFriends');
+    const submitText = document.getElementById('btnSubmitInviteText');
+    const customGroupName = (document.getElementById('inputCustomGroupName')?.value || '').trim();
+
+    if (btnSubmit) btnSubmit.disabled = true;
+    if (submitText) submitText.textContent = '처리 중... 🚀';
+
+    try {
+      if (this.inviteFriendsMode === 'create') {
+        const res = await fetch('/api/chat/create-group', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({
+            token: this.cloudToken,
+            members: selected,
+            name: customGroupName
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.closeInviteFriendsModal();
+          this.showToastNotice(`👥 [${data.group.name}] 그룹 대화방이 생성되었습니다! ✨`);
+          this.enterChatRoom(data.roomId, null, data.group.name, '👥', {});
+          sfx.fanfare();
+        } else {
+          this.showToastNotice(data.message || '그룹방 생성 실패');
+        }
+      } else {
+        // invite mode
+        const res = await fetch('/api/chat/invite', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({
+            token: this.cloudToken,
+            roomId: this.currentChatRoomId,
+            otherUser: this.currentChatTargetUser,
+            members: selected
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.closeInviteFriendsModal();
+          this.showToastNotice(`👋 친구 ${selected.length}명을 초대했습니다! ✨`);
+          this.enterChatRoom(data.roomId, null, data.group.name, '👥', {});
+          sfx.combo();
+        } else {
+          this.showToastNotice(data.message || '친구 초대 실패');
+        }
+      }
+    } catch (e) {
+      this.showToastNotice('통신 오류로 처리하지 못했습니다.');
+    } finally {
+      if (btnSubmit) btnSubmit.disabled = false;
+    }
   }
 
   // ============================================================
