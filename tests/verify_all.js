@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.2">'), 'index.html must include meta app-version 3.5.2');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.3">'), 'index.html must include meta app-version 3.5.3');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.2', 'GET /api/version version must be 3.5.2');
+    assert.strictEqual(verRes.data.version, '3.5.3', 'GET /api/version version must be 3.5.3');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -522,12 +522,44 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.2';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.3';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
     assert(appCode.includes('this.enterChatRoom(null, senderUser);'), 'app.js reply must open chat directly');
     assert(indexHtml.includes('💬 대화창으로 이동'), 'index.html must label reply button as direct chat');
+
+    // 31. v3.5.3 User 5-Bugfixes Verification
+    // Bug 1: Mascot greeting dynamically reflects user name
+    assert(indexHtml.includes('id="mascotUserGreeting"'), 'index.html must include #mascotUserGreeting');
+    assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
+
+    // Bug 2: Version badge dynamic & synced
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.3</span>'), 'index.html must have v3.5.3 badge');
+    assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
+    assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
+
+    // Bug 3: Chat scroll jitter eliminated
+    assert(!appCode.includes('anchor.scrollIntoView({ block: \'end\', inline: \'nearest\', behavior: smooth ? \'smooth\' : \'auto\' });'), 'app.js must not thrash with scrollIntoView inside scrollChatToBottom');
+    assert(appCode.includes('container.scrollTo({'), 'app.js must use container.scrollTo for smooth scroll');
+
+    // Bug 4: Sentence grammar validation (Q2557 and question bank)
+    const sample2557 = spellingBank.find(q => q.id === 2557);
+    assert(sample2557, 'Question #2557 must exist');
+    assert(sample2557.sentence.includes('나왔어야 [ (     ) ],'), 'Question #2557 must use grammatically valid stem 나왔어야');
+    const completed2557 = sample2557.sentence.replace(/\[\s*\(\s*\)\s*\]/, sample2557.options[sample2557.answerIndex]);
+    assert(completed2557.includes('나왔어야 할걸,'), 'Completed sentence for Q2557 must be natural Korean');
+
+    // Bug 5: Inventory Modal & Send Gift Deduplication
+    assert(indexHtml.includes('id="modalInventory"'), 'index.html must include #modalInventory');
+    assert(indexHtml.includes('id="tabInvGifts"'), 'index.html must include #tabInvGifts');
+    assert(indexHtml.includes('id="tabInvItems"'), 'index.html must include #tabInvItems');
+    assert(indexHtml.includes('id="tabInvAcc"'), 'index.html must include #tabInvAcc');
+    assert(indexHtml.includes('id="btnChatHeaderInventory"'), 'index.html must include #btnChatHeaderInventory');
+    assert(indexHtml.includes('id="btnOpenInventory"'), 'index.html must include #btnOpenInventory in header');
+    assert(appCode.includes('openInventoryModal'), 'app.js must implement openInventoryModal');
+    assert(appCode.includes('isSendingGift'), 'app.js must guard against duplicate send gift');
+    assert(styleCode.includes('.inv-gift-card'), 'style.css must style .inv-gift-card');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

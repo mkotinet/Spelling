@@ -1,6 +1,6 @@
 {
-  "version": "3.5.2",
-  "build": "20261116_2155",
-  "name": "하루맞춤 (Haru Matchum) - Direct Chat on Notification Click Edition",
-  "releaseNotes": "메시지 알림(웹 푸시 알림, 인앱 팝업, 랭킹 메시지 버튼) 클릭 시 기존 메시지창(쪽지함) 대신 해당 상대방과의 실시간 대화창(채팅창)으로 즉시 직행하도록 라우팅 및 서비스워커 전면 개편"
+  "version": "3.5.3",
+  "build": "20261117_1445",
+  "name": "하루맞춤 (Haru Matchum) - Gift Inventory & Precision Chat Engine Edition",
+  "releaseNotes": "1) 로그인 시 홈 화면 마스코트 환영인사 닉네임 실시간 반영 버그 해결, 2) 페이지 하단 새로고침 배지 버전(v3.5.3) 동기화, 3) 채팅창 글/사진 전송 시 화면 떨림(Jitter) 완벽 제거 및 스크롤 안정화, 4) 정답 삽입 시 완성 문장의 비문 및 어색한 어법 29문항 전수 교정, 5) 내 보관함(인벤토리) 신설(받은 선물함/퀴즈 아이템/치장품) 및 선물 전송 중복 방지 강화"
 }

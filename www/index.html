@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.5.2">
+  <meta name="app-version" content="3.5.3">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,6 +55,10 @@
         <button id="btnOpenInbox" class="icon-btn inbox-btn" title="응원 메시지 보관함" style="position: relative;">
           📬
           <span id="inboxUnreadBadge" class="inbox-unread-badge" style="display: none;">0</span>
+        </button>
+        <button id="btnOpenInventory" class="icon-btn inventory-btn" title="내 보관함 (받은 선물 및 아이템)" style="position: relative;">
+          🎁
+          <span id="headerInvBadge" class="inbox-unread-badge" style="display: none; background: #ec4899;">0</span>
         </button>
         <button id="btnOpenAuthModal" class="icon-btn" title="간단 로그인 / 회원가입">🔑</button>
         <button id="btnReloadPage" class="icon-btn reload-btn" title="화면 새로고침 (최신 버전 불러오기)">🔄</button>
@@ -126,7 +130,7 @@
       <div class="mascot-card">
         <div id="mascotAvatar" class="mascot-avatar">🐰</div>
         <div id="mascotSpeech" class="mascot-bubble">
-          안녕, <strong>맞춤요정</strong>야! 오늘도 반짝이는 맞춤법 퀴즈 도전해볼까? ✨
+          안녕, <strong id="mascotUserGreeting">맞춤요정</strong>야! 오늘도 반짝이는 맞춤법 퀴즈 도전해볼까? ✨
         </div>
       </div>
 
@@ -195,9 +199,9 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span class="version-badge">v2.9.0</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.5.3</span>
         </button>
-        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v2.9 업데이트 소식 다시 보기">
+        <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
           <span>업데이트 소식</span>
         </button>
@@ -1275,6 +1279,7 @@
         <div class="chat-header-actions">
           <button id="btnChatToggleArchive" class="btn-chat-archive-quick" type="button" title="이전 대화 압축 보관">📦 압축</button>
           <button id="btnChatHeaderInvite" class="btn-chat-invite-quick" type="button" title="친구 초대하여 멀티 대화하기" style="display: none;">👥 초대</button>
+          <button id="btnChatHeaderInventory" class="btn-chat-inventory-quick" type="button" title="내 보관함 (받은 선물 및 아이템)">🎒 보관함</button>
           <button id="btnChatHeaderGift" class="btn-chat-gift-quick" type="button" title="선물 보내기">🎁 선물</button>
           <button id="btnCloseChatApp" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
         </div>
@@ -1649,12 +1654,88 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       v3.5.3: INVENTORY / 내 보관함 MODAL (Social Gifts & Quiz Items)
+       ============================================================ -->
+  <div id="modalInventory" class="modal-overlay">
+    <div class="modal-box inventory-modal-box" style="max-width: 520px; width: 92%; max-height: 85vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 24px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.22); overflow: hidden;">
+      <!-- Inventory Header -->
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.5rem;">🎁</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #1e293b;">내 보관함</h3>
+            <span style="font-size: 0.76rem; color: #64748b;">친구들이 보낸 소중한 선물과 보유 퀴즈 아이템</span>
+          </div>
+        </div>
+        <button id="btnModalInventoryClose" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
+      </div>
+
+      <!-- Inventory Nav Tabs -->
+      <div class="inventory-tabs" style="display: flex; gap: 6px; margin: 12px 0 10px 0; background: #f8fafc; padding: 4px; border-radius: 14px; border: 1px solid #e2e8f0;">
+        <button id="tabInvGifts" class="inv-tab-btn active" type="button" style="flex: 1; padding: 8px 6px; border: none; border-radius: 10px; font-size: 0.82rem; font-weight: 800; cursor: pointer; transition: all 0.2s;">
+          🎁 받은 선물 (<span id="invGiftsBadgeCount">0</span>)
+        </button>
+        <button id="tabInvItems" class="inv-tab-btn" type="button" style="flex: 1; padding: 8px 6px; border: none; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+          🎒 퀴즈 아이템
+        </button>
+        <button id="tabInvAcc" class="inv-tab-btn" type="button" style="flex: 1; padding: 8px 6px; border: none; border-radius: 10px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+          👑 보유 치장품
+        </button>
+      </div>
+
+      <!-- Tab 1: Received Social Gifts -->
+      <div id="invViewGifts" class="inv-view-pane active" style="overflow-y: auto; flex: 1; padding: 6px 2px; -webkit-overflow-scrolling: touch;">
+        <div id="invGiftsContainer" class="inv-gifts-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+          <!-- Dynamically populated gift cards -->
+        </div>
+      </div>
+
+      <!-- Tab 2: Quiz Items & Shield -->
+      <div id="invViewItems" class="inv-view-pane" style="display: none; overflow-y: auto; flex: 1; padding: 6px 2px; -webkit-overflow-scrolling: touch;">
+        <!-- Shields Card -->
+        <div class="inv-shield-card" style="background: linear-gradient(135deg, #e0f2fe, #f0f9ff); border: 1.5px solid #bae6fd; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 2rem;">🛡️</span>
+            <div>
+              <div style="font-weight: 800; font-size: 0.95rem; color: #0369a1;">황금 수호 방패</div>
+              <div style="font-size: 0.74rem; color: #0284c7;">틀려도 연속 만점 스트릭을 안전하게 보호 (최대 2개)</div>
+            </div>
+          </div>
+          <span id="invShieldCount" style="font-size: 1.1rem; font-weight: 900; color: #0284c7; background: white; padding: 4px 12px; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">0/2개</span>
+        </div>
+
+        <div id="invItemsContainer" class="inv-items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;">
+          <!-- Dynamically populated game items -->
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <button id="btnInvGoShop" type="button" style="background: linear-gradient(135deg, #ec4899, #f43f5e); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(244,63,94,0.3);">
+            🏪 상점에서 아이템 더 채우기
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Accessories -->
+      <div id="invViewAcc" class="inv-view-pane" style="display: none; overflow-y: auto; flex: 1; padding: 6px 2px; -webkit-overflow-scrolling: touch;">
+        <div id="invAccContainer" class="inv-acc-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px;">
+          <!-- Dynamically populated owned accessories -->
+        </div>
+        <div style="margin-top: 14px; text-align: center;">
+          <button id="btnInvGoDress" type="button" style="background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(168,85,247,0.3);">
+            👗 드레스룸에서 아바타 꾸미기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="questions.js?v=3.5.2"></script>
-  <script src="idiom_questions.js?v=3.5.2"></script>
-  <script src="hanja_questions.js?v=3.5.2"></script>
-  <script src="english_questions.js?v=3.5.2"></script>
-  <script src="stickers.js?v=3.5.2"></script>
-  <script src="app.js?v=3.5.2"></script>
+  <script src="questions.js?v=3.5.3"></script>
+  <script src="idiom_questions.js?v=3.5.3"></script>
+  <script src="hanja_questions.js?v=3.5.3"></script>
+  <script src="english_questions.js?v=3.5.3"></script>
+  <script src="stickers.js?v=3.5.3"></script>
+  <script src="app.js?v=3.5.3"></script>
 </body>
 </html>

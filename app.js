@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.3.0';
+    this.APP_VERSION = metaVer || '3.5.3';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -1649,6 +1649,13 @@ class HaruMatchumApp {
     // Leaderboard state
     this.rankSubject = 'spelling';
     this.rankType = 'round';
+
+    // Inventory Modal & Version Badge (v3.5.3)
+    this.modalInventory = document.getElementById('modalInventory');
+    this.quickReloadVersionBadge = document.getElementById('quickReloadVersionBadge') || document.querySelector('.quick-reload-btn .version-badge');
+    if (this.quickReloadVersionBadge) {
+      this.quickReloadVersionBadge.textContent = 'v' + this.APP_VERSION;
+    }
 
     const soundBtn = document.getElementById('btnToggleSound');
     if (soundBtn) {
@@ -1906,6 +1913,35 @@ class HaruMatchumApp {
     if (btnCancelSendMessage) btnCancelSendMessage.addEventListener('click', () => this.closeSendMessageModal());
     if (btnSubmitSendMessage) btnSubmitSendMessage.addEventListener('click', () => this.submitSendMessage());
     if (btnToggleSelectAll) btnToggleSelectAll.addEventListener('click', () => this.toggleSelectAllRecipients());
+
+    // v3.5.3: Inventory Modal Action Listeners
+    const btnOpenInv = document.getElementById('btnOpenInventory');
+    const btnCloseInv = document.getElementById('btnModalInventoryClose');
+    const btnChatHeaderInv = document.getElementById('btnChatHeaderInventory');
+    const tabInvGifts = document.getElementById('tabInvGifts');
+    const tabInvItems = document.getElementById('tabInvItems');
+    const tabInvAcc = document.getElementById('tabInvAcc');
+    const btnInvGoShop = document.getElementById('btnInvGoShop');
+    const btnInvGoDress = document.getElementById('btnInvGoDress');
+
+    if (btnOpenInv) btnOpenInv.addEventListener('click', () => this.openInventoryModal('gifts'));
+    if (btnCloseInv) btnCloseInv.addEventListener('click', () => this.closeInventoryModal());
+    if (btnChatHeaderInv) btnChatHeaderInv.addEventListener('click', () => this.openInventoryModal('gifts'));
+    if (tabInvGifts) tabInvGifts.addEventListener('click', () => this.switchInventoryTab('gifts'));
+    if (tabInvItems) tabInvItems.addEventListener('click', () => this.switchInventoryTab('items'));
+    if (tabInvAcc) tabInvAcc.addEventListener('click', () => this.switchInventoryTab('acc'));
+    if (btnInvGoShop) {
+      btnInvGoShop.addEventListener('click', () => {
+        this.closeInventoryModal();
+        this.openShopModal();
+      });
+    }
+    if (btnInvGoDress) {
+      btnInvGoDress.addEventListener('click', () => {
+        this.closeInventoryModal();
+        this.openAvatarZoomModal();
+      });
+    }
 
     const msgInput = document.getElementById('msgSendInput');
     if (msgInput) {
@@ -2323,6 +2359,23 @@ class HaruMatchumApp {
     if (userShieldsEl) userShieldsEl.textContent = (this.shields || 0) + '/2개';
     document.getElementById('userPoints').textContent = u.totalPoints + 'P';
     document.getElementById('streakBadge').textContent = `🔥 ${u.streak}일 연속`;
+
+    // v3.5.3: Ensure mascot greeting bubble dynamically reflects authenticated user name
+    if (this.mascotBubble && u && u.name) {
+      const subject = this.quizSubject || 'spelling';
+      if (subject === 'idiom') {
+        this.updateMascotMood('happy', `안녕, <strong>${u.name}</strong>야! 오늘은 지혜가 샘솟는 속담·관용구 퀴즈 도전해볼까? 🍯✨`);
+      } else if (subject === 'hanja') {
+        this.updateMascotMood('happy', `안녕, <strong>${u.name}</strong>야! 오늘은 지혜가 담긴 한자·고사성어 퀴즈에 도전해볼까? 📜✨`);
+      } else if (subject === 'english') {
+        this.updateMascotMood('happy', `Hi, <strong>${u.name}</strong>! 오늘도 반짝이는 영단어 스펠링 퀴즈 도전해볼까? 🔤✨`);
+      } else {
+        this.updateMascotMood('happy', `안녕, <strong>${u.name}</strong>야! 오늘도 반짝이는 맞춤법 퀴즈 도전해볼까? ✨`);
+      }
+    }
+
+    // Update inventory header badge if gifts exist
+    this.updateInventoryBadges();
   }
 
   renderCalendarWeek() {
@@ -6484,17 +6537,21 @@ class HaruMatchumApp {
     }
     this.chatMessagesScrollArea.appendChild(anchor);
 
-    // v3.4.4: Bind load and decode listeners on all images to guarantee bottom pinning
+    // v3.5.3: Debounced image load listener to avoid multiple rapid scroll calls
+    let imageScrollDebounce = null;
     const allImgs = this.chatMessagesScrollArea.querySelectorAll('img');
     allImgs.forEach(img => {
       const onImageLoaded = () => {
         img.classList.add('loaded');
         if (!this.isChatUserScrolledUp) {
-          this.scrollChatToBottom(false);
+          clearTimeout(imageScrollDebounce);
+          imageScrollDebounce = setTimeout(() => {
+            this.scrollChatToBottom(false);
+          }, 30);
         }
       };
       if (img.complete && img.naturalHeight !== 0) {
-        onImageLoaded();
+        img.classList.add('loaded');
       } else {
         img.addEventListener('load', onImageLoaded, { once: true });
         img.addEventListener('error', onImageLoaded, { once: true });
@@ -6506,41 +6563,43 @@ class HaruMatchumApp {
     }
   }
 
-  // v3.4.4: Multi-stage resilient bottom scrolling pipeline (eliminates CLS & async load jumps)
+  // v3.5.3: Jitter-free single-pipeline bottom scrolling (prevents scrollIntoView vs scrollTop thrashing)
   scrollChatToBottom(smooth = false, force = false) {
     const container = this.chatMessagesScrollArea;
     if (!container) return;
 
     if (force) {
       this.isChatUserScrolledUp = false;
+    } else if (this.isChatUserScrolledUp) {
+      return;
     }
 
-    const performScroll = () => {
+    if (this._chatScrollTimer) {
+      cancelAnimationFrame(this._chatScrollTimer);
+      this._chatScrollTimer = null;
+    }
+
+    this._chatScrollTimer = requestAnimationFrame(() => {
       if (!container) return;
-      container.scrollTop = container.scrollHeight;
       const anchor = document.getElementById('chatBottomAnchor');
-      if (anchor) {
+      if (smooth) {
+        if (anchor && typeof anchor.scrollIntoView === 'function') {
+          try {
+            anchor.scrollIntoView({ block: 'end', behavior: 'smooth' });
+            return;
+          } catch (e) {}
+        }
         try {
-          anchor.scrollIntoView({ block: 'end', inline: 'nearest', behavior: smooth ? 'smooth' : 'auto' });
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+          });
         } catch (e) {
           container.scrollTop = container.scrollHeight;
         }
+      } else {
+        container.scrollTop = container.scrollHeight;
       }
-    };
-
-    container.style.scrollBehavior = smooth ? 'smooth' : 'auto';
-    performScroll();
-
-    if (typeof requestAnimationFrame === 'function') {
-      requestAnimationFrame(() => {
-        performScroll();
-        requestAnimationFrame(performScroll);
-      });
-    }
-
-    const delays = [20, 50, 100, 200, 350, 500, 800];
-    delays.forEach(delay => {
-      setTimeout(performScroll, delay);
     });
   }
 
@@ -6935,6 +6994,7 @@ class HaruMatchumApp {
   }
 
   async submitSendGift() {
+    if (this.isSendingGift) return; // v3.5.3: Prevent duplicate concurrent gift sends
     if (!this.selectedGiftItem) {
       this.showToastNotice('선물을 먼저 선택해 주세요! 🎁');
       return;
@@ -6951,6 +7011,7 @@ class HaruMatchumApp {
       return;
     }
 
+    this.isSendingGift = true;
     const customMsg = (document.getElementById('giftCustomMessage')?.value || '').trim();
     const btnSubmit = document.getElementById('btnSubmitSendGift');
     if (btnSubmit) {
@@ -7000,14 +7061,17 @@ class HaruMatchumApp {
         this.closeSendGiftModal();
         this.showToastNotice(`🎁 ${targetUser}님에게 [${this.selectedGiftItem.name}] 선물을 보냈어요! ✨`);
 
-        // If thread is active, safely append message
+        // If thread is active, safely append message with deduplication
         if (data.message && this.currentChatRoomId) {
           if (!Array.isArray(this.cachedChatThreadMessages)) {
             this.cachedChatThreadMessages = [];
           }
-          this.cachedChatThreadMessages.push(data.message);
-          this.renderChatMessages(this.cachedChatThreadMessages, true, false);
-          this.scrollChatToBottom(true, true);
+          const alreadyExists = this.cachedChatThreadMessages.some(m => m.id === data.message.id);
+          if (!alreadyExists) {
+            this.cachedChatThreadMessages.push(data.message);
+            this.renderChatMessages(this.cachedChatThreadMessages, true, false);
+            this.scrollChatToBottom(false, true);
+          }
         }
       } else {
         const errorMsg = (data && data.message) ? data.message : `선물 전송 실패 (${res.status})`;
@@ -7017,6 +7081,7 @@ class HaruMatchumApp {
       console.error('[Send Gift Error]', e);
       this.showToastNotice(`선물 전송 실패: ${e.message || '통신 상태를 확인해주세요.'}`);
     } finally {
+      this.isSendingGift = false;
       if (btnSubmit) {
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = '선물 보내기 🎁';
@@ -7024,7 +7089,7 @@ class HaruMatchumApp {
     }
   }
 
-  claimGift(messageId) {
+  async claimGift(messageId) {
     try {
       if (this.confetti && typeof this.confetti.explode === 'function') {
         this.confetti.explode();
@@ -7033,7 +7098,223 @@ class HaruMatchumApp {
         sfx.fanfare();
       }
     } catch (e) {}
-    this.showToastNotice('🎁 선물이 인벤토리에 안전하게 반영되었습니다! 소중하게 사용해보세요.');
+
+    // Tell server and refresh profile
+    if (this.cloudToken) {
+      try {
+        fetch('/api/chat/claim-gift', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.cloudToken}`
+          },
+          body: JSON.stringify({ token: this.cloudToken, messageId })
+        }).catch(() => {});
+        await this.refreshCloudUserProfile();
+      } catch (err) {}
+    }
+
+    this.showToastNotice('🎁 선물이 내 보관함에 안전하게 반영되었습니다! ✨');
+    this.openInventoryModal('gifts');
+  }
+
+  // ============================================================
+  // v3.5.3 INVENTORY / 내 보관함 CONTROLLER
+  // ============================================================
+  async refreshCloudUserProfile() {
+    if (!this.cloudToken) return;
+    try {
+      const res = await fetch('/api/user/profile', {
+        headers: { 'Authorization': `Bearer ${this.cloudToken}` }
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && body.user) {
+          const u = body.user;
+          this.data.currentUser.name = u.name || u.username;
+          this.data.currentUser.totalPoints = u.totalPoints || this.data.currentUser.totalPoints;
+          this.data.currentUser.gifts = Array.isArray(u.gifts) ? u.gifts : (this.data.currentUser.gifts || []);
+          if (u.items && typeof u.items === 'object') {
+            this.items = Object.assign(this.items || {}, u.items);
+          }
+          if (typeof u.shields === 'number') {
+            this.shields = u.shields;
+            localStorage.setItem('haru_game_shields', this.shields);
+          }
+          DataManager.save(this.data);
+          this.renderUserProfile();
+        }
+      }
+    } catch (e) {
+      console.warn('[Haru Matchum] Profile refresh error:', e);
+    }
+  }
+
+  updateInventoryBadges() {
+    const gifts = (this.data && this.data.currentUser && Array.isArray(this.data.currentUser.gifts)) 
+      ? this.data.currentUser.gifts 
+      : [];
+    const count = gifts.length;
+    const badgeEl = document.getElementById('invGiftsBadgeCount');
+    if (badgeEl) badgeEl.textContent = count;
+
+    const headerBadge = document.getElementById('headerInvBadge');
+    if (headerBadge) {
+      if (count > 0) {
+        headerBadge.textContent = count > 99 ? '99+' : count;
+        headerBadge.style.display = 'block';
+      } else {
+        headerBadge.style.display = 'none';
+      }
+    }
+  }
+
+  openInventoryModal(tab = 'gifts') {
+    if (!this.modalInventory) {
+      this.modalInventory = document.getElementById('modalInventory');
+    }
+    if (!this.modalInventory) return;
+
+    this.modalInventory.classList.add('active');
+    this.switchInventoryTab(tab);
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
+  }
+
+  closeInventoryModal() {
+    if (this.modalInventory) {
+      this.modalInventory.classList.remove('active');
+    }
+  }
+
+  switchInventoryTab(tab = 'gifts') {
+    const tabGifts = document.getElementById('tabInvGifts');
+    const tabItems = document.getElementById('tabInvItems');
+    const tabAcc = document.getElementById('tabInvAcc');
+    const viewGifts = document.getElementById('invViewGifts');
+    const viewItems = document.getElementById('invViewItems');
+    const viewAcc = document.getElementById('invViewAcc');
+
+    [tabGifts, tabItems, tabAcc].forEach(t => t && t.classList.remove('active'));
+    if (viewGifts) viewGifts.style.display = 'none';
+    if (viewItems) viewItems.style.display = 'none';
+    if (viewAcc) viewAcc.style.display = 'none';
+
+    if (tab === 'items') {
+      if (tabItems) tabItems.classList.add('active');
+      if (viewItems) viewItems.style.display = 'block';
+      this.renderInventoryItems();
+    } else if (tab === 'acc') {
+      if (tabAcc) tabAcc.classList.add('active');
+      if (viewAcc) viewAcc.style.display = 'block';
+      this.renderInventoryAccessories();
+    } else {
+      if (tabGifts) tabGifts.classList.add('active');
+      if (viewGifts) viewGifts.style.display = 'block';
+      this.renderInventoryGifts();
+    }
+    try {
+      if (typeof sfx !== 'undefined' && typeof sfx.tap === 'function') sfx.tap();
+    } catch (e) {}
+  }
+
+  renderInventoryGifts() {
+    const container = document.getElementById('invGiftsContainer');
+    if (!container) return;
+
+    const gifts = (this.data && this.data.currentUser && Array.isArray(this.data.currentUser.gifts))
+      ? this.data.currentUser.gifts
+      : [];
+
+    this.updateInventoryBadges();
+
+    if (gifts.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px 16px; color: #64748b;">
+          <div style="font-size: 3rem; margin-bottom: 10px;">🎁</div>
+          <div style="font-size: 1rem; font-weight: 800; color: #1e293b; margin-bottom: 6px;">아직 받은 선물이 없어요</div>
+          <div style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin-bottom: 16px;">
+            친구에게 먼저 맛있는 디저트나 치킨 선물을 보내보세요!<br>친구의 답장 선물과 보너스 포인트가 도착합니다 ✨
+          </div>
+          <button type="button" onclick="window.haruApp.closeInventoryModal(); window.haruApp.openChatAppModal();" style="background: var(--gradient-primary); color: white; border: none; padding: 9px 18px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; cursor: pointer;">
+            💬 대화방에서 선물하러 가기
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    // Render in reverse chronological order (newest first)
+    const reversed = [...gifts].reverse();
+    container.innerHTML = reversed.map(gift => `
+      <div class="inv-gift-card">
+        <div class="inv-gift-icon">${gift.icon || '🎁'}</div>
+        <div class="inv-gift-title">${gift.name || '특별한 선물'}</div>
+        <div class="inv-gift-from">보낸 사람: ${gift.fromName || gift.fromUsername || '친구'}</div>
+        <div class="inv-gift-date">수령일: ${gift.kstDate || '최근'}</div>
+        ${gift.bonusPoints ? `<div class="inv-gift-bonus">+${gift.bonusPoints}P 보너스 획득</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  renderInventoryItems() {
+    const shieldCountEl = document.getElementById('invShieldCount');
+    if (shieldCountEl) {
+      shieldCountEl.textContent = `${this.shields || 0}/2개`;
+    }
+
+    const container = document.getElementById('invItemsContainer');
+    if (!container) return;
+
+    const gameItems = [
+      { key: 'heart', name: '하트수호', emoji: '💖', desc: '오답 시 하트 보호' },
+      { key: 'eraser5050', name: '50:50 요술봉', emoji: '🪄', desc: '오답 보기 2개 제거' },
+      { key: 'booster2x', name: '2배 로켓', emoji: '🚀', desc: '라운드 획득 포인트 2배' },
+      { key: 'clover', name: '클로버 패스', emoji: '🍀', desc: '어려운 문제 통과' },
+      { key: 'timemachine', name: '타임머신 시계', emoji: '⏳', desc: '제한 시간 넉넉 연장' },
+      { key: 'magnet', name: '정답 자석', emoji: '🧲', desc: '정답 보기 강력 유인' }
+    ];
+
+    container.innerHTML = gameItems.map(item => {
+      const count = (this.items && this.items[item.key]) || 0;
+      return `
+        <div class="inv-item-card">
+          <div class="inv-item-emoji">${item.emoji}</div>
+          <div class="inv-item-name">${item.name}</div>
+          <div class="inv-item-desc">${item.desc}</div>
+          <div class="inv-item-count">보유: ${count}개</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderInventoryAccessories() {
+    const container = document.getElementById('invAccContainer');
+    if (!container) return;
+
+    const ownedList = (this.data && this.data.currentUser && Array.isArray(this.data.currentUser.inventoryAccessories))
+      ? this.data.currentUser.inventoryAccessories
+      : [];
+
+    if (ownedList.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 30px 10px; color: #94a3b8; font-size: 0.85rem;">
+          보유한 아바타 치장품이 없습니다.<br>상점에서 모자, 의상, 악세사리를 구매해 보세요! 🎀
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = ownedList.map(accId => {
+      return `
+        <div style="background: white; border: 1.5px solid #f1f5f9; border-radius: 12px; padding: 10px 6px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+          <div style="font-size: 1.8rem; margin-bottom: 2px;">👑</div>
+          <div style="font-size: 0.76rem; font-weight: 800; color: #1e293b;">${accId}</div>
+          <div style="font-size: 0.68rem; color: #10b981; font-weight: 700; margin-top: 2px;">보유중</div>
+        </div>
+      `;
+    }).join('');
   }
 
   // ============================================================
@@ -8116,6 +8397,18 @@ class HaruMatchumApp {
             this.data.currentUser.inventoryAccessories = Array.from(mergedInv);
           }
 
+          // v3.5.3: Sync Social Gifts & Game Items & Shields from Server
+          if (Array.isArray(u.gifts)) {
+            this.data.currentUser.gifts = u.gifts;
+          }
+          if (u.items && typeof u.items === 'object') {
+            this.items = Object.assign(this.items || {}, u.items);
+          }
+          if (typeof u.shields === 'number') {
+            this.shields = u.shields;
+            localStorage.setItem('haru_game_shields', this.shields);
+          }
+
           DataManager.save(this.data);
           localStorage.setItem('haru_auth_username', u.name || u.username);
           this.renderUserProfile();
@@ -8320,6 +8613,19 @@ class HaruMatchumApp {
         const mergedInv = new Set([...(this.data.currentUser.inventoryAccessories || []), ...u.inventoryAccessories]);
         this.data.currentUser.inventoryAccessories = Array.from(mergedInv);
       }
+
+      // v3.5.3: Sync Social Gifts & Game Items & Shields on login
+      if (Array.isArray(u.gifts)) {
+        this.data.currentUser.gifts = u.gifts;
+      }
+      if (u.items && typeof u.items === 'object') {
+        this.items = Object.assign(this.items || {}, u.items);
+      }
+      if (typeof u.shields === 'number') {
+        this.shields = u.shields;
+        localStorage.setItem('haru_game_shields', this.shields);
+      }
+
       if (u.solvedQuestionMap && typeof u.solvedQuestionMap === 'object') {
         this.data.currentUser.solvedQuestionMap = u.solvedQuestionMap;
         for (const sub of ['spelling', 'idiom', 'hanja', 'english']) {
@@ -8488,7 +8794,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', '2.9.7');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.3');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
