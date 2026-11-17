@@ -1,157 +1,805 @@
 /**
  * stickers.js
- * v3.4.0 Famous Anime & Cartoon Parody Vector Stickers with Expressive Emotions & Actions
- * 100% Autonomous, Offline-capable Inline SVG Assets (64 stickers: 16 per pack)
+ * v3.5.4 Haru Matchum Age-Graded & Character Sticker System
+ * Features 90 High-Res Custom Illustrated Emoticons (30 Elementary, 30 Middle, 30 High School)
+ * + Minchae Jjanggu & Legacy Character Parodies & Big Emojis
  */
 
 const STICKER_PACKS = {
-  "minchae_jjanggu": {
-      "id": "minchae_jjanggu",
-      "name": "👧 민채짱구",
-      "stickers": [
-          {
-              "id": "minchae_01",
-              "name": "이불 밖은 위험해",
-              "text": "이불 밖은 위험해... Zzz 🍊",
-              "imageUrl": "/public/stickers/minchae/minchae_01.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_01.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_02",
-              "name": "5분만 더 잘래",
-              "text": "5분만 더 잘래... 😴",
-              "imageUrl": "/public/stickers/minchae/minchae_02.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_02.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_03",
-              "name": "귤 하나만 더",
-              "text": "귤 하나만 더 까먹고... 🍊",
-              "imageUrl": "/public/stickers/minchae/minchae_03.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_03.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_04",
-              "name": "꿈나라 퇴근",
-              "text": "꿈나라로 퇴근 완료! 🌙",
-              "imageUrl": "/public/stickers/minchae/minchae_04.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_04.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_05",
-              "name": "옛다 너 하나 준다",
-              "text": "옛다! 너 하나 준다 🍊",
-              "imageUrl": "/public/stickers/minchae/minchae_05.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_05.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_06",
-              "name": "달달한 뇌물",
-              "text": "달달한 뇌물 투척! 💖",
-              "imageUrl": "/public/stickers/minchae/minchae_06.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_06.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_07",
-              "name": "나 착하지 칭찬해줘",
-              "text": "나 착하지? 칭찬해줘! ✨",
-              "imageUrl": "/public/stickers/minchae/minchae_07.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_07.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_08",
-              "name": "간식은 내가 쏜다",
-              "text": "오늘 간식은 내가 쏜다! 🍊",
-              "imageUrl": "/public/stickers/minchae/minchae_08.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_08.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_09",
-              "name": "으아아악 실화냐",
-              "text": "으아아악 실화냐?! 😱",
-              "imageUrl": "/public/stickers/minchae/minchae_09.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_09.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_10",
-              "name": "헉 대박 사건",
-              "text": "헉! 대박 사건!! 💥",
-              "imageUrl": "/public/stickers/minchae/minchae_10.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_10.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_11",
-              "name": "뭐라고 다시 말해봐",
-              "text": "뭐라고?! 다시 말해봐!! ⚡",
-              "imageUrl": "/public/stickers/minchae/minchae_11.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_11.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_12",
-              "name": "내 멘탈 돌려줘",
-              "text": "내 멘탈 돌려줘어어—!! 😭",
-              "imageUrl": "/public/stickers/minchae/minchae_12.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_12.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_13",
-              "name": "면치기의 신",
-              "text": "호로록! 면치기의 신 🍜",
-              "imageUrl": "/public/stickers/minchae/minchae_13.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_13.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_14",
-              "name": "앗 뜨거 후후 불어먹자",
-              "text": "앗 뜨거! 후후 불어먹자 🥢",
-              "imageUrl": "/public/stickers/minchae/minchae_14.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_14.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_15",
-              "name": "국물이 끝내줘요",
-              "text": "국물이 끝내줘요~ 캬! 🍲",
-              "imageUrl": "/public/stickers/minchae/minchae_15.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_15.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_16",
-              "name": "음 바로 이 맛이지",
-              "text": "음~ 바로 이 맛이지! 💖",
-              "imageUrl": "/public/stickers/minchae/minchae_16.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_16.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_17",
-              "name": "존맛탱 인정",
-              "text": "존맛탱 인정! 말리지 마 🔥",
-              "imageUrl": "/public/stickers/minchae/minchae_17.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_17.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_18",
-              "name": "행복은 가까이에",
-              "text": "행복은 맛있는 거 먹는 것! 😋",
-              "imageUrl": "/public/stickers/minchae/minchae_18.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_18.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_19",
-              "name": "오물오물 뇸뇸",
-              "text": "오물오물 뇸뇸 먹는 중 🥢",
-              "imageUrl": "/public/stickers/minchae/minchae_19.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_19.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          },
-          {
-              "id": "minchae_20",
-              "name": "먹을 땐 건드리지 마라",
-              "text": "먹을 땐 건드리지 마라! 쉿 🤫",
-              "imageUrl": "/public/stickers/minchae/minchae_20.png",
-              "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_20.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
-          }
-      ]
+  "elementary_girl": {
+    "id": "elementary_girl",
+    "name": "🎒 초등학생 (말랑콩떡)",
+    "stickers": [
+      {
+        "id": "elem_01",
+        "name": "안뇽! 나 왔어용",
+        "text": "안뇽! 나 왔어용 ♡",
+        "imageUrl": "/public/stickers/elementary/elem_01.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_01.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_02",
+        "name": "웅웅! 알겠습니당",
+        "text": "웅웅! 알겠습니당 🌸",
+        "imageUrl": "/public/stickers/elementary/elem_02.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_02.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_03",
+        "name": "헤헤 신난다앙~",
+        "text": "헤헤 신난다앙~ 🎈",
+        "imageUrl": "/public/stickers/elementary/elem_03.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_03.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_04",
+        "name": "우와앙 대박!!",
+        "text": "우와앙 대박!! ✨",
+        "imageUrl": "/public/stickers/elementary/elem_04.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_04.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_05",
+        "name": "꼬르륵... 배고파요",
+        "text": "꼬르륵... 배고파요 🍽️",
+        "imageUrl": "/public/stickers/elementary/elem_05.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_05.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_06",
+        "name": "간식 주세용 (아~)",
+        "text": "간식 주세용 (아~) 🍟",
+        "imageUrl": "/public/stickers/elementary/elem_06.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_06.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_07",
+        "name": "고마워요 하트 뿅뿅!",
+        "text": "고마워요 하트 뿅뿅! ♡",
+        "imageUrl": "/public/stickers/elementary/elem_07.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_07.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_08",
+        "name": "미안해용 봐주세용 힝",
+        "text": "미안해용 봐주세용 힝 🥺",
+        "imageUrl": "/public/stickers/elementary/elem_08.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_08.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_09",
+        "name": "나랑 놀자아 심심해",
+        "text": "나랑 놀자아 심심해 🧸",
+        "imageUrl": "/public/stickers/elementary/elem_09.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_09.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_10",
+        "name": "오늘도 화이팅! 아자뵤!",
+        "text": "오늘도 화이팅! 아자뵤! 💪",
+        "imageUrl": "/public/stickers/elementary/elem_10.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_10.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_11",
+        "name": "잠시만 기둘려주세용",
+        "text": "잠시만 기둘려주세용 ⏳",
+        "imageUrl": "/public/stickers/elementary/elem_11.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_11.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_12",
+        "name": "호다닥 달려가는 중!",
+        "text": "호다닥 달려가는 중! 🏃‍♀️",
+        "imageUrl": "/public/stickers/elementary/elem_12.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_12.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_13",
+        "name": "칭찬해 줘! 쓰담쓰담",
+        "text": "칭찬해 줘! 쓰담쓰담 👑",
+        "imageUrl": "/public/stickers/elementary/elem_13.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_13.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_14",
+        "name": "힝구... 속상해쪄",
+        "text": "힝구... 속상해쪄 💧",
+        "imageUrl": "/public/stickers/elementary/elem_14.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_14.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_15",
+        "name": "삐졌어! 흥칫뿡!",
+        "text": "삐졌어! 흥칫뿡! 😤",
+        "imageUrl": "/public/stickers/elementary/elem_15.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_15.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_16",
+        "name": "눈물 똑똑... ㅠㅠ",
+        "text": "눈물 똑똑... ㅠㅠ 😭",
+        "imageUrl": "/public/stickers/elementary/elem_16.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_16.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_17",
+        "name": "깜짝이야! 심쿵해쪄",
+        "text": "깜짝이야! 심쿵해쪄 💓",
+        "imageUrl": "/public/stickers/elementary/elem_17.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_17.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_18",
+        "name": "몰라몰라 부끄러웡",
+        "text": "몰라몰라 부끄러웡 🙈",
+        "imageUrl": "/public/stickers/elementary/elem_18.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_18.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_19",
+        "name": "최고최고! 엄지 척!",
+        "text": "최고최고! 엄지 척! 👍",
+        "imageUrl": "/public/stickers/elementary/elem_19.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_19.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_20",
+        "name": "약속! 도장 꾸욱~",
+        "text": "약속! 도장 꾸욱~ 🤙",
+        "imageUrl": "/public/stickers/elementary/elem_20.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_20.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_21",
+        "name": "쿨쿨... 졸려요",
+        "text": "쿨쿨... 졸려요 💤",
+        "imageUrl": "/public/stickers/elementary/elem_21.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_21.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_22",
+        "name": "이불 밖은 위험해!",
+        "text": "이불 밖은 위험해! 🍊",
+        "imageUrl": "/public/stickers/elementary/elem_22.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_22.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_23",
+        "name": "냠냠쩝쩝 마시쪙!",
+        "text": "냠냠쩝쩝 마시쪙! 🍦",
+        "imageUrl": "/public/stickers/elementary/elem_23.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_23.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_24",
+        "name": "에구구 힘들다아",
+        "text": "에구구 힘들다아 🪫",
+        "imageUrl": "/public/stickers/elementary/elem_24.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_24.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_25",
+        "name": "어쩌지? 발 동동",
+        "text": "어쩌지? 발 동동 👣",
+        "imageUrl": "/public/stickers/elementary/elem_25.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_25.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_26",
+        "name": "궁금해! 알려줘잉",
+        "text": "궁금해! 알려줘잉 ❓",
+        "imageUrl": "/public/stickers/elementary/elem_26.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_26.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_27",
+        "name": "내가 도와줄게용!",
+        "text": "내가 도와줄게용! 🦸‍♀️",
+        "imageUrl": "/public/stickers/elementary/elem_27.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_27.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_28",
+        "name": "오늘 기분 째진다~!",
+        "text": "오늘 기분 째진다~! 🌈",
+        "imageUrl": "/public/stickers/elementary/elem_28.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_28.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_29",
+        "name": "내일 또 만나용 안뇽!",
+        "text": "내일 또 만나용 안뇽! 👋",
+        "imageUrl": "/public/stickers/elementary/elem_29.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_29.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "elem_30",
+        "name": "코오~ 잘 자요 굿나잇!",
+        "text": "코오~ 잘 자요 굿나잇! 🌙",
+        "imageUrl": "/public/stickers/elementary/elem_30.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/elementary/elem_30.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      }
+    ]
   },
-
+  "middle_girl": {
+    "id": "middle_girl",
+    "name": "🧋 중학생 (과즙미 뿜뿜)",
+    "stickers": [
+      {
+        "id": "mid_01",
+        "name": "하이하이! 나 등장!",
+        "text": "하이하이! 나 등장! 🧋",
+        "imageUrl": "/public/stickers/middle/mid_01.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_01.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_02",
+        "name": "오키오키 접수 완료~",
+        "text": "오키오키 접수 완료~ 👌",
+        "imageUrl": "/public/stickers/middle/mid_02.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_02.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_03",
+        "name": "완전 럭키비키잖앙!",
+        "text": "완전 럭키비키잖앙! 🍀",
+        "imageUrl": "/public/stickers/middle/mid_03.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_03.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_04",
+        "name": "헐 대박 완전 귀여워!!",
+        "text": "헐 대박 완전 귀여워!! 💖",
+        "imageUrl": "/public/stickers/middle/mid_04.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_04.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_05",
+        "name": "심장 아파... 큐트해",
+        "text": "심장 아파... 큐트해 💘",
+        "imageUrl": "/public/stickers/middle/mid_05.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_05.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_06",
+        "name": "당 충전 시급함 (초코!)",
+        "text": "당 충전 시급함 (초코!) 🍫",
+        "imageUrl": "/public/stickers/middle/mid_06.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_06.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_07",
+        "name": "마라탕 먹으러 갈 파티원!",
+        "text": "마라탕 먹으러 갈 파티원! 🍜",
+        "imageUrl": "/public/stickers/middle/mid_07.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_07.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_08",
+        "name": "헤헤 넘 조아앙",
+        "text": "헤헤 넘 조아앙 😆",
+        "imageUrl": "/public/stickers/middle/mid_08.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_08.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_09",
+        "name": "고마워! 복 받을 거양",
+        "text": "고마워! 복 받을 거양 👼",
+        "imageUrl": "/public/stickers/middle/mid_09.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_09.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_10",
+        "name": "내가 잘못했어 싹싹~",
+        "text": "내가 잘못했어 싹싹~ 😭",
+        "imageUrl": "/public/stickers/middle/mid_10.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_10.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_11",
+        "name": "빨리 와아 보고 시펑",
+        "text": "빨리 와아 보고 시펑 ⏰",
+        "imageUrl": "/public/stickers/middle/mid_11.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_11.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_12",
+        "name": "지금 날아가는 중 슝=3",
+        "text": "지금 날아가는 중 슝=3 🚀",
+        "imageUrl": "/public/stickers/middle/mid_12.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_12.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_13",
+        "name": "기분 날아갈 것 같아!",
+        "text": "기분 날아갈 것 같아! 🛸",
+        "imageUrl": "/public/stickers/middle/mid_13.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_13.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_14",
+        "name": "나 건들면 물 거양! 크앙",
+        "text": "나 건들면 물 거양! 크앙 🐯",
+        "imageUrl": "/public/stickers/middle/mid_14.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_14.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_15",
+        "name": "우울해... 달래줘 ㅠㅠ",
+        "text": "우울해... 달래줘 ㅠㅠ 🍬",
+        "imageUrl": "/public/stickers/middle/mid_15.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_15.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_16",
+        "name": "삐빅! 과부하 왔습니당",
+        "text": "삐빅! 과부하 왔습니당 ⚡",
+        "imageUrl": "/public/stickers/middle/mid_16.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_16.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_17",
+        "name": "두근두근 설레잖아~",
+        "text": "두근두근 설레잖아~ 💓",
+        "imageUrl": "/public/stickers/middle/mid_17.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_17.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_18",
+        "name": "주머니에 쏙 넣고 싶당",
+        "text": "주머니에 쏙 넣고 싶당 🧸",
+        "imageUrl": "/public/stickers/middle/mid_18.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_18.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_19",
+        "name": "박수 백만 번 짝짝짝!",
+        "text": "박수 백만 번 짝짝짝! 👏",
+        "imageUrl": "/public/stickers/middle/mid_19.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_19.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_20",
+        "name": "이건 비밀인데... (속닥)",
+        "text": "이건 비밀인데... (속닥) 🤫",
+        "imageUrl": "/public/stickers/middle/mid_20.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_20.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_21",
+        "name": "졸려서 눈 감긴다아...",
+        "text": "졸려서 눈 감긴다아... 😴",
+        "imageUrl": "/public/stickers/middle/mid_21.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_21.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_22",
+        "name": "뒹굴뒹굴 껌딱지 모드",
+        "text": "뒹굴뒹굴 껌딱지 모드 🛋️",
+        "imageUrl": "/public/stickers/middle/mid_22.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_22.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_23",
+        "name": "입 터졌다! 냠냠",
+        "text": "입 터졌다! 냠냠 🍕",
+        "imageUrl": "/public/stickers/middle/mid_23.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_23.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_24",
+        "name": "헉! 까먹었어 어떡해",
+        "text": "헉! 까먹었어 어떡해 😱",
+        "imageUrl": "/public/stickers/middle/mid_24.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_24.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_25",
+        "name": "나 잘했지? 우쭈쭈해줘",
+        "text": "나 잘했지? 우쭈쭈해줘 💮",
+        "imageUrl": "/public/stickers/middle/mid_25.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_25.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_26",
+        "name": "전적으로 믿으세용! (찡긋)",
+        "text": "전적으로 믿으세용! (찡긋) 😉",
+        "imageUrl": "/public/stickers/middle/mid_26.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_26.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_27",
+        "name": "오늘 텐션 백만 볼트!",
+        "text": "오늘 텐션 백만 볼트! ⚡",
+        "imageUrl": "/public/stickers/middle/mid_27.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_27.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_28",
+        "name": "아잉 부끄럽게 왜 이래~",
+        "text": "아잉 부끄럽게 왜 이래~ 🔥",
+        "imageUrl": "/public/stickers/middle/mid_28.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_28.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_29",
+        "name": "빠빠이! 연락할게용",
+        "text": "빠빠이! 연락할게용 💌",
+        "imageUrl": "/public/stickers/middle/mid_29.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_29.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "mid_30",
+        "name": "잘 자구 내 꿈 꿔~!",
+        "text": "잘 자구 내 꿈 꿔~! ⭐",
+        "imageUrl": "/public/stickers/middle/mid_30.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/middle/mid_30.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      }
+    ]
+  },
+  "high_girl": {
+    "id": "high_girl",
+    "name": "🌸 고등학생 (말랑 힐링)",
+    "stickers": [
+      {
+        "id": "high_01",
+        "name": "안농~ 생존 신고!",
+        "text": "안농~ 생존 신고! 🌙",
+        "imageUrl": "/public/stickers/high/high_01.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_01.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_02",
+        "name": "웅! 확인했어용",
+        "text": "웅! 확인했어용 📑",
+        "imageUrl": "/public/stickers/high/high_02.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_02.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_03",
+        "name": "오예! 신난다아",
+        "text": "오예! 신난다아 🥳",
+        "imageUrl": "/public/stickers/high/high_03.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_03.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_04",
+        "name": "소확행 충전 중...",
+        "text": "소확행 충전 중... ☕",
+        "imageUrl": "/public/stickers/high/high_04.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_04.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_05",
+        "name": "꼬르륵... 밥 시간 언제야",
+        "text": "꼬르륵... 밥 시간 언제야 🍱",
+        "imageUrl": "/public/stickers/high/high_05.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_05.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_06",
+        "name": "달달구리 수혈 필요해",
+        "text": "달달구리 수혈 필요해 🧁",
+        "imageUrl": "/public/stickers/high/high_06.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_06.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_07",
+        "name": "너밖에 없다 감동이야 ㅠ",
+        "text": "너밖에 없다 감동이야 ㅠ 🥺",
+        "imageUrl": "/public/stickers/high/high_07.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_07.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_08",
+        "name": "미안미안! 내가 다 잘못했엉",
+        "text": "미안미안! 내가 다 잘못했엉 🙇‍♀️",
+        "imageUrl": "/public/stickers/high/high_08.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_08.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_09",
+        "name": "힐링이 필요해... 토닥토닥",
+        "text": "힐링이 필요해... 토닥토닥 🧸",
+        "imageUrl": "/public/stickers/high/high_09.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_09.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_10",
+        "name": "조금만 더 힘내자 아자!",
+        "text": "조금만 더 힘내자 아자! 🍀",
+        "imageUrl": "/public/stickers/high/high_10.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_10.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_11",
+        "name": "총총총... 집 가는 길!",
+        "text": "총총총... 집 가는 길! 🎒",
+        "imageUrl": "/public/stickers/high/high_11.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_11.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_12",
+        "name": "칼답 대기 중입니당",
+        "text": "칼답 대기 중입니당 ⚡",
+        "imageUrl": "/public/stickers/high/high_12.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_12.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_13",
+        "name": "기분 몽글몽글해졌어",
+        "text": "기분 몽글몽글해졌어 ☁️",
+        "imageUrl": "/public/stickers/high/high_13.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_13.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_14",
+        "name": "나 지금 뾰루퉁함",
+        "text": "나 지금 뾰루퉁함 😤",
+        "imageUrl": "/public/stickers/high/high_14.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_14.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_15",
+        "name": "사르르 녹는다 녹아...",
+        "text": "사르르 녹는다 녹아... ♨️",
+        "imageUrl": "/public/stickers/high/high_15.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_15.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_16",
+        "name": "뇌 용량 초과! 삐빅-",
+        "text": "뇌 용량 초과! 삐빅- 🧠",
+        "imageUrl": "/public/stickers/high/high_16.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_16.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_17",
+        "name": "설레서 잠 안 와 어떡행",
+        "text": "설레서 잠 안 와 어떡행 💫",
+        "imageUrl": "/public/stickers/high/high_17.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_17.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_18",
+        "name": "오늘 미모 열일하네!",
+        "text": "오늘 미모 열일하네! 🪞",
+        "imageUrl": "/public/stickers/high/high_18.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_18.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_19",
+        "name": "무조건 찬성! 콜이야",
+        "text": "무조건 찬성! 콜이야 🤙",
+        "imageUrl": "/public/stickers/high/high_19.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_19.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_20",
+        "name": "우리끼리만 아는 거당?",
+        "text": "우리끼리만 아는 거당? 🤫",
+        "imageUrl": "/public/stickers/high/high_20.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_20.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_21",
+        "name": "꾸벅꾸벅... 잠과의 사투",
+        "text": "꾸벅꾸벅... 잠과의 사투 😴",
+        "imageUrl": "/public/stickers/high/high_21.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_21.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_22",
+        "name": "이불 속에서 꼼지락",
+        "text": "이불 속에서 꼼지락 ❄️",
+        "imageUrl": "/public/stickers/high/high_22.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_22.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_23",
+        "name": "맛있는 거 사주세용 헤헤",
+        "text": "맛있는 거 사주세용 헤헤 🍊",
+        "imageUrl": "/public/stickers/high/high_23.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_23.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_24",
+        "name": "동공 지진... 어떡하지",
+        "text": "동공 지진... 어떡하지 🌀",
+        "imageUrl": "/public/stickers/high/high_24.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_24.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_25",
+        "name": "오늘 하루도 고생 많았어!",
+        "text": "오늘 하루도 고생 많았어! ✨",
+        "imageUrl": "/public/stickers/high/high_25.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_25.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_26",
+        "name": "내 마음이야 받아랏 얍!",
+        "text": "내 마음이야 받아랏 얍! 💖",
+        "imageUrl": "/public/stickers/high/high_26.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_26.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_27",
+        "name": "충전 완료! 삐리릿",
+        "text": "충전 완료! 삐리릿 🔋",
+        "imageUrl": "/public/stickers/high/high_27.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_27.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_28",
+        "name": "부끄러우니까 숨어야지 총총",
+        "text": "부끄러우니까 숨어야지 총총 🙈",
+        "imageUrl": "/public/stickers/high/high_28.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_28.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_29",
+        "name": "내일 보자아 안뇽!",
+        "text": "내일 보자아 안뇽! 🌸",
+        "imageUrl": "/public/stickers/high/high_29.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_29.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "high_30",
+        "name": "포근한 밤 보내 굿나잇!",
+        "text": "포근한 밤 보내 굿나잇! 🌙",
+        "imageUrl": "/public/stickers/high/high_30.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/high/high_30.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      }
+    ]
+  },
+  "minchae_jjanggu": {
+    "id": "minchae_jjanggu",
+    "name": "👧 민채짱구",
+    "stickers": [
+      {
+        "id": "minchae_01",
+        "name": "이불 밖은 위험해",
+        "text": "이불 밖은 위험해... Zzz 🍊",
+        "imageUrl": "/public/stickers/minchae/minchae_01.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_01.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_02",
+        "name": "5분만 더 잘래",
+        "text": "5분만 더 잘래... 😴",
+        "imageUrl": "/public/stickers/minchae/minchae_02.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_02.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_03",
+        "name": "귤 하나만 더",
+        "text": "귤 하나만 더 까먹고... 🍊",
+        "imageUrl": "/public/stickers/minchae/minchae_03.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_03.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_04",
+        "name": "꿈나라 퇴근",
+        "text": "꿈나라로 퇴근 완료! 🌙",
+        "imageUrl": "/public/stickers/minchae/minchae_04.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_04.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_05",
+        "name": "옛다 너 하나 준다",
+        "text": "옛다! 너 하나 준다 🍊",
+        "imageUrl": "/public/stickers/minchae/minchae_05.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_05.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_06",
+        "name": "달달한 뇌물",
+        "text": "달달한 뇌물 투척! 💖",
+        "imageUrl": "/public/stickers/minchae/minchae_06.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_06.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_07",
+        "name": "나 착하지 칭찬해줘",
+        "text": "나 착하지? 칭찬해줘! ✨",
+        "imageUrl": "/public/stickers/minchae/minchae_07.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_07.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_08",
+        "name": "간식은 내가 쏜다",
+        "text": "오늘 간식은 내가 쏜다! 🍊",
+        "imageUrl": "/public/stickers/minchae/minchae_08.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_08.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_09",
+        "name": "으아아악 실화냐",
+        "text": "으아아악 실화냐?! 😱",
+        "imageUrl": "/public/stickers/minchae/minchae_09.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_09.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_10",
+        "name": "헉 대박 사건",
+        "text": "헉! 대박 사건!! 💥",
+        "imageUrl": "/public/stickers/minchae/minchae_10.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_10.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_11",
+        "name": "뭐라고 다시 말해봐",
+        "text": "뭐라고?! 다시 말해봐!! ⚡",
+        "imageUrl": "/public/stickers/minchae/minchae_11.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_11.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_12",
+        "name": "내 멘탈 돌려줘",
+        "text": "내 멘탈 돌려줘어어—!! 😭",
+        "imageUrl": "/public/stickers/minchae/minchae_12.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_12.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_13",
+        "name": "면치기의 신",
+        "text": "호로록! 면치기의 신 🍜",
+        "imageUrl": "/public/stickers/minchae/minchae_13.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_13.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_14",
+        "name": "앗 뜨거 후후 불어먹자",
+        "text": "앗 뜨거! 후후 불어먹자 🥢",
+        "imageUrl": "/public/stickers/minchae/minchae_14.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_14.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_15",
+        "name": "국물이 끝내줘요",
+        "text": "국물이 끝내줘요~ 캬! 🍲",
+        "imageUrl": "/public/stickers/minchae/minchae_15.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_15.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_16",
+        "name": "음 바로 이 맛이지",
+        "text": "음~ 바로 이 맛이지! 💖",
+        "imageUrl": "/public/stickers/minchae/minchae_16.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_16.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_17",
+        "name": "존맛탱 인정",
+        "text": "존맛탱 인정! 말리지 마 🔥",
+        "imageUrl": "/public/stickers/minchae/minchae_17.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_17.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_18",
+        "name": "행복은 가까이에",
+        "text": "행복은 맛있는 거 먹는 것! 😋",
+        "imageUrl": "/public/stickers/minchae/minchae_18.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_18.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_19",
+        "name": "오물오물 뇸뇸",
+        "text": "오물오물 뇸뇸 먹는 중 🥢",
+        "imageUrl": "/public/stickers/minchae/minchae_19.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_19.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      },
+      {
+        "id": "minchae_20",
+        "name": "먹을 땐 건드리지 마라",
+        "text": "먹을 땐 건드리지 마라! 쉿 🤫",
+        "imageUrl": "/public/stickers/minchae/minchae_20.png",
+        "svg": "<svg viewBox=\"0 0 120 120\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\"><image href=\"/public/stickers/minchae/minchae_20.png\" x=\"0\" y=\"0\" width=\"120\" height=\"120\" preserveAspectRatio=\"xMidYMid slice\"/></svg>"
+      }
+    ]
+  },
   "pokemon_friends": {
     "id": "pokemon_friends",
     "name": "⚡ 포켓몬 친구들",
@@ -562,6 +1210,6 @@ const STICKER_PACKS = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = { STICKER_PACKS };
 }

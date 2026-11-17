@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.3">'), 'index.html must include meta app-version 3.5.3');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.4">'), 'index.html must include meta app-version 3.5.4');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.3', 'GET /api/version version must be 3.5.3');
+    assert.strictEqual(verRes.data.version, '3.5.4', 'GET /api/version version must be 3.5.4');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -522,7 +522,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.3';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.4';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -535,7 +535,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.3</span>'), 'index.html must have v3.5.3 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.4</span>'), 'index.html must have v3.5.4 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -560,6 +560,30 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('openInventoryModal'), 'app.js must implement openInventoryModal');
     assert(appCode.includes('isSendingGift'), 'app.js must guard against duplicate send gift');
     assert(styleCode.includes('.inv-gift-card'), 'style.css must style .inv-gift-card');
+
+    // 32. v3.5.4 Age-Graded 90 Custom Illustrated Sticker Packs Verification
+    assert(STICKER_PACKS.elementary_girl, 'stickers.js must define elementary_girl pack');
+    assert(STICKER_PACKS.middle_girl, 'stickers.js must define middle_girl pack');
+    assert(STICKER_PACKS.high_girl, 'stickers.js must define high_girl pack');
+    assert.strictEqual(STICKER_PACKS.elementary_girl.stickers.length, 30, 'elementary_girl pack must contain 30 stickers');
+    assert.strictEqual(STICKER_PACKS.middle_girl.stickers.length, 30, 'middle_girl pack must contain 30 stickers');
+    assert.strictEqual(STICKER_PACKS.high_girl.stickers.length, 30, 'high_girl pack must contain 30 stickers');
+
+    // Verify all 90 images exist in public/stickers and www/public/stickers
+    for (let i = 1; i <= 30; i++) {
+      const pad = String(i).padStart(2, '0');
+      assert(fs.existsSync(path.join(__dirname, `../public/stickers/elementary/elem_${pad}.png`)), `elem_${pad}.png must exist in public`);
+      assert(fs.existsSync(path.join(__dirname, `../www/public/stickers/elementary/elem_${pad}.png`)), `elem_${pad}.png must exist in www`);
+      assert(fs.existsSync(path.join(__dirname, `../public/stickers/middle/mid_${pad}.png`)), `mid_${pad}.png must exist in public`);
+      assert(fs.existsSync(path.join(__dirname, `../www/public/stickers/middle/mid_${pad}.png`)), `mid_${pad}.png must exist in www`);
+      assert(fs.existsSync(path.join(__dirname, `../public/stickers/high/high_${pad}.png`)), `high_${pad}.png must exist in public`);
+      assert(fs.existsSync(path.join(__dirname, `../www/public/stickers/high/high_${pad}.png`)), `high_${pad}.png must exist in www`);
+    }
+
+    assert(indexHtml.includes('data-pack="elementary_girl"'), 'index.html must have elementary_girl tab');
+    assert(indexHtml.includes('data-pack="middle_girl"'), 'index.html must have middle_girl tab');
+    assert(indexHtml.includes('data-pack="high_girl"'), 'index.html must have high_girl tab');
+    assert(appCode.includes('elementary_girl'), 'app.js must default/support elementary_girl pack');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

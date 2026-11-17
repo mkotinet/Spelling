@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.3';
+    this.APP_VERSION = metaVer || '3.5.4';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -6059,7 +6059,7 @@ class HaruMatchumApp {
       tab.addEventListener('click', (e) => {
         document.querySelectorAll('.sticker-pack-tab').forEach(t => t.classList.remove('active'));
         e.currentTarget.classList.add('active');
-        this.renderStickerGrid(e.currentTarget.dataset.pack || 'minchae_jjanggu');
+        this.renderStickerGrid(e.currentTarget.dataset.pack || 'elementary_girl');
       });
     });
 
@@ -6767,7 +6767,7 @@ class HaruMatchumApp {
     if (banner) banner.style.display = 'none';
   }
 
-  // Sticker & Big Emoji Drawer
+  // Sticker & Big Emoji Drawer (v3.5.4: elementary_girl, middle_girl, high_girl, minchae_jjanggu, etc.)
   toggleChatStickerDrawer(forcedOpen = null, initialPack = null) {
     if (!this.chatStickerDrawer) return;
 
@@ -6776,7 +6776,7 @@ class HaruMatchumApp {
 
     if (nextOpen) {
       this.chatStickerDrawer.style.display = 'flex';
-      const targetPack = initialPack || this.activeStickerPack || 'minchae_jjanggu';
+      const targetPack = initialPack || this.activeStickerPack || 'elementary_girl';
       document.querySelectorAll('.sticker-pack-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.pack === targetPack);
       });
@@ -6786,7 +6786,7 @@ class HaruMatchumApp {
     }
   }
 
-  renderStickerGrid(packId = 'minchae_jjanggu') {
+  renderStickerGrid(packId = 'elementary_girl') {
     this.activeStickerPack = packId;
     const grid = document.getElementById('chatStickerGrid');
     if (!grid) return;
@@ -8794,7 +8794,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.3');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.4');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

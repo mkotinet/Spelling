@@ -37,7 +37,7 @@
   "35": "test_v2910_whatsnew_and_messaging_fixes.js",
   "36": "test_v2913_emoji_picker_toggle_and_sticky_send_button.js",
   "37": "test_20000_questions_and_permutations.js",
-  "38": "hanja_questions.js",
+  "38": "test_random_answer_distribution.js",
   "39": "test_server_compression.js",
   "40": "test_four_subjects_integration.js",
   "41": "test_v2914_pwa_and_web_push.js",
@@ -131,7 +131,7 @@
   "129": "manifest.json",
   "130": "www/manifest.json",
   "131": "36. v3.2.0 PWA 홈 바로가기(A2HS) 설치 지원, 서비스 워커 & Web Push VAPID 백그라운드 실시간 알림창 및 사운드 알림 엔진 탑재",
-  "132": "MockEngine",
+  "132": "generate_hanja_5000.js",
   "133": "39. v3.4.0 대화창 입력 편의성 개선, 퀴즈 스마트 이어하기, 대화 압축 보관 아코디언, 애니메이션 패러디 스티커 & 한국 브랜드 패러디 선물 대폭 탑재",
   "134": "test_v342_mobile_layout_and_concise_quiz.js",
   "135": "test_v321_ui_and_grammar_refinement.js",
@@ -157,5 +157,9 @@
   "155": "45. v3.5.1 사용자 맞춤형 실사 기반 카툰 일러스트 '민채짱구' 스티커 카테고리(총 20종) 신설 및 고화질 이미지 스티커 시스템 구축",
   "156": ".renderShopAvatarPreview",
   "157": "46. v3.5.2 메시지 알림 클릭 시 실시간 대화창(채팅창) 직행 라우팅 시스템 구축",
-  "158": "47. v3.5.3 로그인 닉네임 환영인사 동기화, 새로고침 버전 배지 일치화, 채팅창 스크롤 떨림(Jitter) 완벽 제거, 문장 비문 28제 전수 교정 및 내 보관함(인벤토리) 시스템 신설"
+  "158": "47. v3.5.3 로그인 닉네임 환영인사 동기화, 새로고침 버전 배지 일치화, 채팅창 스크롤 떨림(Jitter) 완벽 제거, 문장 비문 28제 전수 교정 및 내 보관함(인벤토리) 시스템 신설",
+  "159": "📱 v3.0 주요 특징 (iOS & Android Universal Mobile Edition)",
+  "160": "loadGroups",
+  "161": "test_mode_toggle.js",
+  "162": "MOBILE_BUILD_GUIDE.md"
 }
