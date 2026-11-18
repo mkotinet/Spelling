@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.4">'), 'index.html must include meta app-version 3.5.4');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.5">'), 'index.html must include meta app-version 3.5.5');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.4', 'GET /api/version version must be 3.5.4');
+    assert.strictEqual(verRes.data.version, '3.5.5', 'GET /api/version version must be 3.5.5');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -522,7 +522,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.4';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.5';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -535,7 +535,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.4</span>'), 'index.html must have v3.5.4 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.5</span>'), 'index.html must have v3.5.5 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -584,6 +584,15 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(indexHtml.includes('data-pack="middle_girl"'), 'index.html must have middle_girl tab');
     assert(indexHtml.includes('data-pack="high_girl"'), 'index.html must have high_girl tab');
     assert(appCode.includes('elementary_girl'), 'app.js must default/support elementary_girl pack');
+
+    // 33. v3.5.5 Quiz Session Boundary Protection, Q6 Prevention & Safe App Resume
+    assert(appCode.includes('this.currentIndex >= this.activeQuestions.length'), 'app.js must guard against saving session when currentIndex >= length');
+    assert(appCode.includes("viewName === 'result'"), 'switchView in app.js must explicitly clear active session on result view');
+    assert(appCode.includes('this.activeQuestions = null;'), 'finishQuiz in app.js must nullify activeQuestions to prevent zombie sessions');
+    assert(appCode.includes('session.currentIndex >= totalQ'), 'updateResumeQuizBanner must guard against displaying Q6 and clear zombie session');
+    assert(appCode.includes('(Q${currentQNum}/${totalQ})'), 'updateResumeQuizBanner must display clamped Q count (e.g. Q1/5)');
+    assert(appCode.includes('!this.activeQuestions[this.currentIndex]'), 'renderCurrentQuestion must defensively guard against undefined question');
+    assert(appCode.includes('// Refresh banner without forcibly abducting the user from the home screen'), 'visibilitychange must not abduct user from home');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

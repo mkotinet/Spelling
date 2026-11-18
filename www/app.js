@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.4';
+    this.APP_VERSION = metaVer || '3.5.5';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -2086,15 +2086,25 @@ class HaruMatchumApp {
     // Lifecycle & Date Transition Watchers (Mobile app switch / background resume & session persistence)
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') {
-        this.saveActiveQuizSession();
+        if (this.currentViewName === 'quiz') {
+          this.saveActiveQuizSession();
+        }
       } else if (document.visibilityState === 'visible') {
         // Automatically check if server version is newer and refresh if needed
         this.checkAppVersionUpdate();
         const transitioned = this.checkDateTransition();
-        if (!transitioned && this.currentViewName !== 'quiz') {
-          const raw = localStorage.getItem('haru_active_quiz_session');
-          if (raw) {
-            this.restoreActiveQuizSession();
+        if (!transitioned) {
+          if (this.currentViewName === 'quiz') {
+            // Restore session only if active question data was purged from memory
+            if (!this.activeQuestions || !this.activeQuestions[this.currentIndex]) {
+              const raw = localStorage.getItem('haru_active_quiz_session');
+              if (raw) {
+                this.restoreActiveQuizSession();
+              }
+            }
+          } else if (this.currentViewName === 'home') {
+            // Refresh banner without forcibly abducting the user from the home screen
+            this.updateResumeQuizBanner();
           }
         }
       }
@@ -2102,20 +2112,28 @@ class HaruMatchumApp {
     window.addEventListener('pageshow', () => {
       this.checkAppVersionUpdate();
       const transitioned = this.checkDateTransition();
-      if (!transitioned && this.currentViewName !== 'quiz') {
-        const raw = localStorage.getItem('haru_active_quiz_session');
-        if (raw) {
-          this.restoreActiveQuizSession();
+      if (!transitioned) {
+        if (this.currentViewName === 'quiz') {
+          if (!this.activeQuestions || !this.activeQuestions[this.currentIndex]) {
+            const raw = localStorage.getItem('haru_active_quiz_session');
+            if (raw) this.restoreActiveQuizSession();
+          }
+        } else if (this.currentViewName === 'home') {
+          this.updateResumeQuizBanner();
         }
       }
     });
     window.addEventListener('focus', () => {
       this.checkAppVersionUpdate();
       const transitioned = this.checkDateTransition();
-      if (!transitioned && this.currentViewName !== 'quiz') {
-        const raw = localStorage.getItem('haru_active_quiz_session');
-        if (raw) {
-          this.restoreActiveQuizSession();
+      if (!transitioned) {
+        if (this.currentViewName === 'quiz') {
+          if (!this.activeQuestions || !this.activeQuestions[this.currentIndex]) {
+            const raw = localStorage.getItem('haru_active_quiz_session');
+            if (raw) this.restoreActiveQuizSession();
+          }
+        } else if (this.currentViewName === 'home') {
+          this.updateResumeQuizBanner();
         }
       }
     });
@@ -2206,7 +2224,11 @@ class HaruMatchumApp {
       englishVoice.stop();
     }
     if (this.currentViewName === 'quiz' && viewName !== 'quiz') {
-      this.saveActiveQuizSession();
+      if (viewName === 'result' || !this.activeQuestions || (typeof this.currentIndex === 'number' && this.currentIndex >= this.activeQuestions.length)) {
+        this.clearActiveQuizSession();
+      } else {
+        this.saveActiveQuizSession();
+      }
     }
     this.currentViewName = viewName;
     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -2775,6 +2797,14 @@ class HaruMatchumApp {
   }
 
   renderCurrentQuestion() {
+    if (!this.activeQuestions || !Array.isArray(this.activeQuestions) || this.activeQuestions.length === 0 ||
+        typeof this.currentIndex !== 'number' || this.currentIndex < 0 || this.currentIndex >= this.activeQuestions.length ||
+        !this.activeQuestions[this.currentIndex]) {
+      console.warn('[Quiz] renderCurrentQuestion: Invalid question index or missing activeQuestions', this.currentIndex);
+      this.clearActiveQuizSession();
+      this.switchView('home');
+      return;
+    }
     const q = this.activeQuestions[this.currentIndex];
     const total = this.activeQuestions.length;
 
@@ -3154,7 +3184,9 @@ class HaruMatchumApp {
 
   finishQuiz() {
     this.clearActiveQuizSession();
-    this.recordQuestionsSolvedBatch((this.activeQuestions || []).map(q => q.id), this.quizSubject);
+    const solvedIds = (this.activeQuestions || []).map(q => q.id);
+    this.activeQuestions = null;
+    this.recordQuestionsSolvedBatch(solvedIds, this.quizSubject);
     sfx.fanfare();
     this.confetti.explode();
 
@@ -3215,7 +3247,9 @@ class HaruMatchumApp {
         if (resultFailActions) resultFailActions.style.display = 'none';
       }
 
+      this.clearActiveQuizSession();
       this.switchView('result');
+      this.clearActiveQuizSession();
       return;
     }
 
@@ -3565,7 +3599,9 @@ class HaruMatchumApp {
       if (btnEliminated) btnEliminated.style.display = 'none';
     }
 
+    this.clearActiveQuizSession();
     this.switchView('result');
+    this.clearActiveQuizSession();
   }
 
   startNextRound() {
@@ -6767,7 +6803,7 @@ class HaruMatchumApp {
     if (banner) banner.style.display = 'none';
   }
 
-  // Sticker & Big Emoji Drawer (v3.5.4: elementary_girl, middle_girl, high_girl, minchae_jjanggu, etc.)
+  // Sticker & Big Emoji Drawer (v3.5.5: elementary_girl, middle_girl, high_girl, minchae_jjanggu, etc.)
   toggleChatStickerDrawer(forcedOpen = null, initialPack = null) {
     if (!this.chatStickerDrawer) return;
 
@@ -7631,7 +7667,11 @@ class HaruMatchumApp {
   // Active Quiz Session Auto-Save & Mobile Resume (App Switch / KakaoTalk)
   // ============================================================
   saveActiveQuizSession() {
-    if (this.currentViewName !== 'quiz' || !this.activeQuestions || this.activeQuestions.length === 0) {
+    if (this.currentViewName !== 'quiz' || !this.activeQuestions || !Array.isArray(this.activeQuestions) || this.activeQuestions.length === 0) {
+      return;
+    }
+    if (typeof this.currentIndex !== 'number' || this.currentIndex < 0 || this.currentIndex >= this.activeQuestions.length) {
+      this.clearActiveQuizSession();
       return;
     }
     const session = {
@@ -7687,6 +7727,10 @@ class HaruMatchumApp {
       }
 
       if (!session.activeQuestions || !Array.isArray(session.activeQuestions) || session.activeQuestions.length === 0) {
+        this.clearActiveQuizSession();
+        return false;
+      }
+      if (typeof session.currentIndex === 'number' && session.currentIndex >= session.activeQuestions.length) {
         this.clearActiveQuizSession();
         return false;
       }
@@ -7839,14 +7883,22 @@ class HaruMatchumApp {
         return;
       }
       const session = JSON.parse(raw);
-      if (session.date !== getKSTDateString() || !session.activeQuestions || session.activeQuestions.length === 0) {
+      if (session.date !== getKSTDateString() || !session.activeQuestions || !Array.isArray(session.activeQuestions) || session.activeQuestions.length === 0) {
+        this.clearActiveQuizSession();
         banner.style.display = 'none';
         return;
       }
+      const totalQ = session.activeQuestions.length;
+      if (typeof session.currentIndex === 'number' && session.currentIndex >= totalQ) {
+        this.clearActiveQuizSession();
+        banner.style.display = 'none';
+        return;
+      }
+      const currentQNum = Math.min(totalQ, (session.currentIndex || 0) + 1);
       const titleEl = document.getElementById('resumeBannerTitle');
       const descEl = document.getElementById('resumeBannerDesc');
       const modeLabel = session.currentMode === 'level_daily' ? `[${session.selectedLevel}] ` : '';
-      if (titleEl) titleEl.textContent = `진행 중인 ${modeLabel}라운드 ${session.currentRound} 퀴즈 (Q${(session.currentIndex || 0) + 1})`;
+      if (titleEl) titleEl.textContent = `진행 중인 ${modeLabel}라운드 ${session.currentRound} 퀴즈 (Q${currentQNum}/${totalQ})`;
       if (descEl) descEl.textContent = '카카오톡 확인 등 다른 앱을 보셨나요? 풀던 문제를 바로 이어서 계속할 수 있어요.';
       banner.style.display = 'flex';
     } catch (e) {
@@ -8794,7 +8846,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.4');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.5');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
