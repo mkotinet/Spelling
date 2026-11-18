@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.5';
+    this.APP_VERSION = metaVer || '3.5.6';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -3185,7 +3185,6 @@ class HaruMatchumApp {
   finishQuiz() {
     this.clearActiveQuizSession();
     const solvedIds = (this.activeQuestions || []).map(q => q.id);
-    this.activeQuestions = null;
     this.recordQuestionsSolvedBatch(solvedIds, this.quizSubject);
     sfx.fanfare();
     this.confetti.explode();
@@ -3249,12 +3248,13 @@ class HaruMatchumApp {
 
       this.clearActiveQuizSession();
       this.switchView('result');
+      this.activeQuestions = null;
       this.clearActiveQuizSession();
       return;
     }
 
     // Case B: Standard Round Quiz
-    const totalQuestions = this.activeQuestions.length;
+    const totalQuestions = (this.activeQuestions && Array.isArray(this.activeQuestions)) ? this.activeQuestions.length : 5;
     const isPerfect = this.roundCorrectCount === 5;
     const mistakes = totalQuestions - this.roundCorrectCount;
     let isRoundCleared = isPerfect;
@@ -3601,6 +3601,7 @@ class HaruMatchumApp {
 
     this.clearActiveQuizSession();
     this.switchView('result');
+    this.activeQuestions = null;
     this.clearActiveQuizSession();
   }
 
@@ -6803,7 +6804,7 @@ class HaruMatchumApp {
     if (banner) banner.style.display = 'none';
   }
 
-  // Sticker & Big Emoji Drawer (v3.5.5: elementary_girl, middle_girl, high_girl, minchae_jjanggu, etc.)
+  // Sticker & Big Emoji Drawer (v3.5.6: elementary_girl, middle_girl, high_girl, minchae_jjanggu, etc.)
   toggleChatStickerDrawer(forcedOpen = null, initialPack = null) {
     if (!this.chatStickerDrawer) return;
 
@@ -8846,7 +8847,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.5');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.6');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

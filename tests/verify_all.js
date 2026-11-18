@@ -212,7 +212,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.5">'), 'index.html must include meta app-version 3.5.5');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.6">'), 'index.html must include meta app-version 3.5.6');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +295,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.5', 'GET /api/version version must be 3.5.5');
+    assert.strictEqual(verRes.data.version, '3.5.6', 'GET /api/version version must be 3.5.6');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -522,7 +522,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.5';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.6';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -535,7 +535,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.5</span>'), 'index.html must have v3.5.5 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.6</span>'), 'index.html must have v3.5.6 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -593,6 +593,29 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('(Q${currentQNum}/${totalQ})'), 'updateResumeQuizBanner must display clamped Q count (e.g. Q1/5)');
     assert(appCode.includes('!this.activeQuestions[this.currentIndex]'), 'renderCurrentQuestion must defensively guard against undefined question');
     assert(appCode.includes('// Refresh banner without forcibly abducting the user from the home screen'), 'visibilitychange must not abduct user from home');
+
+    // 34. v3.5.6 Result Confirmation Fix & 100 Stage-Specific Questions Verification
+    assert(appCode.includes('const totalQuestions = (this.activeQuestions && Array.isArray(this.activeQuestions)) ? this.activeQuestions.length : 5;'), 'finishQuiz must safely compute totalQuestions before nullifying');
+    assert.strictEqual(spellingQuestions.length, 5100, 'SPELLING_QUESTION_BANK must contain 5,100 questions');
+    const stageCounts = {};
+    spellingQuestions.forEach(q => stageCounts[q.level] = (stageCounts[q.level] || 0) + 1);
+    assert.strictEqual(stageCounts['초등/기초'], 1020, '초등/기초 must contain 1,020 questions');
+    assert.strictEqual(stageCounts['중등/필수'], 1020, '중등/필수 must contain 1,020 questions');
+    assert.strictEqual(stageCounts['고등/심화'], 1020, '고등/심화 must contain 1,020 questions');
+    assert.strictEqual(stageCounts['수능/기출'], 1020, '수능/기출 must contain 1,020 questions');
+    assert.strictEqual(stageCounts['일반/실무'], 1020, '일반/실무 must contain 1,020 questions');
+    
+    const q5001 = spellingQuestions.find(q => q.id === 5001);
+    assert(q5001 && q5001.standardWord === '어떡해', 'Q5001 must be 어떡해');
+    assert.strictEqual(validator.validateSentenceIntegrity(q5001).isValid, true, 'Q5001 must pass grammar validation');
+    
+    const q5043 = spellingQuestions.find(q => q.id === 5043);
+    assert(q5043 && q5043.standardWord === '들르다', 'Q5043 must be 들르다');
+    assert.strictEqual(validator.validateSentenceIntegrity(q5043).isValid, true, 'Q5043 must pass grammar validation');
+
+    const q5100 = spellingQuestions.find(q => q.id === 5100);
+    assert(q5100 && q5100.standardWord === '역할', 'Q5100 must be 역할');
+    assert.strictEqual(validator.validateSentenceIntegrity(q5100).isValid, true, 'Q5100 must pass grammar validation');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');

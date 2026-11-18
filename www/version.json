@@ -1,6 +1,6 @@
 {
-  "version": "3.5.5",
-  "build": "20261118_1000",
-  "name": "하루맞춤 (Haru Matchum) - Quiz Session Lifecycle & Boundary Protection Edition",
-  "releaseNotes": "1) 라운드 완료(5문제 종료) 시 세션 완전 파기 및 Q6 허위 배너 노출 방지(경계값 클램핑), 2) 홈 화면 복귀 후 타 앱(카카오톡 등) 전환 후 재진입 시 퀴즈 화면 강제 납치 현상 제거 및 홈 화면 안전 유지, 3) 퀴즈 렌더러 방어 가드 강화로 문제 미정의 오류 방지 및 4지선다 선택지 누락 원천 차단"
+  "version": "3.5.6",
+  "build": "20261119_0330",
+  "name": "하루맞춤 (Haru Matchum) - Result Confirmation Fix & 100 Stage-Specific Questions Edition",
+  "releaseNotes": "1) 퀴즈 5번 문제 풀이 후 '결과 확인하기' 버튼 클릭 시 `finishQuiz()` 내부 활성 문제 조기 무효화에 따른 `TypeError` 오류 수정 및 결과 화면 전환 정상화, 2) 5대 난이도 단계별(초등/기초, 중등/필수, 고등/심화, 수능/기출, 일반/실무) 신규 맞춤법 각 20문항씩 총 100문항 신규 탑재 (총 5,100문항 확장 및 한국어 문법 무결성 100% 검증)"
 }

@@ -1,6 +1,6 @@
 /**
  * stickers.js
- * v3.5.5 Haru Matchum Age-Graded & Character Sticker System
+ * v3.5.6 Haru Matchum Age-Graded & Character Sticker System
  * Features 90 High-Res Custom Illustrated Emoticons (30 Elementary, 30 Middle, 30 High School)
  * + Minchae Jjanggu & Legacy Character Parodies & Big Emojis
  */
