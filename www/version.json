@@ -1,6 +1,6 @@
 {
-  "version": "3.5.6",
-  "build": "20261119_0330",
-  "name": "하루맞춤 (Haru Matchum) - Result Confirmation Fix & 100 Stage-Specific Questions Edition",
-  "releaseNotes": "1) 퀴즈 5번 문제 풀이 후 '결과 확인하기' 버튼 클릭 시 `finishQuiz()` 내부 활성 문제 조기 무효화에 따른 `TypeError` 오류 수정 및 결과 화면 전환 정상화, 2) 5대 난이도 단계별(초등/기초, 중등/필수, 고등/심화, 수능/기출, 일반/실무) 신규 맞춤법 각 20문항씩 총 100문항 신규 탑재 (총 5,100문항 확장 및 한국어 문법 무결성 100% 검증)"
+  "version": "3.5.7",
+  "build": "20261119_1845",
+  "name": "하루맞춤 (Haru Matchum) - Chat Sticker Bubble Layout & Message Overlap Prevention Edition",
+  "releaseNotes": "1) 메시지 대화창에서 이미지 스티커 전송 시 부모 컨테이너 고정 높이(120px)로 인한 텍스트 메시지 겹침 및 가림 버그 원천 해결(스티커 버블 자동 높이 계산, 1:1 종횡비 확보 및 메시지 간격 완벽 유지), 2) 스티커 이미지 로딩 지연 시에도 메시지 겹침이 발생하지 않도록 CSS 컨테이너 레이아웃 안정화"
 }

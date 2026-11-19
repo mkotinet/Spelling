@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.6';
+    this.APP_VERSION = metaVer || '3.5.7';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -6511,7 +6511,7 @@ class HaruMatchumApp {
         if (stickerImg) {
           bodyHtml = `
             <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')">
-              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy" style="max-width:200px;max-height:200px;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,0.3);display:block;cursor:pointer;">
+              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy">
             </div>
           `;
         } else if (stickerSvg) {
@@ -8847,7 +8847,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.6');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.7');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
