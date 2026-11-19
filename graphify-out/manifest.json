@@ -1,19 +1,19 @@
 {
   "app.js": {
-    "mtime": 1795081511.3500314,
-    "seen": 1795081849.2815108,
-    "ast_hash": "dae6eb9ed9486674217166d4e1a73170",
+    "mtime": 1795082435.776419,
+    "seen": 1795082762.267104,
+    "ast_hash": "45c66465dcb2e8d98dded1d57d2359d5",
     "semantic_hash": ""
   },
   "data/access_logs.json": {
-    "mtime": 1795081749.9071922,
-    "seen": 1795081849.281514,
-    "ast_hash": "e6518a20642aac52ee2abb740743f7c8",
+    "mtime": 1795082684.9498873,
+    "seen": 1795082762.267107,
+    "ast_hash": "cc97c900a11988f8bcec1c41e4c5e1cd",
     "semantic_hash": ""
   },
   "data/users.json": {
-    "mtime": 1795081750.074647,
-    "seen": 1795081849.281518,
+    "mtime": 1795082685.1314774,
+    "seen": 1795082762.2671108,
     "ast_hash": "69c81576e2e9f121c3da1ee9f270e909",
     "semantic_hash": ""
   },
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/verify_all.js": {
-    "mtime": 1795081740.9761076,
-    "seen": 1795081849.2816489,
-    "ast_hash": "d04ed32ef218fabb2da963fab9e2a2fd",
+    "mtime": 1795082677.8703487,
+    "seen": 1795082762.267242,
+    "ast_hash": "fce06697661705843a379fc886ebbf99",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -390,21 +390,21 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1795081581.222473,
-    "seen": 1795081849.2816792,
-    "ast_hash": "2a34194fecf6f36672858a6b7d6b173c",
+    "mtime": 1795082546.1304858,
+    "seen": 1795082762.267273,
+    "ast_hash": "706a12a7f0dc90e3f2815ebd87ad8b20",
     "semantic_hash": ""
   },
   "\uae30\uc220\ub808\ud3ec\ud2b8.md": {
-    "mtime": 1795081817.7252908,
-    "seen": 1795081849.281683,
-    "ast_hash": "e9df7ff21d2a6b47c2c59d694a87b8d9",
+    "mtime": 1795082729.4852455,
+    "seen": 1795082762.267277,
+    "ast_hash": "8a3a2719025bd5904e8bf228ebb47628",
     "semantic_hash": ""
   },
   "\uc81c\uc791\ud788\uc2a4\ud1a0\ub9ac.md": {
-    "mtime": 1795081837.7868044,
-    "seen": 1795081849.281684,
-    "ast_hash": "2341de22c60f9ea874a60acb167a2c3f",
+    "mtime": 1795082749.6609418,
+    "seen": 1795082762.2672782,
+    "ast_hash": "273b0c3f2f4a936e061d154dac09ba6d",
     "semantic_hash": ""
   },
   "scripts/fix_spelling_lvl1_2.py": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "version.json": {
-    "mtime": 1795081517.3900065,
-    "seen": 1795081849.281651,
-    "ast_hash": "41ea3c3f1b0ef1da7d71c60bb944d28d",
+    "mtime": 1795082576.114784,
+    "seen": 1795082762.267243,
+    "ast_hash": "7715534a45267f24c389b8c00a60374f",
     "semantic_hash": ""
   },
   "tests/test_v261_ending_collision_fix.js": {
@@ -732,9 +732,9 @@
     "semantic_hash": ""
   },
   "www/app.js": {
-    "mtime": 1795081612.294584,
-    "seen": 1795081849.281652,
-    "ast_hash": "dae6eb9ed9486674217166d4e1a73170",
+    "mtime": 1795082691.6119986,
+    "seen": 1795082762.267244,
+    "ast_hash": "45c66465dcb2e8d98dded1d57d2359d5",
     "semantic_hash": ""
   },
   "www/english_questions.js": {
@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "www/version.json": {
-    "mtime": 1795081612.2960336,
-    "seen": 1795081849.281662,
-    "ast_hash": "41ea3c3f1b0ef1da7d71c60bb944d28d",
+    "mtime": 1795082691.612487,
+    "seen": 1795082762.267255,
+    "ast_hash": "7715534a45267f24c389b8c00a60374f",
     "semantic_hash": ""
   },
   "MOBILE_BUILD_GUIDE.md": {
@@ -786,9 +786,9 @@
     "semantic_hash": ""
   },
   "www/index.html": {
-    "mtime": 1795081612.2934804,
-    "seen": 1795081849.281682,
-    "ast_hash": "2a34194fecf6f36672858a6b7d6b173c",
+    "mtime": 1795082691.6115022,
+    "seen": 1795082762.267276,
+    "ast_hash": "706a12a7f0dc90e3f2815ebd87ad8b20",
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable-land-hdpi/splash.png": {
@@ -1002,9 +1002,9 @@
     "semantic_hash": ""
   },
   "sw.js": {
-    "mtime": 1795081602.5541937,
-    "seen": 1795081849.2815769,
-    "ast_hash": "0e6eac5a9c7fe54a12e3971d6cc63c88",
+    "mtime": 1795082565.962471,
+    "seen": 1795082762.267169,
+    "ast_hash": "7a09eae23e3713d2dda4098ba24b2a3e",
     "semantic_hash": ""
   },
   "tests/test_v2914_pwa_and_web_push.js": {
@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "www/sw.js": {
-    "mtime": 1795081612.2965674,
-    "seen": 1795081849.281661,
-    "ast_hash": "0e6eac5a9c7fe54a12e3971d6cc63c88",
+    "mtime": 1795082691.6128066,
+    "seen": 1795082762.267254,
+    "ast_hash": "7a09eae23e3713d2dda4098ba24b2a3e",
     "semantic_hash": ""
   },
   "public/icons/apple-touch-icon.png": {

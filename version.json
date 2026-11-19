@@ -1,6 +1,6 @@
 {
-  "version": "3.5.7",
-  "build": "20261119_1845",
-  "name": "하루맞춤 (Haru Matchum) - Chat Sticker Bubble Layout & Message Overlap Prevention Edition",
-  "releaseNotes": "1) 메시지 대화창에서 이미지 스티커 전송 시 부모 컨테이너 고정 높이(120px)로 인한 텍스트 메시지 겹침 및 가림 버그 원천 해결(스티커 버블 자동 높이 계산, 1:1 종횡비 확보 및 메시지 간격 완벽 유지), 2) 스티커 이미지 로딩 지연 시에도 메시지 겹침이 발생하지 않도록 CSS 컨테이너 레이아웃 안정화"
+  "version": "3.5.8",
+  "build": "20261119_1900",
+  "name": "하루맞춤 (Haru Matchum) - Classic Sticker 120px Fixed Size & Message Containment Separation Edition",
+  "releaseNotes": "1) 스티커 표시 크기를 사용자가 선호하는 이전 버전의 아담하고 귀여운 클래식 규격(120px x 120px)으로 완전 고정 복원, 2) 부모 버블에 overflow: hidden 및 방어적 인라인/CSS 이중 규격을 적용하여 스티커 이미지가 다음 메시지 및 이전 메시지를 덮거나 가리는 현상 원천 차단, 3) index.html의 style.css?v=3.5.8 캐시 버스팅을 적용하여 모바일 기기 구버전 캐시 즉시 갱신"
 }

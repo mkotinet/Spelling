@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.7';
+    this.APP_VERSION = metaVer || '3.5.8';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -6510,14 +6510,14 @@ class HaruMatchumApp {
         }
         if (stickerImg) {
           bodyHtml = `
-            <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')">
-              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy">
+            <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')" style="width:120px;height:120px;min-width:120px;min-height:120px;max-width:120px;max-height:120px;margin:6px 0;overflow:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.12);cursor:pointer;flex-shrink:0;">
+              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy" style="width:120px;height:120px;max-width:120px;max-height:120px;object-fit:contain;display:block;border-radius:16px;">
             </div>
           `;
         } else if (stickerSvg) {
-          bodyHtml = `<div class="chat-sticker-bubble">${stickerSvg}</div>`;
+          bodyHtml = `<div class="chat-sticker-bubble" style="width:120px;height:120px;margin:6px 0;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${stickerSvg}</div>`;
         } else if (msg.sticker.char) {
-          bodyHtml = `<div class="chat-sticker-bubble" style="font-size: 4rem;">${msg.sticker.char}</div>`;
+          bodyHtml = `<div class="chat-sticker-bubble" style="width:120px;height:120px;margin:6px 0;font-size:4rem;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${msg.sticker.char}</div>`;
         } else {
           bodyHtml = `<div class="chat-text-bubble">🎀 ${msg.sticker.name || '스티커'}</div>`;
         }
@@ -8847,7 +8847,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.7');
+        url.searchParams.set('_v', this.APP_VERSION || '3.5.8');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

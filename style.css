@@ -4985,40 +4985,41 @@ body.theme-english .quiz-sentence .quiz-blank {
 }
 
 /* Sticker Bubble */
-.chat-sticker-bubble:not(.chat-sticker-img-bubble) {
-  width: 120px;
-  height: 120px;
-  display: flex;
+.chat-sticker-bubble {
+  width: 120px !important;
+  height: 120px !important;
+  min-width: 120px !important;
+  min-height: 120px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
+  display: flex !important;
   align-items: center;
   justify-content: center;
+  margin: 6px 0;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden !important; /* 이미지 및 자식 요소가 절대 밖으로 삐져나오지 않도록 차단 */
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+  flex-shrink: 0;
 }
 
 .chat-sticker-bubble.chat-sticker-img-bubble {
-  width: auto !important;
-  height: auto !important;
-  max-width: min(190px, 60vw);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  filter: none;
-  margin: 4px 0;
-  border-radius: 16px;
-  overflow: visible;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
 }
 
 .chat-sticker-img {
-  width: 100%;
-  max-width: min(190px, 60vw);
-  height: auto;
-  max-height: min(190px, 60vw);
+  width: 120px !important;
+  height: 120px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
   aspect-ratio: 1 / 1;
   border-radius: 16px;
   display: block;
   cursor: pointer;
   object-fit: contain;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   transition: transform 0.18s ease;
 }
 

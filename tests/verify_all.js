@@ -212,7 +212,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.5.7">'), 'index.html must include meta app-version 3.5.7');
+    assert(indexHtml.includes('<meta name="app-version" content="3.5.8">'), 'index.html must include meta app-version 3.5.8');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.5.8">'), 'index.html must cache-bust style.css with v3.5.8');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -295,7 +296,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.5.7', 'GET /api/version version must be 3.5.7');
+    assert.strictEqual(verRes.data.version, '3.5.8', 'GET /api/version version must be 3.5.8');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -522,7 +523,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.7';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.5.8';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -535,7 +536,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.7</span>'), 'index.html must have v3.5.7 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.5.8</span>'), 'index.html must have v3.5.8 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -617,15 +618,14 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(q5100 && q5100.standardWord === '역할', 'Q5100 must be 역할');
     assert.strictEqual(validator.validateSentenceIntegrity(q5100).isValid, true, 'Q5100 must pass grammar validation');
 
-    // 35. v3.5.7 Chat Sticker Bubble Auto-Height & Message Overlap Prevention Verification
-    assert(styleCss.includes('.chat-sticker-bubble:not(.chat-sticker-img-bubble)'), 'style.css must isolate fixed 120px height to non-image stickers');
-    assert(styleCss.includes('.chat-sticker-bubble.chat-sticker-img-bubble'), 'style.css must define dedicated .chat-sticker-img-bubble class');
-    assert(styleCss.includes('width: auto !important;'), 'style.css must set width auto for chat sticker image bubble');
-    assert(styleCss.includes('height: auto !important;'), 'style.css must set height auto for chat sticker image bubble');
-    assert(styleCss.includes('.chat-sticker-img'), 'style.css must define .chat-sticker-img class');
-    assert(styleCss.includes('aspect-ratio: 1 / 1;'), 'style.css must enforce 1:1 aspect ratio on sticker images to prevent CLS');
-    assert(!appCode.includes('style="max-width:200px;max-height:200px;'), 'app.js must not hardcode inline dimensions on sticker img');
-    assert(appCode.includes('class="chat-sticker-img" loading="lazy"'), 'app.js must delegate sticker image layout to CSS classes');
+    // 35. v3.5.8 Classic Sticker 120px Fixed Size & Message Containment Separation Verification
+    const latestStyleCss = fs.readFileSync(path.join(__dirname, '../style.css'), 'utf8');
+    assert(latestStyleCss.includes('width: 120px !important;'), 'style.css must enforce 120px fixed width on .chat-sticker-bubble');
+    assert(latestStyleCss.includes('height: 120px !important;'), 'style.css must enforce 120px fixed height on .chat-sticker-bubble');
+    assert(latestStyleCss.includes('overflow: hidden !important;'), 'style.css must enforce overflow:hidden on sticker bubble to prevent text overlapping');
+    assert(latestStyleCss.includes('.chat-sticker-img'), 'style.css must define .chat-sticker-img class');
+    assert(appCode.includes('width:120px;height:120px;min-width:120px;min-height:120px;max-width:120px;max-height:120px;'), 'app.js must defensively embed inline 120px bounding box');
+    assert(appCode.includes('overflow:hidden;border-radius:16px;'), 'app.js must enforce overflow hidden inline to prevent CSS caching leakage');
 
     // Clean up temporary test user to strictly maintain 4 authentic users
     const usersFilePath = path.join(__dirname, '../data/users.json');
