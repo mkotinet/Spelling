@@ -20,6 +20,7 @@ const PHOTOS_DIR = path.join(DATA_DIR, "uploads", "photos");
 const VAPID_FILE = path.join(DATA_DIR, "vapid_keys.json");
 const PUSH_SUBS_FILE = path.join(DATA_DIR, "push_subscriptions.json");
 const GROUPS_FILE = path.join(DATA_DIR, "groups.json");
+const BATTLE_ROOMS_FILE = path.join(DATA_DIR, "battle_rooms.json");
 const PHOTO_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (1 day) automatic deletion
 
 // Web Push Module & VAPID Setup (v2.9.14)
@@ -227,6 +228,186 @@ function saveGroups(groups) {
   } catch (e) {
     console.error("Groups Save Error:", e);
   }
+}
+
+// ⚔️ v3.6.0 퀴즈대결방 (Battle Arena) 데이터 입출력 및 전용 아이템/문제 엔진
+function loadBattleRooms() {
+  try {
+    if (fs.existsSync(BATTLE_ROOMS_FILE)) {
+      return JSON.parse(fs.readFileSync(BATTLE_ROOMS_FILE, "utf8")) || [];
+    }
+  } catch (e) {
+    console.error("Battle Rooms Load Error:", e);
+  }
+  return [];
+}
+
+function saveBattleRooms(rooms) {
+  try {
+    fs.writeFileSync(BATTLE_ROOMS_FILE, JSON.stringify(rooms || [], null, 2), "utf8");
+  } catch (e) {
+    console.error("Battle Rooms Save Error:", e);
+  }
+}
+
+// ⚔️ 퀴즈대결방 전용 신규 아이템 8종 (Battle Exclusive Items)
+const BATTLE_ITEMS = {
+  battle_ink: {
+    id: "battle_ink",
+    name: "먹물 벼루",
+    icon: "墨",
+    type: "attack",
+    duration: 3500, // 3.5초
+    desc: "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+  },
+  battle_wind: {
+    id: "battle_wind",
+    name: "모래바람",
+    icon: "🌪️",
+    type: "attack",
+    duration: 4000,
+    desc: "상대방의 선택지 순서를 마구 뒤섞어 혼란을 줍니다!"
+  },
+  battle_freeze: {
+    id: "battle_freeze",
+    name: "꽁꽁 얼음",
+    icon: "❄️",
+    type: "attack",
+    duration: 3000,
+    desc: "상대방의 화면을 3초간 얼려 정답 터치를 지연시킵니다!"
+  },
+  battle_reflect: {
+    id: "battle_reflect",
+    name: "반사 거울방패",
+    icon: "🛡️",
+    type: "defense",
+    desc: "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
+  },
+  battle_steal: {
+    id: "battle_steal",
+    name: "번개 스틸",
+    icon: "⚡",
+    type: "attack",
+    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25P를 내 점수로 뺏어옵니다!"
+  },
+  battle_lightning: {
+    id: "battle_lightning",
+    name: "번개 스틸",
+    icon: "⚡",
+    type: "attack",
+    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25P를 내 점수로 뺏어옵니다!"
+  },
+  battle_peek: {
+    id: "battle_peek",
+    name: "천리안 심안",
+    icon: "👁️",
+    type: "support",
+    duration: 3000,
+    desc: "1위 라이벌이 선택한 보기를 3초간 훔쳐봅니다!"
+  },
+  battle_sight: {
+    id: "battle_sight",
+    name: "천리안 심안",
+    icon: "👁️",
+    type: "support",
+    duration: 3000,
+    desc: "1위 라이벌이 선택한 보기를 3초간 훔쳐봅니다!"
+  },
+  battle_bomb: {
+    id: "battle_bomb",
+    name: "째깍 시한폭탄",
+    icon: "💣",
+    type: "attack",
+    duration: 6000,
+    desc: "상대에게 폭탄 투척! 6초 안에 맞히지 못하면 폭발(-30P)!"
+  },
+  battle_rainbow: {
+    id: "battle_rainbow",
+    name: "무지개 찬스",
+    icon: "🌈",
+    type: "buff",
+    desc: "오답을 선택해도 1회 무조건 정답으로 인정해줍니다!"
+  }
+};
+
+let BATTLE_BANKS_CACHE = null;
+function getBattleQuestionBanks() {
+  if (!BATTLE_BANKS_CACHE) {
+    try {
+      BATTLE_BANKS_CACHE = {
+        spelling: require(path.join(__dirname, "questions.js")).SPELLING_QUESTION_BANK || [],
+        idiom: require(path.join(__dirname, "idiom_questions.js")).IDIOM_QUESTION_BANK || [],
+        hanja: require(path.join(__dirname, "hanja_questions.js")).HANJA_QUESTION_BANK || [],
+        english: require(path.join(__dirname, "english_questions.js")).ENGLISH_QUESTION_BANK || []
+      };
+    } catch (e) {
+      console.error("Failed to load question banks for battle:", e);
+      BATTLE_BANKS_CACHE = { spelling: [], idiom: [], hanja: [], english: [] };
+    }
+  }
+  return BATTLE_BANKS_CACHE;
+}
+
+// ⚔️ 퀴즈대결 공통 문제 세트 추출기 (과목, 난이도, 문항 수 기반 & Fisher-Yates 셔플 - Rule 8 준수)
+function generateBattleQuestions(subject, level, count) {
+  const banks = getBattleQuestionBanks();
+  let candidatePool = [];
+
+  const safeCount = Math.max(3, Math.min(count || 5, 20));
+
+  if (subject === 'mixed' || !subject) {
+    candidatePool = [
+      ...banks.spelling.map(q => ({ ...q, subject: 'spelling', subjectName: '우리말 맞춤법' })),
+      ...banks.idiom.map(q => ({ ...q, subject: 'idiom', subjectName: '속담·관용구' })),
+      ...banks.hanja.map(q => ({ ...q, subject: 'hanja', subjectName: '한자·고사성어' })),
+      ...banks.english.map(q => ({ ...q, subject: 'english', subjectName: '영어 스펠링' }))
+    ];
+  } else if (banks[subject]) {
+    const sName = subject === 'spelling' ? '우리말 맞춤법' : (subject === 'idiom' ? '속담·관용구' : (subject === 'hanja' ? '한자·고사성어' : '영어 스펠링'));
+    candidatePool = banks[subject].map(q => ({ ...q, subject, subjectName: sName }));
+  } else {
+    candidatePool = banks.spelling.map(q => ({ ...q, subject: 'spelling', subjectName: '우리말 맞춤법' }));
+  }
+
+  // 난이도 필터링
+  if (level && level !== 'all') {
+    const filtered = candidatePool.filter(q => q.level === level);
+    if (filtered.length >= safeCount) {
+      candidatePool = filtered;
+    }
+  }
+
+  // 무작위 셔플 후 safeCount개 추출
+  const shuffled = candidatePool.slice().sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, safeCount);
+
+  // 각 문제별 선택지 셔플 및 answerIndex 동적 재매핑
+  return selected.map((q, idx) => {
+    const origOptions = Array.isArray(q.options) ? q.options.slice() : ['보기1', '보기2', '보기3', '보기4'];
+    const correctAns = origOptions[q.answerIndex !== undefined ? q.answerIndex : 0];
+
+    for (let i = origOptions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [origOptions[i], origOptions[j]] = [origOptions[j], origOptions[i]];
+    }
+    const newAnswerIndex = origOptions.indexOf(correctAns);
+
+    return {
+      index: idx,
+      id: q.id,
+      subject: q.subject || 'spelling',
+      subjectName: q.subjectName || '우리말 맞춤법',
+      level: q.level || '초등/기초',
+      question: q.question || '알맞은 것을 고르세요.',
+      sentence: q.sentence || '',
+      sentenceTranslation: q.sentenceTranslation || '',
+      options: origOptions,
+      answerIndex: newAnswerIndex >= 0 ? newAnswerIndex : 0,
+      correctIndex: newAnswerIndex >= 0 ? newAnswerIndex : 0,
+      explanation: q.explanation || '',
+      standardWord: q.standardWord || q.idiomWord || q.hanjaWord || q.englishWord || ''
+    };
+  });
 }
 
 // 🎁 v3.3.0 & v3.4.0 Interactive Gift Catalog (Items & Korean Brand Parody Social Gifts)
@@ -2020,6 +2201,638 @@ const server = http.createServer(async (req, res) => {
         gift: msg.gift
       });
     } catch (e) {
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // =========================================================================
+  // 20. [v3.6.0] ⚔️ 퀴즈대결방 (Battle Arena) API
+  // =========================================================================
+
+  // 20-A. 퀴즈대결방 생성 및 친구 초대 (POST /api/battle/create)
+  if (req.method === "POST" && pathname === "/api/battle/create") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const sender = db.users[username];
+      const rawMembers = Array.isArray(body.members) ? body.members : (Array.isArray(body.invitedUsernames) ? body.invitedUsernames : []);
+      const memberSet = new Set([username]);
+      rawMembers.forEach(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        if (mName && db.users[mName]) memberSet.add(mName);
+      });
+
+      const members = Array.from(memberSet);
+      if (members.length < 2) {
+        return sendJSON(res, 400, { success: false, message: "퀴즈 대결에는 최소 1명 이상의 대결 상대를 초대해야 합니다." });
+      }
+
+      const questionCount = [5, 10, 15, 20].includes(Number(body.questionCount)) ? Number(body.questionCount) : 5;
+      let normalizedSubject = body.subject || 'spelling';
+      if (normalizedSubject === 'all') normalizedSubject = 'mixed';
+      if (normalizedSubject === 'proverb') normalizedSubject = 'idiom';
+      const subject = ['spelling', 'idiom', 'hanja', 'english', 'mixed'].includes(normalizedSubject) ? normalizedSubject : 'spelling';
+      const level = body.level || 'all';
+      const allowItems = (body.allowItems !== false); // 기본값 true
+
+      const subjectNameMap = {
+        spelling: "우리말 맞춤법",
+        idiom: "속담·관용구",
+        hanja: "한자·고사성어",
+        english: "영어 스펠링",
+        mixed: "종합 올스타전"
+      };
+
+      const title = (body.title || "").trim() || `${sender.name || username}님의 퀴즈 대결! ⚔️`;
+      const questions = generateBattleQuestions(subject, level, questionCount);
+
+      if (!questions || questions.length === 0) {
+        return sendJSON(res, 500, { success: false, message: "대결 문제 세트를 생성하지 못했습니다." });
+      }
+
+      const defaultInventory = allowItems ? {
+        battle_ink: 1,
+        battle_wind: 1,
+        battle_freeze: 1,
+        battle_reflect: 1,
+        battle_steal: 1,
+        battle_lightning: 1,
+        battle_peek: 1,
+        battle_sight: 1,
+        battle_bomb: 1,
+        battle_rainbow: 1
+      } : {};
+
+      const progress = {};
+      members.forEach(m => {
+        progress[m] = {
+          joined: true,
+          currentIndex: 0,
+          score: 0,
+          combo: 0,
+          answers: [],
+          inventory: { ...defaultInventory },
+          completed: false,
+          completedAt: null,
+          totalTime: 0,
+          activeEffects: [],
+          hasReflect: false,
+          hasSteal: false,
+          hasRainbow: false
+        };
+      });
+
+      const roomId = "battle_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+      const newRoom = {
+        id: roomId,
+        roomId,
+        title,
+        creator: username,
+        creatorName: sender.name || username,
+        members,
+        status: "in_progress",
+        settings: {
+          questionCount,
+          subject,
+          subjectName: subjectNameMap[subject] || "맞춤법",
+          level,
+          allowItems
+        },
+        questions,
+        progress,
+        itemLog: [],
+        winner: null,
+        createdAt: new Date().toISOString(),
+        completedAt: null
+      };
+
+      const rooms = loadBattleRooms();
+      rooms.push(newRoom);
+      saveBattleRooms(rooms);
+
+      // 초대된 다른 친구들에게 웹 푸시 알림 발송
+      const otherMembers = members.filter(m => m !== username);
+      if (otherMembers.length > 0) {
+        sendWebPushToUsers(otherMembers, {
+          title: "⚔️ 퀴즈대결 도전장 도착!",
+          body: `${sender.name || username}님이 '${title}' (${subjectNameMap[subject]}, ${questionCount}제) 대결에 초대했습니다!`,
+          icon: "/public/icons/icon-192.png",
+          badge: "/public/icons/badge-72.png",
+          url: `/?open=battle&roomId=${encodeURIComponent(roomId)}`
+        });
+      }
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: "퀴즈대결방이 성공적으로 생성되었습니다!",
+        roomId,
+        room: newRoom
+      });
+    } catch (e) {
+      console.error("Battle Create Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-B. 내 퀴즈대결방 목록 조회 (GET /api/battle/rooms)
+  if (req.method === "GET" && pathname === "/api/battle/rooms") {
+    try {
+      const token = parsedUrl.searchParams.get("token") || (req.headers["authorization"] || "").replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const rooms = loadBattleRooms();
+      const myRooms = rooms.filter(r => r.members && r.members.includes(username));
+      myRooms.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // 요약 목록 포맷팅
+      const roomSummaries = myRooms.slice(0, 30).map(r => {
+        const myProg = r.progress && r.progress[username];
+        return {
+          id: r.roomId || r.id,
+          roomId: r.roomId || r.id,
+          title: r.title,
+          creator: r.creator,
+          creatorName: r.creatorName,
+          members: r.members,
+          memberCount: r.members.length,
+          status: r.status,
+          settings: r.settings,
+          myCompleted: myProg ? myProg.completed : false,
+          myScore: myProg ? myProg.score : 0,
+          winner: r.winner,
+          winnerName: r.winner && db.users[r.winner] ? db.users[r.winner].name : r.winner,
+          createdAt: r.createdAt,
+          completedAt: r.completedAt
+        };
+      });
+
+      return sendJSON(res, 200, {
+        success: true,
+        rooms: roomSummaries
+      });
+    } catch (e) {
+      console.error("Battle Rooms List Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-C. 퀴즈대결방 상세 및 실시간 진행 상태 조회 (GET /api/battle/room)
+  if (req.method === "GET" && pathname === "/api/battle/room") {
+    try {
+      const token = parsedUrl.searchParams.get("token") || (req.headers["authorization"] || "").replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const roomId = parsedUrl.searchParams.get("roomId");
+      if (!roomId) {
+        return sendJSON(res, 400, { success: false, message: "방 ID가 필요합니다." });
+      }
+
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      if (!room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "해당 대결방에 참여 권한이 없습니다." });
+      }
+
+      // 만료된 활성 효과(activeEffects) 정리
+      const now = Date.now();
+      let effectsChanged = false;
+      Object.keys(room.progress).forEach(m => {
+        const prog = room.progress[m];
+        if (prog && Array.isArray(prog.activeEffects)) {
+          const beforeLen = prog.activeEffects.length;
+          prog.activeEffects = prog.activeEffects.filter(eff => eff.expireAt > now);
+          if (prog.activeEffects.length !== beforeLen) effectsChanged = true;
+        }
+      });
+      if (effectsChanged) saveBattleRooms(rooms);
+
+      // 멤버별 최신 프로필 정보 부가
+      const memberProfiles = {};
+      room.members.forEach(m => {
+        const u = db.users[m] || {};
+        memberProfiles[m] = {
+          username: m,
+          name: u.name || m,
+          avatar: u.avatar || '🌸',
+          accessories: u.accessories || {}
+        };
+      });
+
+      return sendJSON(res, 200, {
+        success: true,
+        room,
+        memberProfiles
+      });
+    } catch (e) {
+      console.error("Battle Room Get Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-D. 퀴즈대결 문제 풀이 제출 (POST /api/battle/submit-answer)
+  if (req.method === "POST" && pathname === "/api/battle/submit-answer") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId, questionIndex, selectedIndex, selectedOptionIndex, timeSpent } = body;
+      const actualSelectedIndex = (selectedOptionIndex !== undefined ? selectedOptionIndex : selectedIndex);
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      if (!room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "대결 참가자가 아닙니다." });
+      }
+
+      const userProg = room.progress[username];
+      if (!userProg) {
+        return sendJSON(res, 400, { success: false, message: "진행 정보를 찾을 수 없습니다." });
+      }
+
+      if (userProg.completed) {
+        return sendJSON(res, 400, { success: false, message: "이미 모든 대결 문제를 완료했습니다." });
+      }
+
+      const q = room.questions[questionIndex];
+      if (!q) {
+        return sendJSON(res, 400, { success: false, message: "유효하지 않은 문제 번호입니다." });
+      }
+
+      // 1) 정답 판정 (무지개 찬스 버프 체크)
+      let isCorrect = (Number(actualSelectedIndex) === q.answerIndex);
+      if (!isCorrect && userProg.hasRainbow) {
+        isCorrect = true;
+        userProg.hasRainbow = false; // 1회 소모
+      }
+
+      // 2) 점수 계산
+      let points = 0;
+      if (isCorrect) {
+        points = 20; // 기본 정답 20P
+        userProg.combo = (userProg.combo || 0) + 1;
+        // 콤보 보너스
+        if (userProg.combo >= 5) points += 10;
+        else if (userProg.combo >= 4) points += 6;
+        else if (userProg.combo >= 3) points += 4;
+        else if (userProg.combo >= 2) points += 2;
+        // 스피드 보너스 (3초 이내 정답)
+        if (Number(timeSpent) <= 3) points += 5;
+      } else {
+        userProg.combo = 0;
+      }
+
+      // 3) 시한폭탄 감점 체크 (폭탄이 걸려있는데 오답이거나 6초 초과)
+      const now = Date.now();
+      const bombIdx = (userProg.activeEffects || []).findIndex(e => e.type === 'bomb');
+      if (bombIdx >= 0) {
+        const bomb = userProg.activeEffects[bombIdx];
+        if (!isCorrect || Number(timeSpent) > 6 || now > bomb.expireAt) {
+          points = Math.max(-userProg.score, -30); // 최대 -30P 폭발 감점
+        }
+        userProg.activeEffects.splice(bombIdx, 1); // 폭탄 소멸
+      }
+
+      // 4) 번개 스틸 (battle_steal) 발동
+      let stealNotice = null;
+      if (isCorrect && userProg.hasSteal) {
+        userProg.hasSteal = false;
+        // 나를 제외한 방 내 최고 점수자 찾기
+        let highestRival = null;
+        let highestScore = -1;
+        room.members.forEach(m => {
+          if (m !== username && room.progress[m] && room.progress[m].score > highestScore) {
+            highestScore = room.progress[m].score;
+            highestRival = m;
+          }
+        });
+        if (highestRival && highestScore > 0) {
+          const stealAmt = Math.min(25, highestScore);
+          room.progress[highestRival].score -= stealAmt;
+          points += stealAmt;
+          stealNotice = `${highestRival}님으로부터 ⚡ 25P를 스틸했습니다!`;
+        }
+      }
+
+      userProg.score = Math.max(0, userProg.score + points);
+      userProg.currentIndex = questionIndex + 1;
+      userProg.totalTime = (userProg.totalTime || 0) + Number(timeSpent || 0);
+      userProg.answers.push({
+        qIndex: questionIndex,
+        isCorrect,
+        selectedIndex,
+        points,
+        timeSpent: Number(timeSpent || 0)
+      });
+
+      // 전 문항 완료 여부
+      if (userProg.currentIndex >= room.settings.questionCount) {
+        userProg.completed = true;
+        userProg.completedAt = new Date().toISOString();
+      }
+
+      // 5) 전원 완료 시 승패 판정 및 배틀 랭킹(RP / stats) 집계
+      const allFinished = room.members.every(m => room.progress[m] && room.progress[m].completed);
+      if (allFinished && room.status !== "completed") {
+        room.status = "completed";
+        room.completedAt = new Date().toISOString();
+
+        // 랭킹 순위 계산 (점수 내림차순, 동점 시 총 소요시간 오름차순)
+        const rankList = room.members.map(m => ({
+          username: m,
+          score: room.progress[m].score,
+          totalTime: room.progress[m].totalTime || 999
+        })).sort((a, b) => (b.score - a.score) || (a.totalTime - b.totalTime));
+
+        room.winner = rankList[0].username;
+
+        // 회원 DB 배틀 전적 영구 반영 (Rule 10 준수)
+        rankList.forEach((entry, rIdx) => {
+          const u = db.users[entry.username];
+          if (u) {
+            u.battleStats = u.battleStats || {
+              rp: 1000,
+              games: 0,
+              wins: 0,
+              losses: 0,
+              winRate: 0,
+              streak: 0,
+              maxStreak: 0
+            };
+            u.battleStats.games += 1;
+            if (rIdx === 0) {
+              // 1등: 승리
+              u.battleStats.wins += 1;
+              u.battleStats.streak += 1;
+              u.battleStats.maxStreak = Math.max(u.battleStats.maxStreak, u.battleStats.streak);
+              u.battleStats.rp += 30;
+            } else if (rIdx === 1 && rankList.length >= 3) {
+              // 3인 이상 중 2등: 준우승 소폭 상승
+              u.battleStats.losses += 1;
+              u.battleStats.streak = 0;
+              u.battleStats.rp += 10;
+            } else {
+              // 최하위: 패배
+              u.battleStats.losses += 1;
+              u.battleStats.streak = 0;
+              u.battleStats.rp = Math.max(0, u.battleStats.rp - 15);
+            }
+            u.battleStats.winRate = Math.round((u.battleStats.wins / u.battleStats.games) * 100);
+          }
+        });
+        saveDB(db);
+      }
+
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        isCorrect,
+        pointsEarned: points,
+        combo: userProg.combo,
+        myScore: userProg.score,
+        stealNotice,
+        allFinished,
+        room
+      });
+    } catch (e) {
+      console.error("Battle Submit Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-E. 퀴즈대결 아이템 사용 (POST /api/battle/use-item)
+  if (req.method === "POST" && pathname === "/api/battle/use-item") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId, itemKey, targetUsername } = body;
+      const itemDef = BATTLE_ITEMS[itemKey];
+      if (!itemDef) {
+        return sendJSON(res, 400, { success: false, message: "존재하지 않는 배틀 아이템입니다." });
+      }
+
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      if (!room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "대결 참가자가 아닙니다." });
+      }
+
+      const myProg = room.progress[username];
+      if (!myProg || !myProg.inventory || (myProg.inventory[itemKey] || 0) <= 0) {
+        return sendJSON(res, 400, { success: false, message: "해당 아이템 잔여 수량이 부족합니다." });
+      }
+
+      // 아이템 차감
+      myProg.inventory[itemKey] -= 1;
+
+      // 타겟 지정 유효성 검사
+      let actualTarget = targetUsername;
+      if (itemDef.type === "attack" && (!actualTarget || !room.members.includes(actualTarget) || actualTarget === username)) {
+        // 상대방 중 첫 번째 유저 자동 지정
+        actualTarget = room.members.find(m => m !== username);
+      }
+
+      let reflected = false;
+      const now = Date.now();
+
+      // 반사 방패(reflect) 판정
+      if (itemDef.type === "attack" && actualTarget && room.progress[actualTarget] && room.progress[actualTarget].hasReflect) {
+        room.progress[actualTarget].hasReflect = false; // 반사 방패 소모
+        reflected = true;
+        actualTarget = username; // 공격이 발신자 본인에게 역반사!
+      }
+
+      // 아이템 효과 적용
+      if (itemKey === "battle_ink") {
+        const targetProg = room.progress[actualTarget];
+        targetProg.activeEffects = targetProg.activeEffects || [];
+        targetProg.activeEffects.push({
+          type: "ink",
+          name: "먹물 벼루",
+          icon: "墨",
+          expireAt: now + itemDef.duration,
+          from: username
+        });
+      } else if (itemKey === "battle_wind") {
+        const targetProg = room.progress[actualTarget];
+        targetProg.activeEffects = targetProg.activeEffects || [];
+        targetProg.activeEffects.push({
+          type: "wind",
+          name: "모래바람",
+          icon: "🌪️",
+          expireAt: now + itemDef.duration,
+          from: username
+        });
+      } else if (itemKey === "battle_freeze") {
+        const targetProg = room.progress[actualTarget];
+        targetProg.activeEffects = targetProg.activeEffects || [];
+        targetProg.activeEffects.push({
+          type: "freeze",
+          name: "꽁꽁 얼음",
+          icon: "❄️",
+          expireAt: now + itemDef.duration,
+          from: username
+        });
+      } else if (itemKey === "battle_reflect") {
+        myProg.hasReflect = true;
+      } else if (itemKey === "battle_steal") {
+        myProg.hasSteal = true;
+      } else if (itemKey === "battle_peek") {
+        myProg.activeEffects = myProg.activeEffects || [];
+        myProg.activeEffects.push({
+          type: "peek",
+          name: "천리안 심안",
+          icon: "👁️",
+          expireAt: now + itemDef.duration,
+          target: actualTarget
+        });
+      } else if (itemKey === "battle_bomb") {
+        const targetProg = room.progress[actualTarget];
+        targetProg.activeEffects = targetProg.activeEffects || [];
+        targetProg.activeEffects.push({
+          type: "bomb",
+          name: "째깍 시한폭탄",
+          icon: "💣",
+          expireAt: now + itemDef.duration,
+          from: username
+        });
+      } else if (itemKey === "battle_rainbow") {
+        myProg.hasRainbow = true;
+      }
+
+      // 아이템 사용 로그 기록
+      room.itemLog = room.itemLog || [];
+      room.itemLog.push({
+        from: username,
+        fromName: (db.users[username] && db.users[username].name) || username,
+        target: actualTarget,
+        targetName: (db.users[actualTarget] && db.users[actualTarget].name) || actualTarget,
+        item: itemDef,
+        reflected,
+        time: getKSTTime()
+      });
+
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: reflected ? `⚡ 상대방의 반사 방패로 인해 ${itemDef.name} 효과가 나에게 튕겨 나왔습니다!` : `✨ ${itemDef.name} 사용 성공!`,
+        reflected,
+        actualTarget,
+        targetUser: actualTarget,
+        item: itemDef,
+        room
+      });
+    } catch (e) {
+      console.error("Battle Item Use Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-F. 퀴즈대결 전용 랭킹 집계 (GET /api/battle/rankings)
+  if (req.method === "GET" && pathname === "/api/battle/rankings") {
+    try {
+      const db = loadDB();
+      const users = db.users || {};
+
+      // 4인 실제 계정 데이터 기본 배틀 전적 보장 (Rule 6 데이터 무결성 보존)
+      const list = Object.keys(users).map(uname => {
+        const u = users[uname];
+        const stats = u.battleStats || {
+          rp: 1000,
+          games: 0,
+          wins: 0,
+          losses: 0,
+          winRate: 0,
+          streak: 0,
+          maxStreak: 0
+        };
+
+        // 티어 판정
+        let tierLabel = "브론즈 🥉";
+        let tier = "bronze";
+        let tierClass = "tier-bronze";
+        if (stats.rp >= 1800) { tierLabel = "마스터 👑"; tier = "master"; tierClass = "tier-master"; }
+        else if (stats.rp >= 1500) { tierLabel = "다이아몬드 💎"; tier = "diamond"; tierClass = "tier-diamond"; }
+        else if (stats.rp >= 1200) { tierLabel = "골드 🥇"; tier = "gold"; tierClass = "tier-gold"; }
+        else if (stats.rp >= 1000) { tierLabel = "실버 🥈"; tier = "silver"; tierClass = "tier-silver"; }
+
+        return {
+          username: uname,
+          name: u.name || uname,
+          nickname: u.name || uname,
+          avatar: u.avatar || '🌸',
+          accessories: u.accessories || {},
+          rp: stats.rp,
+          games: stats.games,
+          wins: stats.wins,
+          losses: stats.losses,
+          winRate: stats.winRate,
+          streak: stats.streak,
+          maxStreak: stats.maxStreak,
+          tier,
+          tierLabel,
+          tierClass
+        };
+      });
+
+      // 랭킹 정렬: RP 내림차순 -> 승수 내림차순 -> 승률 내림차순
+      list.sort((a, b) => (b.rp - a.rp) || (b.wins - a.wins) || (b.winRate - a.winRate));
+      const rankedList = list.map((item, idx) => ({
+        ...item,
+        rank: idx + 1
+      }));
+
+      return sendJSON(res, 200, {
+        success: true,
+        rankings: rankedList
+      });
+    } catch (e) {
+      console.error("Battle Rankings Error:", e);
       return sendJSON(res, 500, { success: false, message: e.message });
     }
   }

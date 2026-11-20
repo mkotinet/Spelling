@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.5.8">
+  <meta name="app-version" content="3.6.0">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.5.8">
+  <link rel="stylesheet" href="style.css?v=3.6.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -100,6 +100,7 @@
     <nav class="nav-tabs" aria-label="메뉴 탐색">
       <button class="nav-tab active" data-view="home">🏠 퀴즈홈</button>
       <button class="nav-tab" data-view="leaderboard">🏆 랭킹</button>
+      <button id="btnNavBattle" class="nav-tab" type="button" data-action="open-battle" style="color: #ec4899; font-weight: 800;">⚔️ 퀴즈대결</button>
       <button id="btnNavInbox" class="nav-tab" type="button" data-action="open-inbox" style="color: #8b5cf6; font-weight: 800;">📬 메시지</button>
       <button class="nav-tab" data-view="badges">🎀 스티커</button>
       <button id="btnOpenShop" class="nav-tab" type="button" data-action="open-shop" style="color: #e11d48; font-weight: 800;">🏪 상점</button>
@@ -144,6 +145,20 @@
           </div>
         </div>
         <button id="btnResumeQuiz" class="btn-resume-action" type="button">이어서 풀기 ▶</button>
+      </div>
+
+      <!-- ⚔️ v3.6.0 Live Quiz Battle Arena Entry Card -->
+      <div id="btnStartBattleArena" class="battle-arena-banner-card" role="button" tabindex="0" title="친구와 함께하는 퀴즈 대결방 열기">
+        <div class="battle-card-glow"></div>
+        <div class="battle-card-content">
+          <div class="battle-badge">⚔️ REALTIME BATTLE</div>
+          <h3 class="battle-card-title">친구와 함께하는 퀴즈 대결방</h3>
+          <p class="battle-card-desc">방을 만들어 친구를 초대하고 먹물·얼음 아이템으로 짜릿한 대결을 펼치세요!</p>
+          <div class="battle-card-footer">
+            <span class="battle-card-rp-chip">🏆 배틀 랭킹 & 신규 아이템 8종 탑재</span>
+            <span class="battle-card-btn">입장하기 ▶</span>
+          </div>
+        </div>
       </div>
 
       <!-- Mode Cards Grid -->
@@ -199,7 +214,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span id="quickReloadVersionBadge" class="version-badge">v3.5.8</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.6.0</span>
         </button>
         <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
@@ -503,6 +518,76 @@
     </section>
 
     <!-- ============================================================
+         VIEW 3-B: v3.6.0 REAL-TIME QUIZ BATTLE ARENA SCREEN
+         ============================================================ -->
+    <section id="viewBattle" class="view-section battle-arena-section">
+      <div class="battle-screen">
+        <!-- Battle Top Header -->
+        <div class="battle-top-bar">
+          <button id="btnBattleExit" class="btn-battle-back" type="button" title="대결방 나가기">✕</button>
+          <div class="battle-title-col">
+            <span id="battleRoomSubjectBadge" class="battle-subject-pill">⚔️ 우리말 맞춤법</span>
+            <h3 id="battleRoomHeaderTitle" class="battle-room-title">민채 vs 미니 퀴즈 대결!</h3>
+          </div>
+          <div class="battle-q-indicator">
+            <span id="battleCurrentQNum">Q1</span><span id="battleTotalQNum">/5</span>
+          </div>
+        </div>
+
+        <!-- Real-time Rival Live Score Gauge Bar -->
+        <div id="battleRivalsBar" class="battle-rivals-bar">
+          <!-- Dynamically populated rival gauge cards -->
+        </div>
+
+        <!-- Question & Problem Box -->
+        <div class="battle-question-box">
+          <div class="battle-timer-bar-track">
+            <div id="battleTimerBarFill" class="battle-timer-bar-fill"></div>
+          </div>
+          <div class="battle-q-meta-row">
+            <span id="battleLevelBadge" class="battle-level-pill">초등/기초</span>
+            <span id="battleComboBadge" class="battle-combo-pill" style="display: none;">🔥 2 콤보 (+2P)</span>
+            <span id="battleTimerText" class="battle-timer-text">⏱️ 15.0s</span>
+          </div>
+          <div id="battlePromptText" class="battle-prompt-text">Q1. 빈칸에 들어갈 올바른 맞춤법을 고르세요.</div>
+          <div id="battleSentenceBox" class="battle-sentence-card">
+            <!-- Problem Sentence Content -->
+          </div>
+          <div id="battleSentenceTranslation" class="battle-translation-box" style="display: none;"></div>
+        </div>
+
+        <!-- 4 Options Grid -->
+        <div id="battleOptionsGrid" class="battle-options-grid">
+          <!-- Dynamically rendered 4 choices with Fisher-Yates shuffle -->
+        </div>
+
+        <!-- Battle Exclusive Item Bar (8 Battle Items) -->
+        <div id="battleItemDock" class="battle-item-dock">
+          <div class="battle-dock-header">
+            <span class="battle-dock-title">🎒 배틀 전용 전략 아이템</span>
+            <span id="battleDockNotice" class="battle-dock-sub">상대를 지정해 아이템을 발사하세요!</span>
+          </div>
+          <div id="battleItemButtonsRow" class="battle-item-row">
+            <!-- Dynamically populated 8 battle items -->
+          </div>
+        </div>
+
+        <!-- Visual Effects (VFX) Overlay Container -->
+        <div id="battleVfxContainer" class="battle-vfx-container">
+          <div id="vfxInkLayer" class="vfx-ink-layer" style="display: none;"></div>
+          <div id="vfxFreezeLayer" class="vfx-freeze-layer" style="display: none;">
+            <div class="freeze-frost-glass">❄️ 꽁꽁 얼어붙음! (터치 불가) ❄️</div>
+          </div>
+          <div id="vfxWindLayer" class="vfx-wind-layer" style="display: none;"></div>
+          <div id="vfxBombBanner" class="vfx-bomb-banner" style="display: none;">
+            <span class="bomb-pulse">💣</span>
+            <span id="vfxBombTimer">시한폭탄 작동 중! 5.0s 내 정답을 맞히세요! (-30P 위험)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
          VIEW 4: LEADERBOARD / RANKING SCREEN
          ============================================================ -->
     <section id="viewLeaderboard" class="view-section">
@@ -525,6 +610,9 @@
           </button>
           <button id="rankSubjectEnglish" class="mode-switch-btn" type="button">
             <span class="switch-icon">🔤</span> 영어
+          </button>
+          <button id="rankSubjectBattle" class="mode-switch-btn" type="button" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white;">
+            <span class="switch-icon">⚔️</span> 퀴즈대결
           </button>
         </div>
 
@@ -1279,6 +1367,7 @@
         <div class="chat-header-actions">
           <button id="btnChatToggleArchive" class="btn-chat-archive-quick" type="button" title="이전 대화 압축 보관">📦 압축</button>
           <button id="btnChatHeaderInvite" class="btn-chat-invite-quick" type="button" title="친구 초대하여 멀티 대화하기" style="display: none;">👥 초대</button>
+          <button id="btnChatHeaderBattle" class="btn-chat-battle-quick" type="button" title="이 친구들과 퀴즈 대결하기" style="display: none; background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 800; cursor: pointer;">⚔️ 대결</button>
           <button id="btnChatHeaderInventory" class="btn-chat-inventory-quick" type="button" title="내 보관함 (받은 선물 및 아이템)">🎒 보관함</button>
           <button id="btnChatHeaderGift" class="btn-chat-gift-quick" type="button" title="선물 보내기">🎁 선물</button>
           <button id="btnCloseChatApp" class="btn-close-modal" type="button" aria-label="닫기">✕</button>
@@ -1290,6 +1379,7 @@
         <div class="chat-nav-tabs">
           <button id="tabRoomSquare" class="chat-nav-tab active" type="button">💬 광장 대화</button>
           <button id="tabRoomDirect" class="chat-nav-tab" type="button">👥 친구·그룹</button>
+          <button id="tabRoomBattle" class="chat-nav-tab" type="button">⚔️ 퀴즈대결</button>
           <button id="btnOpenCreateGroup" class="btn-create-group-pill" type="button" title="새 그룹 대화방 만들기">➕ 새 그룹방</button>
         </div>
 
@@ -1733,12 +1823,162 @@
     </div>
   </div>
 
+  <!-- ============================================================
+       v3.6.0 QUIZ BATTLE ARENA MODALS (Lobby, Create, Result, Target)
+       ============================================================ -->
+
+  <!-- 1. Battle Lobby Modal -->
+  <div id="modalBattleLobby" class="modal-overlay">
+    <div class="modal-box battle-modal-box">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.5rem;">⚔️</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #1e293b;">퀴즈 대결 로비</h3>
+            <span style="font-size: 0.76rem; color: #64748b;">친구와 실시간 퀴즈 대결을 펼쳐보세요!</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button id="btnOpenCreateBattle" class="btn-create-battle-pill" type="button">➕ 방 만들기</button>
+          <button id="btnCloseBattleLobby" class="btn-close-modal" type="button">✕</button>
+        </div>
+      </div>
+      <div class="battle-lobby-body">
+        <div id="battleLobbyRoomList" class="battle-room-list">
+          <!-- Dynamically populated battle rooms -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Battle Room Create Modal -->
+  <div id="modalBattleCreate" class="modal-overlay">
+    <div class="modal-box battle-create-modal-box">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.5rem;">⚔️</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #1e293b;">새 퀴즈 대결방 만들기</h3>
+            <span style="font-size: 0.76rem; color: #64748b;">문제량, 과목, 난이도 및 아이템 규칙을 설정하세요</span>
+          </div>
+        </div>
+        <button id="btnCloseBattleCreate" class="btn-close-modal" type="button">✕</button>
+      </div>
+      <form id="formBattleCreate" class="battle-create-form" onsubmit="return false;">
+        <!-- Room Title -->
+        <div class="form-group">
+          <label class="form-label" for="inputBattleTitle">대결방 제목</label>
+          <input type="text" id="inputBattleTitle" class="form-input" placeholder="예: 민채 vs 아빠 맞춤법 대격돌!" maxlength="30">
+        </div>
+
+        <!-- Member Invites -->
+        <div class="form-group">
+          <label class="form-label">함께할 대결 상대 선택 (최소 1명 이상)</label>
+          <div id="battleInviteMemberList" class="battle-member-select-grid">
+            <!-- Dynamically populated friend checkboxes -->
+          </div>
+        </div>
+
+        <!-- Question Count Selection (5, 10, 15, 20) -->
+        <div class="form-group">
+          <label class="form-label">문제 수 선택</label>
+          <div class="pill-radio-group">
+            <label class="pill-radio"><input type="radio" name="battleQCount" value="5" checked><span>5문제</span></label>
+            <label class="pill-radio"><input type="radio" name="battleQCount" value="10"><span>10문제</span></label>
+            <label class="pill-radio"><input type="radio" name="battleQCount" value="15"><span>15문제</span></label>
+            <label class="pill-radio"><input type="radio" name="battleQCount" value="20"><span>20문제</span></label>
+          </div>
+        </div>
+
+        <!-- Subject Selection -->
+        <div class="form-group">
+          <label class="form-label">대결 과목 선택</label>
+          <div class="pill-radio-group subject-group">
+            <label class="pill-radio"><input type="radio" name="battleSubject" value="spelling" checked><span>🌸 맞춤법</span></label>
+            <label class="pill-radio"><input type="radio" name="battleSubject" value="idiom"><span>🍯 속담</span></label>
+            <label class="pill-radio"><input type="radio" name="battleSubject" value="hanja"><span>📜 사자성어</span></label>
+            <label class="pill-radio"><input type="radio" name="battleSubject" value="english"><span>🔤 영어</span></label>
+            <label class="pill-radio"><input type="radio" name="battleSubject" value="mixed"><span>⭐ 올스타전</span></label>
+          </div>
+        </div>
+
+        <!-- Level Selection -->
+        <div class="form-group">
+          <label class="form-label" for="selectBattleLevel">난이도 선택</label>
+          <select id="selectBattleLevel" class="form-select">
+            <option value="all">전체 난이도 무작위</option>
+            <option value="초등/기초">초등 / 기초</option>
+            <option value="중등/필수">중등 / 필수</option>
+            <option value="고등/심화">고등 / 심화</option>
+            <option value="수능/기출">수능 / 기출</option>
+            <option value="일반/실무">일반 / 실무</option>
+          </select>
+        </div>
+
+        <!-- Item Usage Toggle -->
+        <div class="form-group switch-group" style="display: flex; align-items: center; justify-content: space-between; background: #fff1f2; padding: 12px 14px; border-radius: 16px; border: 1px solid #fecdd3;">
+          <div>
+            <strong style="color: #be123c; font-size: 0.9rem; display: block;">전략 아이템 사용 허용</strong>
+            <span style="font-size: 0.75rem; color: #9f1239;">먹물, 얼음, 번개스틸 등 8종 신규 배틀 아이템 사용</span>
+          </div>
+          <label class="switch-toggle">
+            <input type="checkbox" id="checkBattleAllowItems" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 18px;">
+          <button id="btnSubmitCreateBattle" class="main-action-btn battle-submit-btn" type="button">
+            대결방 생성 및 배틀 시작! ⚔️
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Target Selection Modal for Attack Items -->
+  <div id="modalBattleTarget" class="modal-overlay">
+    <div class="modal-box battle-target-modal-box">
+      <div class="modal-header">
+        <h3 id="battleTargetModalTitle" style="margin: 0; font-size: 1.1rem; font-weight: 800;">공격 대상 상대 선택</h3>
+        <button id="btnCloseBattleTarget" class="btn-close-modal" type="button">✕</button>
+      </div>
+      <p id="battleTargetModalDesc" style="font-size: 0.8rem; color: #64748b; margin: 4px 0 12px;">공격 아이템을 발사할 라이벌을 선택하세요!</p>
+      <div id="battleTargetCandidateList" class="battle-target-list">
+        <!-- Dynamically populated target rivals -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Battle Final Result Modal -->
+  <div id="modalBattleResult" class="modal-overlay">
+    <div class="modal-box battle-result-modal-box">
+      <div class="battle-podium-header">
+        <div id="battleResultTrophy" class="podium-trophy">👑</div>
+        <h2 id="battleResultHeadline" class="podium-headline">승리! WINNER!</h2>
+        <span id="battleResultRpBadge" class="podium-rp-badge">+30 RP 획득!</span>
+      </div>
+      <div id="battleResultRankings" class="battle-result-rank-list">
+        <!-- Dynamically rendered final leaderboard -->
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button id="btnBattleResultLobby" class="main-action-btn" type="button" style="flex: 1; background: #64748b;">
+          로비로 이동 🏠
+        </button>
+        <button id="btnBattleResultRematch" class="main-action-btn" type="button" style="flex: 1.2; background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+          다시 대결하기 ⚔️
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
-  <script src="questions.js?v=3.5.8"></script>
-  <script src="idiom_questions.js?v=3.5.8"></script>
-  <script src="hanja_questions.js?v=3.5.8"></script>
-  <script src="english_questions.js?v=3.5.8"></script>
-  <script src="stickers.js?v=3.5.8"></script>
-  <script src="app.js?v=3.5.8"></script>
+  <script src="questions.js?v=3.6.0"></script>
+  <script src="idiom_questions.js?v=3.6.0"></script>
+  <script src="hanja_questions.js?v=3.6.0"></script>
+  <script src="english_questions.js?v=3.6.0"></script>
+  <script src="stickers.js?v=3.6.0"></script>
+  <script src="app.js?v=3.6.0"></script>
 </body>
 </html>

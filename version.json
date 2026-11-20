@@ -1,6 +1,6 @@
 {
-  "version": "3.5.8",
-  "build": "20261119_1900",
-  "name": "하루맞춤 (Haru Matchum) - Classic Sticker 120px Fixed Size & Message Containment Separation Edition",
-  "releaseNotes": "1) 스티커 표시 크기를 사용자가 선호하는 이전 버전의 아담하고 귀여운 클래식 규격(120px x 120px)으로 완전 고정 복원, 2) 부모 버블에 overflow: hidden 및 방어적 인라인/CSS 이중 규격을 적용하여 스티커 이미지가 다음 메시지 및 이전 메시지를 덮거나 가리는 현상 원천 차단, 3) index.html의 style.css?v=3.5.8 캐시 버스팅을 적용하여 모바일 기기 구버전 캐시 즉시 갱신"
+  "version": "3.6.0",
+  "build": "20261120_1200",
+  "name": "하루맞춤 (Haru Matchum) - Real-time Battle Arena, Custom Question Settings, 8 Battle Items & Battle RP Rankings Edition",
+  "releaseNotes": "1) 실시간 퀴즈대결방(Battle Arena) 신설: 친구 초대 및 1:1/다자간 스피드 대결 지원, 2) 문제 수(5/10/15/20제), 과목(맞춤법/속담/사자성어/영어/올스타전), 난이도(전체/초등/중등/고등/수능/일반) 및 아이템 허용 여부 자유 선택, 3) 대결 전용 8종 배틀 아이템(먹물 벼루, 모래바람, 꽁꽁 얼음, 반사 거울방패, 번개 스틸, 천리안 심안, 째깍 시한폭탄, 무지개 찬스) 및 실시간 VFX 시각효과 탑재, 4) 배틀 전용 5대 티어(마스터/다이아/골드/실버/브론즈) 및 RP 랭킹 시스템 구축"
 }

@@ -1565,11 +1565,22 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.5.8';
+    this.APP_VERSION = metaVer || '3.6.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
     this.isPushSubscribed = false;
+
+    // ⚔️ v3.6.0 Real-time Quiz Battle Arena State
+    this.currentBattleRoom = null;
+    this.battlePollingTimer = null;
+    this.battleTimerInterval = null;
+    this.battleQuestionStartTime = 0;
+    this.battleCurrentQIndex = 0;
+    this.battleSelectedTarget = null;
+    this.battleTimerRemaining = 15;
+    this.battleItemToUse = null;
+    this.battleIsSubmitting = false;
 
     this.initDOM();
     this.bindEvents();
@@ -1607,8 +1618,13 @@ class HaruMatchumApp {
     this.viewResult = document.getElementById('viewResult');
     this.viewLeaderboard = document.getElementById('viewLeaderboard');
     this.viewBadges = document.getElementById('viewBadges');
+    this.viewBattle = document.getElementById('viewBattle');
 
     // Modals
+    this.modalBattleLobby = document.getElementById('modalBattleLobby');
+    this.modalBattleCreate = document.getElementById('modalBattleCreate');
+    this.modalBattleTarget = document.getElementById('modalBattleTarget');
+    this.modalBattleResult = document.getElementById('modalBattleResult');
     this.modalProfile = document.getElementById('modalProfile');
     this.modalApi = document.getElementById('modalApi');
     this.modalDictSearch = document.getElementById('modalDictSearch');
@@ -1704,6 +1720,64 @@ class HaruMatchumApp {
 
     document.getElementById('btnStartPractice').addEventListener('click', () => this.startQuiz('practice'));
     document.getElementById('btnStartReview').addEventListener('click', () => this.startQuiz('review'));
+
+    // ⚔️ v3.6.0 Battle Arena Navigation & Modal Event Bindings
+    const btnNavBattle = document.getElementById('btnNavBattle');
+    if (btnNavBattle) btnNavBattle.addEventListener('click', () => this.openBattleLobby());
+
+    const btnStartBattleArena = document.getElementById('btnStartBattleArena');
+    if (btnStartBattleArena) btnStartBattleArena.addEventListener('click', () => this.openBattleLobby());
+
+    const btnOpenCreateBattle = document.getElementById('btnOpenCreateBattle');
+    if (btnOpenCreateBattle) btnOpenCreateBattle.addEventListener('click', () => this.openBattleCreateModal());
+
+    const btnCloseBattleLobby = document.getElementById('btnCloseBattleLobby');
+    if (btnCloseBattleLobby) btnCloseBattleLobby.addEventListener('click', () => {
+      if (this.modalBattleLobby) this.modalBattleLobby.classList.remove('active');
+    });
+
+    const btnCloseBattleCreate = document.getElementById('btnCloseBattleCreate');
+    if (btnCloseBattleCreate) btnCloseBattleCreate.addEventListener('click', () => {
+      if (this.modalBattleCreate) this.modalBattleCreate.classList.remove('active');
+    });
+
+    const btnSubmitCreateBattle = document.getElementById('btnSubmitCreateBattle');
+    if (btnSubmitCreateBattle) btnSubmitCreateBattle.addEventListener('click', () => this.submitCreateBattle());
+
+    const btnBattleExit = document.getElementById('btnBattleExit');
+    if (btnBattleExit) btnBattleExit.addEventListener('click', () => {
+      if (confirm('대결을 종료하고 로비로 나가시겠습니까?')) {
+        this.stopBattlePolling();
+        this.switchView('home');
+      }
+    });
+
+    const btnBattleResultLobby = document.getElementById('btnBattleResultLobby');
+    if (btnBattleResultLobby) btnBattleResultLobby.addEventListener('click', () => {
+      if (this.modalBattleResult) this.modalBattleResult.classList.remove('active');
+      this.openBattleLobby();
+    });
+
+    const btnBattleResultRematch = document.getElementById('btnBattleResultRematch');
+    if (btnBattleResultRematch) btnBattleResultRematch.addEventListener('click', () => {
+      if (this.modalBattleResult) this.modalBattleResult.classList.remove('active');
+      const prevMembers = this.currentBattleRoom ? this.currentBattleRoom.members : [];
+      this.openBattleCreateModal(prevMembers);
+    });
+
+    const btnCloseBattleTarget = document.getElementById('btnCloseBattleTarget');
+    if (btnCloseBattleTarget) btnCloseBattleTarget.addEventListener('click', () => {
+      if (this.modalBattleTarget) this.modalBattleTarget.classList.remove('active');
+    });
+
+    const btnChatHeaderBattle = document.getElementById('btnChatHeaderBattle');
+    if (btnChatHeaderBattle) btnChatHeaderBattle.addEventListener('click', () => this.openBattleFromChat());
+
+    const tabRoomBattle = document.getElementById('tabRoomBattle');
+    if (tabRoomBattle) tabRoomBattle.addEventListener('click', () => this.openBattleLobby());
+
+    const rankSubjectBattle = document.getElementById('rankSubjectBattle');
+    if (rankSubjectBattle) rankSubjectBattle.addEventListener('click', () => this.renderBattleRankings());
 
     // Lucky Box modal buttons
     const btnOpenLucky = document.getElementById('btnOpenLuckyBox');
@@ -2251,6 +2325,8 @@ class HaruMatchumApp {
     } else if (viewName === 'badges') {
       this.viewBadges.classList.add('active');
       this.renderBadges();
+    } else if (viewName === 'battle') {
+      if (this.viewBattle) this.viewBattle.classList.add('active');
     }
   }
 
@@ -5648,6 +5724,23 @@ class HaruMatchumApp {
       const roomId = params.get('roomId');
       const withUser = params.get('withUser');
 
+      if (open === 'battle') {
+        const battleRoomId = params.get('roomId');
+        setTimeout(() => {
+          if (battleRoomId) {
+            this.enterBattleRoom(battleRoomId);
+          } else {
+            this.openBattleLobby();
+          }
+        }, 200);
+
+        try {
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        } catch (e) {}
+        return;
+      }
+
       const isChatTarget = open === 'chat' || openChat === '1' || open === 'inbox' || openInbox === '1' || Boolean(roomId) || Boolean(withUser);
 
       if (isChatTarget) {
@@ -6272,6 +6365,7 @@ class HaruMatchumApp {
     const headerAvatar = document.getElementById('chatActiveAvatar');
     const btnGift = document.getElementById('btnChatHeaderGift');
     const btnInvite = document.getElementById('btnChatHeaderInvite');
+    const btnBattle = document.getElementById('btnChatHeaderBattle');
 
     if (btnBack) btnBack.style.display = 'flex';
 
@@ -6281,12 +6375,14 @@ class HaruMatchumApp {
       if (headerAvatar) headerAvatar.innerHTML = '💬';
       if (btnGift) btnGift.style.display = 'none';
       if (btnInvite) btnInvite.style.display = 'none';
+      if (btnBattle) btnBattle.style.display = 'none';
     } else if (this.currentChatRoomId.startsWith('group_')) {
       if (headerTitle) headerTitle.textContent = targetName || '그룹 대화방';
       if (headerSub) headerSub.textContent = '👥 멀티 그룹 대화방 (실시간)';
       if (headerAvatar) headerAvatar.innerHTML = '👥';
       if (btnGift) btnGift.style.display = 'inline-flex';
       if (btnInvite) btnInvite.style.display = 'inline-flex';
+      if (btnBattle) btnBattle.style.display = 'inline-flex';
     } else {
       if (headerTitle) headerTitle.textContent = targetName || targetUsername || '대화방';
       if (headerSub) headerSub.textContent = '1:1 친근한 대화방 ✨';
@@ -6297,6 +6393,7 @@ class HaruMatchumApp {
       }
       if (btnGift) btnGift.style.display = 'inline-flex';
       if (btnInvite) btnInvite.style.display = 'inline-flex';
+      if (btnBattle) btnBattle.style.display = 'inline-flex';
     }
 
     if (this.chatRoomsView) this.chatRoomsView.style.display = 'none';
@@ -6318,6 +6415,7 @@ class HaruMatchumApp {
     const headerAvatar = document.getElementById('chatActiveAvatar');
     const btnGift = document.getElementById('btnChatHeaderGift');
     const btnInvite = document.getElementById('btnChatHeaderInvite');
+    const btnBattle = document.getElementById('btnChatHeaderBattle');
 
     if (btnBack) btnBack.style.display = 'none';
     if (headerTitle) headerTitle.textContent = '하루 대화 광장';
@@ -6325,6 +6423,7 @@ class HaruMatchumApp {
     if (headerAvatar) headerAvatar.innerHTML = '💬';
     if (btnGift) btnGift.style.display = 'none';
     if (btnInvite) btnInvite.style.display = 'none';
+    if (btnBattle) btnBattle.style.display = 'none';
 
     if (this.chatThreadView) this.chatThreadView.style.display = 'none';
     if (this.chatRoomsView) this.chatRoomsView.style.display = 'flex';
@@ -8822,6 +8921,941 @@ class HaruMatchumApp {
     }
   }
 
+  // ==========================================
+  // ⚔️ v3.6.0 실시간 퀴즈대결방(Battle Arena) 클라이언트 엔진
+  // ==========================================
+
+  // 1. 대결 로비 열기 및 목록 조회
+  async openBattleLobby() {
+    if (!this.currentUser) {
+      this.showToastNotice('대결방에 입장하려면 먼저 로그인해주세요!');
+      return;
+    }
+    if (this.modalBattleLobby) this.modalBattleLobby.classList.add('active');
+    const container = document.getElementById('battleLobbyRoomList');
+    if (container) {
+      container.innerHTML = '<div style="text-align:center; padding: 32px 16px; color:#94a3b8;"><p style="font-size:1.8rem; margin:0 0 8px;">⚔️</p>진행 중인 대결방 목록을 불러오는 중...</div>';
+    }
+
+    try {
+      const res = await fetch('/api/battle/rooms', {
+        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        this.renderBattleLobbyRooms(data.rooms || []);
+      } else {
+        if (container) container.innerHTML = `<div style="text-align:center; padding:24px; color:#ef4444;">${data.message || '목록을 불러오지 못했습니다.'}</div>`;
+      }
+    } catch (err) {
+      console.error('[Battle] Lobby load failed:', err);
+      if (container) container.innerHTML = '<div style="text-align:center; padding:24px; color:#ef4444;">통신 오류로 목록을 불러오지 못했습니다.</div>';
+    }
+  }
+
+  // 2. 대결 로비 방 목록 렌더링
+  renderBattleLobbyRooms(rooms) {
+    const container = document.getElementById('battleLobbyRoomList');
+    if (!container) return;
+
+    if (!rooms || rooms.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state-card" style="text-align:center; padding:36px 16px; color:#94a3b8;">
+          <p style="font-size:2.2rem; margin:0 0 10px;">⚔️</p>
+          <p style="font-weight:700; color:#334155; font-size:1rem; margin-bottom:4px;">현재 열려있는 대결방이 없습니다.</p>
+          <p style="font-size:0.82rem; margin:0 0 18px; color:#64748b;">새로운 퀴즈대결방을 만들어 친구를 초대해보세요!</p>
+          <button type="button" class="btn-create-battle-pill" onclick="window.app.openBattleCreateModal()" style="margin:0 auto; padding:8px 18px; font-size:0.9rem;">➕ 방 만들기</button>
+        </div>
+      `;
+      return;
+    }
+
+    const subjectLabels = {
+      spelling: '우리말 맞춤법',
+      proverb: '속담·관용구',
+      idiom: '사자성어',
+      english: '영어 어휘',
+      all: '올스타전'
+    };
+
+    const levelLabels = {
+      all: '전체',
+      elem: '초등',
+      mid: '중등',
+      high: '고등',
+      csat: '수능',
+      general: '일반'
+    };
+
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+
+    container.innerHTML = rooms.map(room => {
+      const myMember = (room.members || []).find(m => m.username === myUsername);
+      const isCompleted = room.status === 'completed';
+      const myDone = myMember && myMember.status === 'completed';
+
+      let statusBadge = '<span class="battle-room-status-badge in-progress">대결중</span>';
+      if (isCompleted) {
+        statusBadge = '<span class="battle-room-status-badge completed">종료됨</span>';
+      } else if (room.status === 'waiting') {
+        statusBadge = '<span class="battle-room-status-badge waiting">대기중</span>';
+      }
+
+      let actionBtnText = '대결 입장 ⚔️';
+      let actionBtnClass = 'btn-enter-battle';
+      if (isCompleted) {
+        actionBtnText = '결과 보기 🏆';
+      } else if (myDone) {
+        actionBtnText = '대결 현황 ⏱️';
+      }
+
+      const membersHtml = (room.members || []).map(m => {
+        const isMe = m.username === myUsername;
+        return `
+          <div class="battle-lobby-member-chip ${isMe ? 'is-me' : ''}" title="${m.nickname}">
+            <span class="member-chip-avatar">${m.avatar || '🌸'}</span>
+            <span class="member-chip-name">${m.nickname}</span>
+            <span class="member-chip-prog">${m.currentQuestionIndex || 0}/${room.questionCount}</span>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="battle-room-card ${isCompleted ? 'is-completed' : ''}" data-room-id="${room.id}">
+          <div class="battle-room-card-header">
+            <div class="battle-room-meta-tags">
+              <span class="battle-room-subject-pill">${subjectLabels[room.subject] || '맞춤법'}</span>
+              <span class="battle-room-level-pill">${levelLabels[room.level] || '전체'}</span>
+              <span class="battle-room-qcount-pill">${room.questionCount}제</span>
+              ${room.allowItems ? '<span class="battle-room-item-pill">✨ 아이템전</span>' : '<span class="battle-room-item-pill no-item">🎯 노템전</span>'}
+            </div>
+            ${statusBadge}
+          </div>
+          <h4 class="battle-room-card-title">${room.title}</h4>
+          <div class="battle-room-members-row">
+            ${membersHtml}
+          </div>
+          <div class="battle-room-card-footer">
+            <span class="battle-room-time-sub">${new Date(room.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 개설</span>
+            <button type="button" class="${actionBtnClass}" onclick="window.app.enterBattleRoom('${room.id}')">${actionBtnText}</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3. 방 만들기 모달 열기 및 친구 목록 렌더링
+  async openBattleCreateModal(defaultMembers = []) {
+    if (!this.currentUser) {
+      this.showToastNotice('방을 만들려면 먼저 로그인해주세요!');
+      return;
+    }
+    if (this.modalBattleCreate) this.modalBattleCreate.classList.add('active');
+
+    const inputTitle = document.getElementById('inputBattleTitle');
+    if (inputTitle) {
+      inputTitle.value = `${this.currentUser.nickname || this.currentUser.username}님의 스피드 퀴즈대결!`;
+    }
+
+    const memberGrid = document.getElementById('battleInviteMemberList');
+    if (memberGrid) {
+      // 4인 실제 계정 (단민러브, 미니미니, 민지, 맞춤요정)
+      const AUTHENTIC_USERS = [
+        { username: '단민러브', nickname: '단민러브', avatar: '👑' },
+        { username: '미니미니', nickname: '미니미니', avatar: '🐱' },
+        { username: '민지', nickname: '민지', avatar: '⭐' },
+        { username: '맞춤요정', nickname: '맞춤요정', avatar: '🧚' }
+      ];
+
+      const myUsername = this.currentUser.username;
+      const candidates = AUTHENTIC_USERS.filter(u => u.username !== myUsername);
+
+      memberGrid.innerHTML = candidates.map(user => {
+        const isChecked = defaultMembers.includes(user.username);
+        return `
+          <label class="battle-friend-select-item">
+            <input type="checkbox" name="battleFriend" value="${user.username}" ${isChecked ? 'checked' : ''}>
+            <span class="friend-item-avatar">${user.avatar}</span>
+            <span class="friend-item-name">${user.nickname}</span>
+          </label>
+        `;
+      }).join('');
+    }
+  }
+
+  // 4. 대화방에서 즉시 대결방 열기
+  openBattleFromChat() {
+    let defaultMembers = [];
+    if (this.currentChatTargetUser) {
+      defaultMembers = [this.currentChatTargetUser];
+    } else if (this.currentGroupMeta && Array.isArray(this.currentGroupMeta.members)) {
+      defaultMembers = this.currentGroupMeta.members.filter(u => u !== (this.currentUser && this.currentUser.username));
+    }
+    this.openBattleCreateModal(defaultMembers);
+  }
+
+  // 5. 방 생성 제출
+  async submitCreateBattle() {
+    if (!this.currentUser) return;
+    const inputTitle = document.getElementById('inputBattleTitle');
+    const title = inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : `${this.currentUser.nickname}님의 퀴즈대결!`;
+
+    const checkboxes = document.querySelectorAll('input[name="battleFriend"]:checked');
+    const invitedUsernames = Array.from(checkboxes).map(cb => cb.value);
+
+    if (invitedUsernames.length === 0) {
+      this.showToastNotice('대결할 친구를 1명 이상 선택해주세요!');
+      return;
+    }
+
+    const qCountRadio = document.querySelector('input[name="battleQCount"]:checked');
+    const questionCount = qCountRadio ? parseInt(qCountRadio.value, 10) : 5;
+
+    const subjRadio = document.querySelector('input[name="battleSubject"]:checked');
+    const subject = subjRadio ? subjRadio.value : 'all';
+
+    const levelSelect = document.getElementById('selectBattleLevel');
+    const level = levelSelect ? levelSelect.value : 'all';
+
+    const allowItemsCheck = document.getElementById('checkBattleAllowItems');
+    const allowItems = allowItemsCheck ? allowItemsCheck.checked : true;
+
+    try {
+      const res = await fetch('/api/battle/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token || ''}`
+        },
+        body: JSON.stringify({
+          title,
+          invitedUsernames,
+          questionCount,
+          subject,
+          level,
+          allowItems
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.roomId) {
+        if (this.modalBattleCreate) this.modalBattleCreate.classList.remove('active');
+        if (this.modalBattleLobby) this.modalBattleLobby.classList.remove('active');
+        this.showToastNotice('⚔️ 퀴즈대결방이 생성되었습니다! 대결을 시작합니다.');
+        this.enterBattleRoom(data.roomId);
+      } else {
+        this.showToastNotice(data.message || '방 생성에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('[Battle] Create room error:', err);
+      this.showToastNotice('방 생성 중 통신 오류가 발생했습니다.');
+    }
+  }
+
+  // 6. 대결방 입장 및 화면 초기화
+  async enterBattleRoom(roomId) {
+    this.stopBattlePolling();
+
+    if (this.modalBattleLobby) this.modalBattleLobby.classList.remove('active');
+    if (this.modalBattleCreate) this.modalBattleCreate.classList.remove('active');
+    if (this.modalBattleResult) this.modalBattleResult.classList.remove('active');
+    if (this.modalBattleTarget) this.modalBattleTarget.classList.remove('active');
+
+    this.switchView('battle');
+
+    try {
+      const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}`, {
+        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      });
+      const data = await res.json();
+      if (!data.success || !data.room) {
+        this.showToastNotice(data.message || '대결방을 찾을 수 없습니다.');
+        this.switchView('home');
+        return;
+      }
+
+      this.currentBattleRoom = data.room;
+
+      const headerTitle = document.getElementById('battleRoomHeaderTitle');
+      if (headerTitle) headerTitle.textContent = this.currentBattleRoom.title;
+
+      const subjectBadge = document.getElementById('battleRoomSubjectBadge');
+      const subjectLabels = { spelling: '우리말 맞춤법', proverb: '속담·관용구', idiom: '사자성어', english: '영어 어휘', all: '올스타전' };
+      if (subjectBadge) subjectBadge.textContent = `⚔️ ${subjectLabels[this.currentBattleRoom.subject] || '대결'}`;
+
+      const totalQNum = document.getElementById('battleTotalQNum');
+      if (totalQNum) totalQNum.textContent = `/${this.currentBattleRoom.questions.length}`;
+
+      this.renderBattleRivalsBar(this.currentBattleRoom);
+
+      const myUsername = this.currentUser ? this.currentUser.username : '';
+      const myMember = this.currentBattleRoom.members.find(m => m.username === myUsername);
+
+      const isCompleted = this.currentBattleRoom.status === 'completed';
+      const myDone = myMember && myMember.status === 'completed';
+
+      if (isCompleted) {
+        this.renderBattleResult(this.currentBattleRoom);
+      } else if (myDone) {
+        this.renderBattleQuestion();
+        this.startBattlePolling(roomId);
+      } else {
+        this.renderBattleQuestion();
+        this.renderBattleItemDock(this.currentBattleRoom);
+        this.startBattlePolling(roomId);
+      }
+    } catch (err) {
+      console.error('[Battle] Enter room error:', err);
+      this.showToastNotice('대결방 입장 중 통신 오류가 발생했습니다.');
+      this.switchView('home');
+    }
+  }
+
+  // 7. 실시간 대결 폴링 시작 및 정지
+  startBattlePolling(roomId) {
+    this.stopBattlePolling();
+    this.battlePollingTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}`, {
+          headers: { 'Authorization': `Bearer ${this.token || ''}` }
+        });
+        const data = await res.json();
+        if (data.success && data.room) {
+          this.currentBattleRoom = data.room;
+          this.renderBattleRivalsBar(data.room);
+          this.applyBattleVfx(data.room);
+
+          if (data.room.status === 'completed') {
+            this.stopBattlePolling();
+            this.renderBattleResult(data.room);
+          }
+        }
+      } catch (e) {
+        console.warn('[Battle] Polling error:', e);
+      }
+    }, 1500);
+  }
+
+  stopBattlePolling() {
+    if (this.battlePollingTimer) {
+      clearInterval(this.battlePollingTimer);
+      this.battlePollingTimer = null;
+    }
+    if (this.battleTimerInterval) {
+      clearInterval(this.battleTimerInterval);
+      this.battleTimerInterval = null;
+    }
+  }
+
+  // 8. 현재 문제 렌더링
+  renderBattleQuestion() {
+    const room = this.currentBattleRoom;
+    if (!room) return;
+
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myMember = (room.members || []).find(m => m.username === myUsername);
+    const qIndex = myMember ? (myMember.currentQuestionIndex || 0) : 0;
+
+    const currentQNum = document.getElementById('battleCurrentQNum');
+    if (currentQNum) currentQNum.textContent = `Q${Math.min(qIndex + 1, room.questions.length)}`;
+
+    const promptText = document.getElementById('battlePromptText');
+    const sentenceBox = document.getElementById('battleSentenceBox');
+    const translationBox = document.getElementById('battleSentenceTranslation');
+    const optionsGrid = document.getElementById('battleOptionsGrid');
+    const levelBadge = document.getElementById('battleLevelBadge');
+    const comboBadge = document.getElementById('battleComboBadge');
+    const itemDock = document.getElementById('battleItemDock');
+
+    if (comboBadge) {
+      if (myMember && myMember.combo > 1) {
+        comboBadge.style.display = 'inline-block';
+        comboBadge.textContent = `🔥 ${myMember.combo} 콤보 (+${myMember.combo}P)`;
+      } else {
+        comboBadge.style.display = 'none';
+      }
+    }
+
+    // 모든 문제를 다 풀었을 때
+    if (qIndex >= room.questions.length || (myMember && myMember.status === 'completed')) {
+      if (this.battleTimerInterval) clearInterval(this.battleTimerInterval);
+      const timerFill = document.getElementById('battleTimerBarFill');
+      if (timerFill) timerFill.style.width = '100%';
+      const timerText = document.getElementById('battleTimerText');
+      if (timerText) timerText.textContent = '🏁 완료!';
+
+      if (promptText) promptText.textContent = '🎉 모든 문제를 다 풀었습니다!';
+      if (sentenceBox) {
+        sentenceBox.innerHTML = `
+          <div style="text-align:center; padding: 24px 16px; color:#10b981;">
+            <p style="font-size:2rem; margin:0 0 8px;">👑</p>
+            <p style="font-size:1.1rem; font-weight:800; color:#0f766e; margin-bottom:4px;">대결 문제 풀이 완료!</p>
+            <p style="font-size:0.85rem; color:#64748b;">상대방이 문제를 모두 완료할 때까지 잠시만 기다려주세요.<br>실시간으로 대결 순위가 집계됩니다. ⏱️</p>
+          </div>
+        `;
+      }
+      if (translationBox) translationBox.style.display = 'none';
+      if (optionsGrid) optionsGrid.innerHTML = '';
+      if (itemDock) itemDock.style.display = 'none';
+      return;
+    }
+
+    const q = room.questions[qIndex];
+    if (!q) return;
+
+    if (levelBadge) {
+      const levelLabels = { all: '전체', elem: '초등', mid: '중등', high: '고등', csat: '수능', general: '일반' };
+      levelBadge.textContent = levelLabels[q.level] || '일반';
+    }
+
+    if (promptText) {
+      if (q.prompt) {
+        promptText.textContent = q.prompt;
+      } else if (q.subject === 'english') {
+        promptText.textContent = '알맞은 영어 단어나 철자를 선택하세요!';
+      } else if (q.subject === 'proverb') {
+        promptText.textContent = '빈칸에 들어갈 올바른 속담이나 관용구를 고르세요!';
+      } else if (q.subject === 'idiom') {
+        promptText.textContent = '상황에 가장 어울리는 사자성어를 고르세요!';
+      } else {
+        promptText.textContent = '빈칸에 들어갈 올바른 우리말 맞춤법을 고르세요!';
+      }
+    }
+
+    if (sentenceBox) {
+      let sentenceHtml = q.sentence || q.question || '';
+      sentenceHtml = sentenceHtml.replace(/\[\s*___*\s*\]|\[\s*\]/g, '<span class="battle-sentence-blank">빈칸</span>');
+      sentenceBox.innerHTML = sentenceHtml;
+    }
+
+    if (translationBox) {
+      if (q.meaning || q.translation) {
+        translationBox.style.display = 'block';
+        translationBox.textContent = `💡 뜻: ${q.meaning || q.translation}`;
+      } else {
+        translationBox.style.display = 'none';
+      }
+    }
+
+    if (optionsGrid) {
+      optionsGrid.innerHTML = '';
+      (q.options || []).forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'battle-option-btn';
+        btn.innerHTML = `<span class="opt-num">${optIdx + 1}</span> <span class="opt-text">${optText}</span>`;
+        btn.addEventListener('click', () => this.handleBattleOptionSelect(optIdx));
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    if (itemDock && room.allowItems) {
+      itemDock.style.display = 'block';
+    }
+
+    this.startBattleQuestionTimer();
+  }
+
+  // 9. 문제 15초 카운트다운 타이머
+  startBattleQuestionTimer() {
+    if (this.battleTimerInterval) clearInterval(this.battleTimerInterval);
+    this.battleTimerRemaining = 15.0;
+    this.battleQuestionStartTime = Date.now();
+
+    const timerText = document.getElementById('battleTimerText');
+    const timerFill = document.getElementById('battleTimerBarFill');
+
+    if (timerText) timerText.textContent = '⏱️ 15.0s';
+    if (timerFill) {
+      timerFill.style.width = '100%';
+      timerFill.style.background = 'linear-gradient(90deg, #10b981, #3b82f6)';
+    }
+
+    this.battleTimerInterval = setInterval(() => {
+      this.battleTimerRemaining -= 0.1;
+      if (this.battleTimerRemaining <= 0) {
+        this.battleTimerRemaining = 0;
+        clearInterval(this.battleTimerInterval);
+        this.battleTimerInterval = null;
+        if (timerText) timerText.textContent = '⏱️ 0.0s (시간 초과)';
+        if (timerFill) timerFill.style.width = '0%';
+        this.handleBattleOptionSelect(-1); // 시간 초과 오답 제출
+        return;
+      }
+
+      if (timerText) timerText.textContent = `⏱️ ${this.battleTimerRemaining.toFixed(1)}s`;
+      if (timerFill) {
+        const pct = Math.max(0, (this.battleTimerRemaining / 15.0) * 100);
+        timerFill.style.width = `${pct}%`;
+        if (this.battleTimerRemaining < 4.0) {
+          timerFill.style.background = '#ef4444';
+        } else if (this.battleTimerRemaining < 8.0) {
+          timerFill.style.background = '#f59e0b';
+        }
+      }
+    }, 100);
+  }
+
+  // 10. 보기 선택 및 정답 제출
+  async handleBattleOptionSelect(selectedOptionIndex) {
+    if (this.battleIsSubmitting) return;
+
+    // 얼음 효과 확인
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myMember = this.currentBattleRoom ? this.currentBattleRoom.members.find(m => m.username === myUsername) : null;
+    if (myMember && Array.isArray(myMember.activeEffects)) {
+      const now = Date.now();
+      const freezeEffect = myMember.activeEffects.find(e => e.effect === 'freeze' && e.expiresAt > now);
+      if (freezeEffect) {
+        const leftSec = Math.ceil((freezeEffect.expiresAt - now) / 1000);
+        this.showToastNotice(`❄️ 꽁꽁 얼음에 얼어붙어 ${leftSec}초간 보기를 누를 수 없습니다!`);
+        return;
+      }
+    }
+
+    this.battleIsSubmitting = true;
+    if (this.battleTimerInterval) {
+      clearInterval(this.battleTimerInterval);
+      this.battleTimerInterval = null;
+    }
+
+    const timeSpent = Math.min(15.0, (Date.now() - this.battleQuestionStartTime) / 1000);
+    const qIndex = myMember ? (myMember.currentQuestionIndex || 0) : 0;
+
+    const optionButtons = document.querySelectorAll('.battle-option-btn');
+    optionButtons.forEach(btn => btn.disabled = true);
+
+    try {
+      const res = await fetch('/api/battle/submit-answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token || ''}`
+        },
+        body: JSON.stringify({
+          roomId: this.currentBattleRoom.id,
+          questionIndex: qIndex,
+          selectedOptionIndex,
+          timeSpent
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        this.showToastNotice(data.message || '답안 제출 중 오류가 발생했습니다.');
+        this.battleIsSubmitting = false;
+        return;
+      }
+
+      // 시각적 피드백
+      if (data.isCorrect) {
+        if (selectedOptionIndex >= 0 && optionButtons[selectedOptionIndex]) {
+          optionButtons[selectedOptionIndex].classList.add('battle-opt-correct');
+        }
+        if (window.sfx && typeof window.sfx.correct === 'function') {
+          try { window.sfx.correct(); } catch (e) {}
+        }
+        this.showToastNotice(`🎉 정답! +${data.pointsEarned}P (콤보 ${data.combo}배)`);
+      } else {
+        if (selectedOptionIndex >= 0 && optionButtons[selectedOptionIndex]) {
+          optionButtons[selectedOptionIndex].classList.add('battle-opt-wrong');
+        }
+        if (data.correctIndex !== undefined && optionButtons[data.correctIndex]) {
+          optionButtons[data.correctIndex].classList.add('battle-opt-correct');
+        }
+        if (window.sfx && typeof window.sfx.wrong === 'function') {
+          try { window.sfx.wrong(); } catch (e) {}
+        }
+        if (selectedOptionIndex === -1) {
+          this.showToastNotice('⏱️ 시간 초과! 아쉽게도 0점 처리되었습니다.');
+        } else {
+          this.showToastNotice('❌ 아쉬워요! 오답입니다.');
+        }
+      }
+
+      this.currentBattleRoom = data.room;
+      this.renderBattleRivalsBar(data.room);
+
+      setTimeout(() => {
+        this.battleIsSubmitting = false;
+        if (data.room.status === 'completed') {
+          this.stopBattlePolling();
+          this.renderBattleResult(data.room);
+        } else {
+          this.renderBattleQuestion();
+        }
+      }, 850);
+    } catch (err) {
+      console.error('[Battle] Submit error:', err);
+      this.showToastNotice('답안 제출 중 통신 오류가 발생했습니다.');
+      this.battleIsSubmitting = false;
+    }
+  }
+
+  // 11. 실시간 라이벌 진행 바 렌더링
+  renderBattleRivalsBar(room) {
+    const rivalsBar = document.getElementById('battleRivalsBar');
+    if (!rivalsBar || !room || !room.members) return;
+
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const qCount = room.questionCount || 5;
+
+    rivalsBar.innerHTML = room.members.map(member => {
+      const isMe = member.username === myUsername;
+      const progress = Math.min(100, Math.round(((member.currentQuestionIndex || 0) / qCount) * 100));
+      const isDone = member.status === 'completed';
+
+      let effectBadges = '';
+      if (Array.isArray(member.activeEffects)) {
+        const now = Date.now();
+        const activeList = member.activeEffects.filter(e => e.expiresAt > now);
+        if (activeList.some(e => e.effect === 'freeze')) effectBadges += '❄️';
+        if (activeList.some(e => e.effect === 'ink')) effectBadges += '🦑';
+        if (activeList.some(e => e.effect === 'wind')) effectBadges += '🌪️';
+        if (activeList.some(e => e.effect === 'bomb')) effectBadges += '💣';
+        if (activeList.some(e => e.effect === 'reflect')) effectBadges += '🛡️';
+      }
+
+      return `
+        <div class="battle-rival-card ${isMe ? 'is-me' : ''}">
+          <div class="rival-card-header">
+            <span class="rival-avatar">${member.avatar || '🌸'}</span>
+            <span class="rival-name">${member.nickname} ${isMe ? '(나)' : ''}</span>
+            <span class="rival-score">${member.score || 0}P</span>
+            ${effectBadges ? `<span class="rival-effects">${effectBadges}</span>` : ''}
+          </div>
+          <div class="rival-progress-bar-bg">
+            <div class="rival-progress-fill" style="width: ${progress}%;"></div>
+          </div>
+          <div class="rival-card-footer">
+            <span class="rival-prog-text">${isDone ? '🏁 완료' : `Q${(member.currentQuestionIndex || 0) + 1}/${qCount}`}</span>
+            ${member.combo > 1 ? `<span class="rival-combo-text">🔥 ${member.combo}연속</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 12. 배틀 아이템 도크 렌더링
+  renderBattleItemDock(room) {
+    const dock = document.getElementById('battleItemDock');
+    const buttonsRow = document.getElementById('battleItemButtonsRow');
+    if (!dock || !buttonsRow || !room) return;
+
+    if (!room.allowItems) {
+      dock.style.display = 'none';
+      return;
+    }
+    dock.style.display = 'block';
+
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myMember = room.members.find(m => m.username === myUsername);
+    const myItems = myMember ? (myMember.items || {}) : {};
+
+    const BATTLE_ITEMS_DEF = [
+      { key: 'battle_ink', icon: '🦑', name: '먹물벼루', desc: '상대 화면에 5초간 먹물 테러' },
+      { key: 'battle_wind', icon: '🌪️', name: '모래바람', desc: '상대 화면을 4초간 마구 흔듦' },
+      { key: 'battle_freeze', icon: '❄️', name: '꽁꽁얼음', desc: '상대 보기를 3초간 꽁꽁 얼림' },
+      { key: 'battle_reflect', icon: '🛡️', name: '거울방패', desc: '6초간 날아오는 공격을 상대에게 역반사' },
+      { key: 'battle_lightning', icon: '⚡', name: '번개스틸', desc: '상대 점수 30점을 번개처럼 스틸' },
+      { key: 'battle_sight', icon: '👁️', name: '천리안', desc: '오답 2개를 즉시 소멸' },
+      { key: 'battle_bomb', icon: '💣', name: '시한폭탄', desc: '상대에게 10초 폭탄 투척 (-50P)' },
+      { key: 'battle_rainbow', icon: '🌈', name: '무지개', desc: '현재 문제 100% 자동 정답 패스' }
+    ];
+
+    buttonsRow.innerHTML = BATTLE_ITEMS_DEF.map(item => {
+      const count = myItems[item.key] || 0;
+      const isDisabled = count <= 0;
+      return `
+        <button type="button" class="btn-battle-item ${isDisabled ? 'disabled' : ''}" 
+          title="${item.name}: ${item.desc} (남은 수량: ${count}개)"
+          onclick="window.app.handleUseBattleItem('${item.key}')" ${isDisabled ? 'disabled' : ''}>
+          <span class="battle-item-icon">${item.icon}</span>
+          <span class="battle-item-label">${item.name}</span>
+          <span class="battle-item-badge">${count}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  // 13. 아이템 사용 버튼 클릭 핸들러
+  handleUseBattleItem(itemKey) {
+    if (!this.currentBattleRoom) return;
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myMember = this.currentBattleRoom.members.find(m => m.username === myUsername);
+    if (!myMember || !myMember.items || (myMember.items[itemKey] || 0) <= 0) {
+      this.showToastNotice('보유한 아이템이 없습니다!');
+      return;
+    }
+
+    const selfItems = ['battle_reflect', 'battle_sight', 'battle_rainbow'];
+    if (selfItems.includes(itemKey)) {
+      this.submitUseBattleItem(itemKey, null);
+      return;
+    }
+
+    const rivals = this.currentBattleRoom.members.filter(m => m.username !== myUsername);
+    if (rivals.length === 0) {
+      this.showToastNotice('공격할 상대방이 없습니다.');
+      return;
+    }
+
+    if (rivals.length === 1) {
+      this.submitUseBattleItem(itemKey, rivals[0].username);
+    } else {
+      this.openBattleTargetModal(itemKey);
+    }
+  }
+
+  // 14. 2인 이상 다자간 공격 대상 선택 모달
+  openBattleTargetModal(itemKey) {
+    this.battleItemToUse = itemKey;
+    if (this.modalBattleTarget) this.modalBattleTarget.classList.add('active');
+
+    const list = document.getElementById('battleTargetCandidateList');
+    if (!list || !this.currentBattleRoom) return;
+
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const rivals = this.currentBattleRoom.members.filter(m => m.username !== myUsername);
+
+    list.innerHTML = rivals.map(rival => `
+      <div class="battle-target-item" onclick="window.app.submitUseBattleItem('${itemKey}', '${rival.username}')">
+        <span class="target-item-avatar">${rival.avatar || '🌸'}</span>
+        <div class="target-item-info">
+          <span class="target-item-nick">${rival.nickname}</span>
+          <span class="target-item-sub">현재 ${rival.score || 0}P / Q${(rival.currentQuestionIndex || 0) + 1}</span>
+        </div>
+        <button type="button" class="btn-target-fire">발사! 🚀</button>
+      </div>
+    `).join('');
+  }
+
+  // 15. 아이템 사용 요청 전송
+  async submitUseBattleItem(itemKey, targetUsername) {
+    if (this.modalBattleTarget) this.modalBattleTarget.classList.remove('active');
+    if (!this.currentBattleRoom) return;
+
+    try {
+      const res = await fetch('/api/battle/use-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token || ''}`
+        },
+        body: JSON.stringify({
+          roomId: this.currentBattleRoom.id,
+          itemKey,
+          targetUsername
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        this.showToastNotice(data.message || '아이템 사용에 실패했습니다.');
+        return;
+      }
+
+      if (data.reflected) {
+        this.showToastNotice(`🛡️ [거울방패 역반사!] ${data.message}`);
+      } else {
+        this.showToastNotice(`✨ ${data.message}`);
+      }
+
+      // 셀프 찬스 아이템 즉시 UI 적용
+      if (itemKey === 'battle_sight') {
+        const optionButtons = document.querySelectorAll('.battle-option-btn');
+        const qIndex = this.currentBattleRoom.members.find(m => m.username === (this.currentUser && this.currentUser.username)).currentQuestionIndex || 0;
+        const q = this.currentBattleRoom.questions[qIndex];
+        if (q && optionButtons.length > 2) {
+          let hiddenCount = 0;
+          optionButtons.forEach((btn, idx) => {
+            if (idx !== q.correctIndex && hiddenCount < 2) {
+              btn.style.opacity = '0.2';
+              btn.style.pointerEvents = 'none';
+              hiddenCount++;
+            }
+          });
+        }
+      } else if (itemKey === 'battle_rainbow') {
+        const qIndex = this.currentBattleRoom.members.find(m => m.username === (this.currentUser && this.currentUser.username)).currentQuestionIndex || 0;
+        const q = this.currentBattleRoom.questions[qIndex];
+        if (q && q.correctIndex !== undefined) {
+          this.handleBattleOptionSelect(q.correctIndex);
+          return;
+        }
+      }
+
+      this.currentBattleRoom = data.room;
+      this.renderBattleItemDock(data.room);
+      this.renderBattleRivalsBar(data.room);
+    } catch (err) {
+      console.error('[Battle] Use item error:', err);
+      this.showToastNotice('아이템 사용 중 통신 오류가 발생했습니다.');
+    }
+  }
+
+  // 16. 실시간 VFX 시각 효과 적용
+  applyBattleVfx(room) {
+    const vfxContainer = document.getElementById('battleVfxContainer');
+    if (!vfxContainer || !room || !this.currentUser) return;
+
+    const myMember = room.members.find(m => m.username === this.currentUser.username);
+    if (!myMember || !Array.isArray(myMember.activeEffects)) {
+      vfxContainer.innerHTML = '';
+      return;
+    }
+
+    const now = Date.now();
+    const activeList = myMember.activeEffects.filter(e => e.expiresAt > now);
+
+    let html = '';
+    activeList.forEach(effectObj => {
+      if (effectObj.effect === 'ink') {
+        html += '<div class="vfx-ink-layer"></div>';
+      } else if (effectObj.effect === 'freeze') {
+        html += '<div class="vfx-freeze-layer"></div>';
+      } else if (effectObj.effect === 'wind') {
+        html += '<div class="vfx-wind-layer"></div>';
+      } else if (effectObj.effect === 'bomb') {
+        const leftSec = Math.max(0, Math.ceil((effectObj.expiresAt - now) / 1000));
+        html += `
+          <div class="vfx-bomb-banner">
+            <span class="bomb-icon">💣</span>
+            <span class="bomb-text">째깍 시한폭탄 작동 중! (${leftSec}초 내 정답 제출하지 못하면 -50P)</span>
+          </div>
+        `;
+      }
+    });
+
+    vfxContainer.innerHTML = html;
+  }
+
+  // 17. 대결 결과 포디움 모달 렌더링
+  renderBattleResult(room) {
+    this.stopBattlePolling();
+    if (this.modalBattleResult) this.modalBattleResult.classList.add('active');
+
+    const sortedMembers = [...(room.members || [])].sort((a, b) => (b.score || 0) - (a.score || 0));
+    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myRank = sortedMembers.findIndex(m => m.username === myUsername) + 1;
+    const isWinner = myRank === 1;
+
+    const trophy = document.getElementById('battleResultTrophy');
+    const headline = document.getElementById('battleResultHeadline');
+    const rpBadge = document.getElementById('battleResultRpBadge');
+
+    if (isWinner) {
+      if (trophy) trophy.textContent = '👑';
+      if (headline) {
+        headline.textContent = '승리! VICTORY!';
+        headline.style.color = '#f59e0b';
+      }
+      if (rpBadge) {
+        rpBadge.textContent = '+30 RP 획득! (배틀 랭킹 상승)';
+        rpBadge.className = 'podium-rp-badge win';
+      }
+      if (window.sfx && typeof window.sfx.levelup === 'function') {
+        try { window.sfx.levelup(); } catch (e) {}
+      }
+    } else {
+      if (trophy) trophy.textContent = myRank === 2 ? '🥈' : '🥉';
+      if (headline) {
+        headline.textContent = '대결 완료!';
+        headline.style.color = '#64748b';
+      }
+      if (rpBadge) {
+        rpBadge.textContent = '-15 RP (다음엔 이길 수 있어요!)';
+        rpBadge.className = 'podium-rp-badge lose';
+      }
+    }
+
+    const rankListContainer = document.getElementById('battleResultRankings');
+    if (rankListContainer) {
+      const medals = ['🥇', '🥈', '🥉', '4위'];
+      rankListContainer.innerHTML = sortedMembers.map((member, idx) => {
+        const isMe = member.username === myUsername;
+        const rankMedal = medals[idx] || `${idx + 1}위`;
+        return `
+          <div class="battle-podium-rank-item ${isMe ? 'is-me' : ''}">
+            <span class="podium-rank-medal">${rankMedal}</span>
+            <span class="podium-rank-avatar">${member.avatar || '🌸'}</span>
+            <div class="podium-rank-details">
+              <span class="podium-rank-name">${member.nickname} ${isMe ? '(나)' : ''}</span>
+              <span class="podium-rank-score">${member.score || 0}점</span>
+            </div>
+            <span class="podium-rank-rp">${idx === 0 ? '+30 RP' : (sortedMembers.length > 2 && idx === 1 ? '+10 RP' : '-15 RP')}</span>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 18. 배틀 전용 랭킹 집계 렌더링
+  async renderBattleRankings() {
+    this.switchView('ranking');
+
+    // 과목 버튼 활성화 상태 갱신
+    const modeBtns = document.querySelectorAll('.mode-switch-btn');
+    modeBtns.forEach(btn => btn.classList.remove('active'));
+    const btnBattleRank = document.getElementById('rankSubjectBattle');
+    if (btnBattleRank) btnBattleRank.classList.add('active');
+
+    const rankingList = document.getElementById('rankingList');
+    if (rankingList) {
+      rankingList.innerHTML = '<div style="text-align:center; padding: 32px 16px; color:#94a3b8;"><p style="font-size:1.8rem; margin:0 0 8px;">⚔️</p>배틀 아레나 실시간 랭킹을 집계하는 중...</div>';
+    }
+
+    try {
+      const res = await fetch('/api/battle/rankings', {
+        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      });
+      const data = await res.json();
+      if (!data.success || !rankingList) return;
+
+      const myUsername = this.currentUser ? this.currentUser.username : '';
+      const medals = ['🥇', '🥈', '🥉'];
+
+      const tierNames = {
+        master: '🟣 마스터',
+        diamond: '💎 다이아',
+        gold: '🥇 골드',
+        silver: '🥈 실버',
+        bronze: '🥉 브론즈'
+      };
+
+      if (!data.rankings || data.rankings.length === 0) {
+        rankingList.innerHTML = '<div style="text-align:center; padding:32px; color:#94a3b8;">아직 대결 전적이 없습니다. 첫 대결을 시작해보세요!</div>';
+        return;
+      }
+
+      rankingList.innerHTML = data.rankings.map(item => {
+        const isMe = item.username === myUsername;
+        const medal = medals[item.rank - 1] || `<span style="font-weight:700; color:#64748b;">${item.rank}</span>`;
+        return `
+          <div class="ranking-item ${isMe ? 'is-me' : ''}" style="display:flex; align-items:center; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.06); gap:12px;">
+            <div style="font-size:1.2rem; min-width:32px; text-align:center;">${medal}</div>
+            <div style="font-size:1.4rem;">${item.avatar || '🌸'}</div>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-weight:800; font-size:0.95rem; color:#f8fafc;">${item.nickname}</span>
+                <span class="tier-badge tier-${item.tier}" style="font-size:0.7rem; padding:2px 6px; border-radius:6px; font-weight:700;">${tierNames[item.tier] || item.tier}</span>
+                ${item.streak > 1 ? `<span style="font-size:0.7rem; background:#ef4444; color:white; padding:1px 5px; border-radius:6px; font-weight:800;">🔥 ${item.streak}연승</span>` : ''}
+              </div>
+              <div style="font-size:0.78rem; color:#94a3b8; margin-top:2px;">
+                ${item.wins}승 ${item.losses}패 (승률 ${item.winRate}%)
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:900; font-size:1.05rem; color:#f59e0b;">${item.rp} RP</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('[Battle] Rankings error:', err);
+      if (rankingList) rankingList.innerHTML = '<div style="text-align:center; padding:24px; color:#ef4444;">랭킹 집계 중 오류가 발생했습니다.</div>';
+    }
+  }
+
   async forcePageReload() {
     const btnReload = document.getElementById('btnReloadPage');
     const btnQuick = document.getElementById('btnQuickReload');
@@ -8847,7 +9881,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.5.8');
+        url.searchParams.set('_v', this.APP_VERSION || '3.6.0');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
