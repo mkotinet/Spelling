@@ -212,8 +212,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.6.1">'), 'index.html must include meta app-version 3.6.1');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.1">'), 'index.html must cache-bust style.css with v3.6.1');
+    assert(indexHtml.includes('<meta name="app-version" content="3.6.2">'), 'index.html must include meta app-version 3.6.2');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.2">'), 'index.html must cache-bust style.css with v3.6.2');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -296,7 +296,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.6.1', 'GET /api/version version must be 3.6.1');
+    assert.strictEqual(verRes.data.version, '3.6.2', 'GET /api/version version must be 3.6.2');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -523,7 +523,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.1';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.2';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -536,7 +536,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.1</span>'), 'index.html must have v3.6.1 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.2</span>'), 'index.html must have v3.6.2 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -744,6 +744,64 @@ const srv = server.listen(TEST_PORT, async () => {
       assert(typeof item.rp === 'number', 'RP must be a number');
       assert(['master', 'diamond', 'gold', 'silver', 'bronze'].includes(item.tier), 'Tier must be valid');
     });
+
+    // 37. v3.6.2 Autonomous AI Battle Bot & Lobby Challenger List Verification
+    assert(indexHtml.includes('battle-quick-ai-card'), 'index.html must include .battle-quick-ai-card');
+    assert(indexHtml.includes('id="battleLobbyUserList"'), 'index.html must include #battleLobbyUserList');
+    assert(latestStyleCss.includes('.battle-quick-ai-card'), 'style.css must style .battle-quick-ai-card');
+    assert(latestStyleCss.includes('.btn-quick-ai-battle'), 'style.css must style .btn-quick-ai-battle');
+    assert(latestStyleCss.includes('.battle-user-card'), 'style.css must style .battle-user-card');
+    assert(appCode.includes('startQuickAiBattle()'), 'app.js must implement startQuickAiBattle()');
+    assert(appCode.includes('renderBattleLobbyUsers('), 'app.js must implement renderBattleLobbyUsers()');
+    assert(appCode.includes('deleteBattleRoom('), 'app.js must implement deleteBattleRoom()');
+
+    // 37-A. Verify GET /api/battle/rooms returns active challengers list including AI mascot
+    const lobbyRoomsRes = await request('GET', '/api/battle/rooms', { 'Authorization': `Bearer ${userToken}` });
+    assert.strictEqual(lobbyRoomsRes.status, 200, 'GET /api/battle/rooms must return 200');
+    assert(Array.isArray(lobbyRoomsRes.data.users), 'battle rooms response must include users array');
+    const aiUserEntry = lobbyRoomsRes.data.users.find(u => u.username === '맞춤요정');
+    assert(aiUserEntry, 'Lobby users list must include 맞춤요정');
+    assert.strictEqual(aiUserEntry.isAI, true, '맞춤요정 must have isAI: true');
+
+    // 37-B. Create Battle Room vs 맞춤요정 & Verify Autonomous AI bot simulation
+    const aiBattleRes = await request('POST', '/api/battle/create', { 'Authorization': `Bearer ${userToken}` }, {
+      title: '맞춤요정과 1:1 대결',
+      invitedUsernames: ['맞춤요정'],
+      questionCount: 5,
+      subject: 'spelling',
+      level: 'all',
+      allowItems: true
+    });
+    assert.strictEqual(aiBattleRes.status, 200, 'AI battle creation must return 200');
+    assert.strictEqual(aiBattleRes.data.success, true, 'AI battle creation must succeed');
+    const aiRoomId = aiBattleRes.data.roomId;
+    assert(aiRoomId, 'AI battle room must have roomId');
+    assert(aiBattleRes.data.room.members.includes('맞춤요정'), 'Members must include 맞춤요정');
+
+    // Force lastActionTime back by 4 seconds to trigger immediate AI mascot bot step
+    const battleRoomsPath = path.join(__dirname, '../data/battle_rooms.json');
+    if (fs.existsSync(battleRoomsPath)) {
+      const bRooms = JSON.parse(fs.readFileSync(battleRoomsPath, 'utf8'));
+      const targetRoom = bRooms.find(r => r.id === aiRoomId);
+      if (targetRoom && targetRoom.progress && targetRoom.progress['맞춤요정']) {
+        targetRoom.progress['맞춤요정'].lastActionTime = Date.now() - 4000;
+        fs.writeFileSync(battleRoomsPath, JSON.stringify(bRooms, null, 2), 'utf8');
+      }
+    }
+
+    // Call GET /api/battle/room to trigger processAiMascotBot
+    const aiRoomDetailRes = await request('GET', `/api/battle/room?roomId=${aiRoomId}`, { 'Authorization': `Bearer ${userToken}` });
+    assert.strictEqual(aiRoomDetailRes.status, 200, 'GET /api/battle/room for AI match must return 200');
+    const aiProg = aiRoomDetailRes.data.room.progress['맞춤요정'];
+    assert(aiProg, "room must have progress for 맞춤요정");
+    assert(aiProg.currentIndex >= 1 || (aiProg.answers && aiProg.answers.length >= 1), "AI bot must autonomously answer and progress");
+
+    // 37-C. Test POST /api/battle/delete-room
+    const deleteRoomRes = await request('POST', '/api/battle/delete-room', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: aiRoomId
+    });
+    assert.strictEqual(deleteRoomRes.status, 200, 'POST /api/battle/delete-room must return 200');
+    assert.strictEqual(deleteRoomRes.data.success, true, 'Delete room must succeed');
 
     // Clean up created battle room
     const battleRoomsFile = path.join(__dirname, '../data/battle_rooms.json');

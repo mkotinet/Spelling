@@ -6530,6 +6530,190 @@ body.theme-english .quiz-sentence .quiz-blank {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);
 }
+
+/* Quick Instant AI Battle Card */
+.battle-quick-ai-card {
+  background: linear-gradient(135deg, #fff1f2, #f3e8ff);
+  border: 1.5px solid #fbcfe8;
+  border-radius: 18px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.1);
+}
+.quick-ai-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quick-ai-avatar {
+  font-size: 2rem;
+  background: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.quick-ai-title {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #9d174d;
+}
+.quick-ai-desc {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+.btn-quick-ai-battle {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  transition: transform 0.15s ease;
+}
+.btn-quick-ai-battle:active {
+  transform: scale(0.96);
+}
+
+/* Battle Lobby Section Headers */
+.battle-lobby-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.battle-lobby-section-header .section-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #334155;
+  margin: 0;
+}
+.battle-lobby-section-header .section-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  display: block;
+}
+.btn-refresh-rooms-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Battle Lobby User Grid */
+.battle-lobby-user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.battle-user-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.15s ease;
+}
+.battle-user-card:hover {
+  border-color: #f43f5e;
+  background: #fff1f2;
+}
+.battle-user-card.is-me {
+  background: #fdf2f8;
+  border-color: #fbcfe8;
+}
+.battle-user-avatar-wrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 4px;
+}
+.battle-user-avatar {
+  font-size: 1.6rem;
+  display: block;
+  line-height: 38px;
+}
+.battle-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+.battle-status-dot.ready { background: #10b981; }
+.battle-status-dot.in_battle { background: #ef4444; }
+.battle-user-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.battle-user-rp {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 6px;
+}
+.btn-challenge-user {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+.btn-challenge-user:hover {
+  background: #ec4899;
+  border-color: #ec4899;
+  color: #ffffff;
+}
+.btn-delete-battle-pill {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
 .battle-room-list {
   display: flex;
   flex-direction: column;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.6.1">
+  <meta name="app-version" content="3.6.2">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.6.1">
+  <link rel="stylesheet" href="style.css?v=3.6.2">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -214,7 +214,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span id="quickReloadVersionBadge" class="version-badge">v3.6.1</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.6.2</span>
         </button>
         <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
@@ -1844,6 +1844,37 @@
         </div>
       </div>
       <div class="battle-lobby-body">
+        <!-- Quick Instant 1:1 Battle vs AI Mascot Card -->
+        <div class="battle-quick-ai-card">
+          <div class="quick-ai-info">
+            <span class="quick-ai-avatar">🌸</span>
+            <div class="quick-ai-text">
+              <strong class="quick-ai-title">🤖 AI 맞춤요정과 즉시 대결!</strong>
+              <span class="quick-ai-desc">기다림 없이 1초 만에 1:1 스피드 아이템 퀴즈 대결을 시작해보세요!</span>
+            </div>
+          </div>
+          <button type="button" class="btn-quick-ai-battle" onclick="window.app.startQuickAiBattle()">즉시 대결 ⚔️</button>
+        </div>
+
+        <!-- 1) 접속/도전 가능한 친구 및 대결자 목록 -->
+        <div class="battle-lobby-section-header">
+          <div>
+            <h4 class="section-title">👥 접속/대기 중인 도전자</h4>
+            <span class="section-sub">도전 버튼을 눌러 바로 1:1 대결을 신청하세요</span>
+          </div>
+        </div>
+        <div id="battleLobbyUserList" class="battle-lobby-user-grid">
+          <!-- Dynamically populated challenger user cards -->
+        </div>
+
+        <!-- 2) 퀴즈 대결방 목록 -->
+        <div class="battle-lobby-section-header" style="margin-top: 14px;">
+          <div>
+            <h4 class="section-title">⚔️ 열려있는 대결방</h4>
+            <span class="section-sub">참여하기를 누르면 즉시 대결에 합류할 수 있습니다</span>
+          </div>
+          <button type="button" class="btn-refresh-rooms-pill" onclick="window.app.openBattleLobby()" title="새로고침">🔄 새로고침</button>
+        </div>
         <div id="battleLobbyRoomList" class="battle-room-list">
           <!-- Dynamically populated battle rooms -->
         </div>
@@ -1974,11 +2005,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.6.1"></script>
-  <script src="idiom_questions.js?v=3.6.1"></script>
-  <script src="hanja_questions.js?v=3.6.1"></script>
-  <script src="english_questions.js?v=3.6.1"></script>
-  <script src="stickers.js?v=3.6.1"></script>
-  <script src="app.js?v=3.6.1"></script>
+  <script src="questions.js?v=3.6.2"></script>
+  <script src="idiom_questions.js?v=3.6.2"></script>
+  <script src="hanja_questions.js?v=3.6.2"></script>
+  <script src="english_questions.js?v=3.6.2"></script>
+  <script src="stickers.js?v=3.6.2"></script>
+  <script src="app.js?v=3.6.2"></script>
 </body>
 </html>

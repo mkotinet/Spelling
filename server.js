@@ -410,6 +410,184 @@ function generateBattleQuestions(subject, level, count) {
   });
 }
 
+// ⚔️ v3.6.2 AI 맞춤요정 자율 배틀 시뮬레이터 (Autonomous AI Mascot Battle Bot Engine)
+function processAiMascotBot(room, db) {
+  if (!room || room.status !== 'in_progress') return false;
+  if (!room.members || !room.members.includes('맞춤요정')) return false;
+
+  const botProg = room.progress && room.progress['맞춤요정'];
+  if (!botProg || botProg.completed) return false;
+
+  const totalQuestions = room.questionCount || (room.settings && room.settings.questionCount) || (room.questions && room.questions.length) || 5;
+  const now = Date.now();
+
+  if (!botProg.lastActionTime) {
+    botProg.lastActionTime = new Date(room.createdAt).getTime();
+  }
+
+  const elapsed = now - botProg.lastActionTime;
+  // Bot answers every 2.4 ~ 3.5 seconds
+  const thinkDelay = 2600;
+
+  if (elapsed < thinkDelay) {
+    return false;
+  }
+
+  let changed = false;
+  const currentIdx = botProg.currentIndex || 0;
+
+  if (currentIdx < totalQuestions && room.questions && room.questions[currentIdx]) {
+    const q = room.questions[currentIdx];
+    
+    // 85% probability of choosing correct answer
+    const isCorrect = Math.random() < 0.85;
+    let selectedOptionIndex = q.answerIndex;
+    if (!isCorrect) {
+      const wrongIndices = [0, 1, 2, 3].filter(i => i !== q.answerIndex && i < (q.options ? q.options.length : 4));
+      selectedOptionIndex = wrongIndices.length > 0 ? wrongIndices[Math.floor(Math.random() * wrongIndices.length)] : ((q.answerIndex + 1) % 4);
+    }
+
+    let points = 0;
+    if (isCorrect) {
+      points = 20;
+      botProg.combo = (botProg.combo || 0) + 1;
+      if (botProg.combo >= 5) points += 10;
+      else if (botProg.combo >= 4) points += 6;
+      else if (botProg.combo >= 3) points += 4;
+      else if (botProg.combo >= 2) points += 2;
+      points += 5; // speed bonus
+    } else {
+      botProg.combo = 0;
+    }
+
+    // Bomb penalty check
+    const bombIdx = (botProg.activeEffects || []).findIndex(e => e.type === 'bomb');
+    if (bombIdx >= 0) {
+      if (!isCorrect) {
+        points = Math.max(-botProg.score, -30);
+      }
+      botProg.activeEffects.splice(bombIdx, 1);
+    }
+
+    botProg.score = Math.max(0, (botProg.score || 0) + points);
+    botProg.currentIndex = currentIdx + 1;
+    botProg.totalTime = (botProg.totalTime || 0) + (thinkDelay / 1000);
+    botProg.lastActionTime = now;
+    if (!botProg.answers) botProg.answers = [];
+    botProg.answers.push({
+      qIndex: currentIdx,
+      isCorrect,
+      selectedOptionIndex,
+      points,
+      timeSpent: thinkDelay / 1000
+    });
+
+    // 25% chance to use battle items if allowed
+    const allowItems = (room.allowItems !== undefined ? room.allowItems : (room.settings ? room.settings.allowItems : true));
+    if (allowItems && botProg.inventory && Math.random() < 0.28) {
+      const availableItems = Object.keys(botProg.inventory).filter(k => botProg.inventory[k] > 0);
+      if (availableItems.length > 0) {
+        const itemToUse = availableItems[Math.floor(Math.random() * availableItems.length)];
+        botProg.inventory[itemToUse]--;
+
+        const rivals = room.members.filter(m => m !== '맞춤요정');
+        const target = rivals.length > 0 ? rivals[0] : null;
+
+        if (target && room.progress[target]) {
+          const targetProg = room.progress[target];
+          if (targetProg.hasReflect) {
+            targetProg.hasReflect = false;
+            botProg.activeEffects = botProg.activeEffects || [];
+            botProg.activeEffects.push({
+              id: 'eff_' + Date.now(),
+              type: itemToUse.replace('battle_', ''),
+              from: target,
+              expireAt: now + 5000
+            });
+            if (!room.itemLog) room.itemLog = [];
+            room.itemLog.push(`[${target}]님이 거울방패로 [맞춤요정]의 공격을 역반사했습니다!`);
+          } else {
+            targetProg.activeEffects = targetProg.activeEffects || [];
+            targetProg.activeEffects.push({
+              id: 'eff_' + Date.now(),
+              type: itemToUse.replace('battle_', ''),
+              from: '맞춤요정',
+              expireAt: now + 5000
+            });
+            if (!room.itemLog) room.itemLog = [];
+            room.itemLog.push(`[맞춤요정]님이 [${target}]님에게 ${itemToUse}을(를) 발사했습니다!`);
+          }
+        }
+      }
+    }
+
+    if (botProg.currentIndex >= totalQuestions) {
+      botProg.completed = true;
+      botProg.completedAt = new Date().toISOString();
+    }
+    changed = true;
+  }
+
+  // Check if ALL members completed
+  const allCompleted = room.members.every(m => room.progress[m] && room.progress[m].completed);
+  if (allCompleted && room.status !== 'completed') {
+    room.status = 'completed';
+    room.completedAt = new Date().toISOString();
+
+    let winner = null;
+    let maxScore = -1;
+    let minTime = Infinity;
+
+    room.members.forEach(m => {
+      const p = room.progress[m] || {};
+      const score = p.score || 0;
+      const t = p.totalTime || 999;
+      if (score > maxScore || (score === maxScore && t < minTime)) {
+        maxScore = score;
+        minTime = t;
+        winner = m;
+      }
+    });
+
+    room.winner = winner;
+
+    if (db && db.users) {
+      room.members.forEach(m => {
+        const u = db.users[m];
+        if (u) {
+          if (!u.battleStats) {
+            u.battleStats = { rp: 1000, wins: 0, losses: 0, streak: 0, maxStreak: 0, tier: 'silver' };
+          }
+          const isWin = (m === winner);
+          if (isWin) {
+            u.battleStats.wins = (u.battleStats.wins || 0) + 1;
+            u.battleStats.streak = (u.battleStats.streak || 0) + 1;
+            if (u.battleStats.streak > (u.battleStats.maxStreak || 0)) {
+              u.battleStats.maxStreak = u.battleStats.streak;
+            }
+            const streakBonus = Math.min(15, (u.battleStats.streak - 1) * 3);
+            u.battleStats.rp = (u.battleStats.rp || 1000) + 30 + streakBonus;
+          } else {
+            u.battleStats.losses = (u.battleStats.losses || 0) + 1;
+            u.battleStats.streak = 0;
+            u.battleStats.rp = Math.max(500, (u.battleStats.rp || 1000) - 15);
+          }
+          const rp = u.battleStats.rp;
+          if (rp >= 1800) u.battleStats.tier = 'master';
+          else if (rp >= 1500) u.battleStats.tier = 'diamond';
+          else if (rp >= 1200) u.battleStats.tier = 'gold';
+          else if (rp >= 1000) u.battleStats.tier = 'silver';
+          else u.battleStats.tier = 'bronze';
+        }
+      });
+      saveDB(db);
+    }
+    changed = true;
+  }
+
+  return changed;
+}
+
 // 🎁 v3.3.0 & v3.4.0 Interactive Gift Catalog (Items & Korean Brand Parody Social Gifts)
 const GIFT_CATALOG = {
   // 1. 인게임 필수 퀴즈 아이템 선물 (7종)
@@ -2299,6 +2477,10 @@ const server = http.createServer(async (req, res) => {
         creatorName: sender.name || username,
         members,
         status: "in_progress",
+        questionCount,
+        subject,
+        level,
+        allowItems,
         settings: {
           questionCount,
           subject,
@@ -2313,6 +2495,10 @@ const server = http.createServer(async (req, res) => {
         createdAt: new Date().toISOString(),
         completedAt: null
       };
+
+      if (members.includes("맞춤요정") && progress["맞춤요정"]) {
+        progress["맞춤요정"].lastActionTime = Date.now();
+      }
 
       const rooms = loadBattleRooms();
       rooms.push(newRoom);
@@ -2342,7 +2528,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // 20-B. 내 퀴즈대결방 목록 조회 (GET /api/battle/rooms)
+  // 20-B. 퀴즈대결 로비 정보 조회 (도전자 목록 + 열려있는 방/내 대결방 목록) (GET /api/battle/rooms)
   if (req.method === "GET" && pathname === "/api/battle/rooms") {
     try {
       const token = parsedUrl.searchParams.get("token") || (req.headers["authorization"] || "").replace(/^Bearer\s+/, "");
@@ -2354,12 +2540,70 @@ const server = http.createServer(async (req, res) => {
       }
 
       const rooms = loadBattleRooms();
-      const myRooms = rooms.filter(r => r.members && r.members.includes(username));
-      myRooms.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      // 요약 목록 포맷팅
-      const roomSummaries = myRooms.slice(0, 30).map(r => {
+      // 1) 48시간 지난 오래된 방 자동 정리
+      const now = Date.now();
+      const validRooms = rooms.filter(r => {
+        const createdTime = new Date(r.createdAt).getTime();
+        return (now - createdTime) < (48 * 60 * 60 * 1000);
+      });
+      if (validRooms.length !== rooms.length) {
+        saveBattleRooms(validRooms);
+      }
+
+      // 2) 로비 참여 가능 유저 목록 (AUTHENTIC_USERS + db.users)
+      const lobbyUsers = [];
+      const userList = Object.keys(db.users || {});
+      const prioritized = ['단민러브', '미니미니', '민지', '맞춤요정'];
+      const allUserKeys = Array.from(new Set([...prioritized, ...userList]));
+
+      allUserKeys.forEach(uName => {
+        const u = (db.users && db.users[uName]) || {};
+        const isAI = (uName === '맞춤요정');
+        const isMe = (uName === username);
+
+        // Check if user is currently in an in-progress battle
+        const activeInBattle = validRooms.some(r => r.status === 'in_progress' && r.members && r.members.includes(uName));
+
+        let avatar = u.avatar || '🌸';
+        if (!u.avatar) {
+          if (uName === '단민러브') avatar = '👑';
+          else if (uName === '민지') avatar = '⭐';
+          else if (uName === '미니미니') avatar = '🐱';
+        }
+
+        lobbyUsers.push({
+          username: uName,
+          name: u.name || uName,
+          nickname: u.name || uName,
+          avatar,
+          grade: u.grade || (isAI ? 'AI 맞춤법 튜터' : '학습자'),
+          isAI,
+          isMe,
+          status: isAI ? 'ready' : (activeInBattle ? 'in_battle' : 'ready'),
+          statusLabel: isAI ? '24시간 즉시대결' : (activeInBattle ? '대결 진행중' : '대결 대기중'),
+          battleStats: u.battleStats || { rp: 1000, wins: 0, losses: 0, streak: 0, tier: 'silver' }
+        });
+      });
+
+      // 3) 대결방 목록 (내가 참여한 방 + 아직 다른 회원이 참여할 수 있는 열린 방)
+      const visibleRooms = validRooms.filter(r => {
+        const isMyRoom = r.members && r.members.includes(username);
+        const isOpenRoom = (r.status === 'in_progress' || r.status === 'waiting') && (!r.members || r.members.length < 4);
+        return isMyRoom || isOpenRoom;
+      });
+
+      visibleRooms.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const roomSummaries = visibleRooms.slice(0, 30).map(r => {
         const myProg = r.progress && r.progress[username];
+        const isMember = r.members && r.members.includes(username);
+        const isCreator = (r.creator === username);
+        const qCount = r.questionCount || (r.settings && r.settings.questionCount) || (r.questions && r.questions.length) || 5;
+        const subj = r.subject || (r.settings && r.settings.subject) || 'spelling';
+        const lvl = r.level || (r.settings && r.settings.level) || 'all';
+        const itemsAllowed = (r.allowItems !== undefined ? r.allowItems : (r.settings ? r.settings.allowItems : true));
+
         return {
           id: r.roomId || r.id,
           roomId: r.roomId || r.id,
@@ -2369,9 +2613,16 @@ const server = http.createServer(async (req, res) => {
           members: r.members,
           memberCount: r.members.length,
           status: r.status,
+          questionCount: qCount,
+          subject: subj,
+          level: lvl,
+          allowItems: itemsAllowed,
           settings: r.settings,
+          isMember,
+          isCreator,
           myCompleted: myProg ? myProg.completed : false,
           myScore: myProg ? myProg.score : 0,
+          myIndex: myProg ? (myProg.currentIndex || 0) : 0,
           winner: r.winner,
           winnerName: r.winner && db.users[r.winner] ? db.users[r.winner].name : r.winner,
           createdAt: r.createdAt,
@@ -2381,6 +2632,7 @@ const server = http.createServer(async (req, res) => {
 
       return sendJSON(res, 200, {
         success: true,
+        users: lobbyUsers,
         rooms: roomSummaries
       });
     } catch (e) {
@@ -2411,31 +2663,72 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
       }
 
+      // 만약 아직 멤버가 아니라면 (대결방 참여 슬롯이 있는 경우 자동 참여 승인)
+      let joinedJustNow = false;
       if (!room.members.includes(username)) {
-        return sendJSON(res, 403, { success: false, message: "해당 대결방에 참여 권한이 없습니다." });
+        if (room.status === 'in_progress' || room.status === 'waiting') {
+          room.members.push(username);
+          if (!room.progress) room.progress = {};
+          const defaultInventory = (room.allowItems !== false && (room.settings ? room.settings.allowItems !== false : true)) ? {
+            battle_ink: 1, battle_wind: 1, battle_freeze: 1, battle_reflect: 1,
+            battle_steal: 1, battle_lightning: 1, battle_peek: 1, battle_sight: 1,
+            battle_bomb: 1, battle_rainbow: 1
+          } : {};
+          room.progress[username] = {
+            joined: true,
+            currentIndex: 0,
+            score: 0,
+            combo: 0,
+            answers: [],
+            inventory: { ...defaultInventory },
+            completed: false,
+            completedAt: null,
+            totalTime: 0,
+            activeEffects: [],
+            hasReflect: false,
+            hasSteal: false,
+            hasRainbow: false
+          };
+          joinedJustNow = true;
+        }
       }
+
+      // AI 맞춤요정이 포함되어 있다면 봇 스텝 시뮬레이션
+      const aiChanged = processAiMascotBot(room, db);
 
       // 만료된 활성 효과(activeEffects) 정리
       const now = Date.now();
       let effectsChanged = false;
-      Object.keys(room.progress).forEach(m => {
-        const prog = room.progress[m];
-        if (prog && Array.isArray(prog.activeEffects)) {
-          const beforeLen = prog.activeEffects.length;
-          prog.activeEffects = prog.activeEffects.filter(eff => eff.expireAt > now);
-          if (prog.activeEffects.length !== beforeLen) effectsChanged = true;
-        }
-      });
-      if (effectsChanged) saveBattleRooms(rooms);
+      if (room.progress) {
+        Object.keys(room.progress).forEach(m => {
+          const prog = room.progress[m];
+          if (prog && Array.isArray(prog.activeEffects)) {
+            const beforeLen = prog.activeEffects.length;
+            prog.activeEffects = prog.activeEffects.filter(eff => (eff.expireAt > now || eff.expiresAt > now));
+            if (prog.activeEffects.length !== beforeLen) effectsChanged = true;
+          }
+        });
+      }
 
-      // 멤버별 최신 프로필 정보 부가
+      if (joinedJustNow || aiChanged || effectsChanged) {
+        saveBattleRooms(rooms);
+      }
+
+      // Ensure top-level compatibility on room
+      room.questionCount = room.questionCount || (room.settings && room.settings.questionCount) || (room.questions && room.questions.length) || 5;
+      room.subject = room.subject || (room.settings && room.settings.subject) || 'spelling';
+      room.level = room.level || (room.settings && room.settings.level) || 'all';
+      room.allowItems = (room.allowItems !== undefined ? room.allowItems : (room.settings ? room.settings.allowItems : true));
+
+      // 멤버별 프로필 정보 부가
       const memberProfiles = {};
       room.members.forEach(m => {
         const u = db.users[m] || {};
         memberProfiles[m] = {
           username: m,
           name: u.name || m,
-          avatar: u.avatar || '🌸',
+          avatar: u.avatar || (m === '맞춤요정' ? '🌸' : (m === '단민러브' ? '👑' : (m === '민지' ? '⭐' : '🐱'))),
+          grade: u.grade || (m === '맞춤요정' ? 'AI 맞춤법 튜터' : '초·중·고 학습자'),
           accessories: u.accessories || {}
         };
       });
@@ -2614,6 +2907,7 @@ const server = http.createServer(async (req, res) => {
         saveDB(db);
       }
 
+      processAiMascotBot(room, db);
       saveBattleRooms(rooms);
 
       return sendJSON(res, 200, {
@@ -2833,6 +3127,50 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (e) {
       console.error("Battle Rankings Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-G. 퀴즈대결방 삭제 또는 나가기 (POST /api/battle/delete-room)
+  if (req.method === "POST" && pathname === "/api/battle/delete-room") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId } = body;
+      if (!roomId) {
+        return sendJSON(res, 400, { success: false, message: "방 ID가 필요합니다." });
+      }
+
+      const rooms = loadBattleRooms();
+      const idx = rooms.findIndex(r => r.roomId === roomId || r.id === roomId);
+      if (idx === -1) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      const room = rooms[idx];
+      // 방 개설자이거나 참가자인 경우 방 목록에서 정리
+      if (room.creator !== username && !room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "방 삭제 권한이 없습니다." });
+      }
+
+      rooms.splice(idx, 1);
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: "대결방이 정상적으로 삭제되었습니다.",
+        roomId
+      });
+    } catch (e) {
+      console.error("Battle Delete Room Error:", e);
       return sendJSON(res, 500, { success: false, message: e.message });
     }
   }
