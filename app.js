@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.6.0';
+    this.APP_VERSION = metaVer || '3.6.1';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -1609,6 +1609,22 @@ class HaruMatchumApp {
       setTimeout(() => this.handleUrlNavigation(), 200);
       window.addEventListener('popstate', () => this.handleUrlNavigation());
     }
+  }
+
+  get currentUser() {
+    if (!this.data || !this.data.currentUser) return null;
+    const u = this.data.currentUser;
+    const authUname = (typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '';
+    if (!u.username) u.username = authUname || u.name || '맞춤요정';
+    if (!u.nickname) u.nickname = u.name || authUname || '맞춤요정';
+    return u;
+  }
+
+  get token() {
+    if (!this.cloudToken && typeof localStorage !== 'undefined') {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
+    return this.cloudToken || '';
   }
 
   initDOM() {
@@ -8927,10 +8943,16 @@ class HaruMatchumApp {
 
   // 1. 대결 로비 열기 및 목록 조회
   async openBattleLobby() {
-    if (!this.currentUser) {
-      this.showToastNotice('대결방에 입장하려면 먼저 로그인해주세요!');
+    if (!this.cloudToken && typeof localStorage !== 'undefined') {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
+    const isLoggedIn = !!this.cloudToken && this.data && this.data.currentUser && !this.data.currentUser.isGuest;
+    if (!isLoggedIn) {
+      this.showToastNotice('친구와 함께하는 퀴즈 대결은 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
       return;
     }
+
     if (this.modalBattleLobby) this.modalBattleLobby.classList.add('active');
     const container = document.getElementById('battleLobbyRoomList');
     if (container) {
@@ -8938,8 +8960,8 @@ class HaruMatchumApp {
     }
 
     try {
-      const res = await fetch('/api/battle/rooms', {
-        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      const res = await fetch(`/api/battle/rooms?token=${encodeURIComponent(this.token)}`, {
+        headers: { 'Authorization': `Bearer ${this.token}` }
       });
       const data = await res.json();
       if (data.success) {
@@ -8987,10 +9009,10 @@ class HaruMatchumApp {
       general: '일반'
     };
 
-    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
 
     container.innerHTML = rooms.map(room => {
-      const myMember = (room.members || []).find(m => m.username === myUsername);
+      const myMember = (room.members || []).find(m => m.username === myUsername || m === myUsername);
       const isCompleted = room.status === 'completed';
       const myDone = myMember && myMember.status === 'completed';
 
@@ -9010,18 +9032,21 @@ class HaruMatchumApp {
       }
 
       const membersHtml = (room.members || []).map(m => {
-        const isMe = m.username === myUsername;
+        const mName = typeof m === 'object' && m ? (m.nickname || m.name || m.username) : m;
+        const mAvatar = typeof m === 'object' && m ? (m.avatar || '🌸') : '🌸';
+        const isMe = (mName === myUsername);
+        const mProg = typeof m === 'object' && m ? (m.currentQuestionIndex || 0) : 0;
         return `
-          <div class="battle-lobby-member-chip ${isMe ? 'is-me' : ''}" title="${m.nickname}">
-            <span class="member-chip-avatar">${m.avatar || '🌸'}</span>
-            <span class="member-chip-name">${m.nickname}</span>
-            <span class="member-chip-prog">${m.currentQuestionIndex || 0}/${room.questionCount}</span>
+          <div class="battle-lobby-member-chip ${isMe ? 'is-me' : ''}" title="${mName}">
+            <span class="member-chip-avatar">${mAvatar}</span>
+            <span class="member-chip-name">${mName}</span>
+            <span class="member-chip-prog">${mProg}/${room.questionCount}</span>
           </div>
         `;
       }).join('');
 
       return `
-        <div class="battle-room-card ${isCompleted ? 'is-completed' : ''}" data-room-id="${room.id}">
+        <div class="battle-room-card ${isCompleted ? 'is-completed' : ''}" data-room-id="${room.id || room.roomId}">
           <div class="battle-room-card-header">
             <div class="battle-room-meta-tags">
               <span class="battle-room-subject-pill">${subjectLabels[room.subject] || '맞춤법'}</span>
@@ -9037,7 +9062,7 @@ class HaruMatchumApp {
           </div>
           <div class="battle-room-card-footer">
             <span class="battle-room-time-sub">${new Date(room.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 개설</span>
-            <button type="button" class="${actionBtnClass}" onclick="window.app.enterBattleRoom('${room.id}')">${actionBtnText}</button>
+            <button type="button" class="${actionBtnClass}" onclick="window.app.enterBattleRoom('${room.id || room.roomId}')">${actionBtnText}</button>
           </div>
         </div>
       `;
@@ -9046,15 +9071,22 @@ class HaruMatchumApp {
 
   // 3. 방 만들기 모달 열기 및 친구 목록 렌더링
   async openBattleCreateModal(defaultMembers = []) {
-    if (!this.currentUser) {
-      this.showToastNotice('방을 만들려면 먼저 로그인해주세요!');
+    if (!this.cloudToken && typeof localStorage !== 'undefined') {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
+    const isLoggedIn = !!this.cloudToken && this.data && this.data.currentUser && !this.data.currentUser.isGuest;
+    if (!isLoggedIn) {
+      this.showToastNotice('대결방을 개설하려면 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
       return;
     }
     if (this.modalBattleCreate) this.modalBattleCreate.classList.add('active');
 
+    const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
+
     const inputTitle = document.getElementById('inputBattleTitle');
     if (inputTitle) {
-      inputTitle.value = `${this.currentUser.nickname || this.currentUser.username}님의 스피드 퀴즈대결!`;
+      inputTitle.value = `${myName}님의 스피드 퀴즈대결!`;
     }
 
     const memberGrid = document.getElementById('battleInviteMemberList');
@@ -9067,8 +9099,7 @@ class HaruMatchumApp {
         { username: '맞춤요정', nickname: '맞춤요정', avatar: '🧚' }
       ];
 
-      const myUsername = this.currentUser.username;
-      const candidates = AUTHENTIC_USERS.filter(u => u.username !== myUsername);
+      const candidates = AUTHENTIC_USERS.filter(u => u.username !== myName);
 
       memberGrid.innerHTML = candidates.map(user => {
         const isChecked = defaultMembers.includes(user.username);
@@ -9085,20 +9116,31 @@ class HaruMatchumApp {
 
   // 4. 대화방에서 즉시 대결방 열기
   openBattleFromChat() {
+    const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '';
     let defaultMembers = [];
     if (this.currentChatTargetUser) {
       defaultMembers = [this.currentChatTargetUser];
     } else if (this.currentGroupMeta && Array.isArray(this.currentGroupMeta.members)) {
-      defaultMembers = this.currentGroupMeta.members.filter(u => u !== (this.currentUser && this.currentUser.username));
+      defaultMembers = this.currentGroupMeta.members.filter(u => u !== myName);
     }
     this.openBattleCreateModal(defaultMembers);
   }
 
   // 5. 방 생성 제출
   async submitCreateBattle() {
-    if (!this.currentUser) return;
+    if (!this.cloudToken && typeof localStorage !== 'undefined') {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
+    const isLoggedIn = !!this.cloudToken && this.data && this.data.currentUser && !this.data.currentUser.isGuest;
+    if (!isLoggedIn) {
+      this.showToastNotice('대결방을 개설하려면 3초 간편 로그인이 필요해요! 🔑');
+      this.openAuthModal('login');
+      return;
+    }
+
+    const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
     const inputTitle = document.getElementById('inputBattleTitle');
-    const title = inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : `${this.currentUser.nickname}님의 퀴즈대결!`;
+    const title = inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : `${myName}님의 퀴즈대결!`;
 
     const checkboxes = document.querySelectorAll('input[name="battleFriend"]:checked');
     const invitedUsernames = Array.from(checkboxes).map(cb => cb.value);
@@ -9125,7 +9167,7 @@ class HaruMatchumApp {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.token || ''}`
+          'Authorization': `Bearer ${this.token}`
         },
         body: JSON.stringify({
           title,
@@ -9133,15 +9175,17 @@ class HaruMatchumApp {
           questionCount,
           subject,
           level,
-          allowItems
+          allowItems,
+          token: this.token
         })
       });
       const data = await res.json();
-      if (data.success && data.roomId) {
+      if (data.success && (data.roomId || data.room)) {
+        const rId = data.roomId || (data.room && (data.room.id || data.room.roomId));
         if (this.modalBattleCreate) this.modalBattleCreate.classList.remove('active');
         if (this.modalBattleLobby) this.modalBattleLobby.classList.remove('active');
         this.showToastNotice('⚔️ 퀴즈대결방이 생성되었습니다! 대결을 시작합니다.');
-        this.enterBattleRoom(data.roomId);
+        this.enterBattleRoom(rId);
       } else {
         this.showToastNotice(data.message || '방 생성에 실패했습니다.');
       }
@@ -9153,6 +9197,9 @@ class HaruMatchumApp {
 
   // 6. 대결방 입장 및 화면 초기화
   async enterBattleRoom(roomId) {
+    if (!this.cloudToken && typeof localStorage !== 'undefined') {
+      this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
+    }
     this.stopBattlePolling();
 
     if (this.modalBattleLobby) this.modalBattleLobby.classList.remove('active');
@@ -9163,8 +9210,8 @@ class HaruMatchumApp {
     this.switchView('battle');
 
     try {
-      const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}`, {
-        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(this.token)}`, {
+        headers: { 'Authorization': `Bearer ${this.token}` }
       });
       const data = await res.json();
       if (!data.success || !data.room) {
@@ -9187,11 +9234,11 @@ class HaruMatchumApp {
 
       this.renderBattleRivalsBar(this.currentBattleRoom);
 
-      const myUsername = this.currentUser ? this.currentUser.username : '';
-      const myMember = this.currentBattleRoom.members.find(m => m.username === myUsername);
+      const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+      const myMember = (this.currentBattleRoom.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
 
       const isCompleted = this.currentBattleRoom.status === 'completed';
-      const myDone = myMember && myMember.status === 'completed';
+      const myDone = myMember && (typeof myMember === 'object' ? myMember.status === 'completed' : false);
 
       if (isCompleted) {
         this.renderBattleResult(this.currentBattleRoom);
@@ -9215,8 +9262,8 @@ class HaruMatchumApp {
     this.stopBattlePolling();
     this.battlePollingTimer = setInterval(async () => {
       try {
-        const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}`, {
-          headers: { 'Authorization': `Bearer ${this.token || ''}` }
+        const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(this.token)}`, {
+          headers: { 'Authorization': `Bearer ${this.token}` }
         });
         const data = await res.json();
         if (data.success && data.room) {
@@ -9251,9 +9298,9 @@ class HaruMatchumApp {
     const room = this.currentBattleRoom;
     if (!room) return;
 
-    const myUsername = this.currentUser ? this.currentUser.username : '';
-    const myMember = (room.members || []).find(m => m.username === myUsername);
-    const qIndex = myMember ? (myMember.currentQuestionIndex || 0) : 0;
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const myMember = (room.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+    const qIndex = (myMember && typeof myMember === 'object') ? (myMember.currentQuestionIndex || 0) : 0;
 
     const currentQNum = document.getElementById('battleCurrentQNum');
     if (currentQNum) currentQNum.textContent = `Q${Math.min(qIndex + 1, room.questions.length)}`;
@@ -9267,7 +9314,7 @@ class HaruMatchumApp {
     const itemDock = document.getElementById('battleItemDock');
 
     if (comboBadge) {
-      if (myMember && myMember.combo > 1) {
+      if (myMember && typeof myMember === 'object' && myMember.combo > 1) {
         comboBadge.style.display = 'inline-block';
         comboBadge.textContent = `🔥 ${myMember.combo} 콤보 (+${myMember.combo}P)`;
       } else {
@@ -9276,7 +9323,7 @@ class HaruMatchumApp {
     }
 
     // 모든 문제를 다 풀었을 때
-    if (qIndex >= room.questions.length || (myMember && myMember.status === 'completed')) {
+    if (qIndex >= room.questions.length || (myMember && typeof myMember === 'object' && myMember.status === 'completed')) {
       if (this.battleTimerInterval) clearInterval(this.battleTimerInterval);
       const timerFill = document.getElementById('battleTimerBarFill');
       if (timerFill) timerFill.style.width = '100%';
@@ -9399,14 +9446,16 @@ class HaruMatchumApp {
   async handleBattleOptionSelect(selectedOptionIndex) {
     if (this.battleIsSubmitting) return;
 
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const myMember = this.currentBattleRoom ? (this.currentBattleRoom.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername)) : null;
+
     // 얼음 효과 확인
-    const myUsername = this.currentUser ? this.currentUser.username : '';
-    const myMember = this.currentBattleRoom ? this.currentBattleRoom.members.find(m => m.username === myUsername) : null;
-    if (myMember && Array.isArray(myMember.activeEffects)) {
+    if (myMember && typeof myMember === 'object' && Array.isArray(myMember.activeEffects)) {
       const now = Date.now();
-      const freezeEffect = myMember.activeEffects.find(e => e.effect === 'freeze' && e.expiresAt > now);
+      const freezeEffect = myMember.activeEffects.find(e => (e.effect === 'freeze' || e.type === 'freeze') && (e.expiresAt > now || e.expireAt > now));
       if (freezeEffect) {
-        const leftSec = Math.ceil((freezeEffect.expiresAt - now) / 1000);
+        const expTime = freezeEffect.expiresAt || freezeEffect.expireAt;
+        const leftSec = Math.ceil((expTime - now) / 1000);
         this.showToastNotice(`❄️ 꽁꽁 얼음에 얼어붙어 ${leftSec}초간 보기를 누를 수 없습니다!`);
         return;
       }
@@ -9419,7 +9468,7 @@ class HaruMatchumApp {
     }
 
     const timeSpent = Math.min(15.0, (Date.now() - this.battleQuestionStartTime) / 1000);
-    const qIndex = myMember ? (myMember.currentQuestionIndex || 0) : 0;
+    const qIndex = (myMember && typeof myMember === 'object') ? (myMember.currentQuestionIndex || 0) : 0;
 
     const optionButtons = document.querySelectorAll('.battle-option-btn');
     optionButtons.forEach(btn => btn.disabled = true);
@@ -9429,13 +9478,14 @@ class HaruMatchumApp {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.token || ''}`
+          'Authorization': `Bearer ${this.token}`
         },
         body: JSON.stringify({
-          roomId: this.currentBattleRoom.id,
+          roomId: this.currentBattleRoom.id || this.currentBattleRoom.roomId,
           questionIndex: qIndex,
           selectedOptionIndex,
-          timeSpent
+          timeSpent,
+          token: this.token
         })
       });
 
@@ -9496,39 +9546,44 @@ class HaruMatchumApp {
     const rivalsBar = document.getElementById('battleRivalsBar');
     if (!rivalsBar || !room || !room.members) return;
 
-    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
     const qCount = room.questionCount || 5;
 
     rivalsBar.innerHTML = room.members.map(member => {
-      const isMe = member.username === myUsername;
-      const progress = Math.min(100, Math.round(((member.currentQuestionIndex || 0) / qCount) * 100));
-      const isDone = member.status === 'completed';
+      const mName = typeof member === 'object' && member ? (member.nickname || member.name || member.username) : member;
+      const mAvatar = typeof member === 'object' && member ? (member.avatar || '🌸') : '🌸';
+      const mScore = typeof member === 'object' && member ? (member.score || 0) : ((room.progress && room.progress[mName]) ? room.progress[mName].score : 0);
+      const mIdx = typeof member === 'object' && member ? (member.currentQuestionIndex || 0) : ((room.progress && room.progress[mName]) ? room.progress[mName].currentIndex : 0);
+      const isDone = typeof member === 'object' && member ? (member.status === 'completed') : ((room.progress && room.progress[mName]) ? room.progress[mName].completed : false);
+      const isMe = (mName === myUsername);
+      const progress = Math.min(100, Math.round((mIdx / qCount) * 100));
 
       let effectBadges = '';
-      if (Array.isArray(member.activeEffects)) {
+      const activeEffects = (typeof member === 'object' && member && member.activeEffects) || ((room.progress && room.progress[mName]) ? room.progress[mName].activeEffects : []);
+      if (Array.isArray(activeEffects)) {
         const now = Date.now();
-        const activeList = member.activeEffects.filter(e => e.expiresAt > now);
-        if (activeList.some(e => e.effect === 'freeze')) effectBadges += '❄️';
-        if (activeList.some(e => e.effect === 'ink')) effectBadges += '🦑';
-        if (activeList.some(e => e.effect === 'wind')) effectBadges += '🌪️';
-        if (activeList.some(e => e.effect === 'bomb')) effectBadges += '💣';
-        if (activeList.some(e => e.effect === 'reflect')) effectBadges += '🛡️';
+        const activeList = activeEffects.filter(e => (e.expiresAt > now || e.expireAt > now));
+        if (activeList.some(e => e.effect === 'freeze' || e.type === 'freeze')) effectBadges += '❄️';
+        if (activeList.some(e => e.effect === 'ink' || e.type === 'ink')) effectBadges += '🦑';
+        if (activeList.some(e => e.effect === 'wind' || e.type === 'wind')) effectBadges += '🌪️';
+        if (activeList.some(e => e.effect === 'bomb' || e.type === 'bomb')) effectBadges += '💣';
+        if (activeList.some(e => e.effect === 'reflect' || e.type === 'reflect')) effectBadges += '🛡️';
       }
 
       return `
         <div class="battle-rival-card ${isMe ? 'is-me' : ''}">
           <div class="rival-card-header">
-            <span class="rival-avatar">${member.avatar || '🌸'}</span>
-            <span class="rival-name">${member.nickname} ${isMe ? '(나)' : ''}</span>
-            <span class="rival-score">${member.score || 0}P</span>
+            <span class="rival-avatar">${mAvatar}</span>
+            <span class="rival-name">${mName} ${isMe ? '(나)' : ''}</span>
+            <span class="rival-score">${mScore}P</span>
             ${effectBadges ? `<span class="rival-effects">${effectBadges}</span>` : ''}
           </div>
           <div class="rival-progress-bar-bg">
             <div class="rival-progress-fill" style="width: ${progress}%;"></div>
           </div>
           <div class="rival-card-footer">
-            <span class="rival-prog-text">${isDone ? '🏁 완료' : `Q${(member.currentQuestionIndex || 0) + 1}/${qCount}`}</span>
-            ${member.combo > 1 ? `<span class="rival-combo-text">🔥 ${member.combo}연속</span>` : ''}
+            <span class="rival-prog-text">${isDone ? '🏁 완료' : `Q${mIdx + 1}/${qCount}`}</span>
+            ${(member && member.combo > 1) ? `<span class="rival-combo-text">🔥 ${member.combo}연속</span>` : ''}
           </div>
         </div>
       `;
@@ -9541,15 +9596,15 @@ class HaruMatchumApp {
     const buttonsRow = document.getElementById('battleItemButtonsRow');
     if (!dock || !buttonsRow || !room) return;
 
-    if (!room.allowItems) {
+    if (!room.allowItems && !(room.settings && room.settings.allowItems)) {
       dock.style.display = 'none';
       return;
     }
     dock.style.display = 'block';
 
-    const myUsername = this.currentUser ? this.currentUser.username : '';
-    const myMember = room.members.find(m => m.username === myUsername);
-    const myItems = myMember ? (myMember.items || {}) : {};
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const myMember = (room.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+    const myItems = (myMember && myMember.items) || ((room.progress && room.progress[myUsername]) ? room.progress[myUsername].inventory : {}) || {};
 
     const BATTLE_ITEMS_DEF = [
       { key: 'battle_ink', icon: '🦑', name: '먹물벼루', desc: '상대 화면에 5초간 먹물 테러' },
@@ -9563,7 +9618,7 @@ class HaruMatchumApp {
     ];
 
     buttonsRow.innerHTML = BATTLE_ITEMS_DEF.map(item => {
-      const count = myItems[item.key] || 0;
+      const count = myItems[item.key] || myItems[item.key.replace('lightning', 'steal').replace('sight', 'peek')] || 0;
       const isDisabled = count <= 0;
       return `
         <button type="button" class="btn-battle-item ${isDisabled ? 'disabled' : ''}" 
@@ -9580,27 +9635,35 @@ class HaruMatchumApp {
   // 13. 아이템 사용 버튼 클릭 핸들러
   handleUseBattleItem(itemKey) {
     if (!this.currentBattleRoom) return;
-    const myUsername = this.currentUser ? this.currentUser.username : '';
-    const myMember = this.currentBattleRoom.members.find(m => m.username === myUsername);
-    if (!myMember || !myMember.items || (myMember.items[itemKey] || 0) <= 0) {
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const myMember = (this.currentBattleRoom.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+    const myItems = (myMember && myMember.items) || ((this.currentBattleRoom.progress && this.currentBattleRoom.progress[myUsername]) ? this.currentBattleRoom.progress[myUsername].inventory : {}) || {};
+
+    const count = myItems[itemKey] || myItems[itemKey.replace('lightning', 'steal').replace('sight', 'peek')] || 0;
+    if (count <= 0) {
       this.showToastNotice('보유한 아이템이 없습니다!');
       return;
     }
 
-    const selfItems = ['battle_reflect', 'battle_sight', 'battle_rainbow'];
+    const selfItems = ['battle_reflect', 'battle_sight', 'battle_peek', 'battle_rainbow'];
     if (selfItems.includes(itemKey)) {
       this.submitUseBattleItem(itemKey, null);
       return;
     }
 
-    const rivals = this.currentBattleRoom.members.filter(m => m.username !== myUsername);
+    const rivals = (this.currentBattleRoom.members || []).filter(m => {
+      const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+      return mName !== myUsername;
+    });
+
     if (rivals.length === 0) {
       this.showToastNotice('공격할 상대방이 없습니다.');
       return;
     }
 
     if (rivals.length === 1) {
-      this.submitUseBattleItem(itemKey, rivals[0].username);
+      const rivalName = typeof rivals[0] === 'object' && rivals[0] ? (rivals[0].username || rivals[0].name) : rivals[0];
+      this.submitUseBattleItem(itemKey, rivalName);
     } else {
       this.openBattleTargetModal(itemKey);
     }
@@ -9614,19 +9677,27 @@ class HaruMatchumApp {
     const list = document.getElementById('battleTargetCandidateList');
     if (!list || !this.currentBattleRoom) return;
 
-    const myUsername = this.currentUser ? this.currentUser.username : '';
-    const rivals = this.currentBattleRoom.members.filter(m => m.username !== myUsername);
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const rivals = (this.currentBattleRoom.members || []).filter(m => {
+      const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+      return mName !== myUsername;
+    });
 
-    list.innerHTML = rivals.map(rival => `
-      <div class="battle-target-item" onclick="window.app.submitUseBattleItem('${itemKey}', '${rival.username}')">
-        <span class="target-item-avatar">${rival.avatar || '🌸'}</span>
-        <div class="target-item-info">
-          <span class="target-item-nick">${rival.nickname}</span>
-          <span class="target-item-sub">현재 ${rival.score || 0}P / Q${(rival.currentQuestionIndex || 0) + 1}</span>
+    list.innerHTML = rivals.map(rival => {
+      const rName = typeof rival === 'object' && rival ? (rival.nickname || rival.name || rival.username) : rival;
+      const rAvatar = typeof rival === 'object' && rival ? (rival.avatar || '🌸') : '🌸';
+      const rScore = typeof rival === 'object' && rival ? (rival.score || 0) : ((this.currentBattleRoom.progress && this.currentBattleRoom.progress[rName]) ? this.currentBattleRoom.progress[rName].score : 0);
+      return `
+        <div class="battle-target-item" onclick="window.app.submitUseBattleItem('${itemKey}', '${rName}')">
+          <span class="target-item-avatar">${rAvatar}</span>
+          <div class="target-item-info">
+            <span class="target-item-nick">${rName}</span>
+            <span class="target-item-sub">현재 ${rScore}P</span>
+          </div>
+          <button type="button" class="btn-target-fire">발사! 🚀</button>
         </div>
-        <button type="button" class="btn-target-fire">발사! 🚀</button>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   // 15. 아이템 사용 요청 전송
@@ -9639,12 +9710,13 @@ class HaruMatchumApp {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.token || ''}`
+          'Authorization': `Bearer ${this.token}`
         },
         body: JSON.stringify({
-          roomId: this.currentBattleRoom.id,
+          roomId: this.currentBattleRoom.id || this.currentBattleRoom.roomId,
           itemKey,
-          targetUsername
+          targetUsername,
+          token: this.token
         })
       });
 
@@ -9661,14 +9733,17 @@ class HaruMatchumApp {
       }
 
       // 셀프 찬스 아이템 즉시 UI 적용
-      if (itemKey === 'battle_sight') {
+      if (itemKey === 'battle_sight' || itemKey === 'battle_peek') {
         const optionButtons = document.querySelectorAll('.battle-option-btn');
-        const qIndex = this.currentBattleRoom.members.find(m => m.username === (this.currentUser && this.currentUser.username)).currentQuestionIndex || 0;
+        const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+        const myMember = (this.currentBattleRoom.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+        const qIndex = (myMember && typeof myMember === 'object') ? (myMember.currentQuestionIndex || 0) : 0;
         const q = this.currentBattleRoom.questions[qIndex];
+        const corIdx = q ? (q.correctIndex !== undefined ? q.correctIndex : q.answerIndex) : 0;
         if (q && optionButtons.length > 2) {
           let hiddenCount = 0;
           optionButtons.forEach((btn, idx) => {
-            if (idx !== q.correctIndex && hiddenCount < 2) {
+            if (idx !== corIdx && hiddenCount < 2) {
               btn.style.opacity = '0.2';
               btn.style.pointerEvents = 'none';
               hiddenCount++;
@@ -9676,10 +9751,13 @@ class HaruMatchumApp {
           });
         }
       } else if (itemKey === 'battle_rainbow') {
-        const qIndex = this.currentBattleRoom.members.find(m => m.username === (this.currentUser && this.currentUser.username)).currentQuestionIndex || 0;
+        const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+        const myMember = (this.currentBattleRoom.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+        const qIndex = (myMember && typeof myMember === 'object') ? (myMember.currentQuestionIndex || 0) : 0;
         const q = this.currentBattleRoom.questions[qIndex];
-        if (q && q.correctIndex !== undefined) {
-          this.handleBattleOptionSelect(q.correctIndex);
+        const corIdx = q ? (q.correctIndex !== undefined ? q.correctIndex : q.answerIndex) : 0;
+        if (corIdx !== undefined) {
+          this.handleBattleOptionSelect(corIdx);
           return;
         }
       }
@@ -9696,27 +9774,32 @@ class HaruMatchumApp {
   // 16. 실시간 VFX 시각 효과 적용
   applyBattleVfx(room) {
     const vfxContainer = document.getElementById('battleVfxContainer');
-    if (!vfxContainer || !room || !this.currentUser) return;
+    if (!vfxContainer || !room) return;
 
-    const myMember = room.members.find(m => m.username === this.currentUser.username);
-    if (!myMember || !Array.isArray(myMember.activeEffects)) {
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const myMember = (room.members || []).find(m => (typeof m === 'object' && m ? (m.username === myUsername) : m === myUsername));
+    const activeEffects = (myMember && myMember.activeEffects) || ((room.progress && room.progress[myUsername]) ? room.progress[myUsername].activeEffects : []);
+
+    if (!Array.isArray(activeEffects)) {
       vfxContainer.innerHTML = '';
       return;
     }
 
     const now = Date.now();
-    const activeList = myMember.activeEffects.filter(e => e.expiresAt > now);
+    const activeList = activeEffects.filter(e => (e.expiresAt > now || e.expireAt > now));
 
     let html = '';
     activeList.forEach(effectObj => {
-      if (effectObj.effect === 'ink') {
+      const eType = effectObj.effect || effectObj.type;
+      const expTime = effectObj.expiresAt || effectObj.expireAt;
+      if (eType === 'ink') {
         html += '<div class="vfx-ink-layer"></div>';
-      } else if (effectObj.effect === 'freeze') {
+      } else if (eType === 'freeze') {
         html += '<div class="vfx-freeze-layer"></div>';
-      } else if (effectObj.effect === 'wind') {
+      } else if (eType === 'wind') {
         html += '<div class="vfx-wind-layer"></div>';
-      } else if (effectObj.effect === 'bomb') {
-        const leftSec = Math.max(0, Math.ceil((effectObj.expiresAt - now) / 1000));
+      } else if (eType === 'bomb') {
+        const leftSec = Math.max(0, Math.ceil((expTime - now) / 1000));
         html += `
           <div class="vfx-bomb-banner">
             <span class="bomb-icon">💣</span>
@@ -9734,8 +9817,16 @@ class HaruMatchumApp {
     this.stopBattlePolling();
     if (this.modalBattleResult) this.modalBattleResult.classList.add('active');
 
-    const sortedMembers = [...(room.members || [])].sort((a, b) => (b.score || 0) - (a.score || 0));
-    const myUsername = this.currentUser ? this.currentUser.username : '';
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+
+    const memberList = (room.members || []).map(m => {
+      const mName = typeof m === 'object' && m ? (m.nickname || m.name || m.username) : m;
+      const mAvatar = typeof m === 'object' && m ? (m.avatar || '🌸') : '🌸';
+      const mScore = typeof m === 'object' && m ? (m.score || 0) : ((room.progress && room.progress[mName]) ? room.progress[mName].score : 0);
+      return { username: mName, nickname: mName, avatar: mAvatar, score: mScore };
+    });
+
+    const sortedMembers = memberList.sort((a, b) => (b.score || 0) - (a.score || 0));
     const myRank = sortedMembers.findIndex(m => m.username === myUsername) + 1;
     const isWinner = myRank === 1;
 
@@ -9805,13 +9896,13 @@ class HaruMatchumApp {
     }
 
     try {
-      const res = await fetch('/api/battle/rankings', {
-        headers: { 'Authorization': `Bearer ${this.token || ''}` }
+      const res = await fetch(`/api/battle/rankings?token=${encodeURIComponent(this.token)}`, {
+        headers: { 'Authorization': `Bearer ${this.token}` }
       });
       const data = await res.json();
       if (!data.success || !rankingList) return;
 
-      const myUsername = this.currentUser ? this.currentUser.username : '';
+      const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
       const medals = ['🥇', '🥈', '🥉'];
 
       const tierNames = {
@@ -9881,7 +9972,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.6.0');
+        url.searchParams.set('_v', this.APP_VERSION || '3.6.1');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

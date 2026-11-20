@@ -212,8 +212,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.6.0">'), 'index.html must include meta app-version 3.6.0');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.0">'), 'index.html must cache-bust style.css with v3.6.0');
+    assert(indexHtml.includes('<meta name="app-version" content="3.6.1">'), 'index.html must include meta app-version 3.6.1');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.1">'), 'index.html must cache-bust style.css with v3.6.1');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -296,7 +296,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.6.0', 'GET /api/version version must be 3.6.0');
+    assert.strictEqual(verRes.data.version, '3.6.1', 'GET /api/version version must be 3.6.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -523,7 +523,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.0';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.1';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -536,7 +536,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.0</span>'), 'index.html must have v3.6.0 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.1</span>'), 'index.html must have v3.6.1 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -647,6 +647,9 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('enterBattleRoom('), 'app.js must implement enterBattleRoom()');
     assert(appCode.includes('submitCreateBattle()'), 'app.js must implement submitCreateBattle()');
     assert(appCode.includes('renderBattleRankings()'), 'app.js must implement renderBattleRankings()');
+    assert(appCode.includes('get currentUser()'), 'app.js must provide currentUser getter for robust session compatibility');
+    assert(appCode.includes('get token()'), 'app.js must provide token getter for cloudToken fallback');
+    assert(appCode.includes("this.cloudToken = localStorage.getItem('haru_cloud_token') || ''"), 'app.js must fallback to localStorage token');
 
     // 36-A. Battle Room Creation API Test (POST /api/battle/create)
     const createBattleRes = await request('POST', '/api/battle/create', { 'Authorization': `Bearer ${userToken}` }, {
@@ -756,12 +759,14 @@ const srv = server.listen(TEST_PORT, async () => {
     if (fs.existsSync(usersFilePath)) {
       try {
         const usersObj = JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
-        if (usersObj.users && usersObj.users[testUsername]) {
-          delete usersObj.users[testUsername];
+        if (usersObj.users) {
+          for (const k of Object.keys(usersObj.users)) {
+            if (k.startsWith('e2e_runner_')) delete usersObj.users[k];
+          }
         }
         if (usersObj.tokens) {
           for (const [t, u] of Object.entries(usersObj.tokens)) {
-            if (u === testUsername) delete usersObj.tokens[t];
+            if (u.startsWith('e2e_runner_') || t.startsWith('test_mini_token_')) delete usersObj.tokens[t];
           }
         }
         fs.writeFileSync(usersFilePath, JSON.stringify(usersObj, null, 2), 'utf8');
@@ -773,6 +778,22 @@ const srv = server.listen(TEST_PORT, async () => {
     process.exit(0);
   } catch (e) {
     console.error('❌ E2E Verification Failed:', e);
+    if (fs.existsSync(usersFilePath)) {
+      try {
+        const usersObj = JSON.parse(fs.readFileSync(usersFilePath, 'utf8'));
+        if (usersObj.users) {
+          for (const k of Object.keys(usersObj.users)) {
+            if (k.startsWith('e2e_runner_')) delete usersObj.users[k];
+          }
+        }
+        if (usersObj.tokens) {
+          for (const [t, u] of Object.entries(usersObj.tokens)) {
+            if (u.startsWith('e2e_runner_') || t.startsWith('test_mini_token_')) delete usersObj.tokens[t];
+          }
+        }
+        fs.writeFileSync(usersFilePath, JSON.stringify(usersObj, null, 2), 'utf8');
+      } catch (err) {}
+    }
     srv.close();
     process.exit(1);
   }
