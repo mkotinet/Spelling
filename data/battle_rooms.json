@@ -1,1 +1,518 @@
-[]
+[
+  {
+    "id": "battle_1795207495161_zsazy",
+    "roomId": "battle_1795207495161_zsazy",
+    "title": "테스트 스피드 대결방",
+    "creator": "e2e_runner_1795207494943",
+    "creatorName": "e2e_runner_1795207494943",
+    "members": [
+      "e2e_runner_1795207494943",
+      "미니미니"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "in_progress",
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 573,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #573)",
+        "sentence": "해 질 녘이 되자 서쪽 하늘로 태양의 고도가 점점 [ (     ) ] 지평선 너머로 내려앉았다.",
+        "sentenceTranslation": "",
+        "options": [
+          "낳아져",
+          "낮아져",
+          "나아져",
+          "낟아져"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'낮다'(이)가 올바른 표준 표기입니다. 높이의 반대말 / 수치가 적음. (표준어 규정 (높이/수치가 아래쪽임))",
+        "standardWord": "낮다"
+      },
+      {
+        "index": 1,
+        "id": 3349,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3349)",
+        "sentence": "폭풍우에 쓰러진 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "생대같다",
+          "생때갓다",
+          "쌩때같다",
+          "생때같다"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'생때같다'(이)가 올바른 표준 표기입니다. 몸이 아주 건강하고 튼튼하다 / 멀쩡하게 매우 귀중하다. (표준어 규정 (아무 탈 없이 건강하고 싱싱함))",
+        "standardWord": "생때같다"
+      },
+      {
+        "index": 2,
+        "id": 5063,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #5063)",
+        "sentence": "사과를 먹[ (     ) ] 배를 먹든 네가 원하는 과일을 자유롭게 골라라.",
+        "sentenceTranslation": "",
+        "options": [
+          "던",
+          "던가",
+          "던지",
+          "든"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'든'(이)가 올바른 표준 표기입니다. 어느 것이 선택되어도 상관없음을 나타내는 연결 어미는 '-든지/든'이며, 과거를 회상할 때는 '-던'을 씁니다. (한글 맞춤법 제56항)",
+        "standardWord": "든"
+      },
+      {
+        "index": 3,
+        "id": 3520,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3520)",
+        "sentence": "공부하지 않고 놀기만 하니 부모님 속을 여간 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "썩히다",
+          "썩이여",
+          "썩이다",
+          "썩이였다"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'썩이다'(이)가 올바른 표준 표기입니다. 걱정이나 근심으로 마음이나 속을 몹시 괴롭게 하다. (한글 맞춤법 제57항 (마음/속을 괴롭히다))",
+        "standardWord": "썩이다"
+      },
+      {
+        "index": 4,
+        "id": 3366,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3366)",
+        "sentence": "질척한 [ (     ) ] 속에서 뻘낙지를 잡아 올렸다.",
+        "sentenceTranslation": "",
+        "options": [
+          "개펄",
+          "갯펄",
+          "개펄의",
+          "갯벌"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'개펄'(이)가 올바른 표준 표기입니다. 개에 있는 거무스름하고 질척한 진흙 벌. (표준어 규정 (갯가의 질척질척한 진흙땅))",
+        "standardWord": "개펄"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795207494943": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 25,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "points": 25,
+            "timeSpent": 2.5
+          }
+        ],
+        "inventory": {
+          "battle_ink": 0,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 2.5,
+        "activeEffects": [
+          {
+            "type": "ink",
+            "name": "먹물 벼루",
+            "icon": "墨",
+            "expireAt": 1795207498665,
+            "from": "e2e_runner_1795207494943"
+          }
+        ],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "미니미니": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 0,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      }
+    },
+    "itemLog": [
+      {
+        "from": "미니미니",
+        "fromName": "미니미니",
+        "item": {
+          "id": "battle_reflect",
+          "name": "반사 거울방패",
+          "icon": "🛡️",
+          "type": "defense",
+          "desc": "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
+        },
+        "reflected": false,
+        "time": "2026-11-20 20:44:55"
+      },
+      {
+        "from": "e2e_runner_1795207494943",
+        "fromName": "e2e_runner_1795207494943",
+        "target": "e2e_runner_1795207494943",
+        "targetName": "e2e_runner_1795207494943",
+        "item": {
+          "id": "battle_ink",
+          "name": "먹물 벼루",
+          "icon": "墨",
+          "type": "attack",
+          "duration": 3500,
+          "desc": "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+        },
+        "reflected": true,
+        "time": "2026-11-20 20:44:55"
+      }
+    ],
+    "winner": null,
+    "createdAt": "2026-11-20T20:44:55.161Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795207495180_gifef",
+    "roomId": "battle_1795207495180_gifef",
+    "title": "가족 2:2 스피드 팀전",
+    "creator": "e2e_runner_1795207494943",
+    "creatorName": "e2e_runner_1795207494943",
+    "members": [
+      "e2e_runner_1795207494943",
+      "미니미니",
+      "도비사랑녀",
+      "Ljh"
+    ],
+    "matchType": "2v2",
+    "teams": {
+      "A": [
+        "e2e_runner_1795207494943",
+        "미니미니"
+      ],
+      "B": [
+        "도비사랑녀",
+        "Ljh"
+      ]
+    },
+    "status": "in_progress",
+    "questionCount": 5,
+    "subject": "mixed",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "mixed",
+      "subjectName": "종합 올스타전",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "2v2",
+      "teams": {
+        "A": [
+          "e2e_runner_1795207494943",
+          "미니미니"
+        ],
+        "B": [
+          "도비사랑녀",
+          "Ljh"
+        ]
+      }
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 9424,
+        "subject": "idiom",
+        "subjectName": "속담·관용구",
+        "level": "일반/실무",
+        "question": "다음 사회·비즈니스 맥락의 빈칸에 적절한 속담 및 관용 표현을 고르세요. (문항 #4424)",
+        "sentence": "고객 만족도를 높이기 위해 콜센터에 접수된 고객의 사소한 불만 사항에도 세심하게 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "눈을 감다",
+          "고삐를 죄다",
+          "손을 떼다",
+          "귀를 기울이다"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'귀를 기울이다'은(는) \"남의 의견이나 요구사항을 주의 깊게 성심껏 듣다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
+        "standardWord": "귀를 기울이다"
+      },
+      {
+        "index": 1,
+        "id": 15449,
+        "subject": "english",
+        "subjectName": "영어 스펠링",
+        "level": "초등/기초",
+        "question": "문장을 읽고 빈칸에 들어갈 알맞은 영어 단어를 골라보세요. (문항 #449)",
+        "sentence": "Many students gather after school to pump fresh air into the deflated rubber tires of my [ (     ) ].",
+        "sentenceTranslation": "많은 학생들이 방과 후 모여 자전거의 바람 빠진 고무 타이어에 공기를 주입합니다.",
+        "options": [
+          "bicycal",
+          "bycycle",
+          "bicyle",
+          "bicycle"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'자전거'는 bicycle입니다. 앞은 'i', 뒤는 'y' 철자 순서에 유의하세요.",
+        "standardWord": "bicycle"
+      },
+      {
+        "index": 2,
+        "id": 4394,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "일반/실무",
+        "question": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #4394)",
+        "sentence": "정해진 기한 내에 통고 처분된 [ (     ) ]을 내지 않으면 즉결심판에 넘겨진다.",
+        "sentenceTranslation": "",
+        "options": [
+          "과태료",
+          "범칙금",
+          "벌금",
+          "과징금"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'범칙금'(이)가 올바른 표준 표기입니다. 도로교통법이나 경범죄처벌법 위반에 대해 경찰서장이 통고처분으로 납부를 명하는 금액. (도로교통법/경범죄처벌법 규정 (경미한 범죄에 대해 통고 처분하는 금액))",
+        "standardWord": "범칙금"
+      },
+      {
+        "index": 3,
+        "id": 2802,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "고등/심화",
+        "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2802)",
+        "sentence": "달콤한 유자와 설탕을 일대일 비율로 재워 겨울철 감기 예방용 유자차를 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "담궜다",
+          "담갓다",
+          "담굿다",
+          "담갔다"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'담갔다'(이)가 올바른 표준 표기입니다. 물이나 액체에 넣다 / 김치를 만들다. (한글 맞춤법 제18항 (ㅡ 불규칙 탈락))",
+        "standardWord": "담갔다"
+      },
+      {
+        "index": 4,
+        "id": 6121,
+        "subject": "idiom",
+        "subjectName": "속담·관용구",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 속담이나 관용 표현을 고르세요. (문항 #1121)",
+        "sentence": "외출할 때 문단속 철저히 하라는 어머니의 잔소리를 하도 많이 들어서 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "입이 무겁다",
+          "귀에 못이 박히다",
+          "귀가 얇다",
+          "눈을 흘기다"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'귀에 못이 박히다'은(는) \"같은 말을 너무 여러 번 들어서 몹시 지겹고 익숙해지다\"을(를) 뜻하는 표현입니다. 문맥상 가장 자연스럽고 올바른 어휘입니다.",
+        "standardWord": "귀에 못이 박히다"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795207494943": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 0,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "미니미니": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "도비사랑녀": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [
+          {
+            "type": "ink",
+            "name": "먹물 벼루",
+            "icon": "墨",
+            "expireAt": 1795207498681,
+            "from": "e2e_runner_1795207494943"
+          }
+        ],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "Ljh": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      }
+    },
+    "itemLog": [
+      {
+        "from": "e2e_runner_1795207494943",
+        "fromName": "e2e_runner_1795207494943",
+        "target": "도비사랑녀",
+        "targetName": "도비사랑녀",
+        "item": {
+          "id": "battle_ink",
+          "name": "먹물 벼루",
+          "icon": "墨",
+          "type": "attack",
+          "duration": 3500,
+          "desc": "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+        },
+        "reflected": false,
+        "time": "2026-11-20 20:44:55"
+      }
+    ],
+    "winner": null,
+    "createdAt": "2026-11-20T20:44:55.180Z",
+    "completedAt": null
+  }
+]

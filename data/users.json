@@ -108,6 +108,47 @@
       "createdAt": "2026-11-11T14:31:13.169Z",
       "updatedAt": "2026-11-11T14:31:30.361Z",
       "maxRoundToday": 1
+    },
+    "Ljh": {
+      "id": "user_1794643652291",
+      "username": "Ljh",
+      "name": "Ljh",
+      "grade": "일반 / 대학생",
+      "avatar": "🍀",
+      "streak": 2,
+      "totalPoints": 1645
+    },
+    "도비사랑녀": {
+      "id": "user_1794643794670",
+      "username": "도비사랑녀",
+      "name": "도비사랑녀",
+      "grade": "중학교 3학년",
+      "avatar": "🐥",
+      "streak": 5,
+      "totalPoints": 9297
+    },
+    "미니미니채": {
+      "id": "user_1794710981303",
+      "username": "미니미니채",
+      "name": "미니미니채",
+      "grade": "초등학교 6학년",
+      "avatar": "🍀",
+      "streak": 4,
+      "totalPoints": 23979,
+      "avatarAccessories": {
+        "pin": "pin_clover_mini",
+        "hat": "hat_straw",
+        "outfit": "outfit_strawberry_milk_pajama",
+        "shoes": "shoes_rabbit_slippers",
+        "pet": "pet_bunny"
+      },
+      "inventoryAccessories": [
+        "pin_clover_mini",
+        "hat_straw",
+        "outfit_strawberry_milk_pajama",
+        "shoes_rabbit_slippers",
+        "pet_bunny"
+      ]
     }
   },
   "tokens": {

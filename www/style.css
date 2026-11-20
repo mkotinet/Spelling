@@ -6881,3 +6881,202 @@ body.theme-english .quiz-sentence .quiz-blank {
 
 
 
+
+/* ============================================================
+   v3.6.3 MATCH TYPES & 2:2 TEAM BATTLE STYLES
+   ============================================================ */
+.battle-match-type-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.battle-match-type-group .pill-radio span {
+  font-size: 0.82rem;
+  padding: 8px 6px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.battle-member-count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  transition: all 0.2s ease;
+}
+.battle-member-count-badge.ok {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+.battle-member-count-badge.warn {
+  background: #fff1f2;
+  color: #e11d48;
+  border-color: #fecdd3;
+}
+
+.btn-battle-pill-small {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-battle-pill-small:hover {
+  background: #e2e8f0;
+}
+
+.battle-friend-select-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.battle-friend-select-item:has(input:checked) {
+  border-color: #ec4899;
+  background: #fff1f2;
+  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.15);
+}
+.battle-friend-select-item input {
+  accent-color: #ec4899;
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+.friend-item-avatar {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.friend-item-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.friend-item-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.friend-item-grade {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 2:2 Team Setup Preview Box */
+.battle-team-setup-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #eff6ff 0%, #fdf2f8 100%);
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 16px;
+}
+.team-setup-col {
+  flex: 1;
+  padding: 8px;
+  border-radius: 12px;
+  text-align: center;
+}
+.team-setup-col.team-blue {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid #93c5fd;
+}
+.team-setup-col.team-red {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #fca5a5;
+}
+.team-setup-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.team-setup-col.team-blue .team-setup-title { color: #1d4ed8; }
+.team-setup-col.team-red .team-setup-title { color: #b91c1c; }
+.team-setup-members {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.team-setup-vs {
+  font-weight: 900;
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Battle Screen 2:2 Team Score Header */
+.battle-team-score-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: rgba(15, 23, 42, 0.88);
+  border-radius: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.team-banner-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.team-banner-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+.team-banner-badge.blue {
+  background: #2563eb;
+  color: #ffffff;
+}
+.team-banner-badge.red {
+  background: #dc2626;
+  color: #ffffff;
+}
+.team-banner-score {
+  font-size: 1.25rem;
+  font-weight: 900;
+  font-family: monospace;
+}
+.team-banner-side.blue .team-banner-score { color: #60a5fa; }
+.team-banner-side.red .team-banner-score { color: #f87171; }
+.team-banner-vs {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #94a3b8;
+}
+.rival-team-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+.rival-team-badge.blue { background: #dbeafe; color: #1d4ed8; }
+.rival-team-badge.red { background: #fee2e2; color: #b91c1c; }

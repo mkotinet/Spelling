@@ -4827,5 +4827,107 @@
     "details": {
       "reason": "인증 실패"
     }
+  },
+  {
+    "id": "log_1795207494959_dnwrq",
+    "timestamp": "2026-11-20T20:44:54.959Z",
+    "kstTime": "2026-11-20 20:44:54",
+    "username": "e2e_runner_1795207494943",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795207494961_eodmp",
+    "timestamp": "2026-11-20T20:44:54.961Z",
+    "kstTime": "2026-11-20 20:44:54",
+    "username": "e2e_runner_1795207494943",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795207494962_773ej",
+    "timestamp": "2026-11-20T20:44:54.962Z",
+    "kstTime": "2026-11-20 20:44:54",
+    "username": "e2e_runner_1795207494943",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795207495164_2tug3",
+    "timestamp": "2026-11-20T20:44:55.164Z",
+    "kstTime": "2026-11-20 20:44:55",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795207552613_qsql3",
+    "timestamp": "2026-11-20T20:45:52.613Z",
+    "kstTime": "2026-11-20 20:45:52",
+    "username": "e2e_runner_1795207552598",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795207552614_53yj5",
+    "timestamp": "2026-11-20T20:45:52.614Z",
+    "kstTime": "2026-11-20 20:45:52",
+    "username": "e2e_runner_1795207552598",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795207552615_rf1bg",
+    "timestamp": "2026-11-20T20:45:52.615Z",
+    "kstTime": "2026-11-20 20:45:52",
+    "username": "e2e_runner_1795207552598",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795207552805_obo8g",
+    "timestamp": "2026-11-20T20:45:52.805Z",
+    "kstTime": "2026-11-20 20:45:52",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
   }
 ]

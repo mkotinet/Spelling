@@ -1,6 +1,6 @@
 {
-  "version": "3.6.2",
-  "build": "20261121_0505",
-  "name": "하루맞춤 (Haru Matchum) - Autonomous AI Battle Bot, Live Challengers Lobby, Instant 1:1 Match & Open Room Arena",
-  "releaseNotes": "1) 로비 도전자 목록(접속/대기 회원 및 AI 봇) 실시간 표시 및 1클릭 1:1 대결 신청 기능 탑재, 2) 맞춤요정 자율 AI 배틀 봇 엔진 구축 (실시간 문제 풀이, ~85% 정확도, 인간형 2.6초 씽크 딜레이, 배틀 아이템 8종 능동 사용 및 거울방패 역반사 연동), 3) 1초 즉시 대결(Instant Quick AI Match) 기능 추가, 4) 열린 대결방 자유 참여(Open Room Joining) 및 권한 버그 완전 해소, 5) 진행도(qIndex) 상태 동기화 및 방 개설자 전용 방 삭제/정리 기능 추가"
+  "version": "3.6.3",
+  "build": "20261121_0535",
+  "name": "하루맞춤 (Haru Matchum) - Full Family Roster Dynamic Invite, Multi-Format 1:1, 1:1:1, 1:1:1:1 & 2:2 Team Battle Arena",
+  "releaseNotes": "1) 방 생성 시 모든 가족 구성원(미니미니, 미니미니채, 도비사랑녀, Ljh, 단민러브, 민지, 맞춤요정) 동적 초대 목록 전면 개방, 2) 4대 매치 규격 신설: 1:1(2인), 1:1:1(3인), 1:1:1:1(4인), 2:2 팀전(4인), 3) 2:2 팀전 전용 [블루팀 vs 레드팀] 팀 점수 합산, 팀킬 방지 타겟팅 및 팀 승리 판정 엔진 구축, 4) 실시간 인원 선택 가이드 및 원클릭 전체 선택/초기화 기능 추가"
 }

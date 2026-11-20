@@ -410,6 +410,105 @@ function generateBattleQuestions(subject, level, count) {
   });
 }
 
+// ⚔️ 퀴즈대결 완료 및 승패/RP/티어 종합 집계 엔진 (1:1, 다자간 개인전, 2:2 팀전 지원)
+function finalizeBattleRoom(room, db) {
+  if (!room || room.status === 'completed') return;
+  room.status = 'completed';
+  room.completedAt = new Date().toISOString();
+
+  const matchType = room.matchType || (room.settings && room.settings.matchType) || '1v1';
+
+  if (matchType === '2v2' && room.teams) {
+    // 2:2 팀전 승패 판정
+    const teamA = room.teams.A || [];
+    const teamB = room.teams.B || [];
+    const scoreA = teamA.reduce((sum, u) => sum + ((room.progress && room.progress[u] && room.progress[u].score) || 0), 0);
+    const scoreB = teamB.reduce((sum, u) => sum + ((room.progress && room.progress[u] && room.progress[u].score) || 0), 0);
+    room.teamScores = { A: scoreA, B: scoreB };
+
+    const winTeam = scoreA > scoreB ? 'A' : (scoreB > scoreA ? 'B' : 'draw');
+    room.winningTeam = winTeam;
+    room.winner = winTeam === 'A' ? teamA[0] : (winTeam === 'B' ? teamB[0] : null);
+    room.winnerName = winTeam === 'A' ? '블루팀' : (winTeam === 'B' ? '레드팀' : '무승부');
+
+    if (db && db.users) {
+      room.members.forEach(m => {
+        const u = db.users[m];
+        if (u) {
+          u.battleStats = u.battleStats || { rp: 1000, games: 0, wins: 0, losses: 0, winRate: 0, streak: 0, maxStreak: 0, tier: 'silver' };
+          u.battleStats.games = (u.battleStats.games || 0) + 1;
+          const myTeam = teamA.includes(m) ? 'A' : (teamB.includes(m) ? 'B' : null);
+          const isWin = (myTeam && myTeam === winTeam);
+          if (isWin) {
+            u.battleStats.wins = (u.battleStats.wins || 0) + 1;
+            u.battleStats.streak = (u.battleStats.streak || 0) + 1;
+            u.battleStats.maxStreak = Math.max(u.battleStats.maxStreak || 0, u.battleStats.streak);
+            const streakBonus = Math.min(15, (u.battleStats.streak - 1) * 3);
+            u.battleStats.rp = (u.battleStats.rp || 1000) + 30 + streakBonus;
+          } else if (winTeam === 'draw') {
+            u.battleStats.rp = (u.battleStats.rp || 1000) + 5;
+          } else {
+            u.battleStats.losses = (u.battleStats.losses || 0) + 1;
+            u.battleStats.streak = 0;
+            u.battleStats.rp = Math.max(500, (u.battleStats.rp || 1000) - 15);
+          }
+          const rp = u.battleStats.rp;
+          if (rp >= 1800) u.battleStats.tier = 'master';
+          else if (rp >= 1500) u.battleStats.tier = 'diamond';
+          else if (rp >= 1200) u.battleStats.tier = 'gold';
+          else if (rp >= 1000) u.battleStats.tier = 'silver';
+          else u.battleStats.tier = 'bronze';
+          u.battleStats.winRate = Math.round((u.battleStats.wins / u.battleStats.games) * 100);
+        }
+      });
+      saveDB(db);
+    }
+  } else {
+    // 1:1, 1:1:1, 1:1:1:1 개인전 승패 판정
+    const rankList = room.members.map(m => ({
+      username: m,
+      score: (room.progress && room.progress[m] && room.progress[m].score) || 0,
+      totalTime: (room.progress && room.progress[m] && room.progress[m].totalTime) || 999
+    })).sort((a, b) => (b.score - a.score) || (a.totalTime - b.totalTime));
+
+    room.winner = rankList[0].username;
+    room.winnerName = db && db.users && db.users[rankList[0].username] ? db.users[rankList[0].username].name : rankList[0].username;
+
+    if (db && db.users) {
+      rankList.forEach((entry, rIdx) => {
+        const u = db.users[entry.username];
+        if (u) {
+          u.battleStats = u.battleStats || { rp: 1000, games: 0, wins: 0, losses: 0, winRate: 0, streak: 0, maxStreak: 0, tier: 'silver' };
+          u.battleStats.games = (u.battleStats.games || 0) + 1;
+          if (rIdx === 0) {
+            u.battleStats.wins = (u.battleStats.wins || 0) + 1;
+            u.battleStats.streak = (u.battleStats.streak || 0) + 1;
+            u.battleStats.maxStreak = Math.max(u.battleStats.maxStreak || 0, u.battleStats.streak);
+            const streakBonus = Math.min(15, (u.battleStats.streak - 1) * 3);
+            u.battleStats.rp = (u.battleStats.rp || 1000) + 30 + streakBonus;
+          } else if (rIdx === 1 && rankList.length >= 3) {
+            u.battleStats.losses = (u.battleStats.losses || 0) + 1;
+            u.battleStats.streak = 0;
+            u.battleStats.rp = (u.battleStats.rp || 1000) + 10;
+          } else {
+            u.battleStats.losses = (u.battleStats.losses || 0) + 1;
+            u.battleStats.streak = 0;
+            u.battleStats.rp = Math.max(500, (u.battleStats.rp || 1000) - 15);
+          }
+          const rp = u.battleStats.rp;
+          if (rp >= 1800) u.battleStats.tier = 'master';
+          else if (rp >= 1500) u.battleStats.tier = 'diamond';
+          else if (rp >= 1200) u.battleStats.tier = 'gold';
+          else if (rp >= 1000) u.battleStats.tier = 'silver';
+          else u.battleStats.tier = 'bronze';
+          u.battleStats.winRate = Math.round((u.battleStats.wins / u.battleStats.games) * 100);
+        }
+      });
+      saveDB(db);
+    }
+  }
+}
+
 // ⚔️ v3.6.2 AI 맞춤요정 자율 배틀 시뮬레이터 (Autonomous AI Mascot Battle Bot Engine)
 function processAiMascotBot(room, db) {
   if (!room || room.status !== 'in_progress') return false;
@@ -490,8 +589,16 @@ function processAiMascotBot(room, db) {
         const itemToUse = availableItems[Math.floor(Math.random() * availableItems.length)];
         botProg.inventory[itemToUse]--;
 
-        const rivals = room.members.filter(m => m !== '맞춤요정');
-        const target = rivals.length > 0 ? rivals[0] : null;
+        let target = null;
+        if (room.matchType === '2v2' && room.teams) {
+          const aiTeam = (room.teams.A && room.teams.A.includes('맞춤요정')) ? 'A' : 'B';
+          const opposingTeam = aiTeam === 'A' ? 'B' : 'A';
+          const opponents = room.teams[opposingTeam] || [];
+          target = opponents[Math.floor(Math.random() * opponents.length)] || null;
+        } else {
+          const rivals = room.members.filter(m => m !== '맞춤요정');
+          target = rivals.length > 0 ? rivals[Math.floor(Math.random() * rivals.length)] : null;
+        }
 
         if (target && room.progress[target]) {
           const targetProg = room.progress[target];
@@ -531,57 +638,7 @@ function processAiMascotBot(room, db) {
   // Check if ALL members completed
   const allCompleted = room.members.every(m => room.progress[m] && room.progress[m].completed);
   if (allCompleted && room.status !== 'completed') {
-    room.status = 'completed';
-    room.completedAt = new Date().toISOString();
-
-    let winner = null;
-    let maxScore = -1;
-    let minTime = Infinity;
-
-    room.members.forEach(m => {
-      const p = room.progress[m] || {};
-      const score = p.score || 0;
-      const t = p.totalTime || 999;
-      if (score > maxScore || (score === maxScore && t < minTime)) {
-        maxScore = score;
-        minTime = t;
-        winner = m;
-      }
-    });
-
-    room.winner = winner;
-
-    if (db && db.users) {
-      room.members.forEach(m => {
-        const u = db.users[m];
-        if (u) {
-          if (!u.battleStats) {
-            u.battleStats = { rp: 1000, wins: 0, losses: 0, streak: 0, maxStreak: 0, tier: 'silver' };
-          }
-          const isWin = (m === winner);
-          if (isWin) {
-            u.battleStats.wins = (u.battleStats.wins || 0) + 1;
-            u.battleStats.streak = (u.battleStats.streak || 0) + 1;
-            if (u.battleStats.streak > (u.battleStats.maxStreak || 0)) {
-              u.battleStats.maxStreak = u.battleStats.streak;
-            }
-            const streakBonus = Math.min(15, (u.battleStats.streak - 1) * 3);
-            u.battleStats.rp = (u.battleStats.rp || 1000) + 30 + streakBonus;
-          } else {
-            u.battleStats.losses = (u.battleStats.losses || 0) + 1;
-            u.battleStats.streak = 0;
-            u.battleStats.rp = Math.max(500, (u.battleStats.rp || 1000) - 15);
-          }
-          const rp = u.battleStats.rp;
-          if (rp >= 1800) u.battleStats.tier = 'master';
-          else if (rp >= 1500) u.battleStats.tier = 'diamond';
-          else if (rp >= 1200) u.battleStats.tier = 'gold';
-          else if (rp >= 1000) u.battleStats.tier = 'silver';
-          else u.battleStats.tier = 'bronze';
-        }
-      });
-      saveDB(db);
-    }
+    finalizeBattleRoom(room, db);
     changed = true;
   }
 
@@ -2468,6 +2525,25 @@ const server = http.createServer(async (req, res) => {
         };
       });
 
+      let matchType = body.matchType || '1v1';
+      if (!['1v1', '1v1v1', '1v1v1v1', '2v2'].includes(matchType)) {
+        if (members.length === 2) matchType = '1v1';
+        else if (members.length === 3) matchType = '1v1v1';
+        else if (members.length >= 4) matchType = '1v1v1v1';
+      }
+
+      let teams = null;
+      if (matchType === '2v2') {
+        if (body.teams && Array.isArray(body.teams.A) && Array.isArray(body.teams.B)) {
+          teams = body.teams;
+        } else if (members.length >= 4) {
+          teams = {
+            A: [members[0], members[1]],
+            B: [members[2], members[3]]
+          };
+        }
+      }
+
       const roomId = "battle_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
       const newRoom = {
         id: roomId,
@@ -2476,6 +2552,8 @@ const server = http.createServer(async (req, res) => {
         creator: username,
         creatorName: sender.name || username,
         members,
+        matchType,
+        teams,
         status: "in_progress",
         questionCount,
         subject,
@@ -2486,7 +2564,9 @@ const server = http.createServer(async (req, res) => {
           subject,
           subjectName: subjectNameMap[subject] || "맞춤법",
           level,
-          allowItems
+          allowItems,
+          matchType,
+          teams
         },
         questions,
         progress,
@@ -2554,7 +2634,7 @@ const server = http.createServer(async (req, res) => {
       // 2) 로비 참여 가능 유저 목록 (AUTHENTIC_USERS + db.users)
       const lobbyUsers = [];
       const userList = Object.keys(db.users || {});
-      const prioritized = ['단민러브', '미니미니', '민지', '맞춤요정'];
+      const prioritized = ['단민러브', '미니미니', '민지', '맞춤요정', '미니미니채', '도비사랑녀', 'Ljh'];
       const allUserKeys = Array.from(new Set([...prioritized, ...userList]));
 
       allUserKeys.forEach(uName => {
@@ -2567,9 +2647,12 @@ const server = http.createServer(async (req, res) => {
 
         let avatar = u.avatar || '🌸';
         if (!u.avatar) {
-          if (uName === '단민러브') avatar = '👑';
-          else if (uName === '민지') avatar = '⭐';
-          else if (uName === '미니미니') avatar = '🐱';
+          if (uName === '단민러브') avatar = '🐰';
+          else if (uName === '민지') avatar = '🎀';
+          else if (uName === '미니미니') avatar = '🐶';
+          else if (uName === '미니미니채') avatar = '🍀';
+          else if (uName === '도비사랑녀') avatar = '🐥';
+          else if (uName === 'Ljh') avatar = '🍀';
         }
 
         lobbyUsers.push({
@@ -2603,6 +2686,8 @@ const server = http.createServer(async (req, res) => {
         const subj = r.subject || (r.settings && r.settings.subject) || 'spelling';
         const lvl = r.level || (r.settings && r.settings.level) || 'all';
         const itemsAllowed = (r.allowItems !== undefined ? r.allowItems : (r.settings ? r.settings.allowItems : true));
+        const matchType = r.matchType || (r.settings && r.settings.matchType) || '1v1';
+        const teams = r.teams || (r.settings && r.settings.teams) || null;
 
         return {
           id: r.roomId || r.id,
@@ -2612,6 +2697,8 @@ const server = http.createServer(async (req, res) => {
           creatorName: r.creatorName,
           members: r.members,
           memberCount: r.members.length,
+          matchType,
+          teams,
           status: r.status,
           questionCount: qCount,
           subject: subj,
@@ -2719,6 +2806,8 @@ const server = http.createServer(async (req, res) => {
       room.subject = room.subject || (room.settings && room.settings.subject) || 'spelling';
       room.level = room.level || (room.settings && room.settings.level) || 'all';
       room.allowItems = (room.allowItems !== undefined ? room.allowItems : (room.settings ? room.settings.allowItems : true));
+      room.matchType = room.matchType || (room.settings && room.settings.matchType) || '1v1';
+      room.teams = room.teams || (room.settings && room.settings.teams) || null;
 
       // 멤버별 프로필 정보 부가
       const memberProfiles = {};
@@ -2727,7 +2816,7 @@ const server = http.createServer(async (req, res) => {
         memberProfiles[m] = {
           username: m,
           name: u.name || m,
-          avatar: u.avatar || (m === '맞춤요정' ? '🌸' : (m === '단민러브' ? '👑' : (m === '민지' ? '⭐' : '🐱'))),
+          avatar: u.avatar || (m === '맞춤요정' ? '🌸' : (m === '단민러브' ? '🐰' : (m === '민지' ? '🎀' : (m === '도비사랑녀' ? '🐥' : (m === 'Ljh' || m === '미니미니채' ? '🍀' : '🐶'))))),
           grade: u.grade || (m === '맞춤요정' ? 'AI 맞춤법 튜터' : '초·중·고 학습자'),
           accessories: u.accessories || {}
         };
@@ -2855,56 +2944,10 @@ const server = http.createServer(async (req, res) => {
         userProg.completedAt = new Date().toISOString();
       }
 
-      // 5) 전원 완료 시 승패 판정 및 배틀 랭킹(RP / stats) 집계
+      // 5) 전원 완료 시 승패 판정 및 배틀 랭킹(RP / stats) 집계 (1:1, 1:1:1, 1:1:1:1, 2:2 팀전)
       const allFinished = room.members.every(m => room.progress[m] && room.progress[m].completed);
       if (allFinished && room.status !== "completed") {
-        room.status = "completed";
-        room.completedAt = new Date().toISOString();
-
-        // 랭킹 순위 계산 (점수 내림차순, 동점 시 총 소요시간 오름차순)
-        const rankList = room.members.map(m => ({
-          username: m,
-          score: room.progress[m].score,
-          totalTime: room.progress[m].totalTime || 999
-        })).sort((a, b) => (b.score - a.score) || (a.totalTime - b.totalTime));
-
-        room.winner = rankList[0].username;
-
-        // 회원 DB 배틀 전적 영구 반영 (Rule 10 준수)
-        rankList.forEach((entry, rIdx) => {
-          const u = db.users[entry.username];
-          if (u) {
-            u.battleStats = u.battleStats || {
-              rp: 1000,
-              games: 0,
-              wins: 0,
-              losses: 0,
-              winRate: 0,
-              streak: 0,
-              maxStreak: 0
-            };
-            u.battleStats.games += 1;
-            if (rIdx === 0) {
-              // 1등: 승리
-              u.battleStats.wins += 1;
-              u.battleStats.streak += 1;
-              u.battleStats.maxStreak = Math.max(u.battleStats.maxStreak, u.battleStats.streak);
-              u.battleStats.rp += 30;
-            } else if (rIdx === 1 && rankList.length >= 3) {
-              // 3인 이상 중 2등: 준우승 소폭 상승
-              u.battleStats.losses += 1;
-              u.battleStats.streak = 0;
-              u.battleStats.rp += 10;
-            } else {
-              // 최하위: 패배
-              u.battleStats.losses += 1;
-              u.battleStats.streak = 0;
-              u.battleStats.rp = Math.max(0, u.battleStats.rp - 15);
-            }
-            u.battleStats.winRate = Math.round((u.battleStats.wins / u.battleStats.games) * 100);
-          }
-        });
-        saveDB(db);
+        finalizeBattleRoom(room, db);
       }
 
       processAiMascotBot(room, db);
@@ -2963,9 +3006,18 @@ const server = http.createServer(async (req, res) => {
       // 아이템 차감
       myProg.inventory[itemKey] -= 1;
 
-      // 타겟 지정 유효성 검사
+      // 타겟 지정 유효성 검사 (2:2 팀전 팀킬 방지 포함)
       let actualTarget = targetUsername;
-      if (itemDef.type === "attack" && (!actualTarget || !room.members.includes(actualTarget) || actualTarget === username)) {
+      if (room.matchType === '2v2' && room.teams) {
+        const myTeam = (room.teams.A && room.teams.A.includes(username)) ? 'A' : 'B';
+        const opposingTeam = myTeam === 'A' ? 'B' : 'A';
+        const opponents = room.teams[opposingTeam] || [];
+        if (itemDef.type === "attack") {
+          if (!actualTarget || !opponents.includes(actualTarget)) {
+            actualTarget = opponents[0] || actualTarget;
+          }
+        }
+      } else if (itemDef.type === "attack" && (!actualTarget || !room.members.includes(actualTarget) || actualTarget === username)) {
         // 상대방 중 첫 번째 유저 자동 지정
         actualTarget = room.members.find(m => m !== username);
       }
@@ -3058,6 +3110,7 @@ const server = http.createServer(async (req, res) => {
         reflected,
         actualTarget,
         targetUser: actualTarget,
+        targetUsername: actualTarget,
         item: itemDef,
         room
       });

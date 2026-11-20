@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.6.2">
+  <meta name="app-version" content="3.6.3">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.6.2">
+  <link rel="stylesheet" href="style.css?v=3.6.3">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -214,7 +214,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span id="quickReloadVersionBadge" class="version-badge">v3.6.2</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.6.3</span>
         </button>
         <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
@@ -1902,11 +1902,41 @@
           <input type="text" id="inputBattleTitle" class="form-input" placeholder="예: 민채 vs 아빠 맞춤법 대격돌!" maxlength="30">
         </div>
 
+        <!-- Match Type Selection (1v1, 1v1v1, 1v1v1v1, 2v2) -->
+        <div class="form-group">
+          <label class="form-label">대결 방식 선택</label>
+          <div class="pill-radio-group battle-match-type-group">
+            <label class="pill-radio"><input type="radio" name="battleMatchType" value="1v1" checked><span>⚔️ 1:1 대결</span></label>
+            <label class="pill-radio"><input type="radio" name="battleMatchType" value="1v1v1"><span>🔥 1:1:1 (3인)</span></label>
+            <label class="pill-radio"><input type="radio" name="battleMatchType" value="1v1v1v1"><span>👑 1:1:1:1 (4인)</span></label>
+            <label class="pill-radio"><input type="radio" name="battleMatchType" value="2v2"><span>🤝 2:2 팀전 (4인)</span></label>
+          </div>
+        </div>
+
         <!-- Member Invites -->
         <div class="form-group">
-          <label class="form-label">함께할 대결 상대 선택 (최소 1명 이상)</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" style="margin: 0;">함께할 대결 상대 선택 <span id="battleMemberSelectCountNotice" class="battle-member-count-badge">상대 1명 선택 필요</span></label>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" id="btnBattleSelectAllFriends" class="btn-battle-pill-small">전체 선택</button>
+              <button type="button" id="btnBattleDeselectFriends" class="btn-battle-pill-small">선택 초기화</button>
+            </div>
+          </div>
           <div id="battleInviteMemberList" class="battle-member-select-grid">
             <!-- Dynamically populated friend checkboxes -->
+          </div>
+
+          <!-- 2:2 Team Setup Preview Box -->
+          <div id="battleTeamSetupWrap" class="battle-team-setup-box" style="display: none;">
+            <div class="team-setup-col team-blue">
+              <div class="team-setup-title">🔵 블루팀 (우리팀)</div>
+              <div id="battleTeamBlueMembers" class="team-setup-members"></div>
+            </div>
+            <div class="team-setup-vs">VS</div>
+            <div class="team-setup-col team-red">
+              <div class="team-setup-title">🔴 레드팀 (상대팀)</div>
+              <div id="battleTeamRedMembers" class="team-setup-members"></div>
+            </div>
           </div>
         </div>
 
@@ -2005,11 +2035,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.6.2"></script>
-  <script src="idiom_questions.js?v=3.6.2"></script>
-  <script src="hanja_questions.js?v=3.6.2"></script>
-  <script src="english_questions.js?v=3.6.2"></script>
-  <script src="stickers.js?v=3.6.2"></script>
-  <script src="app.js?v=3.6.2"></script>
+  <script src="questions.js?v=3.6.3"></script>
+  <script src="idiom_questions.js?v=3.6.3"></script>
+  <script src="hanja_questions.js?v=3.6.3"></script>
+  <script src="english_questions.js?v=3.6.3"></script>
+  <script src="stickers.js?v=3.6.3"></script>
+  <script src="app.js?v=3.6.3"></script>
 </body>
 </html>

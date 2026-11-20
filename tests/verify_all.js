@@ -212,8 +212,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.6.2">'), 'index.html must include meta app-version 3.6.2');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.2">'), 'index.html must cache-bust style.css with v3.6.2');
+    assert(indexHtml.includes('<meta name="app-version" content="3.6.3">'), 'index.html must include meta app-version 3.6.3');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.3">'), 'index.html must cache-bust style.css with v3.6.3');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -296,7 +296,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.6.2', 'GET /api/version version must be 3.6.2');
+    assert.strictEqual(verRes.data.version, '3.6.3', 'GET /api/version version must be 3.6.3');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -523,7 +523,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.2';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.3';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -536,7 +536,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.2</span>'), 'index.html must have v3.6.2 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.3</span>'), 'index.html must have v3.6.3 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -628,6 +628,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('overflow:hidden;border-radius:16px;'), 'app.js must enforce overflow hidden inline to prevent CSS caching leakage');
 
     // 36. v3.6.0 Real-time Quiz Battle Arena, Custom Question Settings, 8 Battle Items & Battle RP Rankings Verification
+    const usersFilePath = path.join(__dirname, '../data/users.json');
     assert(indexHtml.includes('id="btnNavBattle"'), 'index.html must include #btnNavBattle tab');
     assert(indexHtml.includes('id="btnStartBattleArena"'), 'index.html must include #btnStartBattleArena banner');
     assert(indexHtml.includes('id="viewBattle"'), 'index.html must include #viewBattle section');
@@ -687,7 +688,6 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.strictEqual(roomDetailRes.data.room.members.length, 2, 'Room must have 2 members (testUser + 미니미니)');
 
     // 36-D. Battle Item Usage & Mirror Shield Counter-Attack Test (POST /api/battle/use-item)
-    const usersFilePath = path.join(__dirname, '../data/users.json');
     // 1) Target ('미니미니') sets up reflect shield
     // Give 미니미니 a token for testing
     const miniTokenRes = await request('POST', '/api/auth/login', {}, { username: '미니미니', password: 'password123' });
@@ -802,6 +802,64 @@ const srv = server.listen(TEST_PORT, async () => {
     });
     assert.strictEqual(deleteRoomRes.status, 200, 'POST /api/battle/delete-room must return 200');
     assert.strictEqual(deleteRoomRes.data.success, true, 'Delete room must succeed');
+
+    // 38. v3.6.3 Full Family Dynamic Roster & 1:1, 1:1:1, 1:1:1:1, 2:2 Team Battle System Verification
+    assert(indexHtml.includes('battle-match-type-group'), 'index.html must include .battle-match-type-group');
+    assert(indexHtml.includes('id="battleTeamSetupWrap"'), 'index.html must include #battleTeamSetupWrap');
+    assert(latestStyleCss.includes('.battle-team-score-banner'), 'style.css must include .battle-team-score-banner');
+    assert(latestStyleCss.includes('.rival-team-badge'), 'style.css must include .rival-team-badge');
+    assert(appCode.includes('bindBattleCreateEvents()'), 'app.js must include bindBattleCreateEvents()');
+    assert(appCode.includes('updateBattleCreateSelectionUI()'), 'app.js must include updateBattleCreateSelectionUI()');
+    assert(serverCode.includes('finalizeBattleRoom'), 'server.js must include finalizeBattleRoom()');
+
+    // 38-A. Verify all 7 authentic family accounts are present in GET /api/battle/rooms
+    const roomsResV363 = await request('GET', '/api/battle/rooms', { 'Authorization': `Bearer ${userToken}` });
+    assert.strictEqual(roomsResV363.status, 200, 'GET /api/battle/rooms must return 200');
+    const returnedUsernames = roomsResV363.data.users.map(u => u.username);
+    const expectedAccounts = ['맞춤요정', '민지', '미니미니', '단민러브', 'Ljh', '도비사랑녀', '미니미니채'];
+    expectedAccounts.forEach(acc => {
+      assert(returnedUsernames.includes(acc), `Lobby users must include family member: ${acc}`);
+    });
+
+    // 38-B. Create 2:2 Team Battle Room & Verify Team Allocation (Blue A vs Red B)
+    const teamBattleRes = await request('POST', '/api/battle/create', { 'Authorization': `Bearer ${userToken}` }, {
+      title: '가족 2:2 스피드 팀전',
+      invitedUsernames: ['미니미니', '도비사랑녀', 'Ljh'],
+      matchType: '2v2',
+      questionCount: 5,
+      subject: 'all',
+      level: 'all',
+      allowItems: true
+    });
+    assert.strictEqual(teamBattleRes.status, 200, 'POST /api/battle/create for 2:2 team battle must return 200');
+    assert.strictEqual(teamBattleRes.data.success, true, '2:2 team battle creation must succeed');
+    const teamRoom = teamBattleRes.data.room;
+    assert.strictEqual(teamRoom.matchType, '2v2', 'Room matchType must be 2v2');
+    assert(teamRoom.teams && Array.isArray(teamRoom.teams.A) && Array.isArray(teamRoom.teams.B), 'Room must contain teams A and B');
+    assert.strictEqual(teamRoom.teams.A.length, 2, 'Team A must have 2 players');
+    assert.strictEqual(teamRoom.teams.B.length, 2, 'Team B must have 2 players');
+    assert.strictEqual(teamRoom.teams.A[0], testUsername, 'Team A first player must be creator');
+    assert.strictEqual(teamRoom.teams.A[1], '미니미니', 'Team A second player must be first invited friend');
+    assert.strictEqual(teamRoom.teams.B[0], '도비사랑녀', 'Team B first player must be second invited friend');
+    assert.strictEqual(teamRoom.teams.B[1], 'Ljh', 'Team B second player must be third invited friend');
+
+    // 38-C. Test 2:2 Team Attack Item Protection (Team-kill prevention)
+    // Attempting to target teammate '미니미니' on Team A should be re-routed to opposing Team B
+    const itemUseRes = await request('POST', '/api/battle/use-item', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: teamRoom.id,
+      itemKey: 'battle_ink',
+      targetUsername: '미니미니' // Teammate!
+    });
+    assert.strictEqual(itemUseRes.status, 200, 'POST /api/battle/use-item must return 200');
+    assert.strictEqual(itemUseRes.data.success, true, 'Item usage must succeed');
+    assert(teamRoom.teams.B.includes(itemUseRes.data.targetUsername), 'Attack item must be redirected to opponent in Team B to prevent team-kill');
+
+    // 38-D. Delete test 2:2 room
+    const delTeamRoomRes = await request('POST', '/api/battle/delete-room', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: teamRoom.id
+    });
+    assert.strictEqual(delTeamRoomRes.status, 200, 'Delete team room must return 200');
+    assert.strictEqual(delTeamRoomRes.data.success, true, 'Delete team room must succeed');
 
     // Clean up created battle room
     const battleRoomsFile = path.join(__dirname, '../data/battle_rooms.json');

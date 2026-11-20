@@ -1565,7 +1565,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.6.2';
+    this.APP_VERSION = metaVer || '3.6.3';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -9219,15 +9219,35 @@ class HaruMatchumApp {
 
     const memberGrid = document.getElementById('battleInviteMemberList');
     if (memberGrid) {
-      // 4인 실제 계정 (단민러브, 미니미니, 민지, 맞춤요정)
+      // 7인 실제 계정 (맞춤요정, 단민러브, 미니미니, 민지, Ljh, 도비사랑녀, 미니미니채)
       const AUTHENTIC_USERS = [
-        { username: '맞춤요정', nickname: '맞춤요정 (AI 봇 - 24시간 즉시대결)', avatar: '🌸' },
-        { username: '단민러브', nickname: '단민러브', avatar: '👑' },
-        { username: '미니미니', nickname: '미니미니', avatar: '🐱' },
-        { username: '민지', nickname: '민지', avatar: '⭐' }
+        { username: '맞춤요정', nickname: '맞춤요정 (AI 봇 - 24시간 즉시대결)', avatar: '🧚', grade: '공식 퀴즈요정' },
+        { username: '단민러브', nickname: '단민러브', avatar: '👑', grade: '우주최강' },
+        { username: '미니미니', nickname: '미니미니', avatar: '🐱', grade: '맞춤법 마스터' },
+        { username: '민지', nickname: '민지', avatar: '⭐', grade: '도전자' },
+        { username: 'Ljh', nickname: 'Ljh', avatar: '🎮', grade: '게임마스터' },
+        { username: '도비사랑녀', nickname: '도비사랑녀', avatar: '🎀', grade: '열혈학습자' },
+        { username: '미니미니채', nickname: '미니미니채', avatar: '🌸', grade: '퀴즈탐험가' }
       ];
 
-      const candidates = AUTHENTIC_USERS.filter(u => u.username !== myName);
+      const allCandidatesMap = new Map();
+      AUTHENTIC_USERS.forEach(u => allCandidatesMap.set(u.username, u));
+
+      if (Array.isArray(this.cachedBattleLobbyUsers)) {
+        this.cachedBattleLobbyUsers.forEach(u => {
+          const un = u.username || u.name;
+          if (un && !allCandidatesMap.has(un)) {
+            allCandidatesMap.set(un, {
+              username: un,
+              nickname: u.nickname || u.name || un,
+              avatar: u.avatar || '🌸',
+              grade: u.grade || '일반 도전자'
+            });
+          }
+        });
+      }
+
+      const candidates = Array.from(allCandidatesMap.values()).filter(u => u.username !== myName);
 
       memberGrid.innerHTML = candidates.map(user => {
         const isChecked = defaultMembers.includes(user.username);
@@ -9235,10 +9255,106 @@ class HaruMatchumApp {
           <label class="battle-friend-select-item">
             <input type="checkbox" name="battleFriend" value="${user.username}" ${isChecked ? 'checked' : ''}>
             <span class="friend-item-avatar">${user.avatar}</span>
-            <span class="friend-item-name">${user.nickname}</span>
+            <div class="friend-item-text" style="display:flex; flex-direction:column; overflow:hidden;">
+              <span class="friend-item-name">${user.nickname}</span>
+              <span class="friend-item-grade">${user.grade || ''}</span>
+            </div>
           </label>
         `;
       }).join('');
+
+      this.bindBattleCreateEvents();
+      this.updateBattleCreateSelectionUI();
+    }
+  }
+
+  // 3-1. 방 만들기 이벤트 바인딩
+  bindBattleCreateEvents() {
+    if (this._battleCreateEventsBound) return;
+    this._battleCreateEventsBound = true;
+
+    const matchTypeRadios = document.querySelectorAll('input[name="battleMatchType"]');
+    matchTypeRadios.forEach(radio => {
+      radio.addEventListener('change', () => this.updateBattleCreateSelectionUI());
+    });
+
+    const btnSelectAll = document.getElementById('btnBattleSelectAllFriends');
+    if (btnSelectAll) {
+      btnSelectAll.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('input[name="battleFriend"]');
+        checkboxes.forEach(cb => { cb.checked = true; });
+        this.updateBattleCreateSelectionUI();
+      });
+    }
+
+    const btnDeselect = document.getElementById('btnBattleDeselectFriends');
+    if (btnDeselect) {
+      btnDeselect.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('input[name="battleFriend"]');
+        checkboxes.forEach(cb => { cb.checked = false; });
+        this.updateBattleCreateSelectionUI();
+      });
+    }
+
+    const memberList = document.getElementById('battleInviteMemberList');
+    if (memberList) {
+      memberList.addEventListener('change', (e) => {
+        if (e.target && e.target.name === 'battleFriend') {
+          this.updateBattleCreateSelectionUI();
+        }
+      });
+    }
+  }
+
+  // 3-2. 매치 타입 및 선택 인원 실시간 UI 갱신 (2:2 팀전 미리보기 포함)
+  updateBattleCreateSelectionUI() {
+    const matchType = document.querySelector('input[name="battleMatchType"]:checked')?.value || '1v1';
+    const checkedFriends = Array.from(document.querySelectorAll('input[name="battleFriend"]:checked')).map(cb => cb.value);
+    const countNotice = document.getElementById('battleMemberSelectCountNotice');
+    const teamSetupWrap = document.getElementById('battleTeamSetupWrap');
+    const blueMembersEl = document.getElementById('battleTeamBlueMembers');
+    const redMembersEl = document.getElementById('battleTeamRedMembers');
+
+    let requiredCount = 1;
+    if (matchType === '1v1') {
+      requiredCount = 1;
+    } else if (matchType === '1v1v1') {
+      requiredCount = 2;
+    } else if (matchType === '1v1v1v1') {
+      requiredCount = 3;
+    } else if (matchType === '2v2') {
+      requiredCount = 3;
+    }
+
+    if (countNotice) {
+      const isExact = checkedFriends.length === requiredCount;
+      countNotice.className = `battle-member-count-badge ${isExact ? 'ok' : 'warn'}`;
+      countNotice.textContent = `${checkedFriends.length}/${requiredCount}명 선택됨 (${isExact ? '선택 완료!' : `${requiredCount}명 필요`})`;
+    }
+
+    if (teamSetupWrap) {
+      if (matchType === '2v2') {
+        teamSetupWrap.style.display = 'flex';
+        const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
+        const partner = checkedFriends[0] || '1번 친구 대기';
+        const opp1 = checkedFriends[1] || '2번 친구 대기';
+        const opp2 = checkedFriends[2] || '3번 친구 대기';
+
+        if (blueMembersEl) {
+          blueMembersEl.innerHTML = `
+            <div class="team-member-pill blue" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#dbeafe; color:#1d4ed8; font-weight:700;">👑 ${myName} (나)</div>
+            <div class="team-member-pill blue" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#dbeafe; color:#1d4ed8; font-weight:700;">${checkedFriends[0] ? `🤝 ${partner}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
+          `;
+        }
+        if (redMembersEl) {
+          redMembersEl.innerHTML = `
+            <div class="team-member-pill red" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#fee2e2; color:#b91c1c; font-weight:700;">${checkedFriends[1] ? `⚔️ ${opp1}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
+            <div class="team-member-pill red" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#fee2e2; color:#b91c1c; font-weight:700;">${checkedFriends[2] ? `⚔️ ${opp2}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
+          `;
+        }
+      } else {
+        teamSetupWrap.style.display = 'none';
+      }
     }
   }
 
@@ -9270,11 +9386,23 @@ class HaruMatchumApp {
     const inputTitle = document.getElementById('inputBattleTitle');
     const title = inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : `${myName}님의 퀴즈대결!`;
 
+    const matchTypeRadio = document.querySelector('input[name="battleMatchType"]:checked');
+    const matchType = matchTypeRadio ? matchTypeRadio.value : '1v1';
+
     const checkboxes = document.querySelectorAll('input[name="battleFriend"]:checked');
     const invitedUsernames = Array.from(checkboxes).map(cb => cb.value);
 
-    if (invitedUsernames.length === 0) {
-      this.showToastNotice('대결할 친구를 1명 이상 선택해주세요!');
+    if (matchType === '1v1' && invitedUsernames.length !== 1) {
+      this.showToastNotice('1:1 대결은 함께할 상대방 1명을 선택해주세요!');
+      return;
+    } else if (matchType === '1v1v1' && invitedUsernames.length !== 2) {
+      this.showToastNotice('1:1:1 3인 대결은 상대방 2명을 선택해주세요!');
+      return;
+    } else if (matchType === '1v1v1v1' && invitedUsernames.length !== 3) {
+      this.showToastNotice('1:1:1:1 4인 대결은 상대방 3명을 선택해주세요!');
+      return;
+    } else if (matchType === '2v2' && invitedUsernames.length !== 3) {
+      this.showToastNotice('2:2 팀전은 친구 3명을 선택해주세요! (방장+1번친구 vs 2번+3번친구)');
       return;
     }
 
@@ -9304,6 +9432,7 @@ class HaruMatchumApp {
           subject,
           level,
           allowItems,
+          matchType,
           token: this.token
         })
       });
@@ -9685,7 +9814,28 @@ class HaruMatchumApp {
     const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
     const qCount = room.questionCount || (room.settings && room.settings.questionCount) || (room.questions && room.questions.length) || 5;
 
-    rivalsBar.innerHTML = room.members.map(member => {
+    let teamBannerHtml = '';
+    if (room.matchType === '2v2' && room.teams) {
+      const teamA = room.teams.A || [];
+      const teamB = room.teams.B || [];
+      const scoreA = teamA.reduce((sum, u) => sum + ((room.progress && room.progress[u]) ? (room.progress[u].score || 0) : 0), 0);
+      const scoreB = teamB.reduce((sum, u) => sum + ((room.progress && room.progress[u]) ? (room.progress[u].score || 0) : 0), 0);
+      teamBannerHtml = `
+        <div class="battle-team-score-banner" style="grid-column: 1 / -1; width: 100%;">
+          <div class="team-banner-side blue">
+            <span class="team-banner-badge blue">🔵 블루팀</span>
+            <span class="team-banner-score">${scoreA}P</span>
+          </div>
+          <div class="team-banner-vs">VS</div>
+          <div class="team-banner-side red">
+            <span class="team-banner-score">${scoreB}P</span>
+            <span class="team-banner-badge red">🔴 레드팀</span>
+          </div>
+        </div>
+      `;
+    }
+
+    const cardsHtml = room.members.map(member => {
       const mName = typeof member === 'object' && member ? (member.nickname || member.name || member.username) : member;
       const mAvatar = (mName === '맞춤요정') ? '🧚' : (typeof member === 'object' && member ? (member.avatar || '🌸') : '🌸');
       const prog = (room.progress && room.progress[mName]) || {};
@@ -9709,11 +9859,20 @@ class HaruMatchumApp {
 
       const mCombo = (prog.combo !== undefined) ? prog.combo : ((typeof member === 'object' && member) ? member.combo : 0);
 
+      let teamBadgeHtml = '';
+      if (room.matchType === '2v2' && room.teams) {
+        if ((room.teams.A || []).includes(mName)) {
+          teamBadgeHtml = '<span class="rival-team-badge blue">🔵 블루</span>';
+        } else if ((room.teams.B || []).includes(mName)) {
+          teamBadgeHtml = '<span class="rival-team-badge red">🔴 레드</span>';
+        }
+      }
+
       return `
         <div class="battle-rival-card ${isMe ? 'is-me' : ''}">
           <div class="rival-card-header">
             <span class="rival-avatar">${mAvatar}</span>
-            <span class="rival-name">${mName} ${isMe ? '(나)' : ''}</span>
+            <span class="rival-name">${mName} ${teamBadgeHtml} ${isMe ? '(나)' : ''}</span>
             <span class="rival-score">${mScore}P</span>
             ${effectBadges ? `<span class="rival-effects">${effectBadges}</span>` : ''}
           </div>
@@ -9727,6 +9886,8 @@ class HaruMatchumApp {
         </div>
       `;
     }).join('');
+
+    rivalsBar.innerHTML = teamBannerHtml + cardsHtml;
   }
 
   // 12. 배틀 아이템 도크 렌더링
@@ -9792,10 +9953,21 @@ class HaruMatchumApp {
       return;
     }
 
-    const rivals = (this.currentBattleRoom.members || []).filter(m => {
-      const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
-      return mName !== myUsername;
-    });
+    let rivals = [];
+    if (this.currentBattleRoom.matchType === '2v2' && this.currentBattleRoom.teams) {
+      const myTeam = (this.currentBattleRoom.teams.A || []).includes(myUsername) ? 'A' : 'B';
+      const oppTeamKey = (myTeam === 'A') ? 'B' : 'A';
+      const oppMembers = this.currentBattleRoom.teams[oppTeamKey] || [];
+      rivals = (this.currentBattleRoom.members || []).filter(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        return oppMembers.includes(mName);
+      });
+    } else {
+      rivals = (this.currentBattleRoom.members || []).filter(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        return mName !== myUsername;
+      });
+    }
 
     if (rivals.length === 0) {
       this.showToastNotice('공격할 상대방이 없습니다.');
@@ -9819,20 +9991,39 @@ class HaruMatchumApp {
     if (!list || !this.currentBattleRoom) return;
 
     const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
-    const rivals = (this.currentBattleRoom.members || []).filter(m => {
-      const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
-      return mName !== myUsername;
-    });
+    
+    let rivals = [];
+    if (this.currentBattleRoom.matchType === '2v2' && this.currentBattleRoom.teams) {
+      const myTeam = (this.currentBattleRoom.teams.A || []).includes(myUsername) ? 'A' : 'B';
+      const oppTeamKey = (myTeam === 'A') ? 'B' : 'A';
+      const oppMembers = this.currentBattleRoom.teams[oppTeamKey] || [];
+      rivals = (this.currentBattleRoom.members || []).filter(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        return oppMembers.includes(mName);
+      });
+    } else {
+      rivals = (this.currentBattleRoom.members || []).filter(m => {
+        const mName = typeof m === 'object' && m ? (m.username || m.name) : m;
+        return mName !== myUsername;
+      });
+    }
 
     list.innerHTML = rivals.map(rival => {
       const rName = typeof rival === 'object' && rival ? (rival.nickname || rival.name || rival.username) : rival;
       const rAvatar = typeof rival === 'object' && rival ? (rival.avatar || '🌸') : '🌸';
       const rScore = typeof rival === 'object' && rival ? (rival.score || 0) : ((this.currentBattleRoom.progress && this.currentBattleRoom.progress[rName]) ? this.currentBattleRoom.progress[rName].score : 0);
+      
+      let teamBadge = '';
+      if (this.currentBattleRoom.matchType === '2v2' && this.currentBattleRoom.teams) {
+        const isTeamA = (this.currentBattleRoom.teams.A || []).includes(rName);
+        teamBadge = isTeamA ? '<span class="rival-team-badge blue">🔵 블루팀</span>' : '<span class="rival-team-badge red">🔴 레드팀</span>';
+      }
+
       return `
         <div class="battle-target-item" onclick="window.app.submitUseBattleItem('${itemKey}', '${rName}')">
           <span class="target-item-avatar">${rAvatar}</span>
           <div class="target-item-info">
-            <span class="target-item-nick">${rName}</span>
+            <span class="target-item-nick">${rName} ${teamBadge}</span>
             <span class="target-item-sub">현재 ${rScore}P</span>
           </div>
           <button type="button" class="btn-target-fire">발사! 🚀</button>
@@ -9970,12 +10161,100 @@ class HaruMatchumApp {
     });
 
     const sortedMembers = memberList.sort((a, b) => (b.score || 0) - (a.score || 0));
-    const myRank = sortedMembers.findIndex(m => m.username === myUsername) + 1;
-    const isWinner = myRank === 1;
-
     const trophy = document.getElementById('battleResultTrophy');
     const headline = document.getElementById('battleResultHeadline');
     const rpBadge = document.getElementById('battleResultRpBadge');
+    const rankListContainer = document.getElementById('battleResultRankings');
+
+    // 2:2 팀전 특별 결과 판정
+    if (room.matchType === '2v2' && room.teams) {
+      const teamA = room.teams.A || [];
+      const teamB = room.teams.B || [];
+      const scoreA = teamA.reduce((sum, u) => sum + ((room.progress && room.progress[u]) ? (room.progress[u].score || 0) : 0), 0);
+      const scoreB = teamB.reduce((sum, u) => sum + ((room.progress && room.progress[u]) ? (room.progress[u].score || 0) : 0), 0);
+
+      const myTeam = teamA.includes(myUsername) ? 'A' : 'B';
+      const myTeamName = myTeam === 'A' ? '블루팀' : '레드팀';
+      const myScore = myTeam === 'A' ? scoreA : scoreB;
+      const oppScore = myTeam === 'A' ? scoreB : scoreA;
+
+      const isWin = myScore > oppScore;
+      const isDraw = myScore === oppScore;
+
+      if (isWin) {
+        if (trophy) trophy.textContent = '🏆';
+        if (headline) {
+          headline.textContent = `🎉 ${myTeamName} 승리! (${scoreA}P vs ${scoreB}P)`;
+          headline.style.color = myTeam === 'A' ? '#2563eb' : '#dc2626';
+        }
+        if (rpBadge) {
+          rpBadge.textContent = '+30 RP 팀전 승리 보너스 획득!';
+          rpBadge.className = 'podium-rp-badge win';
+        }
+        if (window.sfx && typeof window.sfx.levelup === 'function') {
+          try { window.sfx.levelup(); } catch (e) {}
+        }
+      } else if (isDraw) {
+        if (trophy) trophy.textContent = '🤝';
+        if (headline) {
+          headline.textContent = `🤝 무승부! (${scoreA}P vs ${scoreB}P)`;
+          headline.style.color = '#64748b';
+        }
+        if (rpBadge) {
+          rpBadge.textContent = '+10 RP 무승부 포인트!';
+          rpBadge.className = 'podium-rp-badge draw';
+        }
+      } else {
+        if (trophy) trophy.textContent = '🥈';
+        if (headline) {
+          headline.textContent = `아쉬운 패배! (${scoreA}P vs ${scoreB}P)`;
+          headline.style.color = '#64748b';
+        }
+        if (rpBadge) {
+          rpBadge.textContent = '-15 RP (다음엔 이길 수 있어요!)';
+          rpBadge.className = 'podium-rp-badge lose';
+        }
+      }
+
+      if (rankListContainer) {
+        rankListContainer.innerHTML = `
+          <div class="battle-team-score-banner" style="margin-bottom:12px;">
+            <div class="team-banner-side blue">
+              <span class="team-banner-badge blue">🔵 블루팀</span>
+              <span class="team-banner-score">${scoreA}P</span>
+            </div>
+            <div class="team-banner-vs">VS</div>
+            <div class="team-banner-side red">
+              <span class="team-banner-score">${scoreB}P</span>
+              <span class="team-banner-badge red">🔴 레드팀</span>
+            </div>
+          </div>
+        ` + sortedMembers.map((member, idx) => {
+          const isMe = member.username === myUsername;
+          const memberTeam = teamA.includes(member.username) ? 'A' : 'B';
+          const teamBadge = memberTeam === 'A' 
+            ? '<span class="rival-team-badge blue">🔵 블루</span>' 
+            : '<span class="rival-team-badge red">🔴 레드</span>';
+          const memberRp = (memberTeam === 'A' ? (scoreA > scoreB ? '+30 RP' : (scoreA === scoreB ? '+10 RP' : '-15 RP')) : (scoreB > scoreA ? '+30 RP' : (scoreA === scoreB ? '+10 RP' : '-15 RP')));
+          return `
+            <div class="battle-podium-rank-item ${isMe ? 'is-me' : ''}">
+              <span class="podium-rank-medal">${idx + 1}위</span>
+              <span class="podium-rank-avatar">${member.avatar || '🌸'}</span>
+              <div class="podium-rank-details">
+                <span class="podium-rank-name">${member.nickname} ${teamBadge} ${isMe ? '(나)' : ''}</span>
+                <span class="podium-rank-score">${member.score || 0}점</span>
+              </div>
+              <span class="podium-rank-rp">${memberRp}</span>
+            </div>
+          `;
+        }).join('');
+      }
+      return;
+    }
+
+    // 1:1 및 개인전 결과 판정
+    const myRank = sortedMembers.findIndex(m => m.username === myUsername) + 1;
+    const isWinner = myRank === 1;
 
     if (isWinner) {
       if (trophy) trophy.textContent = '👑';
@@ -10002,7 +10281,6 @@ class HaruMatchumApp {
       }
     }
 
-    const rankListContainer = document.getElementById('battleResultRankings');
     if (rankListContainer) {
       const medals = ['🥇', '🥈', '🥉', '4위'];
       rankListContainer.innerHTML = sortedMembers.map((member, idx) => {
@@ -10115,7 +10393,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.6.2');
+        url.searchParams.set('_v', this.APP_VERSION || '3.6.3');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

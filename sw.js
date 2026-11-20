@@ -3,7 +3,7 @@
  * Handles App Lifecycle, Background Push Notifications, Vibration & Realtime Message Routing
  */
 
-const CACHE_NAME = 'haru-pwa-v3.6.2';
+const CACHE_NAME = 'haru-pwa-v3.6.3';
 
 // 1. Service Worker Installation
 self.addEventListener('install', (event) => {
