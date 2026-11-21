@@ -327,6 +327,20 @@ const BATTLE_ITEMS = {
     icon: "🌈",
     type: "buff",
     desc: "오답을 선택해도 1회 무조건 정답으로 인정해줍니다!"
+  },
+  battle_double: {
+    id: "battle_double",
+    name: "더블 포인트",
+    icon: "💎",
+    type: "buff",
+    desc: "다음 문제 정답 시 획득 점수가 2배로 증가합니다!"
+  },
+  battle_hint: {
+    id: "battle_hint",
+    name: "힌트 요정",
+    icon: "💡",
+    type: "buff",
+    desc: "다음 문제에서 오답 1개를 즉시 지워줍니다!"
   }
 };
 
@@ -509,137 +523,226 @@ function finalizeBattleRoom(room, db) {
   }
 }
 
-// ⚔️ v3.6.2 AI 맞춤요정 자율 배틀 시뮬레이터 (Autonomous AI Mascot Battle Bot Engine)
+// ⚔️ v3.7.0 AI 맞춤요정 자율 배틀 시뮬레이터 (동기화 대기실, 카운트다운, 라운드 풀이, 아이템 선택 지원)
 function processAiMascotBot(room, db) {
-  if (!room || room.status !== 'in_progress') return false;
+  if (!room || room.status === 'completed') return false;
   if (!room.members || !room.members.includes('맞춤요정')) return false;
 
   const botProg = room.progress && room.progress['맞춤요정'];
-  if (!botProg || botProg.completed) return false;
+  if (!botProg) return false;
 
   const totalQuestions = room.questionCount || (room.settings && room.settings.questionCount) || (room.questions && room.questions.length) || 5;
   const now = Date.now();
-
-  if (!botProg.lastActionTime) {
-    botProg.lastActionTime = new Date(room.createdAt).getTime();
-  }
-
-  const elapsed = now - botProg.lastActionTime;
-  // Bot answers every 2.4 ~ 3.5 seconds
-  const thinkDelay = 2600;
-
-  if (elapsed < thinkDelay) {
-    return false;
-  }
-
   let changed = false;
-  const currentIdx = botProg.currentIndex || 0;
 
-  if (currentIdx < totalQuestions && room.questions && room.questions[currentIdx]) {
-    const q = room.questions[currentIdx];
-    
-    // 85% probability of choosing correct answer
-    const isCorrect = Math.random() < 0.85;
-    let selectedOptionIndex = q.answerIndex;
-    if (!isCorrect) {
-      const wrongIndices = [0, 1, 2, 3].filter(i => i !== q.answerIndex && i < (q.options ? q.options.length : 4));
-      selectedOptionIndex = wrongIndices.length > 0 ? wrongIndices[Math.floor(Math.random() * wrongIndices.length)] : ((q.answerIndex + 1) % 4);
+  // 1) 대기실 상태: AI 맞춤요정은 항상 준비 완료 상태 유지
+  if (room.status === 'waiting') {
+    room.readyStatus = room.readyStatus || {};
+    if (!room.readyStatus['맞춤요정']) {
+      room.readyStatus['맞춤요정'] = true;
+      changed = true;
     }
-
-    let points = 0;
-    if (isCorrect) {
-      points = 20;
-      botProg.combo = (botProg.combo || 0) + 1;
-      if (botProg.combo >= 5) points += 10;
-      else if (botProg.combo >= 4) points += 6;
-      else if (botProg.combo >= 3) points += 4;
-      else if (botProg.combo >= 2) points += 2;
-      points += 5; // speed bonus
-    } else {
-      botProg.combo = 0;
+    // 다른 참가자들도 모두 준비 완료되었는지 검사
+    const allReady = room.members.every(m => room.readyStatus[m]);
+    if (allReady && room.members.length >= 2) {
+      room.status = 'countdown';
+      room.countdownStartTime = now;
+      room.currentQuestionIndex = 0;
+      room.roundPhase = 'answering';
+      room.phaseStartTime = now + 3200;
+      room.readyStatus = {};
+      changed = true;
     }
+    return changed;
+  }
 
-    // Bomb penalty check
-    const bombIdx = (botProg.activeEffects || []).findIndex(e => e.type === 'bomb');
-    if (bombIdx >= 0) {
-      if (!isCorrect) {
-        points = Math.max(-botProg.score, -30);
-      }
-      botProg.activeEffects.splice(bombIdx, 1);
+  // 2) 카운트다운 상태: 3.2초 후 실제 문제 풀이 페이즈로 자동 전환
+  if (room.status === 'countdown') {
+    if (now - (room.countdownStartTime || now) >= 3200) {
+      room.status = 'in_progress';
+      room.roundPhase = 'answering';
+      room.phaseStartTime = now;
+      changed = true;
     }
+    return changed;
+  }
 
-    botProg.score = Math.max(0, (botProg.score || 0) + points);
-    botProg.currentIndex = currentIdx + 1;
-    botProg.totalTime = (botProg.totalTime || 0) + (thinkDelay / 1000);
-    botProg.lastActionTime = now;
-    if (!botProg.answers) botProg.answers = [];
-    botProg.answers.push({
-      qIndex: currentIdx,
-      isCorrect,
-      selectedOptionIndex,
-      points,
-      timeSpent: thinkDelay / 1000
-    });
+  // 3) 문제 풀이 페이즈: AI는 2.2초 ~ 3.2초 고민 후 답안 제출
+  if (room.status === 'in_progress' && (room.roundPhase === 'answering' || !room.roundPhase)) {
+    const curIdx = room.currentQuestionIndex || 0;
+    room.roundSubmissions = room.roundSubmissions || {};
+    room.roundSubmissions[curIdx] = room.roundSubmissions[curIdx] || {};
 
-    // 25% chance to use battle items if allowed
-    const allowItems = (room.allowItems !== undefined ? room.allowItems : (room.settings ? room.settings.allowItems : true));
-    if (allowItems && botProg.inventory && Math.random() < 0.28) {
-      const availableItems = Object.keys(botProg.inventory).filter(k => botProg.inventory[k] > 0);
-      if (availableItems.length > 0) {
-        const itemToUse = availableItems[Math.floor(Math.random() * availableItems.length)];
-        botProg.inventory[itemToUse]--;
-
-        let target = null;
-        if (room.matchType === '2v2' && room.teams) {
-          const aiTeam = (room.teams.A && room.teams.A.includes('맞춤요정')) ? 'A' : 'B';
-          const opposingTeam = aiTeam === 'A' ? 'B' : 'A';
-          const opponents = room.teams[opposingTeam] || [];
-          target = opponents[Math.floor(Math.random() * opponents.length)] || null;
-        } else {
-          const rivals = room.members.filter(m => m !== '맞춤요정');
-          target = rivals.length > 0 ? rivals[Math.floor(Math.random() * rivals.length)] : null;
+    if (!room.roundSubmissions[curIdx]['맞춤요정'] && curIdx < totalQuestions && room.questions && room.questions[curIdx]) {
+      const elapsed = Math.max(now - (room.phaseStartTime || now), botProg.lastActionTime ? (now - botProg.lastActionTime) : 0);
+      if (elapsed >= 2200) {
+        const q = room.questions[curIdx];
+        const isCorrect = Math.random() < 0.85;
+        let selectedOptionIndex = q.answerIndex;
+        if (!isCorrect) {
+          const wrongIndices = [0, 1, 2, 3].filter(i => i !== q.answerIndex && i < (q.options ? q.options.length : 4));
+          selectedOptionIndex = wrongIndices.length > 0 ? wrongIndices[Math.floor(Math.random() * wrongIndices.length)] : ((q.answerIndex + 1) % 4);
         }
 
-        if (target && room.progress[target]) {
-          const targetProg = room.progress[target];
-          if (targetProg.hasReflect) {
-            targetProg.hasReflect = false;
-            botProg.activeEffects = botProg.activeEffects || [];
-            botProg.activeEffects.push({
-              id: 'eff_' + Date.now(),
-              type: itemToUse.replace('battle_', ''),
-              from: target,
-              expireAt: now + 5000
-            });
-            if (!room.itemLog) room.itemLog = [];
-            room.itemLog.push(`[${target}]님이 거울방패로 [맞춤요정]의 공격을 역반사했습니다!`);
+        const thinkSec = Math.min(6, Math.max(1.8, +(elapsed / 1000).toFixed(1)));
+        let points = 0;
+        if (isCorrect) {
+          points = 20;
+          botProg.combo = (botProg.combo || 0) + 1;
+          if (botProg.combo >= 5) points += 10;
+          else if (botProg.combo >= 4) points += 6;
+          else if (botProg.combo >= 3) points += 4;
+          else if (botProg.combo >= 2) points += 2;
+          if (thinkSec <= 3) points += 5; // 속도 보너스
+        } else {
+          botProg.combo = 0;
+        }
+
+        botProg.score = Math.max(0, (botProg.score || 0) + points);
+        botProg.currentIndex = curIdx + 1;
+        botProg.totalTime = (botProg.totalTime || 0) + thinkSec;
+        botProg.answers = botProg.answers || [];
+        botProg.answers.push({
+          qIndex: curIdx,
+          isCorrect,
+          selectedOptionIndex,
+          points,
+          timeSpent: thinkSec
+        });
+
+        room.roundSubmissions[curIdx]['맞춤요정'] = {
+          selectedIndex: selectedOptionIndex,
+          isCorrect,
+          timeSpent: thinkSec,
+          points,
+          submittedAt: now
+        };
+
+        // 전원 제출 완료 여부 검사
+        const allSubmitted = room.members.every(m => room.roundSubmissions[curIdx] && room.roundSubmissions[curIdx][m]);
+        if (allSubmitted) {
+          room.roundPhase = 'round_result';
+          room.roundResultTime = now;
+          room.readyStatus = {};
+
+          // 스피드 킹 보너스 (+5P)
+          const roundSubs = room.roundSubmissions[curIdx];
+          let fastestUser = null;
+          let minTime = 999;
+          Object.entries(roundSubs).forEach(([mName, s]) => {
+            if (s.isCorrect && s.timeSpent < minTime) {
+              minTime = s.timeSpent;
+              fastestUser = mName;
+            }
+          });
+          if (fastestUser && Object.keys(roundSubs).length > 1) {
+            roundSubs[fastestUser].points += 5;
+            roundSubs[fastestUser].speedBonus = true;
+            if (room.progress[fastestUser]) {
+              room.progress[fastestUser].score += 5;
+            }
+          }
+
+          room.roundResults = room.roundResults || {};
+          room.roundResults[curIdx] = {
+            qIndex: curIdx,
+            question: q,
+            submissions: roundSubs,
+            fastestUser,
+            completedAt: now
+          };
+
+          if (curIdx >= totalQuestions - 1) {
+            room.status = 'completed';
+            finalizeBattleRoom(room, db);
+          }
+        }
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  // 4) 1문제 결과 및 아이템 선택 페이즈: 1.5초 후 아이템 전략 예약 및 다음 문제 준비 완료
+  if (room.status === 'in_progress' && (room.roundPhase === 'round_result' || room.roundPhase === 'item_select')) {
+    const elapsedSinceResult = now - (room.roundResultTime || now);
+    if (elapsedSinceResult >= 1500) {
+      // 28% 확률로 다음 라운드 아이템 예약
+      const allowItems = (room.allowItems !== undefined ? room.allowItems : (room.settings ? room.settings.allowItems : true));
+      if (allowItems && botProg.inventory && !botProg.itemUsedThisRound && Math.random() < 0.28) {
+        const availableItems = Object.keys(botProg.inventory).filter(k => botProg.inventory[k] > 0);
+        if (availableItems.length > 0) {
+          const itemToUse = availableItems[Math.floor(Math.random() * availableItems.length)];
+          botProg.inventory[itemToUse]--;
+          botProg.itemUsedThisRound = true;
+
+          let target = null;
+          if (room.matchType === '2v2' && room.teams) {
+            const aiTeam = (room.teams.A && room.teams.A.includes('맞춤요정')) ? 'A' : 'B';
+            const opposingTeam = aiTeam === 'A' ? 'B' : 'A';
+            const opponents = room.teams[opposingTeam] || [];
+            target = opponents[Math.floor(Math.random() * opponents.length)] || null;
           } else {
-            targetProg.activeEffects = targetProg.activeEffects || [];
-            targetProg.activeEffects.push({
-              id: 'eff_' + Date.now(),
-              type: itemToUse.replace('battle_', ''),
-              from: '맞춤요정',
-              expireAt: now + 5000
+            const rivals = room.members.filter(m => m !== '맞춤요정');
+            target = rivals.length > 0 ? rivals[Math.floor(Math.random() * rivals.length)] : null;
+          }
+
+          if (target) {
+            room.nextRoundEffects = room.nextRoundEffects || {};
+            room.nextRoundEffects[target] = room.nextRoundEffects[target] || [];
+            room.nextRoundEffects[target].push({
+              itemKey: itemToUse,
+              name: BATTLE_ITEMS[itemToUse] ? BATTLE_ITEMS[itemToUse].name : itemToUse,
+              from: '맞춤요정'
             });
-            if (!room.itemLog) room.itemLog = [];
-            room.itemLog.push(`[맞춤요정]님이 [${target}]님에게 ${itemToUse}을(를) 발사했습니다!`);
           }
         }
       }
-    }
 
-    if (botProg.currentIndex >= totalQuestions) {
-      botProg.completed = true;
-      botProg.completedAt = new Date().toISOString();
-    }
-    changed = true;
-  }
+      // AI 준비 완료 토글
+      room.readyStatus = room.readyStatus || {};
+      room.readyStatus['맞춤요정'] = true;
 
-  // Check if ALL members completed
-  const allCompleted = room.members.every(m => room.progress[m] && room.progress[m].completed);
-  if (allCompleted && room.status !== 'completed') {
-    finalizeBattleRoom(room, db);
-    changed = true;
+      // 전원 준비 완료 시 다음 라운드 카운트다운 시작
+      const allReady = room.members.every(m => room.readyStatus[m]);
+      if (allReady) {
+        const curIdx = room.currentQuestionIndex || 0;
+        if (curIdx + 1 < totalQuestions) {
+          room.currentQuestionIndex = curIdx + 1;
+          room.status = 'countdown';
+          room.countdownStartTime = now;
+          room.roundPhase = 'answering';
+          room.phaseStartTime = now + 3200;
+          room.readyStatus = {};
+          if (botProg) botProg.itemUsedThisRound = false;
+
+          // 예약된 아이템 효과 적용
+          if (room.nextRoundEffects) {
+            Object.entries(room.nextRoundEffects).forEach(([target, effects]) => {
+              if (room.progress[target]) {
+                room.progress[target].activeEffects = room.progress[target].activeEffects || [];
+                effects.forEach(eff => {
+                  const itemDef = BATTLE_ITEMS[eff.itemKey];
+                  room.progress[target].activeEffects.push({
+                    type: eff.itemKey.replace('battle_', ''),
+                    name: eff.name,
+                    icon: itemDef ? itemDef.icon : '✨',
+                    expireAt: now + 3200 + (itemDef && itemDef.duration ? itemDef.duration : 4000),
+                    from: eff.from
+                  });
+                });
+              }
+            });
+            room.nextRoundEffects = {};
+          }
+        } else {
+          room.status = 'completed';
+          finalizeBattleRoom(room, db);
+        }
+      }
+      changed = true;
+    }
+    return changed;
   }
 
   return changed;
@@ -2503,7 +2606,9 @@ const server = http.createServer(async (req, res) => {
         battle_peek: 1,
         battle_sight: 1,
         battle_bomb: 1,
-        battle_rainbow: 1
+        battle_rainbow: 1,
+        battle_double: 1,
+        battle_hint: 1
       } : {};
 
       const progress = {};
@@ -2545,6 +2650,11 @@ const server = http.createServer(async (req, res) => {
       }
 
       const roomId = "battle_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7);
+      const readyStatus = { [username]: false };
+      if (members.includes("맞춤요정")) {
+        readyStatus["맞춤요정"] = true;
+      }
+
       const newRoom = {
         id: roomId,
         roomId,
@@ -2554,7 +2664,16 @@ const server = http.createServer(async (req, res) => {
         members,
         matchType,
         teams,
-        status: "in_progress",
+        status: "waiting",
+        roundPhase: "waiting",
+        currentQuestionIndex: 0,
+        readyStatus,
+        roundSubmissions: {},
+        roundResults: {},
+        nextRoundEffects: {},
+        countdownStartTime: null,
+        phaseStartTime: Date.now(),
+        roundResultTime: null,
         questionCount,
         subject,
         level,
@@ -2759,7 +2878,7 @@ const server = http.createServer(async (req, res) => {
           const defaultInventory = (room.allowItems !== false && (room.settings ? room.settings.allowItems !== false : true)) ? {
             battle_ink: 1, battle_wind: 1, battle_freeze: 1, battle_reflect: 1,
             battle_steal: 1, battle_lightning: 1, battle_peek: 1, battle_sight: 1,
-            battle_bomb: 1, battle_rainbow: 1
+            battle_bomb: 1, battle_rainbow: 1, battle_double: 1, battle_hint: 1
           } : {};
           room.progress[username] = {
             joined: true,
@@ -2780,11 +2899,80 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      // 1) Countdown transition check
+      const now = Date.now();
+      let stateChanged = false;
+      if (room.status === 'countdown') {
+        const cdStart = room.countdownStartTime || now;
+        if (now - cdStart >= 3200) {
+          room.status = 'in_progress';
+          room.roundPhase = 'answering';
+          room.phaseStartTime = now;
+          // Apply nextRoundEffects
+          if (room.nextRoundEffects) {
+            Object.entries(room.nextRoundEffects).forEach(([target, effects]) => {
+              if (room.progress[target]) {
+                room.progress[target].activeEffects = room.progress[target].activeEffects || [];
+                effects.forEach(eff => {
+                  const itemDef = BATTLE_ITEMS[eff.itemKey];
+                  room.progress[target].activeEffects.push({
+                    type: eff.itemKey.replace("battle_", ""),
+                    name: eff.name,
+                    icon: itemDef ? itemDef.icon : "✨",
+                    expireAt: now + (itemDef && itemDef.duration ? itemDef.duration : 4000),
+                    from: eff.from
+                  });
+                });
+              }
+            });
+            room.nextRoundEffects = {};
+          }
+          stateChanged = true;
+        }
+      }
+
+      // 2) Answering phase 16s timeout check
+      if (room.status === 'in_progress' && (room.roundPhase === 'answering' || !room.roundPhase)) {
+        const pStart = room.phaseStartTime || now;
+        if (now - pStart >= 16000) {
+          const curIdx = room.currentQuestionIndex || 0;
+          const totalQ = room.settings.questionCount || 5;
+          room.roundSubmissions = room.roundSubmissions || {};
+          room.roundSubmissions[curIdx] = room.roundSubmissions[curIdx] || {};
+          room.members.forEach(m => {
+            if (!room.roundSubmissions[curIdx][m]) {
+              room.roundSubmissions[curIdx][m] = {
+                selectedIndex: -1,
+                isCorrect: false,
+                timeSpent: 15,
+                points: 0,
+                submittedAt: now,
+                timeout: true
+              };
+              if (room.progress[m]) {
+                room.progress[m].combo = 0;
+                room.progress[m].currentIndex = curIdx + 1;
+                room.progress[m].answers = room.progress[m].answers || [];
+                room.progress[m].answers.push({ qIndex: curIdx, isCorrect: false, selectedIndex: -1, points: 0, timeSpent: 15 });
+              }
+            }
+          });
+
+          room.roundPhase = "round_result";
+          room.roundResultTime = now;
+          room.readyStatus = {};
+          if (curIdx >= totalQ - 1) {
+            room.status = "completed";
+            finalizeBattleRoom(room, db);
+          }
+          stateChanged = true;
+        }
+      }
+
       // AI 맞춤요정이 포함되어 있다면 봇 스텝 시뮬레이션
       const aiChanged = processAiMascotBot(room, db);
 
       // 만료된 활성 효과(activeEffects) 정리
-      const now = Date.now();
       let effectsChanged = false;
       if (room.progress) {
         Object.keys(room.progress).forEach(m => {
@@ -2797,7 +2985,7 @@ const server = http.createServer(async (req, res) => {
         });
       }
 
-      if (joinedJustNow || aiChanged || effectsChanged) {
+      if (joinedJustNow || aiChanged || effectsChanged || stateChanged) {
         saveBattleRooms(rooms);
       }
 
@@ -2944,6 +3132,58 @@ const server = http.createServer(async (req, res) => {
         userProg.completedAt = new Date().toISOString();
       }
 
+      // 라운드 동기화 제출 기록
+      room.roundSubmissions = room.roundSubmissions || {};
+      room.roundSubmissions[questionIndex] = room.roundSubmissions[questionIndex] || {};
+      room.roundSubmissions[questionIndex][username] = {
+        selectedIndex: actualSelectedIndex,
+        isCorrect,
+        timeSpent: Number(timeSpent || 0),
+        points,
+        submittedAt: Date.now()
+      };
+
+      // 해당 문제 전원 제출 확인 및 라운드 결과 비교 생성
+      const allSubmittedForThisQ = room.members.every(m => room.roundSubmissions[questionIndex] && room.roundSubmissions[questionIndex][m]);
+      if (allSubmittedForThisQ) {
+        room.roundPhase = "round_result";
+        room.roundResultTime = Date.now();
+        room.readyStatus = {}; // 다음 라운드를 위한 준비 상태 초기화
+
+        // 스피드 킹 보너스 (+5P)
+        const roundSubs = room.roundSubmissions[questionIndex];
+        let fastestUser = null;
+        let minTime = 999;
+        Object.entries(roundSubs).forEach(([mName, s]) => {
+          if (s.isCorrect && s.timeSpent < minTime) {
+            minTime = s.timeSpent;
+            fastestUser = mName;
+          }
+        });
+        if (fastestUser && Object.keys(roundSubs).length > 1) {
+          roundSubs[fastestUser].points += 5;
+          roundSubs[fastestUser].speedBonus = true;
+          if (room.progress[fastestUser]) {
+            room.progress[fastestUser].score += 5;
+          }
+        }
+
+        room.roundResults = room.roundResults || {};
+        room.roundResults[questionIndex] = {
+          qIndex: questionIndex,
+          question: q,
+          submissions: roundSubs,
+          fastestUser,
+          completedAt: Date.now()
+        };
+
+        // 마지막 문제였다면 경기 완료
+        if (questionIndex >= room.settings.questionCount - 1) {
+          room.status = "completed";
+          finalizeBattleRoom(room, db);
+        }
+      }
+
       // 5) 전원 완료 시 승패 판정 및 배틀 랭킹(RP / stats) 집계 (1:1, 1:1:1, 1:1:1:1, 2:2 팀전)
       const allFinished = room.members.every(m => room.progress[m] && room.progress[m].completed);
       if (allFinished && room.status !== "completed") {
@@ -2961,6 +3201,9 @@ const server = http.createServer(async (req, res) => {
         myScore: userProg.score,
         stealNotice,
         allFinished,
+        allSubmitted: allSubmittedForThisQ,
+        roundPhase: room.roundPhase,
+        currentQuestionIndex: room.currentQuestionIndex,
         room
       });
     } catch (e) {
@@ -3116,6 +3359,191 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (e) {
       console.error("Battle Item Use Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-G. 퀴즈대결 준비 완료/시작 토글 (POST /api/battle/ready)
+  if (req.method === "POST" && pathname === "/api/battle/ready") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId } = body;
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      if (!room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "대결 참가자가 아닙니다." });
+      }
+
+      room.readyStatus = room.readyStatus || {};
+      const currentReady = !!room.readyStatus[username];
+      room.readyStatus[username] = !currentReady;
+
+      // AI mascot auto-ready
+      if (room.members.includes("맞춤요정")) {
+        room.readyStatus["맞춤요정"] = true;
+      }
+
+      const now = Date.now();
+      const allReady = room.members.every(m => room.readyStatus[m]);
+
+      // 1) 대기실 상태에서 전원 준비 완료 시 -> 3,2,1 카운트다운 시작
+      if (room.status === "waiting" && allReady && room.members.length >= 2) {
+        room.status = "countdown";
+        room.countdownStartTime = now;
+        room.currentQuestionIndex = 0;
+        room.roundPhase = "answering";
+        room.phaseStartTime = now + 3200;
+        room.readyStatus = {};
+      }
+      // 2) 1문제 결과 화면에서 전원 준비 완료 시 -> 다음 문제 카운트다운 시작
+      else if (room.status === "in_progress" && (room.roundPhase === "round_result" || room.roundPhase === "item_select") && allReady) {
+        const curIdx = room.currentQuestionIndex || 0;
+        const totalQ = room.settings.questionCount || 5;
+        if (curIdx + 1 < totalQ) {
+          room.currentQuestionIndex = curIdx + 1;
+          room.status = "countdown";
+          room.countdownStartTime = now;
+          room.roundPhase = "answering";
+          room.phaseStartTime = now + 3200;
+          room.readyStatus = {};
+
+          // 예약된 다음 라운드 아이템 효과 적용
+          if (room.nextRoundEffects) {
+            Object.entries(room.nextRoundEffects).forEach(([target, effects]) => {
+              if (room.progress[target]) {
+                room.progress[target].activeEffects = room.progress[target].activeEffects || [];
+                effects.forEach(eff => {
+                  const itemDef = BATTLE_ITEMS[eff.itemKey];
+                  room.progress[target].activeEffects.push({
+                    type: eff.itemKey.replace("battle_", ""),
+                    name: eff.name,
+                    icon: itemDef ? itemDef.icon : "✨",
+                    expireAt: now + 3200 + (itemDef && itemDef.duration ? itemDef.duration : 4000),
+                    from: eff.from
+                  });
+                });
+              }
+            });
+            room.nextRoundEffects = {};
+          }
+        } else {
+          room.status = "completed";
+          finalizeBattleRoom(room, db);
+        }
+      }
+
+      processAiMascotBot(room, db);
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        ready: room.readyStatus[username],
+        status: room.status,
+        roundPhase: room.roundPhase,
+        room
+      });
+    } catch (e) {
+      console.error("Battle Ready Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-H. 다음 문제 대비 전략 아이템 선택 예약 (POST /api/battle/select-round-item)
+  if (req.method === "POST" && pathname === "/api/battle/select-round-item") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId, itemKey, targetUsername } = body;
+      const itemDef = BATTLE_ITEMS[itemKey];
+      if (!itemDef) {
+        return sendJSON(res, 400, { success: false, message: "존재하지 않는 배틀 아이템입니다." });
+      }
+
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      const myProg = room.progress[username];
+      if (!myProg || !myProg.inventory || (myProg.inventory[itemKey] || 0) <= 0) {
+        return sendJSON(res, 400, { success: false, message: "해당 아이템 잔여 수량이 부족합니다." });
+      }
+
+      // 아이템 차감
+      myProg.inventory[itemKey] -= 1;
+
+      // 타겟 판별 (2:2 팀전 팀킬 방지 포함)
+      let actualTarget = targetUsername;
+      if (room.matchType === "2v2" && room.teams) {
+        const myTeam = (room.teams.A && room.teams.A.includes(username)) ? "A" : "B";
+        const oppTeam = myTeam === "A" ? "B" : "A";
+        const opponents = room.teams[oppTeam] || [];
+        if (itemDef.type === "attack") {
+          if (!actualTarget || !opponents.includes(actualTarget)) {
+            actualTarget = opponents[0] || opponents[1];
+          }
+        } else {
+          actualTarget = username;
+        }
+      } else if (itemDef.type === "attack") {
+        if (!actualTarget || actualTarget === username || !room.members.includes(actualTarget)) {
+          actualTarget = room.members.find(m => m !== username);
+        }
+      } else {
+        actualTarget = username;
+      }
+
+      room.nextRoundEffects = room.nextRoundEffects || {};
+      room.nextRoundEffects[actualTarget] = room.nextRoundEffects[actualTarget] || [];
+      room.nextRoundEffects[actualTarget].push({
+        itemKey,
+        name: itemDef.name,
+        type: itemDef.type,
+        from: username
+      });
+
+      room.itemLog = room.itemLog || [];
+      room.itemLog.push({
+        from: username,
+        fromName: (db.users[username] && db.users[username].name) || username,
+        target: actualTarget,
+        item: itemDef,
+        time: getKSTTime(),
+        note: "다음 문제 발동 예약"
+      });
+
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: `✨ ${itemDef.name} 선택 완료! 다음 문제에 발동됩니다.`,
+        targetUsername: actualTarget,
+        room
+      });
+    } catch (e) {
+      console.error("Select Round Item Error:", e);
       return sendJSON(res, 500, { success: false, message: e.message });
     }
   }

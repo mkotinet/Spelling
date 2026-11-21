@@ -357,6 +357,17 @@ class SoundEffects {
     this.playHtmlAudio('fanfare', 0.85);
   }
 
+  countdown(isHigh = false) {
+    if (!this.enabled) return;
+    this.unlockAudio();
+    if (isHigh) {
+      this.playTone(880, 'sine', 0.28, 0, 0.45);
+      this.playTone(1174.66, 'sine', 0.35, 0.08, 0.45);
+    } else {
+      this.playTone(523.25, 'sine', 0.16, 0, 0.40);
+    }
+  }
+
   tap() {
     if (!this.enabled) return;
     this.unlockAudio();
@@ -1565,7 +1576,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.6.3';
+    this.APP_VERSION = metaVer || '3.7.0';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -1767,6 +1778,20 @@ class HaruMatchumApp {
         this.switchView('home');
       }
     });
+
+    const btnBattleToggleReady = document.getElementById('btnBattleToggleReady');
+    if (btnBattleToggleReady) btnBattleToggleReady.addEventListener('click', () => this.toggleBattleReady());
+
+    const btnBattleLeaveRoom = document.getElementById('btnBattleLeaveRoom');
+    if (btnBattleLeaveRoom) btnBattleLeaveRoom.addEventListener('click', () => {
+      if (confirm('대결 대기실에서 나가시겠습니까?')) {
+        this.stopBattlePolling();
+        this.switchView('home');
+      }
+    });
+
+    const btnBattleNextRoundReady = document.getElementById('btnBattleNextRoundReady');
+    if (btnBattleNextRoundReady) btnBattleNextRoundReady.addEventListener('click', () => this.toggleBattleReady());
 
     const btnBattleResultLobby = document.getElementById('btnBattleResultLobby');
     if (btnBattleResultLobby) btnBattleResultLobby.addEventListener('click', () => {
@@ -9452,7 +9477,7 @@ class HaruMatchumApp {
     }
   }
 
-  // 6. 대결방 입장 및 화면 초기화
+  // 6. 대결방 입장 및 화면 초기화 (v3.7.0 동기화 대기실/카운트다운/결과비교 지원)
   async enterBattleRoom(roomId) {
     if (!this.cloudToken && typeof localStorage !== 'undefined') {
       this.cloudToken = localStorage.getItem('haru_cloud_token') || '';
@@ -9465,6 +9490,8 @@ class HaruMatchumApp {
     if (this.modalBattleTarget) this.modalBattleTarget.classList.remove('active');
 
     this.switchView('battle');
+    this.lastRenderedQIndex = -1;
+    this.lastCountdownSec = -1;
 
     try {
       const res = await fetch(`/api/battle/room?roomId=${encodeURIComponent(roomId)}&token=${encodeURIComponent(this.token)}`, {
@@ -9492,24 +9519,8 @@ class HaruMatchumApp {
       if (totalQNum) totalQNum.textContent = `/${totalQ}`;
 
       this.renderBattleRivalsBar(this.currentBattleRoom);
-
-      const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
-      const myProg = (this.currentBattleRoom.progress && this.currentBattleRoom.progress[myUsername]) || {};
-
-      const isCompleted = this.currentBattleRoom.status === 'completed';
-      const qIndex = myProg.currentIndex || 0;
-      const myDone = !!myProg.completed || qIndex >= totalQ;
-
-      if (isCompleted) {
-        this.renderBattleResult(this.currentBattleRoom);
-      } else if (myDone) {
-        this.renderBattleQuestion();
-        this.startBattlePolling(roomId);
-      } else {
-        this.renderBattleQuestion();
-        this.renderBattleItemDock(this.currentBattleRoom);
-        this.startBattlePolling(roomId);
-      }
+      this.syncBattleViewStatus(this.currentBattleRoom);
+      this.startBattlePolling(roomId);
     } catch (err) {
       console.error('[Battle] Enter room error:', err);
       this.showToastNotice('대결방 입장 중 통신 오류가 발생했습니다.');
@@ -9528,10 +9539,11 @@ class HaruMatchumApp {
         const data = await res.json();
         if (data.success && data.room) {
           this.currentBattleRoom = data.room;
+          this.syncBattleViewStatus(data.room);
           this.renderBattleRivalsBar(data.room);
           this.applyBattleVfx(data.room);
 
-          if (data.room.status === 'completed') {
+          if (data.room.status === 'completed' && data.room.roundPhase !== 'round_result') {
             this.stopBattlePolling();
             this.renderBattleResult(data.room);
           }
@@ -9539,7 +9551,7 @@ class HaruMatchumApp {
       } catch (e) {
         console.warn('[Battle] Polling error:', e);
       }
-    }, 1500);
+    }, 1200);
   }
 
   stopBattlePolling() {
@@ -9792,13 +9804,8 @@ class HaruMatchumApp {
 
       setTimeout(() => {
         this.battleIsSubmitting = false;
-        if (data.room.status === 'completed') {
-          this.stopBattlePolling();
-          this.renderBattleResult(data.room);
-        } else {
-          this.renderBattleQuestion();
-        }
-      }, 850);
+        this.syncBattleViewStatus(data.room);
+      }, 700);
     } catch (err) {
       console.error('[Battle] Submit error:', err);
       this.showToastNotice('답안 제출 중 통신 오류가 발생했습니다.');
@@ -10301,6 +10308,383 @@ class HaruMatchumApp {
     }
   }
 
+  // 17-A. v3.7.0 대결 화면 상태 동기화 디스패처 (Waiting, Countdown, Answering, Round Result, Completed)
+  syncBattleViewStatus(room) {
+    if (!room) return;
+    this.currentBattleRoom = room;
+
+    const waitingScreen = document.getElementById('battleWaitingScreen');
+    const countdownOverlay = document.getElementById('battleCountdownOverlay');
+    const activePlayArea = document.getElementById('battleActivePlayArea');
+    const roundResultModal = document.getElementById('battleRoundResultModal');
+    const waitingNotice = document.getElementById('battleWaitingOpponentNotice');
+
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+
+    // 1) 대기실 상태 (room.status === 'waiting')
+    if (room.status === 'waiting') {
+      if (waitingScreen) waitingScreen.style.display = 'flex';
+      if (countdownOverlay) countdownOverlay.style.display = 'none';
+      if (activePlayArea) activePlayArea.style.display = 'none';
+      if (roundResultModal) roundResultModal.style.display = 'none';
+      this.renderBattleWaitingScreen(room);
+      return;
+    }
+
+    // 2) 카운트다운 상태 (room.status === 'countdown')
+    if (room.status === 'countdown') {
+      if (waitingScreen) waitingScreen.style.display = 'none';
+      if (roundResultModal) roundResultModal.style.display = 'none';
+      if (activePlayArea) activePlayArea.style.display = 'none';
+      this.triggerBattleCountdown(room);
+      return;
+    }
+
+    // 3) 대결 진행 중 (room.status === 'in_progress')
+    if (room.status === 'in_progress') {
+      if (waitingScreen) waitingScreen.style.display = 'none';
+      if (countdownOverlay) countdownOverlay.style.display = 'none';
+
+      // 1문제 단위 결과 비교 페이즈
+      if (room.roundPhase === 'round_result' || room.roundPhase === 'item_select') {
+        if (activePlayArea) activePlayArea.style.display = 'none';
+        this.renderBattleRoundResult(room);
+      } else {
+        // 문제 풀이 페이즈 (answering)
+        if (roundResultModal) roundResultModal.style.display = 'none';
+        if (activePlayArea) activePlayArea.style.display = 'block';
+
+        const qIndex = room.currentQuestionIndex || 0;
+        const mySub = room.roundSubmissions && room.roundSubmissions[qIndex] && room.roundSubmissions[qIndex][myUsername];
+
+        if (mySub) {
+          // 내가 이미 제출했으면 상대방 대기 안내 표시
+          if (waitingNotice) waitingNotice.style.display = 'flex';
+          const optBtns = document.querySelectorAll('.battle-option-btn');
+          optBtns.forEach(b => b.disabled = true);
+        } else {
+          // 아직 풀지 않았으면 문제 렌더링
+          if (waitingNotice) waitingNotice.style.display = 'none';
+          if (this.lastRenderedQIndex !== qIndex) {
+            this.lastRenderedQIndex = qIndex;
+            this.renderBattleQuestion();
+          }
+        }
+      }
+      return;
+    }
+
+    // 4) 경기 완료 (room.status === 'completed')
+    if (room.status === 'completed') {
+      if (waitingScreen) waitingScreen.style.display = 'none';
+      if (countdownOverlay) countdownOverlay.style.display = 'none';
+
+      // 만약 아직 1문제 결과 모달을 보고 있는 중이라면 유지, 사용자가 닫으면 최종 결과 표시
+      if (room.roundPhase === 'round_result' && roundResultModal && roundResultModal.style.display === 'flex') {
+        this.renderBattleRoundResult(room);
+        return;
+      }
+
+      if (roundResultModal) roundResultModal.style.display = 'none';
+      if (activePlayArea) activePlayArea.style.display = 'none';
+      this.stopBattlePolling();
+      this.renderBattleResult(room);
+      return;
+    }
+  }
+
+  // 17-B. 동기화 대기실 렌더링
+  renderBattleWaitingScreen(room) {
+    const waitingScreen = document.getElementById('battleWaitingScreen');
+    if (!waitingScreen || !room) return;
+
+    const subjectBadge = document.getElementById('battleWaitingSubjectBadge');
+    const titleEl = document.getElementById('battleWaitingTitle');
+    const metaEl = document.getElementById('battleWaitingMeta');
+    const rosterList = document.getElementById('battleWaitingRosterList');
+    const toggleBtn = document.getElementById('btnBattleToggleReady');
+
+    const subjectLabels = { spelling: '우리말 맞춤법', proverb: '속담·관용구', idiom: '사자성어', english: '영어 어휘', all: '올스타전', mixed: '올스타전' };
+    const subj = room.subject || (room.settings && room.settings.subject) || 'spelling';
+    if (subjectBadge) subjectBadge.textContent = `⚔️ ${subjectLabels[subj] || '대결'}`;
+
+    if (titleEl) titleEl.textContent = room.title || '대결 대기실';
+
+    const totalQ = room.questionCount || (room.settings && room.settings.questionCount) || 5;
+    const matchLabel = room.matchType === '2v2' ? '2:2 팀전' : (room.matchType === '1v1v1' ? '1:1:1 3인전' : (room.matchType === '1v1v1v1' ? '1:1:1:1 4인전' : '1:1 대결'));
+    if (metaEl) metaEl.textContent = `${totalQ}문제 · ${matchLabel} · 실시간 동기화 대결`;
+
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const readyStatus = room.readyStatus || {};
+
+    if (rosterList) {
+      rosterList.innerHTML = (room.members || []).map(m => {
+        const mName = typeof m === 'object' && m ? (m.nickname || m.name || m.username) : m;
+        const isMe = (mName === myUsername);
+        const isMemberHost = (room.host === mName || room.creator === mName);
+        const isReady = !!readyStatus[mName];
+        const avatar = (mName === '맞춤요정') ? '🧚' : (typeof m === 'object' && m ? (m.avatar || '🌸') : '🌸');
+
+        let teamBadge = '';
+        if (room.matchType === '2v2' && room.teams) {
+          const team = (room.teams.A && room.teams.A.includes(mName)) ? 'A' : 'B';
+          teamBadge = `<div style="font-size:0.72rem; margin-top:2px; font-weight:800; color:${team === 'A' ? '#3b82f6' : '#ef4444'};">${team === 'A' ? '🔵 블루팀' : '🔴 레드팀'}</div>`;
+        }
+
+        return `
+          <div class="waiting-player-card ${isReady ? 'is-ready' : ''}">
+            <span class="waiting-player-avatar">${avatar}</span>
+            <div class="waiting-player-name">${mName} ${isMe ? '(나)' : ''} ${isMemberHost ? '👑' : ''}</div>
+            ${teamBadge}
+            <div style="margin-top:8px;">
+              <span class="waiting-ready-badge ${isReady ? 'ready' : 'wait'}">
+                ${isReady ? '준비 완료 ✅' : '대기 중 ⏳'}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    if (toggleBtn) {
+      const isMyReady = !!readyStatus[myUsername];
+      if (isMyReady) {
+        toggleBtn.textContent = '❌ 준비 취소';
+        toggleBtn.style.background = '#64748b';
+      } else {
+        toggleBtn.textContent = '🔥 대결 시작 준비 완료';
+        toggleBtn.style.background = 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
+      }
+    }
+  }
+
+  // 17-C. 대결 준비 상태 토글 (POST /api/battle/ready)
+  async toggleBattleReady() {
+    if (!this.currentBattleRoom) return;
+    const roomId = this.currentBattleRoom.id || this.currentBattleRoom.roomId;
+
+    // 만약 마지막 문제 결과 화면에서 사용자가 '최종 대결 결과 보기'를 누른 경우
+    if (this.currentBattleRoom.status === 'completed' && this.currentBattleRoom.roundPhase === 'round_result') {
+      const roundResultModal = document.getElementById('battleRoundResultModal');
+      if (roundResultModal) roundResultModal.style.display = 'none';
+      this.renderBattleResult(this.currentBattleRoom);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/battle/ready', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ roomId, token: this.token })
+      });
+      const data = await res.json();
+      if (data.success && data.room) {
+        this.currentBattleRoom = data.room;
+        this.syncBattleViewStatus(data.room);
+      } else {
+        this.showToastNotice(data.message || '준비 상태 변경에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error('[Battle] Toggle ready error:', e);
+      this.showToastNotice('준비 상태 전송 중 통신 오류가 발생했습니다.');
+    }
+  }
+
+  // 17-D. 3·2·1 동시 카운트다운 오버레이 애니메이션
+  triggerBattleCountdown(room) {
+    const overlay = document.getElementById('battleCountdownOverlay');
+    const numEl = document.getElementById('battleCountdownNumber');
+    const subEl = document.getElementById('battleCountdownSub');
+    if (!overlay || !numEl) return;
+
+    overlay.style.display = 'flex';
+
+    const now = Date.now();
+    const start = room.countdownStartTime || now;
+    const elapsed = now - start;
+    const remainingSec = Math.max(0, 3 - Math.floor(elapsed / 1000));
+
+    if (remainingSec > 0) {
+      numEl.textContent = remainingSec;
+      numEl.className = 'countdown-big-number';
+      if (subEl) subEl.textContent = '대결 시작 준비 중! 🔥';
+      if (this.lastCountdownSec !== remainingSec) {
+        this.lastCountdownSec = remainingSec;
+        if (window.sfx && typeof window.sfx.countdown === 'function') {
+          window.sfx.countdown(false);
+        }
+      }
+    } else {
+      numEl.textContent = '대결 시작!';
+      numEl.className = 'countdown-big-number countdown-go';
+      if (subEl) subEl.textContent = '집중해서 빠르게 정답을 맞춰보세요! 🚀';
+      if (this.lastCountdownSec !== 0) {
+        this.lastCountdownSec = 0;
+        if (window.sfx && typeof window.sfx.countdown === 'function') {
+          window.sfx.countdown(true);
+        }
+      }
+    }
+  }
+
+  // 17-E. 1문제 단위 실시간 대결 결과 비교 & 다음 라운드 전술 아이템 선택 모달
+  renderBattleRoundResult(room) {
+    const modal = document.getElementById('battleRoundResultModal');
+    if (!modal || !room) return;
+
+    const qIndex = room.currentQuestionIndex || 0;
+    const totalQ = room.questionCount || (room.settings && room.settings.questionCount) || (room.questions && room.questions.length) || 5;
+    const roundRes = (room.roundResults && room.roundResults[qIndex]) || null;
+    const q = (roundRes && roundRes.question) || (room.questions && room.questions[qIndex]) || {};
+
+    const qBadge = document.getElementById('roundResultQBadge');
+    if (qBadge) qBadge.textContent = `Q${qIndex + 1} 결과 (${qIndex + 1}/${totalQ})`;
+
+    const ansBanner = document.getElementById('roundResultAnswerBanner');
+    if (ansBanner) {
+      const correctText = (q.options && q.answerIndex !== undefined) ? q.options[q.answerIndex] : (q.answer || '');
+      ansBanner.innerHTML = `🎯 정답: <strong style="color:#10b981; font-size:1.05rem;">${correctText}</strong>`;
+    }
+
+    const versusGrid = document.getElementById('roundResultVersusGrid');
+    const myUsername = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '맞춤요정';
+    const submissions = (roundRes && roundRes.submissions) || (room.roundSubmissions && room.roundSubmissions[qIndex]) || {};
+
+    if (versusGrid) {
+      versusGrid.innerHTML = (room.members || []).map(m => {
+        const mName = typeof m === 'object' && m ? (m.nickname || m.name || m.username) : m;
+        const isMe = (mName === myUsername);
+        const sub = submissions[mName];
+        const isCorrect = sub && sub.isCorrect;
+        const timeSpent = sub ? Number(sub.timeSpent || 0).toFixed(1) : '-';
+        const avatar = (mName === '맞춤요정') ? '🧚' : (typeof m === 'object' && m ? (m.avatar || '🌸') : '🌸');
+
+        let outcomeText = isCorrect ? '⭕ 정답 (+10P)' : (sub ? '❌ 오답 (+0P)' : '⏳ 미제출');
+        if (sub && sub.speedBonus) outcomeText += ' ⚡+5P';
+
+        let choiceLabel = '-';
+        if (sub && q.options && sub.selectedIndex >= 0 && q.options[sub.selectedIndex]) {
+          choiceLabel = q.options[sub.selectedIndex];
+        } else if (sub && sub.selectedIndex === -1) {
+          choiceLabel = '시간 초과';
+        }
+
+        return `
+          <div class="round-player-box ${isCorrect ? 'is-correct' : (sub ? 'is-wrong' : '')}">
+            <div class="round-player-name">${avatar} ${mName} ${isMe ? '(나)' : ''}</div>
+            <div class="round-player-outcome ${isCorrect ? 'win' : 'lose'}">${outcomeText}</div>
+            <div style="font-size:0.75rem; color:#cbd5e1; margin:2px 0;">선택: ${choiceLabel}</div>
+            <div class="round-player-time">⏱️ ${timeSpent}초</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 스피드 보너스 콜아웃
+    const speedCallout = document.getElementById('roundResultSpeedCallout');
+    if (speedCallout) {
+      if (roundRes && roundRes.fastestUser && submissions[roundRes.fastestUser] && submissions[roundRes.fastestUser].speedBonus) {
+        speedCallout.style.display = 'block';
+        speedCallout.textContent = `⚡ [${roundRes.fastestUser}]님이 가장 빠르게 정답을 맞춰 스피드 보너스 +5P를 획득했습니다!`;
+      } else {
+        speedCallout.style.display = 'none';
+      }
+    }
+
+    // 다음 문제 대비 전술 아이템 선택 영역
+    const itemSection = document.getElementById('roundResultItemSection');
+    const itemButtonsRow = document.getElementById('roundItemSelectButtons');
+    const nextBtn = document.getElementById('btnBattleNextRoundReady');
+
+    const isLastRound = (qIndex >= totalQ - 1) || room.status === 'completed';
+
+    if (isLastRound) {
+      if (itemSection) itemSection.style.display = 'none';
+      if (nextBtn) {
+        nextBtn.textContent = '🏆 최종 대결 결과 보기';
+        nextBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #ec4899 100%)';
+      }
+    } else {
+      if (itemSection) itemSection.style.display = 'block';
+      if (itemButtonsRow) {
+        const myProg = (room.progress && room.progress[myUsername]) || {};
+        const inv = myProg.inventory || {};
+        const availableItems = Object.entries(inv).filter(([k, count]) => count > 0);
+
+        if (availableItems.length === 0) {
+          itemButtonsRow.innerHTML = '<div style="color:#94a3b8; font-size:0.8rem; padding:8px;">사용 가능한 배틀 아이템이 없습니다.</div>';
+        } else {
+          const itemDefs = {
+            battle_hint: { name: '힌트 요정', icon: '💡' },
+            battle_double: { name: '더블 포인트', icon: '💎' },
+            battle_shield: { name: '철벽 방패', icon: '🛡️' },
+            battle_smoke: { name: '먹구름 연막', icon: '🌫️' },
+            battle_freeze: { name: '꽁꽁 얼음', icon: '❄️' },
+            battle_scramble: { name: '보기 셔플', icon: '🌪️' },
+            battle_steal: { name: '포인트 스틸', icon: '🥷' },
+            battle_timeplus: { name: '모래시계', icon: '⏳' }
+          };
+
+          const isReserved = room.nextRoundEffects && Object.values(room.nextRoundEffects).some(arr => arr.some(e => e.from === myUsername));
+
+          itemButtonsRow.innerHTML = availableItems.map(([itemKey, count]) => {
+            const def = itemDefs[itemKey] || { name: itemKey, icon: '✨' };
+            return `
+              <button type="button" class="btn-round-item-pill ${isReserved ? 'selected' : ''}" onclick="window.app.selectBattleRoundItem('${itemKey}')" ${isReserved ? 'disabled' : ''}>
+                <span class="item-icon">${def.icon}</span>
+                <span class="item-name">${def.name}</span>
+                <span class="item-cnt">${count}개</span>
+              </button>
+            `;
+          }).join('');
+        }
+      }
+
+      if (nextBtn) {
+        const readyStatus = room.readyStatus || {};
+        const isReady = !!readyStatus[myUsername];
+        if (isReady) {
+          nextBtn.textContent = '✅ 다음 문제 준비 완료 (상대방 대기 중...)';
+          nextBtn.style.background = '#64748b';
+        } else {
+          nextBtn.textContent = '다음 문제 준비 완료! 🔥';
+          nextBtn.style.background = 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
+        }
+      }
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  // 17-F. 다음 라운드 대비 전술 아이템 선택 (POST /api/battle/select-round-item)
+  async selectBattleRoundItem(itemKey) {
+    if (!this.currentBattleRoom) return;
+    const roomId = this.currentBattleRoom.id || this.currentBattleRoom.roomId;
+    try {
+      const res = await fetch('/api/battle/select-round-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ roomId, itemKey, token: this.token })
+      });
+      const data = await res.json();
+      if (data.success && data.room) {
+        this.currentBattleRoom = data.room;
+        this.showToastNotice(data.message || '다음 라운드 전술 아이템이 장착되었습니다! ⚔️');
+        this.renderBattleRoundResult(data.room);
+      } else {
+        this.showToastNotice(data.message || '아이템 선택에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error('[Battle] Select item error:', e);
+    }
+  }
+
   // 18. 배틀 전용 랭킹 집계 렌더링
   async renderBattleRankings() {
     this.switchView('ranking');
@@ -10393,7 +10777,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.6.3');
+        url.searchParams.set('_v', this.APP_VERSION || '3.7.0');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

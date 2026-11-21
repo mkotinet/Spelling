@@ -514,5 +514,1437 @@
     "winner": null,
     "createdAt": "2026-11-20T20:44:55.180Z",
     "completedAt": null
+  },
+  {
+    "id": "battle_1795241963112_636su",
+    "roomId": "battle_1795241963112_636su",
+    "title": "테스트 스피드 대결방",
+    "creator": "e2e_runner_1795241962882",
+    "creatorName": "e2e_runner_1795241962882",
+    "members": [
+      "e2e_runner_1795241962882",
+      "미니미니"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "waiting",
+    "roundPhase": "waiting",
+    "currentQuestionIndex": 0,
+    "readyStatus": {
+      "e2e_runner_1795241962882": false
+    },
+    "roundSubmissions": {
+      "0": {
+        "e2e_runner_1795241962882": {
+          "selectedIndex": 1,
+          "isCorrect": true,
+          "timeSpent": 2.5,
+          "points": 25,
+          "submittedAt": 1795241963117
+        }
+      }
+    },
+    "roundResults": {},
+    "nextRoundEffects": {},
+    "countdownStartTime": null,
+    "phaseStartTime": 1795241963112,
+    "roundResultTime": null,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 1742,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1742)",
+        "sentence": "육아 일기장에 '오늘 우리 아기 첫 [ (     ) ] 깎은 날'이라는 제목으로 기념사진을 남겼다.",
+        "sentenceTranslation": "",
+        "options": [
+          "배내머리",
+          "배냇머리",
+          "배냇머릴",
+          "배내머릴"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'배냇머리'(이)가 올바른 표준 표기입니다. 아기가 태어났을 때의 머리털. (한글 맞춤법 제30항 (사이시옷 및 'ㄴ' 덧남))",
+        "standardWord": "배냇머리"
+      },
+      {
+        "index": 1,
+        "id": 1580,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1580)",
+        "sentence": "캠핑장에서 텐트를 칠 때 머리 위에 마르고 위험한 [ (     ) ]가 없는지 안전을 살폈다.",
+        "sentenceTranslation": "",
+        "options": [
+          "나무가지",
+          "나뭇까지",
+          "나무까지",
+          "나뭇가지"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'나뭇가지'(이)가 올바른 표준 표기입니다. 나무의 줄기에서 뻗어 나온 가지. (한글 맞춤법 제30항 (사이시옷 표기))",
+        "standardWord": "나뭇가지"
+      },
+      {
+        "index": 2,
+        "id": 1467,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1467)",
+        "sentence": "맞춤법 규정상 정답이나 사실이 어긋났을 때 사용하는 올바른 표현은 '[ (     ) ]'이다.",
+        "sentenceTranslation": "",
+        "options": [
+          "틀리다",
+          "틀리이다",
+          "틀려지다",
+          "다르다"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'틀리다'(이)가 올바른 표준 표기입니다. 셈이나 사실이 어긋나다. (표준어 규정 (셈이나 사실이 어긋남을 뜻하는 동사))",
+        "standardWord": "틀리다"
+      },
+      {
+        "index": 3,
+        "id": 962,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #962)",
+        "sentence": "긴 뒷다리를 접었다가 스프링처럼 강하게 튕겨내며 도망치는 [ (     ) ]의 날렵함에 감탄했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "메뚜기",
+          "매뚜기",
+          "매뚝이",
+          "메뚝이"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'메뚜기'(이)가 올바른 표준 표기입니다. 초록색 뜀뛰기 곤충. (표준어 규정)",
+        "standardWord": "메뚜기"
+      },
+      {
+        "index": 4,
+        "id": 934,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #934)",
+        "sentence": "눈 내리는 겨울날 마당의 하얀 설경을 방 안에서 문을 열고 [ (     ) ] 너머로 바라보았다.",
+        "sentenceTranslation": "",
+        "options": [
+          "퇴마류",
+          "툇마류",
+          "툇마루",
+          "퇴마루"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'툇마루'(이)가 올바른 표준 표기입니다. 방문 밖의 좁은 마루. (한글 맞춤법 제30항 (사이시옷 표기))",
+        "standardWord": "툇마루"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795241962882": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 25,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "points": 25,
+            "timeSpent": 2.5
+          }
+        ],
+        "inventory": {
+          "battle_ink": 0,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 2.5,
+        "activeEffects": [
+          {
+            "type": "ink",
+            "name": "먹물 벼루",
+            "icon": "墨",
+            "expireAt": 1795241966616,
+            "from": "e2e_runner_1795241962882"
+          }
+        ],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "미니미니": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 0,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      }
+    },
+    "itemLog": [
+      {
+        "from": "미니미니",
+        "fromName": "미니미니",
+        "item": {
+          "id": "battle_reflect",
+          "name": "반사 거울방패",
+          "icon": "🛡️",
+          "type": "defense",
+          "desc": "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
+        },
+        "reflected": false,
+        "time": "2026-11-21 06:19:23"
+      },
+      {
+        "from": "e2e_runner_1795241962882",
+        "fromName": "e2e_runner_1795241962882",
+        "target": "e2e_runner_1795241962882",
+        "targetName": "e2e_runner_1795241962882",
+        "item": {
+          "id": "battle_ink",
+          "name": "먹물 벼루",
+          "icon": "墨",
+          "type": "attack",
+          "duration": 3500,
+          "desc": "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+        },
+        "reflected": true,
+        "time": "2026-11-21 06:19:23"
+      }
+    ],
+    "winner": null,
+    "createdAt": "2026-11-21T06:19:23.112Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795241963120_oi3m0",
+    "roomId": "battle_1795241963120_oi3m0",
+    "title": "맞춤요정과 1:1 대결",
+    "creator": "e2e_runner_1795241962882",
+    "creatorName": "e2e_runner_1795241962882",
+    "members": [
+      "e2e_runner_1795241962882",
+      "맞춤요정"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "waiting",
+    "roundPhase": "waiting",
+    "currentQuestionIndex": 0,
+    "readyStatus": {
+      "e2e_runner_1795241962882": false,
+      "맞춤요정": true
+    },
+    "roundSubmissions": {},
+    "roundResults": {},
+    "nextRoundEffects": {},
+    "countdownStartTime": null,
+    "phaseStartTime": 1795241963120,
+    "roundResultTime": null,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 3310,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3310)",
+        "sentence": "할머니께서 차려주신 따뜻한 아침밥을 남기지 말고 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "먹어 보아",
+          "먹어보아라",
+          "먹어 보아라",
+          "먹어보아"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'먹어 보아라'(이)가 올바른 표준 표기입니다. 음식을 맛보거나 섭취해 보라는 권유. (한글 맞춤법 제47항 (본용언과 보조용언의 띄어쓰기 원칙))",
+        "standardWord": "먹어 보아라"
+      },
+      {
+        "index": 1,
+        "id": 1050,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1050)",
+        "sentence": "표준어 규정 제12항에서 '숫양, 숫염소, 숫쥐'의 3개 단어는 예외적으로 접두사 '숫-'을 인정하므로 [ (     ) ]가 표준어다.",
+        "sentenceTranslation": "",
+        "options": [
+          "숫염소",
+          "숫념소",
+          "수염소",
+          "수념소"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'숫염소'(이)가 올바른 표준 표기입니다. 수컷인 염소 (예외 규정). (표준어 규정 제12항 (예외적으로 '숫-' 허용))",
+        "standardWord": "숫염소"
+      },
+      {
+        "index": 2,
+        "id": 2369,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "고등/심화",
+        "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2369)",
+        "sentence": "내부 고발자가 조직의 비리와 관행적인 회계 [ (     ) ]를 고발하고 개혁을 촉구했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "불조리",
+          "부조리",
+          "부조릴",
+          "불조릴"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'부조리'(이)가 올바른 표준 표기입니다. 이치에 맞지 아니함. (한글 맞춤법 제12항 (두음법칙 및 'ㄹ' 탈락))",
+        "standardWord": "부조리"
+      },
+      {
+        "index": 3,
+        "id": 1407,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1407)",
+        "sentence": "화학 실험에서 용액의 농도를 나타낼 때 용매 100g당 용질의 질량 [ (     ) ]을 구했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "백분뉼",
+          "백분율",
+          "백분룰",
+          "백분률"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'백분율'(이)가 올바른 표준 표기입니다. 전체를 100으로 나타낸 비율. (한글 맞춤법 제11항 (ㄴ 받침 뒤 -율))",
+        "standardWord": "백분율"
+      },
+      {
+        "index": 4,
+        "id": 376,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #376)",
+        "sentence": "아무리 화가 나더라도 친구에게 거친 욕설이나 폭력을 쓰면 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "안대",
+          "안돼요",
+          "안돼",
+          "안되"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'안돼'(이)가 올바른 표준 표기입니다. '안 되어'의 준말, 금지나 거절. (한글 맞춤법 제35항 ('안 되어'의 준말))",
+        "standardWord": "안돼"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795241962882": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "맞춤요정": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false,
+        "lastActionTime": 1795241959121
+      }
+    },
+    "itemLog": [],
+    "winner": null,
+    "createdAt": "2026-11-21T06:19:23.120Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795242038291_a2mcd",
+    "roomId": "battle_1795242038291_a2mcd",
+    "title": "테스트 스피드 대결방",
+    "creator": "e2e_runner_1795242038092",
+    "creatorName": "e2e_runner_1795242038092",
+    "members": [
+      "e2e_runner_1795242038092",
+      "미니미니"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "waiting",
+    "roundPhase": "waiting",
+    "currentQuestionIndex": 0,
+    "readyStatus": {
+      "e2e_runner_1795242038092": false
+    },
+    "roundSubmissions": {
+      "0": {
+        "e2e_runner_1795242038092": {
+          "selectedIndex": 2,
+          "isCorrect": true,
+          "timeSpent": 2.5,
+          "points": 25,
+          "submittedAt": 1795242038298
+        }
+      }
+    },
+    "roundResults": {},
+    "nextRoundEffects": {},
+    "countdownStartTime": null,
+    "phaseStartTime": 1795242038291,
+    "roundResultTime": null,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 4380,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "일반/실무",
+        "question": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #4380)",
+        "sentence": "발굴된 유물의 제작 시기는 삼국 시대로 조심스럽게 [ (     ) ]된다.",
+        "sentenceTranslation": "",
+        "options": [
+          "간주",
+          "예측",
+          "추정",
+          "의제"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'추정'(이)가 올바른 표준 표기입니다. 명확하지 않은 사실을 일단 그러하리라고 판단함 ('~로 추정한다'). (법률/통계 규정 (반대 증거가 나오면 번복될 수 있는 일응의 인정))",
+        "standardWord": "추정"
+      },
+      {
+        "index": 1,
+        "id": 2503,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "고등/심화",
+        "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2503)",
+        "sentence": "침실에 들어가 취침하기 전에 외부로 통하는 모든 출입문과 방범창을 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "잠굿다",
+          "잠갔다",
+          "잠갓다",
+          "잠궜다"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'잠갔다'(이)가 올바른 표준 표기입니다. 문이나 자물쇠를 닫다. (한글 맞춤법 제18항 (ㅡ 불규칙 탈락))",
+        "standardWord": "잠갔다"
+      },
+      {
+        "index": 2,
+        "id": 2521,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "고등/심화",
+        "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2521)",
+        "sentence": "난파 직전의 선박에서 승객들을 안전하게 대피시킨 선장의 침착한 [ (     ) ]이 돋보였다.",
+        "sentenceTranslation": "",
+        "options": [
+          "결단력",
+          "결단력있게",
+          "결단녁",
+          "결단력있는"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'결단력'(이)가 올바른 표준 표기입니다. 결정적인 순간에 과단성 있게 판단하는 능력. (한글 맞춤법 (유음화 예외 한자어))",
+        "standardWord": "결단력"
+      },
+      {
+        "index": 3,
+        "id": 1943,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1943)",
+        "sentence": "방 탈출 게임 카페에서 숨겨진 힌트를 조합하여 4자리 숫자 휠 [ (     ) ]의 암호를 풀어냈다.",
+        "sentenceTranslation": "",
+        "options": [
+          "잠을쇠",
+          "자물쇄",
+          "잠을쇄",
+          "자물쇠"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'자물쇠'(이)가 올바른 표준 표기입니다. 여닫는 문 따위를 잠그는 장치. (한글 맞춤법 제5항)",
+        "standardWord": "자물쇠"
+      },
+      {
+        "index": 4,
+        "id": 1574,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1574)",
+        "sentence": "호랑이의 용맹스러운 가죽 무늬처럼 몸에 선명한 줄무늬를 가진 토종 [ (     ) ] 고양이가 있었다.",
+        "sentenceTranslation": "",
+        "options": [
+          "얼루기",
+          "얼룩이이",
+          "얼룩이",
+          "얼루기이"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'얼루기'(이)가 올바른 표준 표기입니다. 얼룩무늬가 있는 동물이나 물건. (한글 맞춤법 제19항 (어간 형태 비유지))",
+        "standardWord": "얼루기"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795242038092": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 25,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "points": 25,
+            "timeSpent": 2.5
+          }
+        ],
+        "inventory": {
+          "battle_ink": 0,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 2.5,
+        "activeEffects": [
+          {
+            "type": "ink",
+            "name": "먹물 벼루",
+            "icon": "墨",
+            "expireAt": 1795242041797,
+            "from": "e2e_runner_1795242038092"
+          }
+        ],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "미니미니": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 0,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      }
+    },
+    "itemLog": [
+      {
+        "from": "미니미니",
+        "fromName": "미니미니",
+        "item": {
+          "id": "battle_reflect",
+          "name": "반사 거울방패",
+          "icon": "🛡️",
+          "type": "defense",
+          "desc": "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
+        },
+        "reflected": false,
+        "time": "2026-11-21 06:20:38"
+      },
+      {
+        "from": "e2e_runner_1795242038092",
+        "fromName": "e2e_runner_1795242038092",
+        "target": "e2e_runner_1795242038092",
+        "targetName": "e2e_runner_1795242038092",
+        "item": {
+          "id": "battle_ink",
+          "name": "먹물 벼루",
+          "icon": "墨",
+          "type": "attack",
+          "duration": 3500,
+          "desc": "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+        },
+        "reflected": true,
+        "time": "2026-11-21 06:20:38"
+      }
+    ],
+    "winner": null,
+    "createdAt": "2026-11-21T06:20:38.291Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795242038301_xbdmh",
+    "roomId": "battle_1795242038301_xbdmh",
+    "title": "맞춤요정과 1:1 대결",
+    "creator": "e2e_runner_1795242038092",
+    "creatorName": "e2e_runner_1795242038092",
+    "members": [
+      "e2e_runner_1795242038092",
+      "맞춤요정"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "in_progress",
+    "roundPhase": "answering",
+    "currentQuestionIndex": 0,
+    "readyStatus": {},
+    "roundSubmissions": {
+      "0": {}
+    },
+    "roundResults": {},
+    "nextRoundEffects": {},
+    "countdownStartTime": 1795242034803,
+    "phaseStartTime": 1795242038304,
+    "roundResultTime": null,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 3863,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3863)",
+        "sentence": "그 선수는 부상을 이겨내고 링 위에 선 불사조이자 [ (     ) ]였다.",
+        "sentenceTranslation": "",
+        "options": [
+          "오뚜기의",
+          "오뚜기",
+          "오뚝이의",
+          "오뚝이"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'오뚝이'(이)가 올바른 표준 표기입니다. 밑이 무거워 넘어져도 곧 일어서는 장난감 / 굴하지 않는 사람. (한글 맞춤법 제19항 (어간에 '-이'가 붙어 명사화됨))",
+        "standardWord": "오뚝이"
+      },
+      {
+        "index": 1,
+        "id": 3460,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3460)",
+        "sentence": "보조용언 구성을 원칙대로 띄어 쓴 형태는 [ (     ) ]다.",
+        "sentenceTranslation": "",
+        "options": [
+          "먹어 보아",
+          "먹어보아",
+          "먹어보아라",
+          "먹어 보아라"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'먹어 보아라'(이)가 올바른 표준 표기입니다. 음식을 맛보거나 섭취해 보라는 권유. (한글 맞춤법 제47항 (본용언과 보조용언의 띄어쓰기 원칙))",
+        "standardWord": "먹어 보아라"
+      },
+      {
+        "index": 2,
+        "id": 3454,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3454)",
+        "sentence": "피동형으로 충돌을 당했음을 나타내는 정확한 표기는 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "부딛혔다",
+          "부딪쳤다",
+          "부딪혔다",
+          "부딛쳤다"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'부딪혔다'(이)가 올바른 표준 표기입니다. 주체가 가만히 있거나 뜻하지 않게 충돌을 당하다 / 벽에 직면하다. (한글 맞춤법 제57항 (남이나 외부 물체에 의해 마주 닿음을 당함))",
+        "standardWord": "부딪혔다"
+      },
+      {
+        "index": 3,
+        "id": 3205,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3205)",
+        "sentence": "음식 국물을 바특하게 줄여 간이 배게 함은 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "조렸다",
+          "조리였다",
+          "졸였다",
+          "졸이였다"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'조렸다'(이)가 올바른 표준 표기입니다. 국물이 자작자작하게 줄어 양념이 배도록 끓이다. (한글 맞춤법 제57항 (생선/고기/채소를 양념에 배게 끓임))",
+        "standardWord": "조렸다"
+      },
+      {
+        "index": 4,
+        "id": 3828,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "수능/기출",
+        "question": "다음 글의 문맥상 빈칸에 들어갈 가장 적절한 표준어 어휘를 고르세요. (문항 #3828)",
+        "sentence": "커튼 양쪽 끝을 손으로 잡아 틈을 조금 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "벌리였다",
+          "벌이다",
+          "벌리어",
+          "벌리다"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'벌리다'(이)가 올바른 표준 표기입니다. 둘 사이의 거리를 넓히다 / 입이나 팔을 벌리다 / 껍질을 쪼개 열다. (한글 맞춤법 제57항 (사이를 넓히거나 틈을 엶))",
+        "standardWord": "벌리다"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795242038092": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "맞춤요정": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false,
+        "lastActionTime": 1795242034303
+      }
+    },
+    "itemLog": [],
+    "winner": null,
+    "createdAt": "2026-11-21T06:20:38.301Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795242064847_e0jah",
+    "roomId": "battle_1795242064847_e0jah",
+    "title": "테스트 스피드 대결방",
+    "creator": "e2e_runner_1795242064645",
+    "creatorName": "e2e_runner_1795242064645",
+    "members": [
+      "e2e_runner_1795242064645",
+      "미니미니"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "waiting",
+    "roundPhase": "waiting",
+    "currentQuestionIndex": 0,
+    "readyStatus": {
+      "e2e_runner_1795242064645": false
+    },
+    "roundSubmissions": {
+      "0": {
+        "e2e_runner_1795242064645": {
+          "selectedIndex": 3,
+          "isCorrect": true,
+          "timeSpent": 2.5,
+          "points": 25,
+          "submittedAt": 1795242064853
+        }
+      }
+    },
+    "roundResults": {},
+    "nextRoundEffects": {},
+    "countdownStartTime": null,
+    "phaseStartTime": 1795242064847,
+    "roundResultTime": null,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 4393,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "일반/실무",
+        "question": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #4393)",
+        "sentence": "소방 시설 점검표를 허위로 작성한 건물주에게 [ (     ) ]가 내려졌다.",
+        "sentenceTranslation": "",
+        "options": [
+          "벌금",
+          "과징금",
+          "범칙금",
+          "과태료"
+        ],
+        "answerIndex": 3,
+        "correctIndex": 3,
+        "explanation": "'과태료'(이)가 올바른 표준 표기입니다. 행정법상 의무 위반이나 질서 위반에 대해 행정청이 부과하는 금전적 제재 (형벌 아님). (행정법 규정 (공법상 질서 위반에 부과하는 금전벌 - 전과 기록 없음))",
+        "standardWord": "과태료"
+      },
+      {
+        "index": 1,
+        "id": 1243,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1243)",
+        "sentence": "한글 맞춤법 규정에 따라 모음 'ㅚ'로 끝나는 표준어는 '자물쇄'가 아닌 [ (     ) ]로 적어야 한다.",
+        "sentenceTranslation": "",
+        "options": [
+          "잠을쇄",
+          "자물쇠",
+          "잠을쇠",
+          "자물쇄"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'자물쇠'(이)가 올바른 표준 표기입니다. 여닫는 문 따위를 잠그는 장치. (한글 맞춤법 제5항)",
+        "standardWord": "자물쇠"
+      },
+      {
+        "index": 2,
+        "id": 2392,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "고등/심화",
+        "question": "문맥의 어법과 한글 맞춤법 규정에 부합하는 가장 알맞은 표기를 고르세요. (문항 #2392)",
+        "sentence": "책의 서문만 대충 훑어보고 책 전체 내용을 완전히 꿰뚫고 있는 듯 굴기 쉬운 태도는 '[ (     ) ]'이다.",
+        "sentenceTranslation": "",
+        "options": [
+          "아는 체하다",
+          "아는척하다",
+          "알은척하다",
+          "알은체하다"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'아는 체하다'(이)가 올바른 표준 표기입니다. 알지도 못하면서 아는 듯이 뽐내다. (한글 맞춤법 제57항 (지식을 뽐냄))",
+        "standardWord": "아는 체하다"
+      },
+      {
+        "index": 3,
+        "id": 1666,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1666)",
+        "sentence": "친한 친구 사이라 하더라도 정치적 견해나 선호하는 정당은 얼마든지 [ (     ) ] 수 있다.",
+        "sentenceTranslation": "",
+        "options": [
+          "틀린",
+          "다른",
+          "다를",
+          "틀릴"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'다르다'(이)가 올바른 표준 표기입니다. 같지 아니하다. (표준어 규정 (같지 않음을 나타내는 형용사))",
+        "standardWord": "다르다"
+      },
+      {
+        "index": 4,
+        "id": 1411,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1411)",
+        "sentence": "주방에서 쫄깃한 냉면 면발을 가위로 십자 모양으로 [ (     ) ] 잘라 먹기 좋게 만들었다.",
+        "sentenceTranslation": "",
+        "options": [
+          "싹뚝",
+          "싹둑",
+          "싹뚝이",
+          "싹둑이"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'싹둑'(이)가 올바른 표준 표기입니다. 단숨에 자르는 모양. (한글 맞춤법 제23항 (된소리 비표기))",
+        "standardWord": "싹둑"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795242064645": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 25,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "points": 25,
+            "timeSpent": 2.5
+          }
+        ],
+        "inventory": {
+          "battle_ink": 0,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 2.5,
+        "activeEffects": [
+          {
+            "type": "ink",
+            "name": "먹물 벼루",
+            "icon": "墨",
+            "expireAt": 1795242068352,
+            "from": "e2e_runner_1795242064645"
+          }
+        ],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "미니미니": {
+        "joined": true,
+        "currentIndex": 0,
+        "score": 0,
+        "combo": 0,
+        "answers": [],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 0,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 0,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      }
+    },
+    "itemLog": [
+      {
+        "from": "미니미니",
+        "fromName": "미니미니",
+        "item": {
+          "id": "battle_reflect",
+          "name": "반사 거울방패",
+          "icon": "🛡️",
+          "type": "defense",
+          "desc": "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
+        },
+        "reflected": false,
+        "time": "2026-11-21 06:21:04"
+      },
+      {
+        "from": "e2e_runner_1795242064645",
+        "fromName": "e2e_runner_1795242064645",
+        "target": "e2e_runner_1795242064645",
+        "targetName": "e2e_runner_1795242064645",
+        "item": {
+          "id": "battle_ink",
+          "name": "먹물 벼루",
+          "icon": "墨",
+          "type": "attack",
+          "duration": 3500,
+          "desc": "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+        },
+        "reflected": true,
+        "time": "2026-11-21 06:21:04"
+      }
+    ],
+    "winner": null,
+    "createdAt": "2026-11-21T06:21:04.847Z",
+    "completedAt": null
+  },
+  {
+    "id": "battle_1795242064874_ajn1b",
+    "roomId": "battle_1795242064874_ajn1b",
+    "title": "동기화 1:1 대결 테스트",
+    "creator": "e2e_runner_1795242064645",
+    "creatorName": "e2e_runner_1795242064645",
+    "members": [
+      "e2e_runner_1795242064645",
+      "맞춤요정"
+    ],
+    "matchType": "1v1",
+    "teams": null,
+    "status": "in_progress",
+    "roundPhase": "round_result",
+    "currentQuestionIndex": 0,
+    "readyStatus": {},
+    "roundSubmissions": {
+      "0": {
+        "e2e_runner_1795242064645": {
+          "selectedIndex": 1,
+          "isCorrect": true,
+          "timeSpent": 1.8,
+          "points": 30,
+          "submittedAt": 1795242064878,
+          "speedBonus": true
+        },
+        "맞춤요정": {
+          "selectedIndex": 1,
+          "isCorrect": true,
+          "timeSpent": 4,
+          "points": 20,
+          "submittedAt": 1795242064879
+        }
+      }
+    },
+    "roundResults": {
+      "0": {
+        "qIndex": 0,
+        "question": {
+          "index": 0,
+          "id": 4852,
+          "subject": "spelling",
+          "subjectName": "우리말 맞춤법",
+          "level": "일반/실무",
+          "question": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #4852)",
+          "sentence": "택시를 타고 목적지에 도착하여 카카오페이로 요금을 [ (     ) ]했다.",
+          "sentenceTranslation": "",
+          "options": [
+            "결제를",
+            "결제",
+            "결재의",
+            "결재"
+          ],
+          "answerIndex": 1,
+          "correctIndex": 1,
+          "explanation": "'결제'(이)가 올바른 표준 표기입니다. 매매 거래나 대금 관계를 정산하거나 지불함. (비즈니스 규정 (대금이나 증권을 지불하여 거래 관계를 끝맺음))",
+          "standardWord": "결제"
+        },
+        "submissions": {
+          "e2e_runner_1795242064645": {
+            "selectedIndex": 1,
+            "isCorrect": true,
+            "timeSpent": 1.8,
+            "points": 30,
+            "submittedAt": 1795242064878,
+            "speedBonus": true
+          },
+          "맞춤요정": {
+            "selectedIndex": 1,
+            "isCorrect": true,
+            "timeSpent": 4,
+            "points": 20,
+            "submittedAt": 1795242064879
+          }
+        },
+        "fastestUser": "e2e_runner_1795242064645",
+        "completedAt": 1795242064879
+      }
+    },
+    "nextRoundEffects": {},
+    "countdownStartTime": 1795242061377,
+    "phaseStartTime": 1795242064877,
+    "roundResultTime": 1795242064879,
+    "questionCount": 5,
+    "subject": "spelling",
+    "level": "all",
+    "allowItems": true,
+    "settings": {
+      "questionCount": 5,
+      "subject": "spelling",
+      "subjectName": "우리말 맞춤법",
+      "level": "all",
+      "allowItems": true,
+      "matchType": "1v1",
+      "teams": null
+    },
+    "questions": [
+      {
+        "index": 0,
+        "id": 4852,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "일반/실무",
+        "question": "다음 공문서 및 업무 문맥의 빈칸에 들어갈 올바른 맞춤법 표기를 고르세요. (문항 #4852)",
+        "sentence": "택시를 타고 목적지에 도착하여 카카오페이로 요금을 [ (     ) ]했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "결제를",
+          "결제",
+          "결재의",
+          "결재"
+        ],
+        "answerIndex": 1,
+        "correctIndex": 1,
+        "explanation": "'결제'(이)가 올바른 표준 표기입니다. 매매 거래나 대금 관계를 정산하거나 지불함. (비즈니스 규정 (대금이나 증권을 지불하여 거래 관계를 끝맺음))",
+        "standardWord": "결제"
+      },
+      {
+        "index": 1,
+        "id": 578,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #578)",
+        "sentence": "친구의 도톰하고 둥근 복스러운 [ (     ) ]을 보고 관상이 참 좋아 보인다고 말했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "귀밥",
+          "귓빱",
+          "귓밥",
+          "귀빱"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'귓밥'(이)가 올바른 표준 표기입니다. 귓바퀴의 아래쪽에 붙은 살. (한글 맞춤법 제30항 (사이시옷 표기))",
+        "standardWord": "귓밥"
+      },
+      {
+        "index": 2,
+        "id": 494,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #494)",
+        "sentence": "고추튀김 전문점에서 속을 다진 소고기와 당면으로 꽉 채운 큼직한 [ (     ) ] 튀김을 주문했다.",
+        "sentenceTranslation": "",
+        "options": [
+          "푿고추",
+          "푿꼬추",
+          "풋고추",
+          "풋꼬추"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'풋고추'(이)가 올바른 표준 표기입니다. 아직 덜 익은 푸른 고추. (한글 맞춤법 (접두사 '풋-' 결합))",
+        "standardWord": "풋고추"
+      },
+      {
+        "index": 3,
+        "id": 79,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "초등/기초",
+        "question": "다음 문장의 빈칸에 들어갈 알맞은 낱말을 골라보세요. (문항 #79)",
+        "sentence": "달력을 보며 계산해보니 우리가 캠핑을 떠났던 날은 [ (     ) ] 일이었다.",
+        "sentenceTranslation": "",
+        "options": [
+          "어제그저께",
+          "어제그제",
+          "어저께그저께",
+          "어저께"
+        ],
+        "answerIndex": 0,
+        "correctIndex": 0,
+        "explanation": "'어제그저께'(이)가 올바른 표준 표기입니다. 그제의 전날. (표준어 규정 (그제의 전날을 이르는 표준어))",
+        "standardWord": "어제그저께"
+      },
+      {
+        "index": 4,
+        "id": 1328,
+        "subject": "spelling",
+        "subjectName": "우리말 맞춤법",
+        "level": "중등/필수",
+        "question": "다음 문장의 빈칸에 들어갈 올바른 표준어 표기를 고르세요. (문항 #1328)",
+        "sentence": "놀이공원의 유령의 집에 들어가자 서늘한 냉기와 함께 기분 나쁜 한기가 감돌아 등골이 [ (     ) ].",
+        "sentenceTranslation": "",
+        "options": [
+          "으시시한",
+          "으스스한",
+          "으스스하다",
+          "으시시하다"
+        ],
+        "answerIndex": 2,
+        "correctIndex": 2,
+        "explanation": "'으스스하다'(이)가 올바른 표준 표기입니다. 춥거나 무서워서 오싹하고 소름이 돋다. (표준어 규정 (오싹하고 서늘함))",
+        "standardWord": "으스스하다"
+      }
+    ],
+    "progress": {
+      "e2e_runner_1795242064645": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 30,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "points": 25,
+            "timeSpent": 1.8
+          }
+        ],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1,
+          "battle_double": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 1.8,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false
+      },
+      "맞춤요정": {
+        "joined": true,
+        "currentIndex": 1,
+        "score": 20,
+        "combo": 1,
+        "answers": [
+          {
+            "qIndex": 0,
+            "isCorrect": true,
+            "selectedOptionIndex": 1,
+            "points": 20,
+            "timeSpent": 4
+          }
+        ],
+        "inventory": {
+          "battle_ink": 1,
+          "battle_wind": 1,
+          "battle_freeze": 1,
+          "battle_reflect": 1,
+          "battle_steal": 1,
+          "battle_lightning": 1,
+          "battle_peek": 1,
+          "battle_sight": 1,
+          "battle_bomb": 1,
+          "battle_rainbow": 1
+        },
+        "completed": false,
+        "completedAt": null,
+        "totalTime": 4,
+        "activeEffects": [],
+        "hasReflect": false,
+        "hasSteal": false,
+        "hasRainbow": false,
+        "lastActionTime": 1795242060878
+      }
+    },
+    "itemLog": [],
+    "winner": null,
+    "createdAt": "2026-11-21T06:21:04.874Z",
+    "completedAt": null
   }
 ]

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.6.3">
+  <meta name="app-version" content="3.7.0">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.6.3">
+  <link rel="stylesheet" href="style.css?v=3.7.0">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -214,7 +214,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span id="quickReloadVersionBadge" class="version-badge">v3.6.3</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.7.0</span>
         </button>
         <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
@@ -522,53 +522,134 @@
          ============================================================ -->
     <section id="viewBattle" class="view-section battle-arena-section">
       <div class="battle-screen">
-        <!-- Battle Top Header -->
-        <div class="battle-top-bar">
-          <button id="btnBattleExit" class="btn-battle-back" type="button" title="대결방 나가기">✕</button>
-          <div class="battle-title-col">
-            <span id="battleRoomSubjectBadge" class="battle-subject-pill">⚔️ 우리말 맞춤법</span>
-            <h3 id="battleRoomHeaderTitle" class="battle-room-title">민채 vs 미니 퀴즈 대결!</h3>
-          </div>
-          <div class="battle-q-indicator">
-            <span id="battleCurrentQNum">Q1</span><span id="battleTotalQNum">/5</span>
+        <!-- 1. Fullscreen Synchronized 3, 2, 1 Countdown Overlay -->
+        <div id="battleCountdownOverlay" class="battle-countdown-overlay" style="display: none;">
+          <div class="countdown-center-card">
+            <div id="battleCountdownNumber" class="countdown-big-number">3</div>
+            <div id="battleCountdownSub" class="countdown-sub-text">대결 시작 준비 중! 🔥</div>
           </div>
         </div>
 
-        <!-- Real-time Rival Live Score Gauge Bar -->
-        <div id="battleRivalsBar" class="battle-rivals-bar">
-          <!-- Dynamically populated rival gauge cards -->
+        <!-- 2. Synchronized Waiting Room Screen (Shown when room.status === 'waiting') -->
+        <div id="battleWaitingScreen" class="battle-waiting-screen" style="display: none;">
+          <div class="waiting-header-card">
+            <span id="battleWaitingSubjectBadge" class="waiting-badge-pill">⚔️ 우리말 맞춤법</span>
+            <h2 id="battleWaitingTitle" class="waiting-room-heading">대결 대기실</h2>
+            <p id="battleWaitingMeta" class="waiting-room-meta">5문제 · 1:1 대결</p>
+          </div>
+
+          <div class="waiting-roster-section">
+            <div class="waiting-section-title">👥 참여 플레이어 준비 현황</div>
+            <div id="battleWaitingRosterList" class="waiting-roster-grid">
+              <!-- Dynamically populated player cards with ready status -->
+            </div>
+          </div>
+
+          <div class="waiting-action-footer">
+            <button id="btnBattleToggleReady" type="button" class="btn-battle-ready-main">
+              🔥 대결 시작 준비 완료
+            </button>
+            <button id="btnBattleLeaveRoom" type="button" class="btn-battle-leave">
+              대결 나가기
+            </button>
+          </div>
         </div>
 
-        <!-- Question & Problem Box -->
-        <div class="battle-question-box">
-          <div class="battle-timer-bar-track">
-            <div id="battleTimerBarFill" class="battle-timer-bar-fill"></div>
+        <!-- 3. Active Battle Area (Top Bar, Rivals Bar, Question, Options, Dock) -->
+        <div id="battleActivePlayArea" class="battle-active-play-area">
+          <!-- Battle Top Header -->
+          <div class="battle-top-bar">
+            <button id="btnBattleExit" class="btn-battle-back" type="button" title="대결방 나가기">✕</button>
+            <div class="battle-title-col">
+              <span id="battleRoomSubjectBadge" class="battle-subject-pill">⚔️ 우리말 맞춤법</span>
+              <h3 id="battleRoomHeaderTitle" class="battle-room-title">민채 vs 미니 퀴즈 대결!</h3>
+            </div>
+            <div class="battle-q-indicator">
+              <span id="battleCurrentQNum">Q1</span><span id="battleTotalQNum">/5</span>
+            </div>
           </div>
-          <div class="battle-q-meta-row">
-            <span id="battleLevelBadge" class="battle-level-pill">초등/기초</span>
-            <span id="battleComboBadge" class="battle-combo-pill" style="display: none;">🔥 2 콤보 (+2P)</span>
-            <span id="battleTimerText" class="battle-timer-text">⏱️ 15.0s</span>
+
+          <!-- Real-time Rival Live Score Gauge Bar -->
+          <div id="battleRivalsBar" class="battle-rivals-bar">
+            <!-- Dynamically populated rival gauge cards -->
           </div>
-          <div id="battlePromptText" class="battle-prompt-text">Q1. 빈칸에 들어갈 올바른 맞춤법을 고르세요.</div>
-          <div id="battleSentenceBox" class="battle-sentence-card">
-            <!-- Problem Sentence Content -->
+
+          <!-- Question & Problem Box -->
+          <div class="battle-question-box">
+            <div class="battle-timer-bar-track">
+              <div id="battleTimerBarFill" class="battle-timer-bar-fill"></div>
+            </div>
+            <div class="battle-q-meta-row">
+              <span id="battleLevelBadge" class="battle-level-pill">초등/기초</span>
+              <span id="battleComboBadge" class="battle-combo-pill" style="display: none;">🔥 2 콤보 (+2P)</span>
+              <span id="battleTimerText" class="battle-timer-text">⏱️ 15.0s</span>
+            </div>
+            <div id="battlePromptText" class="battle-prompt-text">Q1. 빈칸에 들어갈 올바른 맞춤법을 고르세요.</div>
+            <div id="battleSentenceBox" class="battle-sentence-card">
+              <!-- Problem Sentence Content -->
+            </div>
+            <div id="battleSentenceTranslation" class="battle-translation-box" style="display: none;"></div>
+
+            <!-- Waiting for Opponent Banner (Shown after answering) -->
+            <div id="battleWaitingOpponentNotice" class="battle-waiting-opponent-banner" style="display: none;">
+              <span class="waiting-spinner">⏳</span>
+              <div class="waiting-notice-text">
+                <strong>답안 제출 완료!</strong>
+                <span>상대방이 문제를 풀고 있습니다... 잠시만 기다려주세요!</span>
+              </div>
+            </div>
           </div>
-          <div id="battleSentenceTranslation" class="battle-translation-box" style="display: none;"></div>
+
+          <!-- 4 Options Grid -->
+          <div id="battleOptionsGrid" class="battle-options-grid">
+            <!-- Dynamically rendered 4 choices with Fisher-Yates shuffle -->
+          </div>
+
+          <!-- Battle Exclusive Item Bar (8 Battle Items) -->
+          <div id="battleItemDock" class="battle-item-dock">
+            <div class="battle-dock-header">
+              <span class="battle-dock-title">🎒 배틀 전용 전략 아이템</span>
+              <span id="battleDockNotice" class="battle-dock-sub">상대를 지정해 아이템을 발사하세요!</span>
+            </div>
+            <div id="battleItemButtonsRow" class="battle-item-row">
+              <!-- Dynamically populated 8 battle items -->
+            </div>
+          </div>
         </div>
 
-        <!-- 4 Options Grid -->
-        <div id="battleOptionsGrid" class="battle-options-grid">
-          <!-- Dynamically rendered 4 choices with Fisher-Yates shuffle -->
-        </div>
+        <!-- 4. 1-Question Round Result Comparison & Tactical Intermission Modal -->
+        <div id="battleRoundResultModal" class="battle-round-result-modal" style="display: none;">
+          <div class="round-result-card">
+            <div class="round-result-header">
+              <span id="roundResultQBadge" class="round-q-badge">Q1 결과</span>
+              <h3 class="round-result-title">1문제 대결 결과</h3>
+            </div>
+            <div id="roundResultAnswerBanner" class="round-answer-banner">
+              <!-- Correct answer text -->
+            </div>
+            <div id="roundResultVersusGrid" class="round-versus-grid">
+              <!-- Player 1 vs Player 2 Comparison -->
+            </div>
+            <div id="roundResultSpeedCallout" class="round-speed-callout" style="display: none;">
+              <!-- Speed king bonus callout -->
+            </div>
 
-        <!-- Battle Exclusive Item Bar (8 Battle Items) -->
-        <div id="battleItemDock" class="battle-item-dock">
-          <div class="battle-dock-header">
-            <span class="battle-dock-title">🎒 배틀 전용 전략 아이템</span>
-            <span id="battleDockNotice" class="battle-dock-sub">상대를 지정해 아이템을 발사하세요!</span>
-          </div>
-          <div id="battleItemButtonsRow" class="battle-item-row">
-            <!-- Dynamically populated 8 battle items -->
+            <!-- Inter-round Tactical Item Selector -->
+            <div id="roundResultItemSection" class="round-item-select-section">
+              <div class="round-item-select-title">
+                <span>🎒 다음 문제 대비 아이템 선택 (선택 시 자동 발동)</span>
+                <span id="roundItemTimerText" class="round-item-timer">남은 시간 8초</span>
+              </div>
+              <div id="roundItemSelectButtons" class="round-item-buttons-row">
+                <!-- Item buttons -->
+              </div>
+            </div>
+
+            <div class="round-result-footer">
+              <button id="btnBattleNextRoundReady" type="button" class="btn-next-round-ready">
+                다음 문제 준비 완료! 🔥
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2035,11 +2116,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.6.3"></script>
-  <script src="idiom_questions.js?v=3.6.3"></script>
-  <script src="hanja_questions.js?v=3.6.3"></script>
-  <script src="english_questions.js?v=3.6.3"></script>
-  <script src="stickers.js?v=3.6.3"></script>
-  <script src="app.js?v=3.6.3"></script>
+  <script src="questions.js?v=3.7.0"></script>
+  <script src="idiom_questions.js?v=3.7.0"></script>
+  <script src="hanja_questions.js?v=3.7.0"></script>
+  <script src="english_questions.js?v=3.7.0"></script>
+  <script src="stickers.js?v=3.7.0"></script>
+  <script src="app.js?v=3.7.0"></script>
 </body>
 </html>

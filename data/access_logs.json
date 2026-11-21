@@ -4929,5 +4929,311 @@
     "details": {
       "reason": "인증 실패"
     }
+  },
+  {
+    "id": "log_1795241962915_0tpht",
+    "timestamp": "2026-11-21T06:19:22.915Z",
+    "kstTime": "2026-11-21 06:19:22",
+    "username": "e2e_runner_1795241962882",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795241962917_r1m7j",
+    "timestamp": "2026-11-21T06:19:22.917Z",
+    "kstTime": "2026-11-21 06:19:22",
+    "username": "e2e_runner_1795241962882",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795241962918_30047",
+    "timestamp": "2026-11-21T06:19:22.918Z",
+    "kstTime": "2026-11-21 06:19:22",
+    "username": "e2e_runner_1795241962882",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795241963115_e1mjt",
+    "timestamp": "2026-11-21T06:19:23.115Z",
+    "kstTime": "2026-11-21 06:19:23",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795242038107_kopz0",
+    "timestamp": "2026-11-21T06:20:38.107Z",
+    "kstTime": "2026-11-21 06:20:38",
+    "username": "e2e_runner_1795242038092",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242038108_7po5i",
+    "timestamp": "2026-11-21T06:20:38.108Z",
+    "kstTime": "2026-11-21 06:20:38",
+    "username": "e2e_runner_1795242038092",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242038109_tbrjz",
+    "timestamp": "2026-11-21T06:20:38.109Z",
+    "kstTime": "2026-11-21 06:20:38",
+    "username": "e2e_runner_1795242038092",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795242038294_b9igb",
+    "timestamp": "2026-11-21T06:20:38.294Z",
+    "kstTime": "2026-11-21 06:20:38",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795242064659_x73y8",
+    "timestamp": "2026-11-21T06:21:04.659Z",
+    "kstTime": "2026-11-21 06:21:04",
+    "username": "e2e_runner_1795242064645",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242064661_dylmi",
+    "timestamp": "2026-11-21T06:21:04.661Z",
+    "kstTime": "2026-11-21 06:21:04",
+    "username": "e2e_runner_1795242064645",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242064662_dlx1p",
+    "timestamp": "2026-11-21T06:21:04.662Z",
+    "kstTime": "2026-11-21 06:21:04",
+    "username": "e2e_runner_1795242064645",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795242064850_dw11p",
+    "timestamp": "2026-11-21T06:21:04.850Z",
+    "kstTime": "2026-11-21 06:21:04",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795242109196_ibzdj",
+    "timestamp": "2026-11-21T06:21:49.196Z",
+    "kstTime": "2026-11-21 06:21:49",
+    "username": "e2e_runner_1795242109182",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242109198_ue0ra",
+    "timestamp": "2026-11-21T06:21:49.198Z",
+    "kstTime": "2026-11-21 06:21:49",
+    "username": "e2e_runner_1795242109182",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242109199_khyaq",
+    "timestamp": "2026-11-21T06:21:49.199Z",
+    "kstTime": "2026-11-21 06:21:49",
+    "username": "e2e_runner_1795242109182",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795242109383_ech2r",
+    "timestamp": "2026-11-21T06:21:49.383Z",
+    "kstTime": "2026-11-21 06:21:49",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795242116840_4nqis",
+    "timestamp": "2026-11-21T06:21:56.840Z",
+    "kstTime": "2026-11-21 06:21:56",
+    "username": "e2e_runner_1795242116825",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242116841_76fbq",
+    "timestamp": "2026-11-21T06:21:56.841Z",
+    "kstTime": "2026-11-21 06:21:56",
+    "username": "e2e_runner_1795242116825",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242116842_7ip1p",
+    "timestamp": "2026-11-21T06:21:56.842Z",
+    "kstTime": "2026-11-21 06:21:56",
+    "username": "e2e_runner_1795242116825",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795242117027_ak4mz",
+    "timestamp": "2026-11-21T06:21:57.027Z",
+    "kstTime": "2026-11-21 06:21:57",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795242197995_rrqnf",
+    "timestamp": "2026-11-21T06:23:17.995Z",
+    "kstTime": "2026-11-21 06:23:17",
+    "username": "e2e_runner_1795242197981",
+    "action": "REGISTER",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242197997_g50qa",
+    "timestamp": "2026-11-21T06:23:17.997Z",
+    "kstTime": "2026-11-21 06:23:17",
+    "username": "e2e_runner_1795242197981",
+    "action": "LOGIN_SUCCESS",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "grade": "고등학교 1학년"
+    }
+  },
+  {
+    "id": "log_1795242197998_mz6vk",
+    "timestamp": "2026-11-21T06:23:17.998Z",
+    "kstTime": "2026-11-21 06:23:17",
+    "username": "e2e_runner_1795242197981",
+    "action": "ROUND_CLEAR",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "mode": "hanja",
+      "round": 2,
+      "score": 100,
+      "pointsEarned": 150
+    }
+  },
+  {
+    "id": "log_1795242198186_sokr0",
+    "timestamp": "2026-11-21T06:23:18.186Z",
+    "kstTime": "2026-11-21 06:23:18",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
   }
 ]

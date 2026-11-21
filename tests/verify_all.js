@@ -8,6 +8,7 @@ process.env.PORT = TEST_PORT;
 process.env.TEST_ENV = 'true';
 
 const server = require('../server.js');
+const usersFilePath = path.join(__dirname, '../data/users.json');
 
 function request(method, urlPath, headers = {}, body = null) {
   return new Promise((resolve, reject) => {
@@ -212,8 +213,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.6.3">'), 'index.html must include meta app-version 3.6.3');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.6.3">'), 'index.html must cache-bust style.css with v3.6.3');
+    assert(indexHtml.includes('<meta name="app-version" content="3.7.0">'), 'index.html must include meta app-version 3.7.0');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.0">'), 'index.html must cache-bust style.css with v3.7.0');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -296,7 +297,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.6.3', 'GET /api/version version must be 3.6.3');
+    assert.strictEqual(verRes.data.version, '3.7.0', 'GET /api/version version must be 3.7.0');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -523,7 +524,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.6.3';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.0';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -536,7 +537,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.6.3</span>'), 'index.html must have v3.6.3 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.0</span>'), 'index.html must have v3.7.0 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -778,13 +779,22 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(aiRoomId, 'AI battle room must have roomId');
     assert(aiBattleRes.data.room.members.includes('맞춤요정'), 'Members must include 맞춤요정');
 
-    // Force lastActionTime back by 4 seconds to trigger immediate AI mascot bot step
+    // v3.7.0 Waiting Room -> Ready -> Countdown -> In_progress transition
+    await request('POST', '/api/battle/ready', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: aiRoomId
+    });
+
+    // Force lastActionTime and countdownStartTime back to trigger immediate AI mascot bot step
     const battleRoomsPath = path.join(__dirname, '../data/battle_rooms.json');
     if (fs.existsSync(battleRoomsPath)) {
       const bRooms = JSON.parse(fs.readFileSync(battleRoomsPath, 'utf8'));
       const targetRoom = bRooms.find(r => r.id === aiRoomId);
-      if (targetRoom && targetRoom.progress && targetRoom.progress['맞춤요정']) {
-        targetRoom.progress['맞춤요정'].lastActionTime = Date.now() - 4000;
+      if (targetRoom) {
+        targetRoom.countdownStartTime = Date.now() - 3500;
+        targetRoom.phaseStartTime = Date.now() - 3500;
+        if (targetRoom.progress && targetRoom.progress['맞춤요정']) {
+          targetRoom.progress['맞춤요정'].lastActionTime = Date.now() - 4000;
+        }
         fs.writeFileSync(battleRoomsPath, JSON.stringify(bRooms, null, 2), 'utf8');
       }
     }
@@ -860,6 +870,117 @@ const srv = server.listen(TEST_PORT, async () => {
     });
     assert.strictEqual(delTeamRoomRes.status, 200, 'Delete team room must return 200');
     assert.strictEqual(delTeamRoomRes.data.success, true, 'Delete team room must succeed');
+
+    // 39. v3.7.0 Synchronized Waiting Room, 3-2-1 Countdown, Turn Result Comparison & Intermission Tactical Item
+    assert(indexHtml.includes('id="battleCountdownOverlay"'), 'index.html must include #battleCountdownOverlay');
+    assert(indexHtml.includes('id="battleWaitingScreen"'), 'index.html must include #battleWaitingScreen');
+    assert(indexHtml.includes('id="battleActivePlayArea"'), 'index.html must include #battleActivePlayArea');
+    assert(indexHtml.includes('id="battleWaitingOpponentNotice"'), 'index.html must include #battleWaitingOpponentNotice');
+    assert(indexHtml.includes('id="battleRoundResultModal"'), 'index.html must include #battleRoundResultModal');
+    assert(indexHtml.includes('id="roundResultVersusGrid"'), 'index.html must include #roundResultVersusGrid');
+    assert(indexHtml.includes('id="roundItemSelectButtons"'), 'index.html must include #roundItemSelectButtons');
+    assert(latestStyleCss.includes('.battle-countdown-overlay'), 'style.css must style .battle-countdown-overlay');
+    assert(latestStyleCss.includes('.battle-waiting-screen'), 'style.css must style .battle-waiting-screen');
+    assert(latestStyleCss.includes('.round-result-card'), 'style.css must style .round-result-card');
+    assert(appCode.includes('syncBattleViewStatus('), 'app.js must implement syncBattleViewStatus()');
+    assert(appCode.includes('renderBattleWaitingScreen('), 'app.js must implement renderBattleWaitingScreen()');
+    assert(appCode.includes('triggerBattleCountdown('), 'app.js must implement triggerBattleCountdown()');
+    assert(appCode.includes('renderBattleRoundResult('), 'app.js must implement renderBattleRoundResult()');
+    assert(appCode.includes('selectBattleRoundItem('), 'app.js must implement selectBattleRoundItem()');
+
+    // 39-A. Create Room & Verify Waiting Room Status
+    const syncRoomRes = await request('POST', '/api/battle/create', { 'Authorization': `Bearer ${userToken}` }, {
+      title: '동기화 1:1 대결 테스트',
+      invitedUsernames: ['맞춤요정'],
+      matchType: '1v1',
+      questionCount: 5,
+      subject: 'spelling',
+      level: 'all',
+      allowItems: true
+    });
+    assert.strictEqual(syncRoomRes.status, 200, 'POST /api/battle/create must return 200');
+    assert.strictEqual(syncRoomRes.data.room.status, 'waiting', 'Room initial status must be waiting');
+    assert.strictEqual(syncRoomRes.data.room.roundPhase, 'waiting', 'Room initial roundPhase must be waiting');
+    const syncRoomId = syncRoomRes.data.room.id;
+
+    // 39-B. Ready Toggle -> All Ready -> Countdown Transition
+    const readyRes = await request('POST', '/api/battle/ready', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: syncRoomId
+    });
+    assert.strictEqual(readyRes.status, 200, 'POST /api/battle/ready must return 200');
+    assert.strictEqual(readyRes.data.success, true, 'Ready toggle must succeed');
+    // When both are ready (creator + auto-ready 맞춤요정), room transitions to 'countdown'
+    assert.strictEqual(readyRes.data.status, 'countdown', 'Room status must transition to countdown when all ready');
+
+    // 39-C. Countdown 3.2s Completion -> answering Phase Transition
+    // Fast-forward countdown time on server by modifying countdownStartTime
+    const bRoomsFile = path.join(__dirname, '../data/battle_rooms.json');
+    if (fs.existsSync(bRoomsFile)) {
+      const allBRooms = JSON.parse(fs.readFileSync(bRoomsFile, 'utf8'));
+      const targetRoom = allBRooms.find(r => r.id === syncRoomId);
+      if (targetRoom) {
+        targetRoom.countdownStartTime = Date.now() - 3500;
+        fs.writeFileSync(bRoomsFile, JSON.stringify(allBRooms, null, 2), 'utf8');
+      }
+    }
+    const checkRoomRes = await request('GET', `/api/battle/room?roomId=${syncRoomId}`, { 'Authorization': `Bearer ${userToken}` });
+    assert.strictEqual(checkRoomRes.status, 200, 'GET /api/battle/room must return 200');
+    assert.strictEqual(checkRoomRes.data.room.status, 'in_progress', 'Room status must advance to in_progress after countdown');
+    assert.strictEqual(checkRoomRes.data.room.roundPhase, 'answering', 'roundPhase must be answering');
+
+    // 39-D. Submit Answer & Turn-by-Turn Result Comparison + Speed Bonus
+    const firstQ = checkRoomRes.data.room.questions[0];
+    const subRes = await request('POST', '/api/battle/submit-answer', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: syncRoomId,
+      questionIndex: 0,
+      selectedOptionIndex: firstQ.answerIndex,
+      timeSpent: 1.8
+    });
+    assert.strictEqual(subRes.status, 200, 'POST /api/battle/submit-answer must return 200');
+    assert.strictEqual(subRes.data.isCorrect, true, 'Answer must be correct');
+
+    // Let AI bot answer as well to complete Q0
+    if (fs.existsSync(bRoomsFile)) {
+      const allBRooms = JSON.parse(fs.readFileSync(bRoomsFile, 'utf8'));
+      const targetRoom = allBRooms.find(r => r.id === syncRoomId);
+      if (targetRoom && targetRoom.progress && targetRoom.progress['맞춤요정']) {
+        targetRoom.progress['맞춤요정'].lastActionTime = Date.now() - 4000;
+        fs.writeFileSync(bRoomsFile, JSON.stringify(allBRooms, null, 2), 'utf8');
+      }
+    }
+    // GET /api/battle/room will trigger processAiMascotBot to answer Q0
+    const botAnswerRes = await request('GET', `/api/battle/room?roomId=${syncRoomId}`, { 'Authorization': `Bearer ${userToken}` });
+    assert.strictEqual(botAnswerRes.status, 200, 'GET /api/battle/room after bot answer must return 200');
+    const updatedSyncRoom = botAnswerRes.data.room;
+
+    assert.strictEqual(updatedSyncRoom.roundPhase, 'round_result', 'roundPhase must transition to round_result when all submitted');
+    assert(updatedSyncRoom.roundResults && updatedSyncRoom.roundResults[0], 'roundResults[0] must exist');
+    assert.strictEqual(updatedSyncRoom.roundResults[0].fastestUser, testUsername, 'Fastest user should be test user (1.8s)');
+
+    // 39-E. Inter-round Tactical Item Reservation (POST /api/battle/select-round-item)
+    // Give test user an item in progress inventory for testing
+    if (fs.existsSync(bRoomsFile)) {
+      const allBRooms = JSON.parse(fs.readFileSync(bRoomsFile, 'utf8'));
+      const targetRoom = allBRooms.find(r => r.id === syncRoomId);
+      if (targetRoom && targetRoom.progress && targetRoom.progress[testUsername]) {
+        targetRoom.progress[testUsername].inventory = targetRoom.progress[testUsername].inventory || {};
+        targetRoom.progress[testUsername].inventory.battle_double = 1;
+        fs.writeFileSync(bRoomsFile, JSON.stringify(allBRooms, null, 2), 'utf8');
+      }
+    }
+    const selectItemRes = await request('POST', '/api/battle/select-round-item', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: syncRoomId,
+      itemKey: 'battle_double'
+    });
+    assert.strictEqual(selectItemRes.status, 200, 'POST /api/battle/select-round-item must return 200');
+    assert.strictEqual(selectItemRes.data.success, true, 'Item selection must succeed');
+    assert(selectItemRes.data.room.nextRoundEffects, 'Room must have nextRoundEffects');
+
+    // 39-F. Delete Sync Test Room
+    const delSyncRoomRes = await request('POST', '/api/battle/delete-room', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: syncRoomId
+    });
+    assert.strictEqual(delSyncRoomRes.status, 200, 'Delete sync test room must return 200');
 
     // Clean up created battle room
     const battleRoomsFile = path.join(__dirname, '../data/battle_rooms.json');
