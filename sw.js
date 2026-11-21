@@ -3,7 +3,7 @@
  * Handles App Lifecycle, Background Push Notifications, Vibration & Realtime Message Routing
  */
 
-const CACHE_NAME = 'haru-pwa-v3.7.0';
+const CACHE_NAME = 'haru-pwa-v3.7.1';
 
 // 1. Service Worker Installation
 self.addEventListener('install', (event) => {
@@ -57,7 +57,9 @@ self.addEventListener('push', (event) => {
     requireInteraction: false,
     data: {
       url: targetUrl,
+      type: data.type || null,
       roomId: roomId,
+      battleRoomId: data.battleRoomId || (targetUrl.includes('open=battle') ? roomId : null),
       withUser: withUser,
       fromUsername: data.fromUsername || (data.data && data.data.fromUsername) || withUser,
       fromName: data.fromName || (data.data && data.data.fromName) || null,
@@ -75,6 +77,7 @@ self.addEventListener('push', (event) => {
           payload: {
             ...data,
             roomId: roomId,
+            battleRoomId: data.battleRoomId || (targetUrl.includes('open=battle') ? roomId : null),
             withUser: withUser
           }
         });
@@ -90,30 +93,44 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   const notifData = (event.notification && event.notification.data) || {};
-  const roomId = notifData.roomId || null;
+  const roomId = notifData.roomId || notifData.battleRoomId || null;
   const withUser = notifData.withUser || notifData.fromUsername || null;
   
   let fallbackUrl = '/?open=chat';
-  if (roomId) fallbackUrl += `&roomId=${encodeURIComponent(roomId)}`;
-  else if (withUser) fallbackUrl += `&withUser=${encodeURIComponent(withUser)}`;
+  if (notifData.type === 'BATTLE_INVITE' && roomId) {
+    fallbackUrl = `/?open=battle&roomId=${encodeURIComponent(roomId)}`;
+  } else if (roomId) {
+    fallbackUrl += `&roomId=${encodeURIComponent(roomId)}`;
+  } else if (withUser) {
+    fallbackUrl += `&withUser=${encodeURIComponent(withUser)}`;
+  }
 
   const targetUrl = notifData.url || fallbackUrl;
+  const isBattleInvite = notifData.type === 'BATTLE_INVITE' || (targetUrl && targetUrl.includes('open=battle'));
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Focus existing open window if available and immediately open chat window
+      // Focus existing open window if available and immediately route to battle room or chat
       for (const client of clientList) {
         if ((client.url.includes('danminlove.com') || client.url.includes(self.location.origin)) && 'focus' in client) {
-          client.postMessage({
-            type: 'OPEN_CHAT',
-            roomId: roomId,
-            withUser: withUser,
-            targetUrl: targetUrl
-          });
+          if (isBattleInvite && roomId) {
+            client.postMessage({
+              type: 'OPEN_BATTLE',
+              roomId: roomId,
+              targetUrl: targetUrl
+            });
+          } else {
+            client.postMessage({
+              type: 'OPEN_CHAT',
+              roomId: roomId,
+              withUser: withUser,
+              targetUrl: targetUrl
+            });
+          }
           return client.focus();
         }
       }
-      // If no window is open, open a new window pointing directly to chat
+      // If no window is open, open a new window pointing directly to the target URL
       if (self.clients.openWindow) {
         return self.clients.openWindow(targetUrl);
       }

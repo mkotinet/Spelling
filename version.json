@@ -1,6 +1,6 @@
 {
-  "version": "3.7.0",
-  "build": "20261121_1510",
-  "name": "하루맞춤 (Haru Matchum) - Synchronized Turn-by-Turn Battle Arena with 3-2-1 Countdown & Tactical Intermission",
-  "releaseNotes": "1) 대결방 초대 및 수락 시 양자 화면 동기화 대기실 입장, 2) 양측 준비 완료 시 3·2·1 풀스크린 동시 카운트다운 후 문제 시작, 3) 1문제 풀이 후 실시간 정답·속도·점수 대결 결과 비교창 노출, 4) 문제 간 다음 라운드 대비 8종 전술 아이템 선택 페이즈 신설"
+  "version": "3.7.1",
+  "build": "20261121_1550",
+  "name": "하루맞춤 (Haru Matchum) - Direct Battle Route, Pure Korean Items & Sticker Isolation Layout",
+  "releaseNotes": "1) 퀴즈대결 초대 알림/도전장 탭 시 즉시 해당 대결방으로 자동 다이렉트 입장 및 대화방 초대 카드 연동, 2) 퀴즈대결 아이템 명칭을 순수하고 직관적인 한글명(오답 지우개, 점수 2배 보석, 꽁꽁 얼음, 먹물 구름, 휘몰이 바람, 반사 방패, 점수 뺏기 번개, 정답 엿보기, 째깍 시한폭탄, 무조건 정답 무지개)으로 전면 개편, 3) 대화창 스티커 180px 클래식 시원한 규격 복원 및 메시지 행 격리(isolation: isolate)를 통한 이전/다음 메시지 겹침 가림 버그 원천 해결"
 }

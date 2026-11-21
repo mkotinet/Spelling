@@ -250,23 +250,21 @@ function saveBattleRooms(rooms) {
   }
 }
 
-// ⚔️ 퀴즈대결방 전용 신규 아이템 8종 (Battle Exclusive Items)
+// ⚔️ 퀴즈대결방 전용 신규 아이템 (직관적 한글 명칭 개편)
 const BATTLE_ITEMS = {
-  battle_ink: {
-    id: "battle_ink",
-    name: "먹물 벼루",
-    icon: "墨",
-    type: "attack",
-    duration: 3500, // 3.5초
-    desc: "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+  battle_hint: {
+    id: "battle_hint",
+    name: "오답 지우개",
+    icon: "💡",
+    type: "buff",
+    desc: "다음 문제에서 오답 보기 1개를 즉시 지워줍니다!"
   },
-  battle_wind: {
-    id: "battle_wind",
-    name: "모래바람",
-    icon: "🌪️",
-    type: "attack",
-    duration: 4000,
-    desc: "상대방의 선택지 순서를 마구 뒤섞어 혼란을 줍니다!"
+  battle_double: {
+    id: "battle_double",
+    name: "점수 2배 보석",
+    icon: "💎",
+    type: "buff",
+    desc: "다음 문제 정답 시 획득 점수가 2배로 증가합니다!"
   },
   battle_freeze: {
     id: "battle_freeze",
@@ -276,42 +274,58 @@ const BATTLE_ITEMS = {
     duration: 3000,
     desc: "상대방의 화면을 3초간 얼려 정답 터치를 지연시킵니다!"
   },
+  battle_ink: {
+    id: "battle_ink",
+    name: "먹물 구름",
+    icon: "墨",
+    type: "attack",
+    duration: 3500, // 3.5초
+    desc: "선택한 상대방의 보기를 3.5초간 검은 먹물로 가립니다!"
+  },
+  battle_wind: {
+    id: "battle_wind",
+    name: "휘몰이 바람",
+    icon: "🌪️",
+    type: "attack",
+    duration: 4000,
+    desc: "상대방의 선택지 순서를 마구 뒤섞어 혼란을 줍니다!"
+  },
   battle_reflect: {
     id: "battle_reflect",
-    name: "반사 거울방패",
+    name: "반사 방패",
     icon: "🛡️",
     type: "defense",
     desc: "나에게 들어오는 다음 공격 아이템을 튕겨내 상대방에게 역공합니다!"
   },
   battle_steal: {
     id: "battle_steal",
-    name: "번개 스틸",
+    name: "점수 뺏기 번개",
     icon: "⚡",
     type: "attack",
-    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25P를 내 점수로 뺏어옵니다!"
+    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25점을 내 점수로 뺏어옵니다!"
   },
   battle_lightning: {
     id: "battle_lightning",
-    name: "번개 스틸",
+    name: "점수 뺏기 번개",
     icon: "⚡",
     type: "attack",
-    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25P를 내 점수로 뺏어옵니다!"
+    desc: "내가 정답을 맞혔을 때 1위 상대방의 점수 25점을 내 점수로 뺏어옵니다!"
   },
   battle_peek: {
     id: "battle_peek",
-    name: "천리안 심안",
+    name: "정답 엿보기",
     icon: "👁️",
     type: "support",
     duration: 3000,
-    desc: "1위 라이벌이 선택한 보기를 3초간 훔쳐봅니다!"
+    desc: "1위 라이벌이 선택한 보기를 3초간 몰래 훔쳐봅니다!"
   },
   battle_sight: {
     id: "battle_sight",
-    name: "천리안 심안",
+    name: "정답 엿보기",
     icon: "👁️",
     type: "support",
     duration: 3000,
-    desc: "1위 라이벌이 선택한 보기를 3초간 훔쳐봅니다!"
+    desc: "1위 라이벌이 선택한 보기를 3초간 몰래 훔쳐봅니다!"
   },
   battle_bomb: {
     id: "battle_bomb",
@@ -319,28 +333,14 @@ const BATTLE_ITEMS = {
     icon: "💣",
     type: "attack",
     duration: 6000,
-    desc: "상대에게 폭탄 투척! 6초 안에 맞히지 못하면 폭발(-30P)!"
+    desc: "상대에게 폭탄 투척! 6초 안에 맞히지 못하면 폭발(-30점)!"
   },
   battle_rainbow: {
     id: "battle_rainbow",
-    name: "무지개 찬스",
+    name: "무조건 정답 무지개",
     icon: "🌈",
     type: "buff",
     desc: "오답을 선택해도 1회 무조건 정답으로 인정해줍니다!"
-  },
-  battle_double: {
-    id: "battle_double",
-    name: "더블 포인트",
-    icon: "💎",
-    type: "buff",
-    desc: "다음 문제 정답 시 획득 점수가 2배로 증가합니다!"
-  },
-  battle_hint: {
-    id: "battle_hint",
-    name: "힌트 요정",
-    icon: "💡",
-    type: "buff",
-    desc: "다음 문제에서 오답 1개를 즉시 지워줍니다!"
   }
 };
 
@@ -2703,7 +2703,7 @@ const server = http.createServer(async (req, res) => {
       rooms.push(newRoom);
       saveBattleRooms(rooms);
 
-      // 초대된 다른 친구들에게 웹 푸시 알림 발송
+      // 초대된 다른 친구들에게 웹 푸시 알림 발송 (v3.7.1: BATTLE_INVITE 타입 및 roomId 직행 페이로드 보장)
       const otherMembers = members.filter(m => m !== username);
       if (otherMembers.length > 0) {
         sendWebPushToUsers(otherMembers, {
@@ -2711,8 +2711,49 @@ const server = http.createServer(async (req, res) => {
           body: `${sender.name || username}님이 '${title}' (${subjectNameMap[subject]}, ${questionCount}제) 대결에 초대했습니다!`,
           icon: "/public/icons/icon-192.png",
           badge: "/public/icons/badge-72.png",
-          url: `/?open=battle&roomId=${encodeURIComponent(roomId)}`
+          url: `/?open=battle&roomId=${encodeURIComponent(roomId)}`,
+          type: "BATTLE_INVITE",
+          roomId: roomId,
+          battleRoomId: roomId
         });
+
+        // 1:1 대화방(채팅창)에도 대결 초대 카드 메시지 자동 주입
+        try {
+          const msgs = loadMessages();
+          otherMembers.forEach(targetUser => {
+            const chatRoomId = getChatRoomId(username, targetUser);
+            const inviteMsg = {
+              id: "msg_battle_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+              roomId: chatRoomId,
+              fromUsername: username,
+              fromName: sender.name || username,
+              fromAvatar: sender.avatar || "🐰",
+              fromAccessories: sender.accessories || {},
+              toUsername: targetUser,
+              toName: db.users[targetUser]?.name || targetUser,
+              toAvatar: db.users[targetUser]?.avatar || "🌸",
+              toAccessories: db.users[targetUser]?.accessories || {},
+              type: "battle_invite",
+              content: `⚔️ '${title}' 퀴즈대결에 초대했습니다!`,
+              battleRoomId: roomId,
+              battleSubject: subjectNameMap[subject] || "맞춤법",
+              battleQuestionCount: questionCount,
+              photoUrl: null,
+              photoExpiresAt: null,
+              photoExpired: false,
+              sticker: null,
+              gift: null,
+              timestamp: new Date().toISOString(),
+              kstTime: getKSTDateString() + " " + new Date().toTimeString().split(" ")[0],
+              read: false,
+              readBy: [username]
+            };
+            msgs.push(inviteMsg);
+          });
+          saveMessages(msgs);
+        } catch (msgErr) {
+          console.error("Failed to inject battle invite chat message:", msgErr);
+        }
       }
 
       return sendJSON(res, 200, {

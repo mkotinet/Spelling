@@ -213,8 +213,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.7.0">'), 'index.html must include meta app-version 3.7.0');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.0">'), 'index.html must cache-bust style.css with v3.7.0');
+    assert(indexHtml.includes('<meta name="app-version" content="3.7.1">'), 'index.html must include meta app-version 3.7.1');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.1">'), 'index.html must cache-bust style.css with v3.7.1');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -297,7 +297,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.7.0', 'GET /api/version version must be 3.7.0');
+    assert.strictEqual(verRes.data.version, '3.7.1', 'GET /api/version version must be 3.7.1');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -524,7 +524,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.0';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.1';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -537,7 +537,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.0</span>'), 'index.html must have v3.7.0 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.1</span>'), 'index.html must have v3.7.1 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -619,14 +619,15 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(q5100 && q5100.standardWord === '역할', 'Q5100 must be 역할');
     assert.strictEqual(validator.validateSentenceIntegrity(q5100).isValid, true, 'Q5100 must pass grammar validation');
 
-    // 35. v3.5.8 Classic Sticker 120px Fixed Size & Message Containment Separation Verification
+    // 35. v3.7.1 Classic Sticker 180px Size & Stacking Context Isolation Verification
     const latestStyleCss = fs.readFileSync(path.join(__dirname, '../style.css'), 'utf8');
-    assert(latestStyleCss.includes('width: 120px !important;'), 'style.css must enforce 120px fixed width on .chat-sticker-bubble');
-    assert(latestStyleCss.includes('height: 120px !important;'), 'style.css must enforce 120px fixed height on .chat-sticker-bubble');
+    assert(latestStyleCss.includes('width: 180px !important;'), 'style.css must enforce 180px width on .chat-sticker-bubble');
+    assert(latestStyleCss.includes('height: 180px !important;'), 'style.css must enforce 180px height on .chat-sticker-bubble');
     assert(latestStyleCss.includes('overflow: hidden !important;'), 'style.css must enforce overflow:hidden on sticker bubble to prevent text overlapping');
+    assert(latestStyleCss.includes('isolation: isolate;'), 'style.css must enforce stacking context isolation on .chat-msg-row');
     assert(latestStyleCss.includes('.chat-sticker-img'), 'style.css must define .chat-sticker-img class');
-    assert(appCode.includes('width:120px;height:120px;min-width:120px;min-height:120px;max-width:120px;max-height:120px;'), 'app.js must defensively embed inline 120px bounding box');
-    assert(appCode.includes('overflow:hidden;border-radius:16px;'), 'app.js must enforce overflow hidden inline to prevent CSS caching leakage');
+    assert(appCode.includes('width:180px;max-width:min(180px, 55vw);height:180px;max-height:min(180px, 55vw);'), 'app.js must defensively embed inline 180px bounding box');
+    assert(appCode.includes('overflow:hidden;border-radius:18px;'), 'app.js must enforce overflow hidden inline to prevent CSS caching leakage');
 
     // 36. v3.6.0 Real-time Quiz Battle Arena, Custom Question Settings, 8 Battle Items & Battle RP Rankings Verification
     const usersFilePath = path.join(__dirname, '../data/users.json');
@@ -981,6 +982,56 @@ const srv = server.listen(TEST_PORT, async () => {
       roomId: syncRoomId
     });
     assert.strictEqual(delSyncRoomRes.status, 200, 'Delete sync test room must return 200');
+
+    // 40. v3.7.1 Direct Battle Entrance & Intuitive Pure Korean Battle Items Verification
+    console.log('Testing Section 40: Direct Battle Entrance & Pure Korean Items...');
+    assert(serverCode.includes('"오답 지우개"'), 'server.js must define 오답 지우개 for battle_hint');
+    assert(serverCode.includes('"점수 2배 보석"'), 'server.js must define 점수 2배 보석 for battle_double');
+    assert(serverCode.includes('"꽁꽁 얼음"'), 'server.js must define 꽁꽁 얼음 for battle_freeze');
+    assert(serverCode.includes('"먹물 구름"'), 'server.js must define 먹물 구름 for battle_ink');
+    assert(serverCode.includes('"휘몰이 바람"'), 'server.js must define 휘몰이 바람 for battle_wind');
+    assert(serverCode.includes('"반사 방패"'), 'server.js must define 반사 방패 for battle_reflect');
+    assert(serverCode.includes('"점수 뺏기 번개"'), 'server.js must define 점수 뺏기 번개 for battle_lightning');
+    assert(serverCode.includes('"정답 엿보기"'), 'server.js must define 정답 엿보기 for battle_sight');
+    assert(serverCode.includes('"째깍 시한폭탄"'), 'server.js must define 째깍 시한폭탄 for battle_bomb');
+    assert(serverCode.includes('"무조건 정답 무지개"'), 'server.js must define 무조건 정답 무지개 for battle_rainbow');
+
+    // Verify Direct Battle Web Push & Chat Message Injection in Battle Create
+    const createRoomWithPush = await request('POST', '/api/battle/create', { 'Authorization': `Bearer ${userToken}` }, {
+      title: '한글 아이템 대결방 테스트',
+      members: [testUsername, '미니미니'],
+      questionCount: 5,
+      subject: 'spelling',
+      level: 'all',
+      allowItems: true
+    });
+    assert.strictEqual(createRoomWithPush.status, 200, 'Battle create must return 200');
+    assert(createRoomWithPush.data.roomId, 'Battle create must return roomId');
+    const createdPushRoomId = createRoomWithPush.data.roomId;
+
+    // Verify Chat Invite Message is Injected
+    const messagesFile = path.join(__dirname, '../data/messages.json');
+    if (fs.existsSync(messagesFile)) {
+      const msgs = JSON.parse(fs.readFileSync(messagesFile, 'utf8'));
+      const foundInvite = msgs.find(m => m.battleRoomId === createdPushRoomId && m.type === 'battle_invite');
+      assert(foundInvite, 'Battle create must automatically inject battle_invite chat message to invited friend');
+      assert(foundInvite.content.includes('퀴즈대결에 초대했습니다'), 'Invite message content must announce challenge');
+      // Clean up test invite message
+      const cleanedMsgs = msgs.filter(m => m.battleRoomId !== createdPushRoomId);
+      fs.writeFileSync(messagesFile, JSON.stringify(cleanedMsgs, null, 2), 'utf8');
+    }
+
+    // Clean up created push test room
+    await request('POST', '/api/battle/delete-room', { 'Authorization': `Bearer ${userToken}` }, {
+      roomId: createdPushRoomId
+    });
+
+    // Verify SW & App Push Handlers for OPEN_BATTLE
+    assert(swCode.includes("OPEN_BATTLE"), 'sw.js must dispatch OPEN_BATTLE on notification click for battle invites');
+    assert(appCode.includes("event.data.type === 'OPEN_BATTLE'"), 'app.js must handle OPEN_BATTLE event');
+    assert(appCode.includes("showInteractiveBattleInviteToast"), 'app.js must provide showInteractiveBattleInviteToast');
+    assert(latestStyleCss.includes(".interactive-battle-toast"), 'style.css must define .interactive-battle-toast styling');
+    assert(latestStyleCss.includes(".chat-battle-bubble"), 'style.css must define .chat-battle-bubble styling');
 
     // Clean up created battle room
     const battleRoomsFile = path.join(__dirname, '../data/battle_rooms.json');

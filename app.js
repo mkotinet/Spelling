@@ -1576,7 +1576,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.7.0';
+    this.APP_VERSION = metaVer || '3.7.1';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -5723,11 +5723,20 @@ class HaruMatchumApp {
         this.swRegistration = reg;
         console.log('[PWA] Service Worker registered with scope:', reg.scope);
 
-        // Listen for foreground push messages & notification clicks (v3.5.2)
+        // Listen for foreground push messages & notification clicks (v3.5.2 & v3.7.1)
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (!event.data) return;
 
-          if (event.data.type === 'OPEN_CHAT' || event.data.type === 'OPEN_INBOX') {
+          if (event.data.type === 'OPEN_BATTLE') {
+            console.log('[PWA] Notification Click -> Direct Open Battle Room:', event.data);
+            const roomId = event.data.roomId;
+            if (roomId) {
+              if (this.chatAppModal && this.chatAppModal.style.display !== 'none') {
+                this.closeChatAppModal();
+              }
+              this.enterBattleRoom(roomId);
+            }
+          } else if (event.data.type === 'OPEN_CHAT' || event.data.type === 'OPEN_INBOX') {
             console.log('[PWA] Notification Click -> Direct Open Chat:', event.data);
             const roomId = event.data.roomId;
             const withUser = event.data.withUser;
@@ -5740,6 +5749,10 @@ class HaruMatchumApp {
             if (sfx && typeof sfx.notification === 'function') {
               sfx.notification();
             }
+            const payload = event.data.payload || {};
+            if (payload.type === 'BATTLE_INVITE' && payload.roomId) {
+              this.showInteractiveBattleInviteToast(payload.roomId, payload.title, payload.body);
+            }
             this.checkUnreadMessages();
           }
         });
@@ -5750,6 +5763,34 @@ class HaruMatchumApp {
 
     // 3. Update initial push status in UI
     this.updatePushNotificationUI();
+  }
+
+  // v3.7.1 포그라운드 대결 초대 알림 토스트 (원터치 다이렉트 입장)
+  showInteractiveBattleInviteToast(roomId, title, body) {
+    let toast = document.getElementById('interactiveBattleToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'interactiveBattleToast';
+      toast.className = 'interactive-battle-toast';
+      document.body.appendChild(toast);
+    }
+    toast.innerHTML = `
+      <div class="interactive-battle-toast-content">
+        <span class="interactive-battle-toast-icon">⚔️</span>
+        <div class="interactive-battle-toast-text-wrap">
+          <h5 class="interactive-battle-toast-title">${title || '퀴즈대결 도전장 도착!'}</h5>
+          <p class="interactive-battle-toast-text">${body || '친구의 퀴즈 대결 초대가 도착했습니다!'}</p>
+        </div>
+        <button type="button" class="btn-battle-toast-enter" onclick="window.haruApp.enterBattleRoom('${roomId}')">
+          입장 🔥
+        </button>
+      </div>
+    `;
+    toast.classList.add('visible');
+    clearTimeout(this._battleToastTimer);
+    this._battleToastTimer = setTimeout(() => {
+      if (toast) toast.classList.remove('visible');
+    }, 7000);
   }
 
   // ============================================================
@@ -6638,6 +6679,16 @@ class HaruMatchumApp {
             </button>
           </div>
         `;
+      } else if (msg.type === 'battle_invite' || msg.battleRoomId) {
+        bodyHtml = `
+          <div class="chat-battle-bubble">
+            <div class="chat-battle-title">⚔️ 퀴즈대결 초대장 도착!</div>
+            <p class="chat-battle-desc">${msg.content || '실시간 퀴즈 대결에 초대되었습니다!'}</p>
+            <button type="button" class="btn-chat-enter-battle" onclick="window.haruApp.enterBattleRoom('${msg.battleRoomId}')">
+              🔥 대결방 바로 입장하기
+            </button>
+          </div>
+        `;
       } else if (msg.type === 'sticker' && msg.sticker) {
         let stickerSvg = msg.sticker.svgData || '';
         let stickerImg = msg.sticker.imageUrl || '';
@@ -6650,14 +6701,14 @@ class HaruMatchumApp {
         }
         if (stickerImg) {
           bodyHtml = `
-            <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')" style="width:120px;height:120px;min-width:120px;min-height:120px;max-width:120px;max-height:120px;margin:6px 0;overflow:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.12);cursor:pointer;flex-shrink:0;">
-              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy" style="width:120px;height:120px;max-width:120px;max-height:120px;object-fit:contain;display:block;border-radius:16px;">
+            <div class="chat-sticker-bubble chat-sticker-img-bubble" onclick="window.haruApp.openPhotoLightbox('${stickerImg}')" style="width:180px;max-width:min(180px, 55vw);height:180px;max-height:min(180px, 55vw);aspect-ratio:1/1;margin:8px 0;overflow:hidden;border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.12);cursor:pointer;flex-shrink:0;">
+              <img src="${stickerImg}" alt="${msg.sticker.name || '스티커'}" class="chat-sticker-img" loading="lazy" style="width:100%;height:100%;max-width:100%;max-height:100%;aspect-ratio:1/1;object-fit:contain;display:block;border-radius:18px;">
             </div>
           `;
         } else if (stickerSvg) {
-          bodyHtml = `<div class="chat-sticker-bubble" style="width:120px;height:120px;margin:6px 0;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${stickerSvg}</div>`;
+          bodyHtml = `<div class="chat-sticker-bubble" style="width:150px;max-width:min(150px, 50vw);height:150px;max-height:min(150px, 50vw);aspect-ratio:1/1;margin:8px 0;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${stickerSvg}</div>`;
         } else if (msg.sticker.char) {
-          bodyHtml = `<div class="chat-sticker-bubble" style="width:120px;height:120px;margin:6px 0;font-size:4rem;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${msg.sticker.char}</div>`;
+          bodyHtml = `<div class="chat-sticker-bubble" style="width:150px;max-width:min(150px, 50vw);height:150px;max-height:min(150px, 50vw);aspect-ratio:1/1;margin:8px 0;font-size:4.5rem;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${msg.sticker.char}</div>`;
         } else {
           bodyHtml = `<div class="chat-text-bubble">🎀 ${msg.sticker.name || '스티커'}</div>`;
         }
@@ -9915,14 +9966,16 @@ class HaruMatchumApp {
     const myItems = myProg.inventory || (myMember && myMember.items) || {};
 
     const BATTLE_ITEMS_DEF = [
-      { key: 'battle_ink', icon: '🦑', name: '먹물벼루', desc: '상대 화면에 5초간 먹물 테러' },
-      { key: 'battle_wind', icon: '🌪️', name: '모래바람', desc: '상대 화면을 4초간 마구 흔듦' },
-      { key: 'battle_freeze', icon: '❄️', name: '꽁꽁얼음', desc: '상대 보기를 3초간 꽁꽁 얼림' },
-      { key: 'battle_reflect', icon: '🛡️', name: '거울방패', desc: '6초간 날아오는 공격을 상대에게 역반사' },
-      { key: 'battle_lightning', icon: '⚡', name: '번개스틸', desc: '상대 점수 30점을 번개처럼 스틸' },
-      { key: 'battle_sight', icon: '👁️', name: '천리안', desc: '오답 2개를 즉시 소멸' },
-      { key: 'battle_bomb', icon: '💣', name: '시한폭탄', desc: '상대에게 10초 폭탄 투척 (-50P)' },
-      { key: 'battle_rainbow', icon: '🌈', name: '무지개', desc: '현재 문제 100% 자동 정답 패스' }
+      { key: 'battle_hint', icon: '💡', name: '오답 지우개', desc: '다음 문제 오답 1개 즉시 제거' },
+      { key: 'battle_double', icon: '💎', name: '점수 2배', desc: '다음 문제 정답 시 점수 2배' },
+      { key: 'battle_freeze', icon: '❄️', name: '꽁꽁 얼음', desc: '상대방 화면 3초간 동결' },
+      { key: 'battle_ink', icon: '墨', name: '먹물 구름', desc: '상대 화면에 3.5초간 먹물 테러' },
+      { key: 'battle_wind', icon: '🌪️', name: '휘몰이 바람', desc: '상대 선택지 순서를 마구 뒤섞음' },
+      { key: 'battle_reflect', icon: '🛡️', name: '반사 방패', desc: '나에게 오는 공격을 상대에게 역공' },
+      { key: 'battle_lightning', icon: '⚡', name: '점수 뺏기', desc: '1위 상대 점수 25점을 내 점수로 스틸' },
+      { key: 'battle_sight', icon: '👁️', name: '정답 엿보기', desc: '1위 라이벌의 선택 보기를 몰래 엿봄' },
+      { key: 'battle_bomb', icon: '💣', name: '째깍 폭탄', desc: '상대에게 폭탄 투척! 6초 내 못 풀면 감점' },
+      { key: 'battle_rainbow', icon: '🌈', name: '무조건 정답', desc: '오답을 골라도 무조건 정답 인정' }
     ];
 
     buttonsRow.innerHTML = BATTLE_ITEMS_DEF.map(item => {
@@ -10618,14 +10671,18 @@ class HaruMatchumApp {
           itemButtonsRow.innerHTML = '<div style="color:#94a3b8; font-size:0.8rem; padding:8px;">사용 가능한 배틀 아이템이 없습니다.</div>';
         } else {
           const itemDefs = {
-            battle_hint: { name: '힌트 요정', icon: '💡' },
-            battle_double: { name: '더블 포인트', icon: '💎' },
-            battle_shield: { name: '철벽 방패', icon: '🛡️' },
-            battle_smoke: { name: '먹구름 연막', icon: '🌫️' },
+            battle_hint: { name: '오답 지우개', icon: '💡' },
+            battle_double: { name: '점수 2배 보석', icon: '💎' },
             battle_freeze: { name: '꽁꽁 얼음', icon: '❄️' },
-            battle_scramble: { name: '보기 셔플', icon: '🌪️' },
-            battle_steal: { name: '포인트 스틸', icon: '🥷' },
-            battle_timeplus: { name: '모래시계', icon: '⏳' }
+            battle_ink: { name: '먹물 구름', icon: '墨' },
+            battle_wind: { name: '휘몰이 바람', icon: '🌪️' },
+            battle_reflect: { name: '반사 방패', icon: '🛡️' },
+            battle_steal: { name: '점수 뺏기 번개', icon: '⚡' },
+            battle_lightning: { name: '점수 뺏기 번개', icon: '⚡' },
+            battle_peek: { name: '정답 엿보기', icon: '👁️' },
+            battle_sight: { name: '정답 엿보기', icon: '👁️' },
+            battle_bomb: { name: '째깍 시한폭탄', icon: '💣' },
+            battle_rainbow: { name: '무조건 정답 무지개', icon: '🌈' }
           };
 
           const isReserved = room.nextRoundEffects && Object.values(room.nextRoundEffects).some(arr => arr.some(e => e.from === myUsername));
@@ -10777,7 +10834,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.7.0');
+        url.searchParams.set('_v', this.APP_VERSION || '3.7.1');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

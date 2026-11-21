@@ -4910,6 +4910,8 @@ body.theme-english .quiz-sentence .quiz-blank {
   max-width: 84%;
   position: relative;
   animation: fadeInMsg 0.25s ease forwards;
+  isolation: isolate; /* 자식 요소 및 스티커의 레이아웃 간섭 원천 차단 */
+  min-height: fit-content;
 }
 @keyframes fadeInMsg {
   from { opacity: 0; transform: translateY(6px); }
@@ -4984,42 +4986,44 @@ body.theme-english .quiz-sentence .quiz-blank {
   border-top-right-radius: 4px;
 }
 
-/* Sticker Bubble */
+/* Sticker Bubble (v3.7.1: 180px 클래식 시원한 규격 복원 및 상하 완전 분리 격리) */
 .chat-sticker-bubble {
-  width: 120px !important;
-  height: 120px !important;
-  min-width: 120px !important;
-  min-height: 120px !important;
-  max-width: 120px !important;
-  max-height: 120px !important;
+  width: 180px !important;
+  height: 180px !important;
+  min-width: 140px !important;
+  min-height: 140px !important;
+  max-width: min(180px, 55vw) !important;
+  max-height: min(180px, 55vw) !important;
+  aspect-ratio: 1 / 1 !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
-  margin: 6px 0;
+  margin: 8px 0 !important;
   position: relative;
-  border-radius: 16px;
+  border-radius: 18px !important;
   overflow: hidden !important; /* 이미지 및 자식 요소가 절대 밖으로 삐져나오지 않도록 차단 */
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
   flex-shrink: 0;
+  clear: both;
 }
 
 .chat-sticker-bubble.chat-sticker-img-bubble {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   background: transparent;
   padding: 0;
 }
 
 .chat-sticker-img {
-  width: 120px !important;
-  height: 120px !important;
-  max-width: 120px !important;
-  max-height: 120px !important;
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
-  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 18px !important;
+  display: block !important;
   cursor: pointer;
-  object-fit: contain;
+  object-fit: contain !important;
   transition: transform 0.18s ease;
 }
 
@@ -7458,3 +7462,115 @@ body.theme-english .quiz-sentence .quiz-blank {
   font-weight: 800;
   cursor: pointer;
 }
+
+/* ============================================================
+   v3.7.1 BATTLE INVITE NOTIFICATION & INTERACTIVE CHAT BUBBLES
+   ============================================================ */
+
+/* In-Chat Battle Challenge Card */
+.chat-battle-bubble {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+  border: 1.5px solid rgba(236, 72, 153, 0.6);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.15);
+  max-width: 280px;
+}
+.chat-battle-title {
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: #ec4899;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.chat-battle-desc {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+.btn-chat-enter-battle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-chat-enter-battle:active {
+  transform: scale(0.97);
+}
+
+/* Foreground Interactive Battle Invite Toast Banner */
+.interactive-battle-toast {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background: rgba(15, 23, 42, 0.94);
+  border: 1.5px solid #ec4899;
+  border-radius: 18px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(236, 72, 153, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 10000;
+  cursor: pointer;
+  animation: slideDownToast 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.interactive-battle-toast.fade-out {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+}
+@keyframes slideDownToast {
+  from { opacity: 0; transform: translate(-50%, -30px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.interactive-battle-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+.interactive-battle-toast-title {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+.interactive-battle-toast-text {
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-battle-toast-enter {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
