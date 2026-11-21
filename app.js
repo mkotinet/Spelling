@@ -1576,7 +1576,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.7.3';
+    this.APP_VERSION = metaVer || '3.7.4';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -1593,13 +1593,14 @@ class HaruMatchumApp {
     this.battleItemToUse = null;
     this.battleIsSubmitting = false;
 
-    this.initDOM();
-    this.bindEvents();
-    this.renderUserProfile();
-    this.renderCalendarWeek();
-    this.renderLeaderboard('daily');
-    this.renderBadges();
-    this.checkCloudAuth();
+    // Defensive initialization error boundaries
+    try { this.initDOM(); } catch (e) { console.error('[HaruApp] initDOM failed:', e); }
+    try { this.bindEvents(); } catch (e) { console.error('[HaruApp] bindEvents failed:', e); }
+    try { this.renderUserProfile(); } catch (e) { console.error('[HaruApp] renderUserProfile failed:', e); }
+    try { this.renderCalendarWeek(); } catch (e) { console.error('[HaruApp] renderCalendarWeek failed:', e); }
+    try { this.renderLeaderboard('daily'); } catch (e) { console.error('[HaruApp] renderLeaderboard failed:', e); }
+    try { this.renderBadges(); } catch (e) { console.error('[HaruApp] renderBadges failed:', e); }
+    try { this.checkCloudAuth(); } catch (e) { console.error('[HaruApp] checkCloudAuth failed:', e); }
 
     // Anti-Cheat: On fresh app launch/reopen, clear stale mid-quiz session or restore resume banner (v3.4.0)
     this.updateResumeQuizBanner();
@@ -11061,7 +11062,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.7.3');
+        url.searchParams.set('_v', this.APP_VERSION || '3.7.4');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
@@ -11071,12 +11072,25 @@ class HaruMatchumApp {
   }
 }
 
-// Start app on DOM ready
-if (typeof document !== 'undefined' && document.addEventListener) {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.app = new HaruMatchumApp();
-    window.haruApp = window.app;
-  });
+// Start app on DOM ready with readyState fallback
+function startHaruApp() {
+  if (typeof window !== 'undefined' && !window.app) {
+    try {
+      window.app = new HaruMatchumApp();
+      window.haruApp = window.app;
+    } catch (err) {
+      console.error('[HaruMatchumApp] Fatal initialization error:', err);
+    }
+  }
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startHaruApp);
+  } else {
+    // DOM already loaded or interactive
+    startHaruApp();
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

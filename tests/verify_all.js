@@ -213,8 +213,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.7.3">'), 'index.html must include meta app-version 3.7.3');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.3">'), 'index.html must cache-bust style.css with v3.7.3');
+    assert(indexHtml.includes('<meta name="app-version" content="3.7.4">'), 'index.html must include meta app-version 3.7.4');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.4">'), 'index.html must cache-bust style.css with v3.7.4');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -297,7 +297,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.7.3', 'GET /api/version version must be 3.7.3');
+    assert.strictEqual(verRes.data.version, '3.7.4', 'GET /api/version version must be 3.7.4');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -524,7 +524,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.3';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.4';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -537,7 +537,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.3</span>'), 'index.html must have v3.7.3 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.4</span>'), 'index.html must have v3.7.4 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -1090,6 +1090,24 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(latestStyleCss.includes(".btn-waiting-change-team"), 'style.css must define .btn-waiting-change-team');
     assert(indexHtml.includes("🔵 파란색팀 (우리팀)"), 'index.html must display 🔵 파란색팀');
     assert(indexHtml.includes("🌸 분홍색팀 (상대팀)"), 'index.html must display 🌸 분홍색팀');
+
+    // 43. v3.7.4 DOM ReadyState Initialization Guard & Cache Invalidation Verification
+    console.log('Testing Section 43: DOM ReadyState Guard & v3.7.4 Cache Invalidation...');
+    const latestAppJs = fs.readFileSync(path.join(__dirname, '../app.js'), 'utf8');
+    const latestWwwAppJs = fs.readFileSync(path.join(__dirname, '../www/app.js'), 'utf8');
+    const latestIndexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const latestSwJs = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
+    const latestVerJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../version.json'), 'utf8'));
+
+    assert(latestAppJs.includes("startHaruApp"), 'app.js must define startHaruApp() function');
+    assert(latestAppJs.includes("document.readyState === 'loading'"), 'app.js must check document.readyState === loading');
+    assert(latestWwwAppJs.includes("startHaruApp"), 'www/app.js must mirror startHaruApp() function');
+    assert(latestWwwAppJs.includes("document.readyState === 'loading'"), 'www/app.js must mirror readyState check');
+    assert(latestAppJs.includes("this.APP_VERSION = metaVer || '3.7.4';"), 'app.js must default to 3.7.4');
+    assert(latestIndexHtml.includes('<script src="app.js?v=3.7.4"></script>'), 'index.html must cache-bust app.js with v3.7.4');
+    assert(latestIndexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.4">'), 'index.html must cache-bust style.css with v3.7.4');
+    assert(latestSwJs.includes("const CACHE_NAME = 'haru-pwa-v3.7.4';"), 'sw.js must define haru-pwa-v3.7.4 cache name');
+    assert.strictEqual(latestVerJson.version, '3.7.4', 'version.json must be 3.7.4');
 
     // Clean up custom battle room
     const battleRoomsFile2 = path.join(__dirname, '../data/battle_rooms.json');
