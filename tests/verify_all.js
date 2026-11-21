@@ -1076,6 +1076,13 @@ const srv = server.listen(TEST_PORT, async () => {
     assert.deepStrictEqual(changeTeamRes.data.room.teams.B, ['도비사랑녀', '미니미니채'], 'Team B after swap must have 미니미니채');
 
     // UI Code assertions
+    const { execSync } = require('child_process');
+    assert.doesNotThrow(() => {
+      execSync('node -c ' + path.join(__dirname, '../app.js'));
+      execSync('node -c ' + path.join(__dirname, '../sw.js'));
+      execSync('node -c ' + path.join(__dirname, '../www/app.js'));
+      execSync('node -c ' + path.join(__dirname, '../www/sw.js'));
+    }, 'All client JS files must pass node -c syntax check without errors');
     assert(appCode.includes("swap2v2TeamMember"), 'app.js must provide swap2v2TeamMember for create modal team swap');
     assert(appCode.includes("changeBattleWaitingTeam"), 'app.js must provide changeBattleWaitingTeam for live waiting room');
     assert(appCode.includes("teams: matchType === '2v2' ? this.battle2v2Teams : null"), 'app.js must pass custom teams in battle create payload');

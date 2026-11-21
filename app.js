@@ -9691,7 +9691,6 @@ class HaruMatchumApp {
           teams: matchType === '2v2' ? this.battle2v2Teams : null,
           token: this.token
         })
-        })
       });
       const data = await res.json();
       if (data.success && (data.roomId || data.room)) {
