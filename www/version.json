@@ -1,6 +1,6 @@
 {
-  "version": "3.7.1",
-  "build": "20261121_1550",
-  "name": "하루맞춤 (Haru Matchum) - Direct Battle Route, Pure Korean Items & Sticker Isolation Layout",
-  "releaseNotes": "1) 퀴즈대결 초대 알림/도전장 탭 시 즉시 해당 대결방으로 자동 다이렉트 입장 및 대화방 초대 카드 연동, 2) 퀴즈대결 아이템 명칭을 순수하고 직관적인 한글명(오답 지우개, 점수 2배 보석, 꽁꽁 얼음, 먹물 구름, 휘몰이 바람, 반사 방패, 점수 뺏기 번개, 정답 엿보기, 째깍 시한폭탄, 무조건 정답 무지개)으로 전면 개편, 3) 대화창 스티커 180px 클래식 시원한 규격 복원 및 메시지 행 격리(isolation: isolate)를 통한 이전/다음 메시지 겹침 가림 버그 원천 해결"
+  "version": "3.7.2",
+  "build": "20261121_2100",
+  "name": "하루맞춤 (Haru Matchum) - Direct Battle Route on Incoming Alerts & Mobile Responsive Battle Lobby Scroll",
+  "releaseNotes": "1) 퀴즈대결 초대 알림/수신 팝업(모달) 및 보관함에서 대화방으로 잘못 이동하던 결함을 해결하여 즉시 퀴즈대결방으로 100% 다이렉트 직행하도록 개선, 2) 퀴즈대결 로비 모달에 반응형 유연 스크롤(flex: 1; overflow-y: auto) 및 작은 화면 모바일 높이 최적화(94vh 및 컴팩트 도전자 그리드)를 적용하여 아래 열린 대결방 목록이 잘림 없이 시원하게 보이도록 UI/UX 완벽 개선"
 }

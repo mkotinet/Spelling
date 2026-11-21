@@ -1576,7 +1576,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.7.1';
+    this.APP_VERSION = metaVer || '3.7.2';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -5412,6 +5412,9 @@ class HaruMatchumApp {
     if (!this.modalIncomingMessage || !msg) return;
 
     this.activeIncomingMessage = msg;
+    const isBattle = (msg.type === 'battle_invite' || Boolean(msg.battleRoomId));
+
+    const titleEl = this.modalIncomingMessage.querySelector('.modal-title');
     const nameEl = document.getElementById('incomingSenderName');
     const timeEl = document.getElementById('incomingTime');
     const contentEl = document.getElementById('incomingContent');
@@ -5419,10 +5422,44 @@ class HaruMatchumApp {
     const photoContainer = document.getElementById('incomingPhotoContainer');
     const photoImg = document.getElementById('incomingPhotoImg');
     const photoExpiredBox = document.getElementById('incomingPhotoExpiredBox');
+    const replyBtn = document.getElementById('btnReplyIncomingMessage');
+
+    if (titleEl) {
+      titleEl.innerHTML = isBattle ? '⚔️ 퀴즈대결 도전장 도착!' : '💬 새 대화 메시지 도착!';
+    }
+    if (replyBtn) {
+      if (isBattle) {
+        replyBtn.innerHTML = '🔥 퀴즈대결방 바로 입장하기';
+        replyBtn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #ec4899 100%)';
+        replyBtn.style.boxShadow = '0 4px 14px rgba(245, 158, 11, 0.35)';
+      } else {
+        replyBtn.innerHTML = '💬 대화창으로 이동';
+        replyBtn.style.background = 'linear-gradient(135deg, #ec4899, #8b5cf6)';
+        replyBtn.style.boxShadow = 'none';
+      }
+    }
 
     if (nameEl) nameEl.textContent = msg.fromName || '친구';
     if (timeEl) timeEl.textContent = msg.kstTime ? `${msg.kstTime.split(' ')[1] || msg.kstTime} 도착` : '방금 전';
-    if (contentEl) contentEl.textContent = msg.content || '';
+    if (contentEl) {
+      if (isBattle) {
+        contentEl.innerHTML = `
+          <div style="font-weight: 800; font-size: 0.98rem; color: #9d174d; margin-bottom: 6px;">
+            ${msg.content || '실시간 퀴즈대결에 도전했습니다!'}
+          </div>
+          <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+            <span style="background: #fdf2f8; border: 1px solid #fbcfe8; color: #db2777; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 10px;">
+              📚 ${msg.battleSubject || '우리말 맞춤법'}
+            </span>
+            <span style="background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 10px;">
+              ⚡ ${msg.battleQuestionCount || 5}문제
+            </span>
+          </div>
+        `;
+      } else {
+        contentEl.textContent = msg.content || '';
+      }
+    }
     if (avatarEl) {
       avatarEl.innerHTML = renderCompositeAvatar(msg.fromAvatar || '🌸', msg.fromAccessories || {}, 58, false, 'compact');
     }
@@ -5445,7 +5482,7 @@ class HaruMatchumApp {
     const cardEl = this.modalIncomingMessage.querySelector('.incoming-msg-card');
     if (cardEl) {
       cardEl.style.cursor = 'pointer';
-      cardEl.title = '탭하여 대화창으로 이동 💬';
+      cardEl.title = isBattle ? '탭하여 퀴즈대결방 바로 입장 🔥' : '탭하여 대화창으로 이동 💬';
       cardEl.onclick = (e) => {
         if (e.target && e.target.id === 'incomingPhotoImg') return;
         this.replyToIncomingMessage();
@@ -5494,6 +5531,19 @@ class HaruMatchumApp {
     this.closeIncomingMessageModal(true);
 
     if (msg) {
+      const isBattle = (msg.type === 'battle_invite' || Boolean(msg.battleRoomId));
+      if (isBattle && msg.battleRoomId) {
+        // v3.7.2: 퀴즈대결 초대는 일반 대화방이 아니라 즉시 퀴즈대결방으로 다이렉트 직행!
+        console.log('[Battle Nav] Direct Entering Battle Room from incoming popup:', msg.battleRoomId);
+        setTimeout(() => {
+          if (this.chatAppModal && this.chatAppModal.style.display !== 'none') {
+            this.closeChatAppModal();
+          }
+          this.enterBattleRoom(msg.battleRoomId);
+        }, 120);
+        return;
+      }
+
       const senderUser = {
         name: msg.fromName || msg.fromUsername,
         username: msg.fromUsername,
@@ -5659,16 +5709,26 @@ class HaruMatchumApp {
         photoSnippet = `<div class="inbox-card-photo-expired">⏳ 24시간이 경과하여 자동 삭제된 사진입니다</div>`;
       }
 
+      const isBattle = (m.type === 'battle_invite' || Boolean(m.battleRoomId));
+      let actionBtnHtml = '';
+      if (isReceived) {
+        if (isBattle && m.battleRoomId) {
+          actionBtnHtml = `<button type="button" class="inbox-card-reply-btn btn-inbox-battle-enter" style="background: linear-gradient(135deg, #f59e0b, #ec4899); color: white; border: none; font-weight: 800; box-shadow: 0 4px 10px rgba(245,158,11,0.3);">🔥 퀴즈대결 바로 입장</button>`;
+        } else {
+          actionBtnHtml = `<button type="button" class="inbox-card-reply-btn">💌 답신 보내기</button>`;
+        }
+      }
+
       card.innerHTML = `
         <div class="inbox-card-avatar" style="width: 42px; height: 42px;">${avatarHtml}</div>
         <div class="inbox-card-meta">
           <div class="inbox-card-header">
-            <span class="inbox-card-name">${isReceived ? `💌 보낸이: ${m.fromName}` : `📤 받는이: ${m.toName}`}</span>
+            <span class="inbox-card-name">${isReceived ? (isBattle ? `⚔️ 대결 신청: ${m.fromName}` : `💌 보낸이: ${m.fromName}`) : `📤 받는이: ${m.toName}`}</span>
             <span class="inbox-card-time">${m.kstTime || ''}</span>
           </div>
           <div class="inbox-card-body">${m.content}</div>
           ${photoSnippet}
-          ${isReceived ? `<button type="button" class="inbox-card-reply-btn">💌 답신 보내기</button>` : ''}
+          ${actionBtnHtml}
         </div>
       `;
 
@@ -5684,17 +5744,24 @@ class HaruMatchumApp {
       if (isReceived) {
         const replyBtn = card.querySelector('.inbox-card-reply-btn');
         if (replyBtn) {
-          replyBtn.onclick = () => {
-            this.closeInboxModal();
-            this.openChatAppModal();
-            this.enterChatRoom(null, {
-              name: m.fromName || m.fromUsername,
-              username: m.fromUsername,
-              avatar: m.fromAvatar,
-              avatarAccessories: m.fromAccessories || {},
-              grade: '친구'
-            });
-          };
+          if (isBattle && m.battleRoomId) {
+            replyBtn.onclick = () => {
+              this.closeInboxModal();
+              this.enterBattleRoom(m.battleRoomId);
+            };
+          } else {
+            replyBtn.onclick = () => {
+              this.closeInboxModal();
+              this.openChatAppModal();
+              this.enterChatRoom(null, {
+                name: m.fromName || m.fromUsername,
+                username: m.fromUsername,
+                avatar: m.fromAvatar,
+                avatarAccessories: m.fromAccessories || {},
+                grade: '친구'
+              });
+            };
+          }
         }
       }
 
@@ -10834,7 +10901,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.7.1');
+        url.searchParams.set('_v', this.APP_VERSION || '3.7.2');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {

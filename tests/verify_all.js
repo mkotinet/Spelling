@@ -213,8 +213,8 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes('checkAppVersionUpdate'), 'app.js must include checkAppVersionUpdate');
     assert(appCode.includes('isServerVersionNewer'), 'app.js must include isServerVersionNewer');
     assert(appCode.includes('meta[name="app-version"]'), 'app.js must query meta app-version');
-    assert(indexHtml.includes('<meta name="app-version" content="3.7.1">'), 'index.html must include meta app-version 3.7.1');
-    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.1">'), 'index.html must cache-bust style.css with v3.7.1');
+    assert(indexHtml.includes('<meta name="app-version" content="3.7.2">'), 'index.html must include meta app-version 3.7.2');
+    assert(indexHtml.includes('<link rel="stylesheet" href="style.css?v=3.7.2">'), 'index.html must cache-bust style.css with v3.7.2');
     assert(indexHtml.includes('(최대 2개 보유)'), 'index.html must specify (최대 2개 보유)');
 
     // 15. v2.6.1 Ending Collision Fix & Self-Healing Guard check
@@ -297,7 +297,7 @@ const srv = server.listen(TEST_PORT, async () => {
     const verRes = await request('GET', '/api/version');
     assert.strictEqual(verRes.status, 200, 'GET /api/version must return 200');
     assert.strictEqual(verRes.data.success, true, 'GET /api/version success must be true');
-    assert.strictEqual(verRes.data.version, '3.7.1', 'GET /api/version version must be 3.7.1');
+    assert.strictEqual(verRes.data.version, '3.7.2', 'GET /api/version version must be 3.7.2');
     const verCc = verRes.headers['cache-control'] || '';
     assert(verCc.includes('no-store'), 'GET /api/version cache-control must include no-store');
 
@@ -524,7 +524,7 @@ const srv = server.listen(TEST_PORT, async () => {
 
     // 30. v3.5.2 Direct Chat Window on Notification Click Verification
     const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
-    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.1';"), 'sw.js must bump cache name');
+    assert(swCode.includes("const CACHE_NAME = 'haru-pwa-v3.7.2';"), 'sw.js must bump cache name');
     assert(swCode.includes("OPEN_CHAT"), 'sw.js must dispatch OPEN_CHAT on click');
     assert(serverCode.includes('/?open=chat&withUser='), 'server.js must send chat target url');
     assert(appCode.includes('handleUrlNavigation()'), 'app.js must implement handleUrlNavigation()');
@@ -537,7 +537,7 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("this.updateMascotMood('happy'"), 'app.js must update mascot greeting dynamically in renderUserProfile');
 
     // Bug 2: Version badge dynamic & synced
-    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.1</span>'), 'index.html must have v3.7.1 badge');
+    assert(indexHtml.includes('id="quickReloadVersionBadge" class="version-badge">v3.7.2</span>'), 'index.html must have v3.7.2 badge');
     assert(indexHtml.includes('title="v3.5 업데이트 소식 다시 보기"'), 'index.html must have v3.5 whats new title');
     assert(appCode.includes("url.searchParams.set('_v', this.APP_VERSION"), 'app.js must use dynamic APP_VERSION on reload');
 
@@ -1032,6 +1032,16 @@ const srv = server.listen(TEST_PORT, async () => {
     assert(appCode.includes("showInteractiveBattleInviteToast"), 'app.js must provide showInteractiveBattleInviteToast');
     assert(latestStyleCss.includes(".interactive-battle-toast"), 'style.css must define .interactive-battle-toast styling');
     assert(latestStyleCss.includes(".chat-battle-bubble"), 'style.css must define .chat-battle-bubble styling');
+
+    // 41. v3.7.2 Incoming Alert Direct Battle Route & Mobile Responsive Battle Lobby Scroll Verification
+    console.log('Testing Section 41: Incoming Alert Direct Battle Route & Battle Lobby Responsive Scroll...');
+    assert(appCode.includes("titleEl.innerHTML = isBattle ? '⚔️ 퀴즈대결 도전장 도착!' : '💬 새 대화 메시지 도착!';"), 'app.js must update incoming popup title for battle invites');
+    assert(appCode.includes("replyBtn.innerHTML = '🔥 퀴즈대결방 바로 입장하기';"), 'app.js must provide direct battle enter button on incoming popup');
+    assert(appCode.includes("this.enterBattleRoom(msg.battleRoomId);"), 'app.js must directly route to battle room from popup reply/click');
+    assert(appCode.includes("btn-inbox-battle-enter"), 'app.js must provide battle enter button in inbox for battle invites');
+    assert(latestStyleCss.includes(".battle-lobby-body"), 'style.css must define .battle-lobby-body for flexible scrolling');
+    assert(latestStyleCss.includes("overflow-y: auto;"), 'style.css must enable vertical scroll on .battle-lobby-body');
+    assert(latestStyleCss.includes("@media (max-height: 720px)"), 'style.css must provide small phone height responsive rules for battle lobby');
 
     // Clean up created battle room
     const battleRoomsFile = path.join(__dirname, '../data/battle_rooms.json');

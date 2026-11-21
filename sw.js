@@ -3,7 +3,7 @@
  * Handles App Lifecycle, Background Push Notifications, Vibration & Realtime Message Routing
  */
 
-const CACHE_NAME = 'haru-pwa-v3.7.1';
+const CACHE_NAME = 'haru-pwa-v3.7.2';
 
 // 1. Service Worker Installation
 self.addEventListener('install', (event) => {
@@ -97,7 +97,8 @@ self.addEventListener('notificationclick', (event) => {
   const withUser = notifData.withUser || notifData.fromUsername || null;
   
   let fallbackUrl = '/?open=chat';
-  if (notifData.type === 'BATTLE_INVITE' && roomId) {
+  const isBattleInvite = notifData.type === 'BATTLE_INVITE' || notifData.type === 'battle_invite' || Boolean(notifData.battleRoomId) || (notifData.url && notifData.url.includes('open=battle'));
+  if (isBattleInvite && roomId) {
     fallbackUrl = `/?open=battle&roomId=${encodeURIComponent(roomId)}`;
   } else if (roomId) {
     fallbackUrl += `&roomId=${encodeURIComponent(roomId)}`;
@@ -106,7 +107,6 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   const targetUrl = notifData.url || fallbackUrl;
-  const isBattleInvite = notifData.type === 'BATTLE_INVITE' || (targetUrl && targetUrl.includes('open=battle'));
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
