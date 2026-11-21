@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>하루맞춤 ✨ 매일매일 반짝이는 국어 맞춤법 챌린지</title>
   <meta name="description" content="국립국어원 표준국어대사전 기반 재미있는 데일리 맞춤법 퀴즈와 랭킹 시스템! 초중고 맞춤법 완벽 마스터">
-  <meta name="app-version" content="3.7.2">
+  <meta name="app-version" content="3.7.3">
   <meta name="theme-color" content="#ec4899">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,7 +17,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="style.css?v=3.7.2">
+  <link rel="stylesheet" href="style.css?v=3.7.3">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
@@ -214,7 +214,7 @@
         <button id="btnQuickReload" class="quick-reload-btn" type="button" title="브라우저 캐시를 지우고 최신 앱 화면으로 새로고침합니다" style="flex: 1; min-width: 220px;">
           <span class="reload-spin-icon">🔄</span>
           <span>최신 버전으로 화면 새로고침</span>
-          <span id="quickReloadVersionBadge" class="version-badge">v3.7.2</span>
+          <span id="quickReloadVersionBadge" class="version-badge">v3.7.3</span>
         </button>
         <button id="btnOpenWhatsNew" class="whats-new-pill-btn" type="button" title="v3.5 업데이트 소식 다시 보기">
           <span>📢</span>
@@ -2008,15 +2008,20 @@
           </div>
 
           <!-- 2:2 Team Setup Preview Box -->
-          <div id="battleTeamSetupWrap" class="battle-team-setup-box" style="display: none;">
-            <div class="team-setup-col team-blue">
-              <div class="team-setup-title">🔵 블루팀 (우리팀)</div>
-              <div id="battleTeamBlueMembers" class="team-setup-members"></div>
+          <div id="battleTeamSetupWrap" class="battle-team-setup-box" style="display: none; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+              <div class="team-setup-col team-blue">
+                <div class="team-setup-title">🔵 파란색팀 (우리팀)</div>
+                <div id="battleTeamBlueMembers" class="team-setup-members"></div>
+              </div>
+              <div class="team-setup-vs">VS</div>
+              <div class="team-setup-col team-red">
+                <div class="team-setup-title">🌸 분홍색팀 (상대팀)</div>
+                <div id="battleTeamRedMembers" class="team-setup-members"></div>
+              </div>
             </div>
-            <div class="team-setup-vs">VS</div>
-            <div class="team-setup-col team-red">
-              <div class="team-setup-title">🔴 레드팀 (상대팀)</div>
-              <div id="battleTeamRedMembers" class="team-setup-members"></div>
+            <div style="font-size:0.73rem; color:#64748b; text-align:center; width:100%;">
+              💡 각 멤버의 <strong>'⇄ 이동'</strong> 버튼을 누르면 파란색팀과 분홍색팀을 자유롭게 바꿀 수 있어요!
             </div>
           </div>
         </div>
@@ -2116,11 +2121,11 @@
   </div>
 
   <!-- Scripts -->
-  <script src="questions.js?v=3.7.2"></script>
-  <script src="idiom_questions.js?v=3.7.2"></script>
-  <script src="hanja_questions.js?v=3.7.2"></script>
-  <script src="english_questions.js?v=3.7.2"></script>
-  <script src="stickers.js?v=3.7.2"></script>
-  <script src="app.js?v=3.7.2"></script>
+  <script src="questions.js?v=3.7.3"></script>
+  <script src="idiom_questions.js?v=3.7.3"></script>
+  <script src="hanja_questions.js?v=3.7.3"></script>
+  <script src="english_questions.js?v=3.7.3"></script>
+  <script src="stickers.js?v=3.7.3"></script>
+  <script src="app.js?v=3.7.3"></script>
 </body>
 </html>

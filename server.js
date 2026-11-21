@@ -443,7 +443,7 @@ function finalizeBattleRoom(room, db) {
     const winTeam = scoreA > scoreB ? 'A' : (scoreB > scoreA ? 'B' : 'draw');
     room.winningTeam = winTeam;
     room.winner = winTeam === 'A' ? teamA[0] : (winTeam === 'B' ? teamB[0] : null);
-    room.winnerName = winTeam === 'A' ? '블루팀' : (winTeam === 'B' ? '레드팀' : '무승부');
+    room.winnerName = winTeam === 'A' ? '파란색팀 (블루)' : (winTeam === 'B' ? '분홍색팀 (레드)' : '무승부');
 
     if (db && db.users) {
       room.members.forEach(m => {
@@ -2639,9 +2639,18 @@ const server = http.createServer(async (req, res) => {
 
       let teams = null;
       if (matchType === '2v2') {
-        if (body.teams && Array.isArray(body.teams.A) && Array.isArray(body.teams.B)) {
-          teams = body.teams;
-        } else if (members.length >= 4) {
+        if (body.teams && Array.isArray(body.teams.A) && Array.isArray(body.teams.B) &&
+            body.teams.A.length === 2 && body.teams.B.length === 2) {
+          const allTeamMembers = [...body.teams.A, ...body.teams.B];
+          const isValid = allTeamMembers.every(m => members.includes(m)) && new Set(allTeamMembers).size === 4;
+          if (isValid) {
+            teams = {
+              A: [...body.teams.A],
+              B: [...body.teams.B]
+            };
+          }
+        }
+        if (!teams && members.length >= 4) {
           teams = {
             A: [members[0], members[1]],
             B: [members[2], members[3]]
@@ -3498,6 +3507,107 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (e) {
       console.error("Battle Ready Error:", e);
+      return sendJSON(res, 500, { success: false, message: e.message });
+    }
+  }
+
+  // 20-I. 2:2 대기실 팀 실시간 변경 및 스왑 (POST /api/battle/change-team)
+  if (req.method === "POST" && pathname === "/api/battle/change-team") {
+    try {
+      const authHeader = req.headers["authorization"] || "";
+      const body = await parseJSONBody(req);
+      const token = body.token || authHeader.replace(/^Bearer\s+/, "");
+      const db = loadDB();
+      const username = db.tokens[token];
+
+      if (!username || !db.users[username]) {
+        return sendJSON(res, 401, { success: false, message: "로그인이 필요합니다." });
+      }
+
+      const { roomId } = body;
+      const rooms = loadBattleRooms();
+      const room = rooms.find(r => r.roomId === roomId || r.id === roomId);
+      if (!room) {
+        return sendJSON(res, 404, { success: false, message: "대결방을 찾을 수 없습니다." });
+      }
+
+      if (room.matchType !== "2v2" || !room.teams) {
+        return sendJSON(res, 400, { success: false, message: "2:2 팀전 대결방만 팀을 변경할 수 있습니다." });
+      }
+
+      if (room.status !== "waiting") {
+        return sendJSON(res, 400, { success: false, message: "대결이 시작된 후에는 팀을 변경할 수 없습니다." });
+      }
+
+      if (!room.members.includes(username)) {
+        return sendJSON(res, 403, { success: false, message: "대결방 참가자가 아닙니다." });
+      }
+
+      // 1) 명시적 teams 객체가 전달된 경우 (유효한 2:2 분배)
+      if (body.teams && Array.isArray(body.teams.A) && Array.isArray(body.teams.B) &&
+          body.teams.A.length === 2 && body.teams.B.length === 2) {
+        const allTeamMembers = [...body.teams.A, ...body.teams.B];
+        const isValid = allTeamMembers.every(m => room.members.includes(m)) && new Set(allTeamMembers).size === 4;
+        if (isValid) {
+          room.teams = {
+            A: [...body.teams.A],
+            B: [...body.teams.B]
+          };
+          saveBattleRooms(rooms);
+          return sendJSON(res, 200, { success: true, message: "팀 구성이 변경되었습니다.", room });
+        }
+      }
+
+      // 2) 특정 사용자의 팀 스왑 요청 (targetUser)
+      const targetUser = body.targetUser || username;
+      if (!room.members.includes(targetUser)) {
+        return sendJSON(res, 400, { success: false, message: "유효하지 않은 참가자입니다." });
+      }
+
+      const teamA = [...(room.teams.A || [])];
+      const teamB = [...(room.teams.B || [])];
+      const isTargetInA = teamA.includes(targetUser);
+      const isTargetInB = teamB.includes(targetUser);
+
+      if (!isTargetInA && !isTargetInB) {
+        return sendJSON(res, 400, { success: false, message: "팀 소속을 찾을 수 없습니다." });
+      }
+
+      let swapWith = body.swapWith;
+      if (isTargetInA) {
+        // Target is in Team A: move to Team B, swap with a member in Team B
+        if (!swapWith || !teamB.includes(swapWith)) {
+          swapWith = teamB.find(m => m !== "맞춤요정") || teamB[0];
+        }
+        if (swapWith && teamB.includes(swapWith)) {
+          const idxA = teamA.indexOf(targetUser);
+          const idxB = teamB.indexOf(swapWith);
+          teamA[idxA] = swapWith;
+          teamB[idxB] = targetUser;
+        }
+      } else {
+        // Target is in Team B: move to Team A, swap with a member in Team A
+        if (!swapWith || !teamA.includes(swapWith)) {
+          swapWith = teamA.find(m => m !== room.creator && m !== "맞춤요정") || teamA.find(m => m !== targetUser) || teamA[0];
+        }
+        if (swapWith && teamA.includes(swapWith)) {
+          const idxB = teamB.indexOf(targetUser);
+          const idxA = teamA.indexOf(swapWith);
+          teamB[idxB] = swapWith;
+          teamA[idxA] = targetUser;
+        }
+      }
+
+      room.teams = { A: teamA, B: teamB };
+      saveBattleRooms(rooms);
+
+      return sendJSON(res, 200, {
+        success: true,
+        message: `${targetUser}님의 팀이 변경되었습니다.`,
+        room
+      });
+    } catch (e) {
+      console.error("Battle Change Team Error:", e);
       return sendJSON(res, 500, { success: false, message: e.message });
     }
   }

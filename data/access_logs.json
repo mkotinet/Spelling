@@ -1152,5 +1152,29 @@
     "details": {
       "reason": "인증 실패"
     }
+  },
+  {
+    "id": "log_1795263653517_5af69",
+    "timestamp": "2026-11-21T12:20:53.517Z",
+    "kstTime": "2026-11-21 12:20:53",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
+  },
+  {
+    "id": "log_1795263729986_q6iov",
+    "timestamp": "2026-11-21T12:22:09.986Z",
+    "kstTime": "2026-11-21 12:22:09",
+    "username": "미니미니",
+    "action": "LOGIN_FAIL",
+    "ip": "127.0.0.1",
+    "userAgent": "-",
+    "details": {
+      "reason": "인증 실패"
+    }
   }
 ]

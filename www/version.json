@@ -1,6 +1,6 @@
 {
-  "version": "3.7.2",
-  "build": "20261121_2100",
-  "name": "하루맞춤 (Haru Matchum) - Direct Battle Route on Incoming Alerts & Mobile Responsive Battle Lobby Scroll",
-  "releaseNotes": "1) 퀴즈대결 초대 알림/수신 팝업(모달) 및 보관함에서 대화방으로 잘못 이동하던 결함을 해결하여 즉시 퀴즈대결방으로 100% 다이렉트 직행하도록 개선, 2) 퀴즈대결 로비 모달에 반응형 유연 스크롤(flex: 1; overflow-y: auto) 및 작은 화면 모바일 높이 최적화(94vh 및 컴팩트 도전자 그리드)를 적용하여 아래 열린 대결방 목록이 잘림 없이 시원하게 보이도록 UI/UX 완벽 개선"
+  "version": "3.7.3",
+  "build": "20261121_2130",
+  "name": "하루맞춤 (Haru Matchum) - 2:2 Team Custom Assignment & Live Waiting Room Team Switch",
+  "releaseNotes": "1) 2:2 퀴즈대결 방 생성 시 파란색팀과 분홍색팀 멤버를 원하는 대로 자유롭게 배정/스왑할 수 있는 원터치 팀 전환 파이프라인 구축, 2) 2:2 대기실에서 실시간 팀 변경(⇄ 팀 변경) API 및 UI를 신설하여 의도와 다르게 매칭되던 결함 원천 해결, 3) 인게임 실시간 라이벌 바, 문제별 결과창 및 최종 포디움에서 파란색팀/분홍색팀 명칭 및 점수 집계 무결성 강화"
 }

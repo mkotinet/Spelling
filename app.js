@@ -1576,7 +1576,7 @@ class HaruMatchumApp {
     const metaVer = (typeof document !== 'undefined' && document.querySelector)
       ? document.querySelector('meta[name="app-version"]')?.getAttribute('content')
       : null;
-    this.APP_VERSION = metaVer || '3.7.2';
+    this.APP_VERSION = metaVer || '3.7.3';
     this.isCheckingVersion = false;
     this.lastVersionCheckTime = 0;
     this.swRegistration = null;
@@ -9354,6 +9354,7 @@ class HaruMatchumApp {
     if (this.modalBattleCreate) this.modalBattleCreate.classList.add('active');
 
     const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
+    this.battle2v2Teams = { A: [myName], B: [] };
 
     const inputTitle = document.getElementById('inputBattleTitle');
     if (inputTitle) {
@@ -9449,7 +9450,7 @@ class HaruMatchumApp {
     }
   }
 
-  // 3-2. 매치 타입 및 선택 인원 실시간 UI 갱신 (2:2 팀전 미리보기 포함)
+  // 3-2. 매치 타입 및 선택 인원 실시간 UI 갱신 (2:2 팀전 미리보기 및 자유 팀 배정 포함)
   updateBattleCreateSelectionUI() {
     const matchType = document.querySelector('input[name="battleMatchType"]:checked')?.value || '1v1';
     const checkedFriends = Array.from(document.querySelectorAll('input[name="battleFriend"]:checked')).map(cb => cb.value);
@@ -9475,30 +9476,141 @@ class HaruMatchumApp {
       countNotice.textContent = `${checkedFriends.length}/${requiredCount}명 선택됨 (${isExact ? '선택 완료!' : `${requiredCount}명 필요`})`;
     }
 
-    if (teamSetupWrap) {
-      if (matchType === '2v2') {
+    const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
+
+    if (matchType === '2v2') {
+      if (!this.battle2v2Teams || !Array.isArray(this.battle2v2Teams.A) || !Array.isArray(this.battle2v2Teams.B)) {
+        this.battle2v2Teams = { A: [myName], B: [] };
+      }
+      // Ensure myName is in A
+      if (!this.battle2v2Teams.A.includes(myName)) {
+        this.battle2v2Teams.A.unshift(myName);
+      }
+
+      // Filter out any members from A and B that are no longer checked
+      this.battle2v2Teams.A = this.battle2v2Teams.A.filter(m => m === myName || checkedFriends.includes(m));
+      this.battle2v2Teams.B = this.battle2v2Teams.B.filter(m => checkedFriends.includes(m) && m !== myName);
+
+      // Add newly checked friends not yet in A or B
+      checkedFriends.forEach(friend => {
+        if (!this.battle2v2Teams.A.includes(friend) && !this.battle2v2Teams.B.includes(friend)) {
+          if (this.battle2v2Teams.A.length < 2) {
+            this.battle2v2Teams.A.push(friend);
+          } else {
+            this.battle2v2Teams.B.push(friend);
+          }
+        }
+      });
+
+      // Balance teams if total checked friends >= 3
+      if (this.battle2v2Teams.A.length > 2) {
+        const overflow = this.battle2v2Teams.A.splice(2);
+        this.battle2v2Teams.B.push(...overflow);
+      }
+      if (this.battle2v2Teams.A.length === 1 && this.battle2v2Teams.B.length > 2) {
+        const moved = this.battle2v2Teams.B.shift();
+        this.battle2v2Teams.A.push(moved);
+      }
+
+      if (teamSetupWrap) {
         teamSetupWrap.style.display = 'flex';
-        const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
-        const partner = checkedFriends[0] || '1번 친구 대기';
-        const opp1 = checkedFriends[1] || '2번 친구 대기';
-        const opp2 = checkedFriends[2] || '3번 친구 대기';
+        const partner = this.battle2v2Teams.A.find(m => m !== myName);
+        const opp1 = this.battle2v2Teams.B[0];
+        const opp2 = this.battle2v2Teams.B[1];
 
         if (blueMembersEl) {
           blueMembersEl.innerHTML = `
-            <div class="team-member-pill blue" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#dbeafe; color:#1d4ed8; font-weight:700;">👑 ${myName} (나)</div>
-            <div class="team-member-pill blue" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#dbeafe; color:#1d4ed8; font-weight:700;">${checkedFriends[0] ? `🤝 ${partner}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
+            <div class="team-member-pill blue">
+              <span>👑 ${myName} (나)</span>
+              <span style="font-size:0.68rem; opacity:0.8;">방장</span>
+            </div>
+            ${partner ? `
+              <div class="team-member-pill blue">
+                <span>🤝 ${partner}</span>
+                <button type="button" class="btn-team-swap" onclick="window.app.swap2v2TeamMember('${partner}')">⇄ 분홍팀</button>
+              </div>
+            ` : `<div class="team-member-pill empty">(파트너 선택 대기)</div>`}
           `;
         }
+
         if (redMembersEl) {
           redMembersEl.innerHTML = `
-            <div class="team-member-pill red" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#fee2e2; color:#b91c1c; font-weight:700;">${checkedFriends[1] ? `⚔️ ${opp1}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
-            <div class="team-member-pill red" style="font-size:0.78rem; padding:3px 8px; border-radius:8px; margin:2px 0; background:#fee2e2; color:#b91c1c; font-weight:700;">${checkedFriends[2] ? `⚔️ ${opp2}` : `<span style="opacity:0.6;">(선택 대기)</span>`}</div>
+            ${opp1 ? `
+              <div class="team-member-pill pink">
+                <span>⚔️ ${opp1}</span>
+                <button type="button" class="btn-team-swap" onclick="window.app.swap2v2TeamMember('${opp1}')">⇄ 파란팀</button>
+              </div>
+            ` : `<div class="team-member-pill empty">(상대 1 대기)</div>`}
+            ${opp2 ? `
+              <div class="team-member-pill pink">
+                <span>⚔️ ${opp2}</span>
+                <button type="button" class="btn-team-swap" onclick="window.app.swap2v2TeamMember('${opp2}')">⇄ 파란팀</button>
+              </div>
+            ` : `<div class="team-member-pill empty">(상대 2 대기)</div>`}
           `;
         }
-      } else {
-        teamSetupWrap.style.display = 'none';
       }
+
+      // Also update badges on friend selection items
+      document.querySelectorAll('.battle-friend-select-item').forEach(label => {
+        const input = label.querySelector('input[name="battleFriend"]');
+        if (!input) return;
+        const u = input.value;
+        let badgeEl = label.querySelector('.friend-team-badge');
+        if (input.checked) {
+          const isA = this.battle2v2Teams.A.includes(u);
+          if (!badgeEl) {
+            badgeEl = document.createElement('span');
+            badgeEl.className = 'friend-team-badge';
+            label.appendChild(badgeEl);
+          }
+          badgeEl.className = `friend-team-badge ${isA ? 'blue' : 'pink'}`;
+          badgeEl.textContent = isA ? '🔵 파란색팀 ⇄' : '🌸 분홍색팀 ⇄';
+          badgeEl.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.swap2v2TeamMember(u);
+          };
+          badgeEl.style.display = 'inline-flex';
+        } else if (badgeEl) {
+          badgeEl.style.display = 'none';
+        }
+      });
+    } else {
+      if (teamSetupWrap) teamSetupWrap.style.display = 'none';
+      document.querySelectorAll('.friend-team-badge').forEach(b => b.style.display = 'none');
     }
+  }
+
+  // 3-3. 2:2 팀전 멤버 팀 변경 스왑 (파란색팀 ⇄ 분홍색팀)
+  swap2v2TeamMember(username) {
+    if (!this.battle2v2Teams) return;
+    const myName = (this.data && this.data.currentUser && (this.data.currentUser.name || this.data.currentUser.username)) || ((typeof localStorage !== 'undefined') ? localStorage.getItem('haru_auth_username') : '') || '나';
+    if (username === myName) return; // Creator stays in A
+
+    const inA = this.battle2v2Teams.A.includes(username);
+    const inB = this.battle2v2Teams.B.includes(username);
+
+    if (inA) {
+      // Move from A to B: swap with B[0] if exists
+      this.battle2v2Teams.A = this.battle2v2Teams.A.filter(m => m !== username);
+      if (this.battle2v2Teams.B.length > 0) {
+        const swapped = this.battle2v2Teams.B.shift();
+        this.battle2v2Teams.A.push(swapped);
+      }
+      this.battle2v2Teams.B.push(username);
+    } else if (inB) {
+      // Move from B to A: swap with partner in A if partner exists
+      this.battle2v2Teams.B = this.battle2v2Teams.B.filter(m => m !== username);
+      const partner = this.battle2v2Teams.A.find(m => m !== myName);
+      if (partner) {
+        this.battle2v2Teams.A = this.battle2v2Teams.A.filter(m => m !== partner);
+        this.battle2v2Teams.B.unshift(partner);
+      }
+      this.battle2v2Teams.A.push(username);
+    }
+
+    this.updateBattleCreateSelectionUI();
   }
 
   // 4. 대화방에서 즉시 대결방 열기
@@ -9576,7 +9688,9 @@ class HaruMatchumApp {
           level,
           allowItems,
           matchType,
+          teams: matchType === '2v2' ? this.battle2v2Teams : null,
           token: this.token
+        })
         })
       });
       const data = await res.json();
@@ -9948,13 +10062,13 @@ class HaruMatchumApp {
       teamBannerHtml = `
         <div class="battle-team-score-banner" style="grid-column: 1 / -1; width: 100%;">
           <div class="team-banner-side blue">
-            <span class="team-banner-badge blue">🔵 블루팀</span>
+            <span class="team-banner-badge blue">🔵 파란색팀</span>
             <span class="team-banner-score">${scoreA}P</span>
           </div>
           <div class="team-banner-vs">VS</div>
-          <div class="team-banner-side red">
+          <div class="team-banner-side pink">
             <span class="team-banner-score">${scoreB}P</span>
-            <span class="team-banner-badge red">🔴 레드팀</span>
+            <span class="team-banner-badge pink" style="background:#db2777; color:#fff;">🌸 분홍색팀</span>
           </div>
         </div>
       `;
@@ -9987,9 +10101,9 @@ class HaruMatchumApp {
       let teamBadgeHtml = '';
       if (room.matchType === '2v2' && room.teams) {
         if ((room.teams.A || []).includes(mName)) {
-          teamBadgeHtml = '<span class="rival-team-badge blue">🔵 블루</span>';
+          teamBadgeHtml = '<span class="rival-team-badge blue">🔵 파란팀</span>';
         } else if ((room.teams.B || []).includes(mName)) {
-          teamBadgeHtml = '<span class="rival-team-badge red">🔴 레드</span>';
+          teamBadgeHtml = '<span class="rival-team-badge pink" style="background:#fce7f3; color:#be185d;">🌸 분홍팀</span>';
         }
       }
 
@@ -10143,7 +10257,7 @@ class HaruMatchumApp {
       let teamBadge = '';
       if (this.currentBattleRoom.matchType === '2v2' && this.currentBattleRoom.teams) {
         const isTeamA = (this.currentBattleRoom.teams.A || []).includes(rName);
-        teamBadge = isTeamA ? '<span class="rival-team-badge blue">🔵 블루팀</span>' : '<span class="rival-team-badge red">🔴 레드팀</span>';
+        teamBadge = isTeamA ? '<span class="rival-team-badge blue">🔵 파란색팀</span>' : '<span class="rival-team-badge pink" style="background:#fce7f3; color:#be185d;">🌸 분홍색팀</span>';
       }
 
       return `
@@ -10301,7 +10415,7 @@ class HaruMatchumApp {
       const scoreB = teamB.reduce((sum, u) => sum + ((room.progress && room.progress[u]) ? (room.progress[u].score || 0) : 0), 0);
 
       const myTeam = teamA.includes(myUsername) ? 'A' : 'B';
-      const myTeamName = myTeam === 'A' ? '블루팀' : '레드팀';
+      const myTeamName = myTeam === 'A' ? '🔵 파란색팀' : '🌸 분홍색팀';
       const myScore = myTeam === 'A' ? scoreA : scoreB;
       const oppScore = myTeam === 'A' ? scoreB : scoreA;
 
@@ -10312,7 +10426,7 @@ class HaruMatchumApp {
         if (trophy) trophy.textContent = '🏆';
         if (headline) {
           headline.textContent = `🎉 ${myTeamName} 승리! (${scoreA}P vs ${scoreB}P)`;
-          headline.style.color = myTeam === 'A' ? '#2563eb' : '#dc2626';
+          headline.style.color = myTeam === 'A' ? '#2563eb' : '#db2777';
         }
         if (rpBadge) {
           rpBadge.textContent = '+30 RP 팀전 승리 보너스 획득!';
@@ -10347,21 +10461,21 @@ class HaruMatchumApp {
         rankListContainer.innerHTML = `
           <div class="battle-team-score-banner" style="margin-bottom:12px;">
             <div class="team-banner-side blue">
-              <span class="team-banner-badge blue">🔵 블루팀</span>
+              <span class="team-banner-badge blue">🔵 파란색팀</span>
               <span class="team-banner-score">${scoreA}P</span>
             </div>
             <div class="team-banner-vs">VS</div>
-            <div class="team-banner-side red">
+            <div class="team-banner-side pink">
               <span class="team-banner-score">${scoreB}P</span>
-              <span class="team-banner-badge red">🔴 레드팀</span>
+              <span class="team-banner-badge pink" style="background:#db2777; color:#fff;">🌸 분홍색팀</span>
             </div>
           </div>
         ` + sortedMembers.map((member, idx) => {
           const isMe = member.username === myUsername;
           const memberTeam = teamA.includes(member.username) ? 'A' : 'B';
           const teamBadge = memberTeam === 'A' 
-            ? '<span class="rival-team-badge blue">🔵 블루</span>' 
-            : '<span class="rival-team-badge red">🔴 레드</span>';
+            ? '<span class="rival-team-badge blue">🔵 파란팀</span>' 
+            : '<span class="rival-team-badge pink" style="background:#fce7f3; color:#be185d;">🌸 분홍팀</span>';
           const memberRp = (memberTeam === 'A' ? (scoreA > scoreB ? '+30 RP' : (scoreA === scoreB ? '+10 RP' : '-15 RP')) : (scoreB > scoreA ? '+30 RP' : (scoreA === scoreB ? '+10 RP' : '-15 RP')));
           return `
             <div class="battle-podium-rank-item ${isMe ? 'is-me' : ''}">
@@ -10548,7 +10662,19 @@ class HaruMatchumApp {
         let teamBadge = '';
         if (room.matchType === '2v2' && room.teams) {
           const team = (room.teams.A && room.teams.A.includes(mName)) ? 'A' : 'B';
-          teamBadge = `<div style="font-size:0.72rem; margin-top:2px; font-weight:800; color:${team === 'A' ? '#3b82f6' : '#ef4444'};">${team === 'A' ? '🔵 블루팀' : '🔴 레드팀'}</div>`;
+          const isTeamA = (team === 'A');
+          const isHost = (room.host === myUsername || room.creator === myUsername);
+          const canChange = (room.status === 'waiting') && (isMe || isHost);
+          teamBadge = `
+            <div style="font-size:0.75rem; margin-top:3px; font-weight:800; color:${isTeamA ? '#2563eb' : '#db2777'};">
+              ${isTeamA ? '🔵 파란색팀' : '🌸 분홍색팀'}
+            </div>
+            ${canChange ? `
+              <button type="button" class="btn-waiting-change-team" onclick="window.app.changeBattleWaitingTeam('${mName}')" style="margin-top:3px; font-size:0.68rem; padding:2px 7px; border-radius:6px; background:#fff; border:1px solid ${isTeamA ? '#93c5fd' : '#fbcfe8'}; color:${isTeamA ? '#1d4ed8' : '#be185d'}; font-weight:700; cursor:pointer;">
+                ⇄ 팀 변경
+              </button>
+            ` : ''}
+          `;
         }
 
         return `
@@ -10575,6 +10701,33 @@ class HaruMatchumApp {
         toggleBtn.textContent = '🔥 대결 시작 준비 완료';
         toggleBtn.style.background = 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)';
       }
+    }
+  }
+
+  // 17-C2. 2:2 대기실 팀 실시간 변경 요청 (POST /api/battle/change-team)
+  async changeBattleWaitingTeam(targetUser) {
+    if (!this.currentBattleRoom) return;
+    const roomId = this.currentBattleRoom.id || this.currentBattleRoom.roomId;
+    try {
+      const res = await fetch('/api/battle/change-team', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify({ roomId, targetUser, token: this.token })
+      });
+      const data = await res.json();
+      if (data.success && data.room) {
+        this.currentBattleRoom = data.room;
+        this.renderBattleWaitingScreen(data.room);
+        this.showToastNotice(data.message || `${targetUser}님의 팀이 변경되었습니다! ✨`);
+      } else {
+        this.showToastNotice(data.message || '팀 변경에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error('[Battle] Change team error:', e);
+      this.showToastNotice('팀 변경 중 통신 오류가 발생했습니다.');
     }
   }
 
@@ -10692,9 +10845,17 @@ class HaruMatchumApp {
           choiceLabel = '시간 초과';
         }
 
+        let teamBadge = '';
+        if (room.matchType === '2v2' && room.teams) {
+          const isTeamA = (room.teams.A || []).includes(mName);
+          teamBadge = isTeamA
+            ? '<span class="rival-team-badge blue" style="font-size:0.65rem; padding:1px 5px; border-radius:4px; margin-left:4px;">🔵 파란팀</span>'
+            : '<span class="rival-team-badge pink" style="font-size:0.65rem; padding:1px 5px; border-radius:4px; margin-left:4px; background:#fce7f3; color:#be185d;">🌸 분홍팀</span>';
+        }
+
         return `
           <div class="round-player-box ${isCorrect ? 'is-correct' : (sub ? 'is-wrong' : '')}">
-            <div class="round-player-name">${avatar} ${mName} ${isMe ? '(나)' : ''}</div>
+            <div class="round-player-name">${avatar} ${mName} ${teamBadge} ${isMe ? '(나)' : ''}</div>
             <div class="round-player-outcome ${isCorrect ? 'win' : 'lose'}">${outcomeText}</div>
             <div style="font-size:0.75rem; color:#cbd5e1; margin:2px 0;">선택: ${choiceLabel}</div>
             <div class="round-player-time">⏱️ ${timeSpent}초</div>
@@ -10901,7 +11062,7 @@ class HaruMatchumApp {
     setTimeout(() => {
       try {
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('_v', this.APP_VERSION || '3.7.2');
+        url.searchParams.set('_v', this.APP_VERSION || '3.7.3');
         url.searchParams.set('_t', Date.now());
         window.location.replace(url.toString());
       } catch (e) {
